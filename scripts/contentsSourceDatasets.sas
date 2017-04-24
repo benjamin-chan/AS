@@ -35,13 +35,13 @@ ods html
   %do i = 1 %to 4;
     data _null_;
       set Work.libs;
-      if _n_ = &i then call symput ("lib", libname);
+      if _n_ = &i then call symput ("lib", strip(libname));
     run;
     proc contents data = &lib.._all_ order = varnum out = Work.contents_&lib;
     run;
     proc export
       data = Work.contents_&lib
-      outfile = "data\processed\contentsSourceDatasets_&lib.csv"
+      outfile = "data\processed\contentsSourceDatasets_&lib..csv"
       dbms = csv
       replace;
       delimiter = ",";
