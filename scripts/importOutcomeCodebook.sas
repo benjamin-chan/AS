@@ -23,7 +23,7 @@ ods html
   style = Statistical;
 
 
-filename f "..\data\raw\AS Project Codebooks - 20170410\AS Project Cohort Outcome Codebook-20170410.xlsx";
+filename f "data\raw\AS Project Codebooks - 20170410\AS Project Cohort Outcome Codebook-20170410.xlsx";
 
 proc sql;
   create table Work.worksheets (worksheet varchar(40), outfile varchar(20));
