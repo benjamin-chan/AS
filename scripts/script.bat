@@ -3,6 +3,7 @@ del ..\data\processed\* /q
 
 call :execute contentsWorkingDatasets
 call :execute importOutcomeCodebook
+call :execute buildIndexLookup
 
 "C:\Program Files\7-Zip\7z.exe" d ..\output.zip ..\output\*
 "C:\Program Files\7-Zip\7z.exe" a ..\output.zip ..\output\*
