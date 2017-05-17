@@ -26,7 +26,7 @@ ods html
 data Work.WorkingDatasets;
   length lib $8 mem $40;
   input lib mem;
-  dataset = compress(lib) || "." || compress(mem);
+  dataset = strip(lib) || "." || strip(mem);
   call symput ("n", put(_n_, best8.));
   cards;
 UCB CohortAStdUCB
