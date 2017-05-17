@@ -17,6 +17,16 @@ options macrogen mlogic mprint symbolgen;
 options nomacrogen nomlogic nomprint nosymbolgen;
 
 
+/* 
+NEED TO OPERATIONALIZE
+
+The outcome definition for osteoporotic fracture is complex.
+See *ALGORITHMS TO ENHANCE SPECIFICITY OF FRACTURE IDENTIFICATION_ 100316.docx*
+
+Osteoporotic fracture Clinical vertebral fracture
+Non-vertebral osteoporotic fracture (hip, pelvis, femur, humerus, distal radius/ulna)
+ */
+
 
 ods html
   body = "output\&cmt..html"
