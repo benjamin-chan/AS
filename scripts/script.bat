@@ -1,6 +1,7 @@
 del ..\output\* /q
 del ..\data\processed\* /q
 
+call :execute contentsSourceDatasets
 call :execute contentsWorkingDatasets
 call :execute importOutcomeCodebook
 call :execute buildIndexLookup
