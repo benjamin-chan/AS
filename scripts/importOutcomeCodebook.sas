@@ -63,6 +63,7 @@ proc sql;
     select case
              when disease in ("Psoriasis", "Psoriatic arthritis") then "PsO/PsA" 
              when disease in ("Crohn’s Disease", "Ulcerative Colitis") then "Inflammatory bowel disease"
+             when prxmatch("/Crohn.s Disease/", disease) then "Inflammatory bowel disease"
              when disease in ("Uveitis") then "Uveitis"
              else ""
              end as outcomeCategory, 
