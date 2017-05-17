@@ -79,7 +79,7 @@ proc sql;
     select * from Work.defOutcomesICD9 union corr
     select disease_category as outcomeCategory, disease, code_type as codeType, dequote(codes) as code, description
       from Work.defLNK;
-  select outcomeCategory, disease, count(codeType) as countCodeTypes, count(code) as countCodes
+  select outcomeCategory, disease, count(distinct codeType) as countCodeTypes, count(distinct code) as countCodes
     from Work.defOutcomes
     where outcomeCategory ^in ("Cancer", "Hospitalized infection", "Opportunistic infection")
     group by outcomeCategory, disease;
