@@ -22,6 +22,17 @@ ods html
   style = Statistical;
 
 
+/* 
+Calculate the prevalence of each comorbidity over various time intervals, by
+disease cohort (AS vs. non-AS). We will explore how the prevalence of each
+condition varies according to the amount of data available. Outcomes will be
+examined in discrete 12 month increments (i.e. using 12 months of data, 24
+months, 36 months, etc.) using the 6 months baseline plus an additional 6
+(1st year), 18 (1st and 2nd year), 30 (1st, 2nd, and 3rd year), etc. months
+of follow-up.
+ */
+
+
 proc sql;
 
   create table Work.defOutcomes as
