@@ -47,3 +47,35 @@ h <- 33
 "../figures/queryPrevalentComorbiditiesMedicare.svg" %>% 
   ggsave(., plotPrev("Medicare"), width = w, height = h, units = "in", dpi = 300)
 ```
+
+Table.
+
+```{r}
+foo <- function(db, exp) {
+    timeWindow <- "Prior to index"
+    col <- which(names(df) %in% c("database", "outcomeCategory", "disease", "prevPer1000"))
+    df %>% filter(timeWindow == timeWindow) %>% filter(database == db) %>% filter(exposure == exp) %>% select(col)
+}
+df1a <- foo("MPCD", "NSAID")
+df1b <- foo("MPCD", "DMARD")
+df1c <- foo("MPCD", "TNF")
+df2a <- foo("Marketscan", "NSAID")
+df2b <- foo("Marketscan", "DMARD")
+df2c <- foo("Marketscan", "TNF")
+df3a <- foo("Medicare", "NSAID")
+df3b <- foo("Medicare", "DMARD")
+df3c <- foo("Medicare", "TNF")
+foo <- function (a, b, c) {
+    by <- c("database", "outcomeCategory", "disease")
+    merge(a, 
+          merge(b, 
+                c, 
+                by = by, all = TRUE, suffixes = c("_DMARD", "_TNF")), 
+          by = by, all = TRUE) %>% 
+    rename(prevPer1000_NSAID = prevPer1000) %>% 
+    kable(digits = 2)
+}
+foo(df1a, df1b, df1c)
+foo(df2a, df2b, df2c)
+foo(df3a, df3b, df3c)
+```
