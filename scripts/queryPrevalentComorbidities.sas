@@ -153,6 +153,7 @@ proc sql;
     from Work.comorbidities A inner join
          Work.denominator B on (A.database = B.database & A.exposure = B.exposure)
     group by A.database, A.exposure, A.outcomeCategory, A.disease, B.denomPatid, B.denomIndexExp
+    union corr
     select A.database, A.exposure, A.outcomeCategory, A.disease,
            B.denomPatid,
            B.denomIndexExp,
