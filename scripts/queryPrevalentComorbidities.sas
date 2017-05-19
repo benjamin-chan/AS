@@ -94,6 +94,7 @@ proc sql;
     select C.database, C.exposure, C.patid, C.indexGNN, C.indexDate, C.age, C.sex,
            C.outcomeCategory,
            C.disease,
+           sum(C.begin_date < C.indexDate) > 0 as indPrevPriorToIndex,
            sum(0 <= C.indexDate  - C.begin_date <= 183 |
                0 <= C.begin_date - C.indexDate  <= (183 * 1)) > 0 as indPrev12mo,
            sum(0 <= C.indexDate  - C.begin_date <= 183 |
@@ -109,7 +110,8 @@ proc sql;
     group by C.database, C.exposure, C.patid, C.indexGNN, C.indexDate, C.age, C.sex,
              C.outcomeCategory,
              C.disease
-    having calculated indPrev12mo > 0 | 
+    having calculated indPrevPriorToIndex > 0 | 
+           calculated indPrev12mo > 0 | 
            calculated indPrev24mo > 0 | 
            calculated indPrev36mo > 0;
 
@@ -122,6 +124,16 @@ proc sql;
     group by database, exposure;
 
   create table Work.prev as
+    select A.database, A.exposure, A.outcomeCategory, A.disease,
+           B.denomPatid,
+           B.denomIndexExp,
+           "Prior to index" as timeWindow,
+           sum(A.indPrevPriorToIndex) as numer,
+           sum(A.indPrevPriorToIndex) / B.denomIndexExp * 1000 as prevPer1000
+    from Work.comorbidities A inner join
+         Work.denominator B on (A.database = B.database & A.exposure = B.exposure)
+    group by A.database, A.exposure, A.outcomeCategory, A.disease, B.denomPatid, B.denomIndexExp
+    union corr
     select A.database, A.exposure, A.outcomeCategory, A.disease,
            B.denomPatid,
            B.denomIndexExp,
