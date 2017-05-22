@@ -40,11 +40,6 @@ See the *Compact Outcome Definition* worksheet in `AS Project Cohort Outcome Cod
 
 proc sql;
 
-  create table Work.defOutcomes as
-    select * 
-    from DT.defOutcomes 
-    where outcomeCategory ^in ("Cancer", "Hospitalized infection", "Opportunistic infection");
-  
   %let select1 = select A.*, B.enc_type, B.admit_date, B.begin_date, B.discharge_date, B.end_date, B.dx_type, B.dx, B.pdx, "ICD9-DX" as codeType, B.dx as code;
   %let on1 = on (A.patid = B.patid);
   %let select2 = select patid, enc_type, admit_date, begin_date, discharge_date, end_date, dx_type, dx, pdx;
@@ -114,6 +109,13 @@ Call interstitial lung disease macro
 
 
 proc sql;
+
+  create table Work.defOutcomes as
+    select * 
+    from DT.defOutcomes 
+    where outcomeCategory ^in ("Cancer", "Hospitalized infection", "Opportunistic infection") & 
+          disease ^in ("Interstitial lung disease");
+  
   %let select1 = select A.*, B.outcomeCategory, B.disease;
   %let join1 = inner join Work.defOutcomes B on (A.codeType = B.codeType & A.code = B.code);
   %let where1 = where B.disease ^= "Myocardial infarction" | (B.disease = "Myocardial infarction" & A.enc_type = "IP");
