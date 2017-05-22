@@ -37,6 +37,9 @@ proc sql;
     select "Medicare"   as database, "DMARD" as exposure, &var from UCB.ASDMARDCohortStd_SABR_ex2 union corr
     select "Medicare"   as database, "NSAID" as exposure, &var from UCB.ASNSAIDCohortStd_SABR_ex2 union corr
     select "Medicare"   as database, "None"  as exposure, &var from UCB.ASNoExpCohortStd_SABR_ex2 ;
+  alter table DT.indexLookup add indexID numeric;
+  update DT.indexLookup
+    set indexID = monotonic();
 quit;
 
 proc sort data = DT.indexLookup nodupkey;
@@ -47,7 +50,7 @@ proc sql;
   select database, 
          exposure, 
          count(distinct patid) as countDistinctPatid, 
-         count(distinct patid || indexGNN || put(indexDate, mmddyy10.)) as countDistinctIndexes, 
+         count(distinct indexID) as countDistinctIndexes, 
          count(*) as countRows
     from DT.indexLookup
     group by database, exposure;
