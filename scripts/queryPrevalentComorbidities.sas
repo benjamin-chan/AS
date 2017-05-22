@@ -65,7 +65,7 @@ proc sql;
   
   %let select1 = select A.*, B.begin_date, "ICD9-DX" as codeType, B.dx as code;
   %let on1 = on (A.patid = B.patid);
-  %let select2 = select patid, begin_date, dx;
+  %let select2 = select patid, enc_type, admit_date, begin_date, dx_type, dx, pdx;
   %let where2 = where dx_type = "09";
   %let selectfrom3 = select * from DT.indexLookup;
   create table UCB.tempDxMPCD as
@@ -89,8 +89,8 @@ proc sql;
 
   %let select1 = select A.*, B.begin_date, case when B.px_type = "09" then "ICD9-PX" when B.px_type = "C1" then "CPT" else "" end as codeType, B.px as code;
   %let on1 = on (A.patid = B.patid);
-  %let select2 = select patid, begin_date, px_type, px;
   %let where2 = where px_type in ("09", "C1");
+  %let select2 = select patid, admit_date, begin_date, px_date, px_type, px;
   %let selectfrom3 = select * from DT.indexLookup;
   create table UCB.tempPxMPCD as
     &select1 from (&selectfrom3 where database = "MPCD") A inner join (&select2 from MPSTD.PX_07_10 &where2) B &on1;
