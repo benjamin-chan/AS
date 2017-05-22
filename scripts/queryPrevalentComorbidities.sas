@@ -33,6 +33,11 @@ of follow-up.
  */
 
 
+/* 
+See the *Compact Outcome Definition* worksheet in `AS Project Cohort Outcome Codebook-20170410.xlsx`
+ */
+
+
 proc sql;
 
   create table Work.defOutcomes as
