@@ -79,15 +79,17 @@ proc sql;
              end as outcomeCategory, 
            A.* 
       from Work.defSpondy A;
-  alter table Work.defOutcomesICD9 add codeType varchar(7), code varchar(5);
+  alter table Work.defOutcomesICD9 add codeType varchar(7), code varchar(5), enc_type varchar(2);
   update Work.defOutcomesICD9
     set codeType = "ICD9-DX";
   update Work.defOutcomesICD9
     set code = dequote(icd9_list);
+  update Work.defOutcomesICD9
+    set enc_type = case when disease = "Myocardial infarction" then "IP" else "" end;
   alter table Work.defOutcomesICD9 drop icd9_list;
   create table DT.defOutcomes as
     select * from Work.defOutcomesICD9 union corr
-    select disease_category as outcomeCategory, disease, code_type as codeType, dequote(codes) as code, description
+    select disease_category as outcomeCategory, disease, code_type as codeType, dequote(codes) as code, "" as enc_type, description
       from Work.defLNK;
   select outcomeCategory, disease, count(distinct codeType) as countCodeTypes, count(distinct code) as countCodes
     from DT.defOutcomes
