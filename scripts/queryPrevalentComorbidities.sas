@@ -38,6 +38,24 @@ See the *Compact Outcome Definition* worksheet in `AS Project Cohort Outcome Cod
  */
 
 
+/* 
+Call interstitial lung disease macro
+ */
+%include "lib\IPP_2IPSOPplusPX_ILD.sas" / source2;
+%IPP_2IPSOPplusPX_ILD(outdata = Work.outcome_ILD_MPCD,
+                      IDS = indexID,
+                      Dxs = UCB.tempDxMPCD,
+                      Pxs = UCB.tempPxMPCD);
+%IPP_2IPSOPplusPX_ILD(outdata = Work.outcome_ILD_UCB,
+                      IDS = indexID,
+                      Dxs = UCB.tempDxUCB,
+                      Pxs = UCB.tempPxUCB);
+%IPP_2IPSOPplusPX_ILD(outdata = Work.outcome_ILD_SABR,
+                      IDS = indexID,
+                      Dxs = UCB.tempDxSABR,
+                      Pxs = UCB.tempPxSABR);
+
+
 proc sql;
 
   create table Work.defOutcomes as
