@@ -1,0 +1,84 @@
+# Plot prevalence
+
+```
+From: Curtis, Jeffrey R [mailto:jrcurtis@uabmc.edu] 
+Sent: Thursday, May 11, 2017 10:59 AM
+Subject: Table 1 Distribution of Characteristics of AS cohort by data source 1 year baseline
+
+Here is table shell for table 1 for AS cohort. All covariates are measured in
+baseline, although I think that we should have additional rows added for all
+13 outcomes of interest, using all available leftward data (not just
+baseline). So for example, someone who had history of uveitis, or cancer,
+would appear as rows in this table.
+
+This would be the same format for Aim II that provides the corresponding
+information with each column representing the exposure episodes.
+```
+
+Read prevalence data.
+See `queryPrevalentComorbidities.sas`.
+
+```{r}
+df <-
+  "../data/processed/queryPrevalentComorbidities.csv" %>% 
+  read.csv(file = ., na.string = c("NA", "")) %>% 
+  rename(disease = Disease)
+```
+
+Plot using `plotPrev()`.
+
+* MPCD [PNG](../figures/queryPrevalentComorbiditiesMPCD.png), [SVG](../figures/queryPrevalentComorbiditiesMPCD.svg)
+* Marketscan [PNG](../figures/queryPrevalentComorbiditiesMarketscan.png), [SVG](../figures/queryPrevalentComorbiditiesMarketscan.svg)
+* Medicare [PNG](../figures/queryPrevalentComorbiditiesMedicare.png), [SVG](../figures/queryPrevalentComorbiditiesMedicare.svg)
+
+```{r}
+w <- 6
+h <- 33
+"../figures/queryPrevalentComorbiditiesMPCD.png" %>% 
+  ggsave(., plotPrev("MPCD"), width = w, height = h, units = "in", dpi = 300)
+"../figures/queryPrevalentComorbiditiesMPCD.svg" %>% 
+  ggsave(., plotPrev("MPCD"), width = w, height = h, units = "in", dpi = 300)
+"../figures/queryPrevalentComorbiditiesMarketscan.png" %>% 
+  ggsave(., plotPrev("Marketscan"), width = w, height = h, units = "in", dpi = 300)
+"../figures/queryPrevalentComorbiditiesMarketscan.svg" %>% 
+  ggsave(., plotPrev("Marketscan"), width = w, height = h, units = "in", dpi = 300)
+"../figures/queryPrevalentComorbiditiesMedicare.png" %>% 
+  ggsave(., plotPrev("Medicare"), width = w, height = h, units = "in", dpi = 300)
+"../figures/queryPrevalentComorbiditiesMedicare.svg" %>% 
+  ggsave(., plotPrev("Medicare"), width = w, height = h, units = "in", dpi = 300)
+```
+
+Table.
+
+```{r}
+foo <- function(db, exp) {
+    col <- which(names(df) %in% c("database", "outcomeCategory", "disease", "prevPer1000"))
+    df %>% 
+      filter(timeWindow == "Prior to index") %>% 
+      filter(database == db) %>% 
+      filter(exposure == exp) %>% 
+      select(col)
+}
+df1a <- foo("MPCD", "NSAID")
+df1b <- foo("MPCD", "DMARD")
+df1c <- foo("MPCD", "TNF")
+df2a <- foo("Marketscan", "NSAID")
+df2b <- foo("Marketscan", "DMARD")
+df2c <- foo("Marketscan", "TNF")
+df3a <- foo("Medicare", "NSAID")
+df3b <- foo("Medicare", "DMARD")
+df3c <- foo("Medicare", "TNF")
+foo <- function (a, b, c) {
+    by <- c("database", "outcomeCategory", "disease")
+    merge(a, 
+          merge(b, 
+                c, 
+                by = by, all = TRUE, suffixes = c("_DMARD", "_TNF")), 
+          by = by, all = TRUE) %>% 
+    rename(prevPer1000_NSAID = prevPer1000) %>% 
+    kable(digits = 2)
+}
+foo(df1a, df1b, df1c)
+foo(df2a, df2b, df2c)
+foo(df3a, df3b, df3c)
+```
