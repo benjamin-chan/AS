@@ -63,7 +63,7 @@ proc sql;
     from DT.defOutcomes 
     where outcomeCategory ^in ("Cancer", "Hospitalized infection", "Opportunistic infection");
   
-  %let select1 = select A.*, B.begin_date, "ICD9-DX" as codeType, B.dx as code;
+  %let select1 = select A.*, B.enc_type, B.admit_date, B.begin_date, B.dx_type, B.dx, B.pdx, "ICD9-DX" as codeType, B.dx as code;
   %let on1 = on (A.patid = B.patid);
   %let select2 = select patid, enc_type, admit_date, begin_date, dx_type, dx, pdx;
   %let where2 = where dx_type = "09";
@@ -87,7 +87,7 @@ proc sql;
     &select1 from (&selectfrom3 where database = "Medicare") A inner join (&select2 from STD_SABR.STD_DX_2013    &where2) B &on1 union corr
     &select1 from (&selectfrom3 where database = "Medicare") A inner join (&select2 from STD_SABR.STD_DX_2014    &where2) B &on1 ;
 
-  %let select1 = select A.*, B.begin_date, case when B.px_type = "09" then "ICD9-PX" when B.px_type = "C1" then "CPT" when B.px_type = "H1" then "HCPCS" else "" end as codeType, B.px as code;
+  %let select1 = select A.*, B.admit_date, B.begin_date, B.px_date, B.px_type, B.px, case when B.px_type = "09" then "ICD9-PX" when B.px_type = "C1" then "CPT" when B.px_type = "H1" then "HCPCS" else "" end as codeType, B.px as code;
   %let on1 = on (A.patid = B.patid);
   %let select2 = select patid, admit_date, begin_date, px_date, px_type, px;
   %let selectfrom3 = select * from DT.indexLookup;
