@@ -38,24 +38,6 @@ See the *Compact Outcome Definition* worksheet in `AS Project Cohort Outcome Cod
  */
 
 
-/* 
-Call interstitial lung disease macro
- */
-%include "lib\IPP_2IPSOPplusPX_ILD.sas" / source2;
-%IPP_2IPSOPplusPX_ILD(outdata = Work.outcome_ILD_MPCD,
-                      IDS = indexID,
-                      Dxs = UCB.tempDxMPCD,
-                      Pxs = UCB.tempPxMPCD);
-%IPP_2IPSOPplusPX_ILD(outdata = Work.outcome_ILD_UCB,
-                      IDS = indexID,
-                      Dxs = UCB.tempDxUCB,
-                      Pxs = UCB.tempPxUCB);
-%IPP_2IPSOPplusPX_ILD(outdata = Work.outcome_ILD_SABR,
-                      IDS = indexID,
-                      Dxs = UCB.tempDxSABR,
-                      Pxs = UCB.tempPxSABR);
-
-
 proc sql;
 
   create table Work.defOutcomes as
@@ -110,6 +92,28 @@ proc sql;
     &select1 from (&selectfrom3 where database = "Medicare") A inner join (&select2 from STD_SABR.STD_PX_2013) B &on1 union corr
     &select1 from (&selectfrom3 where database = "Medicare") A inner join (&select2 from STD_SABR.STD_PX_2014) B &on1 ;
 
+quit;
+
+
+/* 
+Call interstitial lung disease macro
+ */
+%include "lib\IPP_2IPSOPplusPX_ILD.sas" / source2;
+%IPP_2IPSOPplusPX_ILD(outdata = Work.outcome_ILD_MPCD,
+                      IDS = indexID,
+                      Dxs = UCB.tempDxMPCD,
+                      Pxs = UCB.tempPxMPCD);
+%IPP_2IPSOPplusPX_ILD(outdata = Work.outcome_ILD_UCB,
+                      IDS = indexID,
+                      Dxs = UCB.tempDxUCB,
+                      Pxs = UCB.tempPxUCB);
+%IPP_2IPSOPplusPX_ILD(outdata = Work.outcome_ILD_SABR,
+                      IDS = indexID,
+                      Dxs = UCB.tempDxSABR,
+                      Pxs = UCB.tempPxSABR);
+
+
+proc sql;
   %let select1 = select A.*, B.outcomeCategory, B.disease;
   %let join1 = inner join Work.defOutcomes B on (A.codeType = B.codeType & A.code = B.code);
   %let where1 = where B.disease ^= "Myocardial infarction" | (B.disease = "Myocardial infarction" & A.enc_type = "IP");
