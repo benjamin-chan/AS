@@ -114,7 +114,7 @@ proc sql;
   %let join1 = inner join Work.defOutcomes B on (A.codeType = B.codeType & A.code = B.code);
   %let where1 = where B.disease ^= "Myocardial infarction" | (B.disease = "Myocardial infarction" & A.enc_type = "IP");
   create table Work.comorbidities as
-    select C.database, C.exposure, C.patid, C.indexGNN, C.indexDate, C.age, C.sex,
+    select C.database, C.exposure, C.patid, C.indexGNN, C.indexDate, C.indexID, C.age, C.sex,
            C.outcomeCategory,
            C.disease,
            sum(C.begin_date < C.indexDate) > 0 as indPrevPriorToIndex,
@@ -142,7 +142,7 @@ proc sql;
     select database, 
            exposure, 
            count(distinct patid) as denomPatid,
-           count(distinct patid || indexGNN || put(indexDate, mmddyy10.)) as denomIndexExp
+           count(distinct indexID) as denomIndexExp
     from DT.indexLookup
     group by database, exposure;
 
