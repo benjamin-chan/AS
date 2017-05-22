@@ -112,6 +112,7 @@ proc sql;
 
   %let select1 = select A.*, B.outcomeCategory, B.disease;
   %let join1 = inner join Work.defOutcomes B on (A.codeType = B.codeType & A.code = B.code);
+  %let where1 = where B.disease ^= "Myocardial infarction" | (B.disease = "Myocardial infarction" & A.enc_type = "IP");
   create table Work.comorbidities as
     select C.database, C.exposure, C.patid, C.indexGNN, C.indexDate, C.age, C.sex,
            C.outcomeCategory,
@@ -123,13 +124,13 @@ proc sql;
                0 <= C.begin_date - C.indexDate  <= (183 * 3)) > 0 as indPrev24mo,
            sum(0 <= C.indexDate  - C.begin_date <= 183 |
                0 <= C.begin_date - C.indexDate  <= (183 * 5)) > 0 as indPrev36mo
-    from (&select1 from UCB.tempDxMPCD A &join1 union corr
-          &select1 from UCB.tempDxUCB  A &join1 union corr
-          &select1 from UCB.tempDxSABR A &join1 union corr
-          &select1 from UCB.tempPxMPCD A &join1 union corr
-          &select1 from UCB.tempPxUCB  A &join1 union corr
-          &select1 from UCB.tempPxSABR A &join1 ) C
-    group by C.database, C.exposure, C.patid, C.indexGNN, C.indexDate, C.age, C.sex,
+    from (&select1 from UCB.tempDxMPCD A &join1 &where1 union corr
+          &select1 from UCB.tempDxUCB  A &join1 %where1 union corr
+          &select1 from UCB.tempDxSABR A &join1 %where1 union corr
+          &select1 from UCB.tempPxMPCD A &join1 %where1 union corr
+          &select1 from UCB.tempPxUCB  A &join1 %where1 union corr
+          &select1 from UCB.tempPxSABR A &join1 %where1 ) C
+    group by C.database, C.exposure, C.patid, C.indexGNN, C.indexDate, C.indexID, C.age, C.sex,
              C.outcomeCategory,
              C.disease
     having calculated indPrevPriorToIndex > 0 | 
