@@ -132,11 +132,11 @@ proc sql;
            sum(0 <= C.indexDate  - C.begin_date <= 183 |
                0 <= C.begin_date - C.indexDate  <= (183 * 5)) > 0 as indPrev36mo
     from (&select1 from UCB.tempDxMPCD A &join1 &where1 union corr
-          &select1 from UCB.tempDxUCB  A &join1 %where1 union corr
-          &select1 from UCB.tempDxSABR A &join1 %where1 union corr
-          &select1 from UCB.tempPxMPCD A &join1 %where1 union corr
-          &select1 from UCB.tempPxUCB  A &join1 %where1 union corr
-          &select1 from UCB.tempPxSABR A &join1 %where1 union corr
+          &select1 from UCB.tempDxUCB  A &join1 &where1 union corr
+          &select1 from UCB.tempDxSABR A &join1 &where1 union corr
+          &select1 from UCB.tempPxMPCD A &join1 &where1 union corr
+          &select1 from UCB.tempPxUCB  A &join1 &where1 union corr
+          &select1 from UCB.tempPxSABR A &join1 &where1 union corr
           &select2 from Work.outcome_ILD_MPCD union corr
           &select2 from Work.outcome_ILD_UCB  union corr
           &select2 from Work.outcome_ILD_SABR ) C
