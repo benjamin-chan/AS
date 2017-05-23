@@ -38,31 +38,8 @@ See the *Compact Outcome Definition* worksheet in `AS Project Cohort Outcome Cod
  */
 
 
-/* 
-Call interstitial lung disease macro
- */
-%include "lib\IPP_2IPSOPplusPX_ILD.sas" / source2;
-%IPP_2IPSOPplusPX_ILD(outdata = Work.outcome_ILD_MPCD,
-                      IDS = indexID,
-                      Dxs = UCB.tempDxMPCD,
-                      Pxs = UCB.tempPxMPCD);
-%IPP_2IPSOPplusPX_ILD(outdata = Work.outcome_ILD_UCB,
-                      IDS = indexID,
-                      Dxs = UCB.tempDxUCB,
-                      Pxs = UCB.tempPxUCB);
-%IPP_2IPSOPplusPX_ILD(outdata = Work.outcome_ILD_SABR,
-                      IDS = indexID,
-                      Dxs = UCB.tempDxSABR,
-                      Pxs = UCB.tempPxSABR);
-
-
 proc sql;
 
-  create table Work.defOutcomes as
-    select * 
-    from DT.defOutcomes 
-    where outcomeCategory ^in ("Cancer", "Hospitalized infection", "Opportunistic infection");
-  
   %let select1 = select A.*, B.enc_type, B.admit_date, B.begin_date, B.discharge_date, B.end_date, B.dx_type, B.dx, B.pdx, "ICD9-DX" as codeType, B.dx as code;
   %let on1 = on (A.patid = B.patid);
   %let select2 = select patid, enc_type, admit_date, begin_date, discharge_date, end_date, dx_type, dx, pdx;
@@ -110,9 +87,39 @@ proc sql;
     &select1 from (&selectfrom3 where database = "Medicare") A inner join (&select2 from STD_SABR.STD_PX_2013) B &on1 union corr
     &select1 from (&selectfrom3 where database = "Medicare") A inner join (&select2 from STD_SABR.STD_PX_2014) B &on1 ;
 
+quit;
+
+
+/* 
+Call interstitial lung disease macro
+ */
+%include "lib\IPP_2IPSOPplusPX_ILD.sas" / source2;
+%IPP_2IPSOPplusPX_ILD(outdata = Work.outcome_ILD_MPCD,
+                      IDS = indexID,
+                      Dxs = UCB.tempDxMPCD,
+                      Pxs = UCB.tempPxMPCD);
+%IPP_2IPSOPplusPX_ILD(outdata = Work.outcome_ILD_UCB,
+                      IDS = indexID,
+                      Dxs = UCB.tempDxUCB,
+                      Pxs = UCB.tempPxUCB);
+%IPP_2IPSOPplusPX_ILD(outdata = Work.outcome_ILD_SABR,
+                      IDS = indexID,
+                      Dxs = UCB.tempDxSABR,
+                      Pxs = UCB.tempPxSABR);
+
+
+proc sql;
+
+  create table Work.defOutcomes as
+    select * 
+    from DT.defOutcomes 
+    where outcomeCategory ^in ("Cancer", "Hospitalized infection", "Opportunistic infection") & 
+          disease ^in ("Interstitial lung disease");
+  
   %let select1 = select A.*, B.outcomeCategory, B.disease;
   %let join1 = inner join Work.defOutcomes B on (A.codeType = B.codeType & A.code = B.code);
   %let where1 = where B.disease ^= "Myocardial infarction" | (B.disease = "Myocardial infarction" & A.enc_type = "IP");
+  %let select2 = select database, exposure, patid, indexGNN, indexDate, indexID, age, sex, "Lung disease" as outcomeCategory, "Interstitial lung disease" as disease, outcome_start_date as begin_date;
   create table Work.comorbidities as
     select C.database, C.exposure, C.patid, C.indexGNN, C.indexDate, C.indexID, C.age, C.sex,
            C.outcomeCategory,
@@ -129,7 +136,10 @@ proc sql;
           &select1 from UCB.tempDxSABR A &join1 %where1 union corr
           &select1 from UCB.tempPxMPCD A &join1 %where1 union corr
           &select1 from UCB.tempPxUCB  A &join1 %where1 union corr
-          &select1 from UCB.tempPxSABR A &join1 %where1 ) C
+          &select1 from UCB.tempPxSABR A &join1 %where1 union corr
+          &select2 from Work.outcome_ILD_MPCD union corr
+          &select2 from Work.outcome_ILD_UCB  union corr
+          &select2 from Work.outcome_ILD_SABR ) C
     group by C.database, C.exposure, C.patid, C.indexGNN, C.indexDate, C.indexID, C.age, C.sex,
              C.outcomeCategory,
              C.disease
