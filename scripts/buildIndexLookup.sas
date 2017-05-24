@@ -27,16 +27,16 @@ proc sql;
   create table DT.indexLookup AS
     select "Marketscan" as database, "TNF"   as exposure, &var from UCB.ASTNFCohortStdUCB_ex1     union corr
     select "Marketscan" as database, "DMARD" as exposure, &var from UCB.ASDMARDCohortStdUCB_ex2   union corr
-    select "Marketscan" as database, "NSAID" as exposure, &var from UCB.ASNSAIDCohortStdUCB_ex2   union corr
-    select "Marketscan" as database, "None"  as exposure, &var from UCB.ASNoExpCohortStdUCB_ex2   union corr
+    select "Marketscan" as database, "NSAID or no exposure" as exposure, &var from UCB.ASNSAIDCohortStdUCB_ex2   union corr
+    select "Marketscan" as database, "NSAID or no exposure" as exposure, &var from UCB.ASNoExpCohortStdUCB_ex2   union corr
     select "MPCD"       as database, "TNF"   as exposure, &var from UCB.ASTNFCohortStdMPCD_ex1    union corr
     select "MPCD"       as database, "DMARD" as exposure, &var from UCB.ASDMARDCohortStdMPCD_ex2  union corr
-    select "MPCD"       as database, "NSAID" as exposure, &var from UCB.ASNSAIDCohortStdMPCD_ex2  union corr
-    select "MPCD"       as database, "None"  as exposure, &var from UCB.ASNoExpCohortStdMPCD_ex2  union corr
+    select "MPCD"       as database, "NSAID or no exposure" as exposure, &var from UCB.ASNSAIDCohortStdMPCD_ex2  union corr
+    select "MPCD"       as database, "NSAID or no exposure" as exposure, &var from UCB.ASNoExpCohortStdMPCD_ex2  union corr
     select "Medicare"   as database, "TNF"   as exposure, &var from UCB.ASTNFCohortStd_SABR_ex1   union corr
     select "Medicare"   as database, "DMARD" as exposure, &var from UCB.ASDMARDCohortStd_SABR_ex2 union corr
-    select "Medicare"   as database, "NSAID" as exposure, &var from UCB.ASNSAIDCohortStd_SABR_ex2 union corr
-    select "Medicare"   as database, "None"  as exposure, &var from UCB.ASNoExpCohortStd_SABR_ex2 ;
+    select "Medicare"   as database, "NSAID or no exposure" as exposure, &var from UCB.ASNSAIDCohortStd_SABR_ex2 union corr
+    select "Medicare"   as database, "NSAID or no exposure" as exposure, &var from UCB.ASNoExpCohortStd_SABR_ex2 ;
   alter table DT.indexLookup add indexID numeric;
   update DT.indexLookup
     set indexID = monotonic();
