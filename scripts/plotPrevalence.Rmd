@@ -75,13 +75,30 @@ foo <- function (a, b, c) {
                 c, 
                 by = by, all = TRUE, suffixes = c("_DMARD", "_TNF")), 
           by = by, all = TRUE) %>% 
-    rename(prevPer1000_NSAID = prevPer1000) %>% 
-    rename("NSAID or no exposure" = prevPer1000_NSAID,
-           "DMARD" = prevPer1000_DMARD,
-           "TNF" = prevPer1000_TNF) %>% 
-    kable(digits = 2)
+      rename(prevPer1000_NSAID = prevPer1000) %>% 
+      select(-c(database))
 }
-foo(df1a, df1b, df1c)
-foo(df2a, df2b, df2c)
-foo(df3a, df3b, df3c)
+prev <- 
+  merge(foo(df1a, df1b, df1c), 
+        merge(foo(df2a, df2b, df2c),
+              foo(df3a, df3b, df3c),
+              by = c("outcomeCategory", "disease"),
+              all = TRUE,
+              suffixes = c("_Marketscan", "_Medicare")),
+        by = c("outcomeCategory", "disease"),
+        all = TRUE) %>% 
+  rename(prevPer1000_NSAID_MPCD = prevPer1000_NSAID,
+         prevPer1000_DMARD_MPCD = prevPer1000_DMARD,
+         prevPer1000_TNF_MPCD = prevPer1000_TNF) %>% 
+  rename("MPCD NSAID or no exposure" = prevPer1000_NSAID_MPCD,
+         "MPCD DMARD" = prevPer1000_DMARD_MPCD,
+         "MPCD TNF" = prevPer1000_TNF_MPCD,
+         "Marketscan NSAID or no exposure" = prevPer1000_NSAID_Marketscan,
+         "Marketscan DMARD" = prevPer1000_DMARD_Marketscan,
+         "Marketscan TNF" = prevPer1000_TNF_Marketscan,
+         "Medicare NSAID or no exposure" = prevPer1000_NSAID_Medicare,
+         "Medicare DMARD" = prevPer1000_DMARD_Medicare,
+         "Medicare TNF" = prevPer1000_TNF_Medicare)
+prev %>% kable(digits = 2)
+prev %>% write.csv(file = "../data/processed/prevalence.csv", row.names = FALSE)
 ```
