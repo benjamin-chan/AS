@@ -1,6 +1,6 @@
 ---
 title: "Comorbidities and Disease Manifestations in Ankylosing Spondylitis (BAD AS)"
-date: "2017-05-25 07:49:28"
+date: "2017-05-25 08:07:19"
 author: Benjamin Chan (chanb@ohsu.edu)
 output:
   html_document:
@@ -126,63 +126,21 @@ Plot using `plotPrev()`.
 Table of **prevalence per 1,000**
 
 
-|database |outcomeCategory            |disease                                   | NSAID or no exposure| DMARD|    TNF|
-|:--------|:--------------------------|:-----------------------------------------|--------------------:|-----:|------:|
-|MPCD     |Cardiac disease            |Aortic Insufficiency/Aortic Regurgitation |                20.05|  8.32|  14.86|
-|MPCD     |Cardiac disease            |Conduction Block                          |                 8.10|  8.32|   3.91|
-|MPCD     |Cardiac disease            |Myocardial infarction                     |                 4.63|    NA|   3.13|
-|MPCD     |Inflammatory bowel disease |Crohn’s Disease                           |                29.31| 41.58|  60.99|
-|MPCD     |Inflammatory bowel disease |Ulcerative Colitis                        |                20.05| 31.19|  36.75|
-|MPCD     |Kidney disease             |Amyloidosis                               |                 0.39|    NA|     NA|
-|MPCD     |Kidney disease             |IgA nephropathy                           |                 0.77|  2.08|   0.78|
-|MPCD     |Kidney disease             |Nephrotic syndrome                        |                 0.00|  0.00|   0.00|
-|MPCD     |Lung disease               |Apical Pulmonary fibrosis                 |                 0.00|    NA|     NA|
-|MPCD     |Lung disease               |Interstitial lung disease                 |                 0.39|    NA|   1.56|
-|MPCD     |Lung disease               |Restrictive lung disease                  |                15.81|  6.24|  10.16|
-|MPCD     |Neurological Disease       |Cauda Equina syndrome                     |                 1.16|    NA|     NA|
-|MPCD     |Neurological Disease       |Spinal Cord compression                   |                 2.70|    NA|   0.78|
-|MPCD     |PsO/PsA                    |Psoriasis                                 |                26.61| 24.95|  41.44|
-|MPCD     |PsO/PsA                    |Psoriatic arthritis                       |                24.30| 47.82|  65.68|
-|MPCD     |Uveitis                    |Uveitis                                   |                73.66| 85.24| 113.37|
-
-
-
-|database   |outcomeCategory            |disease                                   | NSAID or no exposure|  DMARD|    TNF|
-|:----------|:--------------------------|:-----------------------------------------|--------------------:|------:|------:|
-|Marketscan |Cardiac disease            |Aortic Insufficiency/Aortic Regurgitation |                28.14|  21.03|  18.34|
-|Marketscan |Cardiac disease            |Conduction Block                          |                24.65|  24.45|  16.96|
-|Marketscan |Cardiac disease            |Myocardial infarction                     |                 5.19|   4.89|   5.19|
-|Marketscan |Inflammatory bowel disease |Crohn’s Disease                           |                32.58|  47.92|  63.85|
-|Marketscan |Inflammatory bowel disease |Ulcerative Colitis                        |                26.16|  29.83|  48.97|
-|Marketscan |Kidney disease             |Amyloidosis                               |                 0.28|   0.49|   0.35|
-|Marketscan |Kidney disease             |IgA nephropathy                           |                 1.32|   1.96|   2.25|
-|Marketscan |Kidney disease             |Nephrotic syndrome                        |                 0.57|   0.98|   1.38|
-|Marketscan |Lung disease               |Apical Pulmonary fibrosis                 |                 0.19|     NA|   0.17|
-|Marketscan |Lung disease               |Interstitial lung disease                 |                 1.42|   2.44|   0.69|
-|Marketscan |Lung disease               |Restrictive lung disease                  |                46.75|  44.50|  38.76|
-|Marketscan |Neurological Disease       |Cauda Equina syndrome                     |                 0.94|   2.44|   0.52|
-|Marketscan |Neurological Disease       |Spinal Cord compression                   |                 5.29|   4.89|   2.77|
-|Marketscan |PsO/PsA                    |Psoriasis                                 |                23.42|  38.14|  50.87|
-|Marketscan |PsO/PsA                    |Psoriatic arthritis                       |                28.61|  61.61|  85.31|
-|Marketscan |Uveitis                    |Uveitis                                   |               112.00| 110.02| 133.76|
-
-
-
-|database |outcomeCategory            |disease                                   | NSAID or no exposure|  DMARD|    TNF|
-|:--------|:--------------------------|:-----------------------------------------|--------------------:|------:|------:|
-|Medicare |Cardiac disease            |Aortic Insufficiency/Aortic Regurgitation |               116.64| 108.61|  80.11|
-|Medicare |Cardiac disease            |Conduction Block                          |               105.08|  85.88|  67.97|
-|Medicare |Cardiac disease            |Myocardial infarction                     |                23.62|  18.87|  17.03|
-|Medicare |Inflammatory bowel disease |Crohn’s Disease                           |                58.46|  88.20| 103.56|
-|Medicare |Inflammatory bowel disease |Ulcerative Colitis                        |                48.69|  71.63|  73.54|
-|Medicare |Kidney disease             |Amyloidosis                               |                 1.88|   0.58|   1.01|
-|Medicare |Kidney disease             |IgA nephropathy                           |                 6.01|   9.05|   6.75|
-|Medicare |Kidney disease             |Nephrotic syndrome                        |                 3.10|   4.81|   2.36|
-|Medicare |Lung disease               |Apical Pulmonary fibrosis                 |                 0.50|   0.58|   0.17|
-|Medicare |Lung disease               |Interstitial lung disease                 |                 2.37|   4.81|   3.37|
-|Medicare |Lung disease               |Restrictive lung disease                  |               179.70| 201.42| 155.34|
-|Medicare |Neurological Disease       |Cauda Equina syndrome                     |                 3.18|   3.27|   2.19|
-|Medicare |Neurological Disease       |Spinal Cord compression                   |                23.81|  19.83|  16.70|
-|Medicare |PsO/PsA                    |Psoriasis                                 |                57.92|  79.92|  99.34|
-|Medicare |PsO/PsA                    |Psoriatic arthritis                       |                53.94| 101.29| 138.98|
-|Medicare |Uveitis                    |Uveitis                                   |                80.09| 100.52| 134.42|
+|outcomeCategory            |disease                                   | MPCD NSAID or no exposure| MPCD DMARD| MPCD TNF| Marketscan NSAID or no exposure| Marketscan DMARD| Marketscan TNF| Medicare NSAID or no exposure| Medicare DMARD| Medicare TNF|
+|:--------------------------|:-----------------------------------------|-------------------------:|----------:|--------:|-------------------------------:|----------------:|--------------:|-----------------------------:|--------------:|------------:|
+|Cardiac disease            |Aortic Insufficiency/Aortic Regurgitation |                     20.05|       8.32|    14.86|                           28.14|            21.03|          18.34|                        116.64|         108.61|        80.11|
+|Cardiac disease            |Conduction Block                          |                      8.10|       8.32|     3.91|                           24.65|            24.45|          16.96|                        105.08|          85.88|        67.97|
+|Cardiac disease            |Myocardial infarction                     |                      4.63|         NA|     3.13|                            5.19|             4.89|           5.19|                         23.62|          18.87|        17.03|
+|Inflammatory bowel disease |Crohn’s Disease                           |                     29.31|      41.58|    60.99|                           32.58|            47.92|          63.85|                         58.46|          88.20|       103.56|
+|Inflammatory bowel disease |Ulcerative Colitis                        |                     20.05|      31.19|    36.75|                           26.16|            29.83|          48.97|                         48.69|          71.63|        73.54|
+|Kidney disease             |Amyloidosis                               |                      0.39|         NA|       NA|                            0.28|             0.49|           0.35|                          1.88|           0.58|         1.01|
+|Kidney disease             |IgA nephropathy                           |                      0.77|       2.08|     0.78|                            1.32|             1.96|           2.25|                          6.01|           9.05|         6.75|
+|Kidney disease             |Nephrotic syndrome                        |                      0.00|       0.00|     0.00|                            0.57|             0.98|           1.38|                          3.10|           4.81|         2.36|
+|Lung disease               |Apical Pulmonary fibrosis                 |                      0.00|         NA|       NA|                            0.19|               NA|           0.17|                          0.50|           0.58|         0.17|
+|Lung disease               |Interstitial lung disease                 |                      0.39|         NA|     1.56|                            1.42|             2.44|           0.69|                          2.37|           4.81|         3.37|
+|Lung disease               |Restrictive lung disease                  |                     15.81|       6.24|    10.16|                           46.75|            44.50|          38.76|                        179.70|         201.42|       155.34|
+|Neurological Disease       |Cauda Equina syndrome                     |                      1.16|         NA|       NA|                            0.94|             2.44|           0.52|                          3.18|           3.27|         2.19|
+|Neurological Disease       |Spinal Cord compression                   |                      2.70|         NA|     0.78|                            5.29|             4.89|           2.77|                         23.81|          19.83|        16.70|
+|PsO/PsA                    |Psoriasis                                 |                     26.61|      24.95|    41.44|                           23.42|            38.14|          50.87|                         57.92|          79.92|        99.34|
+|PsO/PsA                    |Psoriatic arthritis                       |                     24.30|      47.82|    65.68|                           28.61|            61.61|          85.31|                         53.94|         101.29|       138.98|
+|Uveitis                    |Uveitis                                   |                     73.66|      85.24|   113.37|                          112.00|           110.02|         133.76|                         80.09|         100.52|       134.42|
