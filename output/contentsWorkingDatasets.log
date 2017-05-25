@@ -1,0 +1,507 @@
+1                                                          The SAS System                              15:26 Wednesday, May 24, 2017
+
+NOTE: Unable to open SASUSER.REGSTRY. WORK.REGSTRY will be opened instead.
+NOTE: All registry changes will be lost at the end of the session.
+
+WARNING: Unable to copy SASUSER registry to WORK registry. Because of this, you will not see registry customizations during this 
+         session.
+NOTE: Unable to open SASUSER.PROFILE. WORK.PROFILE will be opened instead.
+NOTE: All profile changes will be lost at the end of the session.
+NOTE: Copyright (c) 2002-2012 by SAS Institute Inc., Cary, NC, USA. 
+NOTE: SAS (r) Proprietary Software 9.4 (TS1M1) 
+      Licensed to UNIVERSITY OF ALABAMA AT BIRMINGHAM - SFA - T&R, Site 70058223.
+NOTE: This session is executing on the W32_ES08R2  platform.
+
+
+
+NOTE: Updated analytical products:
+      
+      SAS/STAT 13.1
+      SAS/ETS 13.1
+      SAS/OR 13.1
+      SAS/IML 13.1
+      SAS/QC 13.1
+
+NOTE: Additional host information:
+
+ W32_ES08R2 WIN 6.1.7601 Service Pack 1 Server
+
+--- PEER News and Updates ---
+
+: SECURITY REMINDER :
+Please remember not to copy any data files that contain PHI (protected health identifiers) to any of the shared folders.
+
+ 
+
+
+NOTE: SAS initialization used:
+      real time           0.09 seconds
+      cpu time            0.10 seconds
+      
+1          *  University of Alabama at Birmingham                               *
+2          *  AS project                                            *
+3          **********************************************************************;
+4          options pagesize=74 linesize=150 pageno=1 missing=' ' date FORMCHAR="|----|+|---+=|-/\<>*";
+5          * Programmer    : Benjamin Chan <chanb@ohsu.edu>
+6          * Creation date :
+7          * Modify date   :
+8          ;
+9          %let cmt=contentsWorkingDatasets; * type the name of your program here (without the filename extension);
+10         %let pgm=&cmt..sas;
+11         %include "lib\libname.sas" ;
+NOTE: Libref CCW5STD was successfully assigned as follows: 
+      Engine:        SPDE 
+      Physical Name: h:\studies\osteo\data\CDM\5pct\
+NOTE: Libref STD_SABR was successfully assigned as follows: 
+      Engine:        SPDE 
+      Physical Name: q:\data\std_SABER\
+NOTE: Libref MPSTD was successfully assigned as follows: 
+      Engine:        SPDE 
+      Physical Name: h:\studies\mpcd\data\stddata\
+NOTE: Libref UCBSTD was successfully assigned as follows: 
+      Engine:        SPDE 
+      Physical Name: q:\studies\AS\data\stddata\
+NOTE: Libref UCB was successfully assigned as follows: 
+      Engine:        SPDE 
+      Physical Name: q:\studies\AS\data\UCB\
+NOTE: Libref DT was successfully assigned as follows: 
+      Engine:        V9 
+      Physical Name: V:\studies\AS\data
+89         footnote "&pgm.";
+90         * footnote2 "%sysfunc(datetime(),datetime14.)";
+91         title1 '--- AS project ---';
+92         **********************************************************************;
+93         options macrogen mlogic mprint symbolgen;
+2                                                                   The SAS System                                       15:26 Wednesday, May 24, 2017
+
+94         options nomacrogen nomlogic nomprint nosymbolgen;
+95         
+96         
+97         
+98         ods html
+99           body = "output\&cmt..html"
+100          style = Statistical;
+NOTE: Writing HTML Body file: output\contentsWorkingDatasets.html
+101        
+102        
+103        data Work.WorkingDatasets;
+104          length lib $8 mem $40;
+105          input lib mem;
+106          dataset = strip(lib) || "." || strip(mem);
+107          call symput ("n", put(_n_, best8.));
+108          cards;
+
+NOTE: SAS went to a new line when INPUT statement reached past the end of a line.
+NOTE: The data set WORK.WORKINGDATASETS has 18 observations and 3 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+      
+
+128          ;
+129        run;
+130        proc sort data = Work.WorkingDatasets;
+131          by lib mem;
+132        run;
+
+NOTE: There were 18 observations read from the data set WORK.WORKINGDATASETS.
+NOTE: The data set WORK.WORKINGDATASETS has 18 observations and 3 variables.
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.00 seconds
+      
+
+133        
+134        
+135        %macro contents;
+136          %let list = ;
+137          %do i = 1 %to &n;
+138            data _null_;
+139              set Work.WorkingDatasets;
+140              if _n_ = &i then call symput ("dataset", dataset);
+141            run;
+142            proc contents data = &dataset order = varnum out = Work.contents&i noprint;
+143            run;
+144            %let list = &list Work.contents&i;
+145          %end;
+146          data Work.contentsAll;
+147            set &list;
+148          run;
+149        %mend contents;
+150        
+151        %contents;
+
+NOTE: There were 18 observations read from the data set WORK.WORKINGDATASETS.
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+ERROR: Invalid data set name DT.defOu.DT.indexLookup.
+WARNING: Ignoring second data set reference.
+
+NOTE: Statements not processed because of errors noted above.
+NOTE: The data set WORK.CONTENTS1 has 0 observations and 0 variables.
+NOTE: PROCEDURE CONTENTS used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.03 seconds
+      
+3                                                                   The SAS System                                       15:26 Wednesday, May 24, 2017
+
+NOTE: The SAS System stopped processing this step because of errors.
+NOTE: SAS set option OBS=0 and will continue to check statements. This might cause NOTE: No observations in data set.
+
+
+
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+ERROR: Invalid data set name DT.defOu.DT.indexLookup.
+WARNING: Ignoring second data set reference.
+
+NOTE: Statements not processed because of errors noted above.
+NOTE: The data set WORK.CONTENTS2 has 0 observations and 0 variables.
+NOTE: PROCEDURE CONTENTS used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+NOTE: The SAS System stopped processing this step because of errors.
+
+
+
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+ERROR: Invalid data set name DT.defOu.DT.indexLookup.
+WARNING: Ignoring second data set reference.
+
+NOTE: Statements not processed because of errors noted above.
+NOTE: The data set WORK.CONTENTS3 has 0 observations and 0 variables.
+NOTE: PROCEDURE CONTENTS used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.00 seconds
+      
+NOTE: The SAS System stopped processing this step because of errors.
+
+
+
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+ERROR: Invalid data set name DT.defOu.DT.indexLookup.
+WARNING: Ignoring second data set reference.
+
+NOTE: Statements not processed because of errors noted above.
+NOTE: The data set WORK.CONTENTS4 has 0 observations and 0 variables.
+NOTE: PROCEDURE CONTENTS used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+NOTE: The SAS System stopped processing this step because of errors.
+
+
+
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+ERROR: Invalid data set name DT.defOu.DT.indexLookup.
+WARNING: Ignoring second data set reference.
+
+NOTE: Statements not processed because of errors noted above.
+NOTE: The data set WORK.CONTENTS5 has 0 observations and 0 variables.
+NOTE: PROCEDURE CONTENTS used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+4                                                                   The SAS System                                       15:26 Wednesday, May 24, 2017
+
+      
+NOTE: The SAS System stopped processing this step because of errors.
+
+
+
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+ERROR: Invalid data set name DT.defOu.DT.indexLookup.
+WARNING: Ignoring second data set reference.
+
+NOTE: Statements not processed because of errors noted above.
+NOTE: The data set WORK.CONTENTS6 has 0 observations and 0 variables.
+NOTE: PROCEDURE CONTENTS used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.00 seconds
+      
+NOTE: The SAS System stopped processing this step because of errors.
+
+
+
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+ERROR: Invalid data set name DT.defOu.DT.indexLookup.
+WARNING: Ignoring second data set reference.
+
+NOTE: Statements not processed because of errors noted above.
+NOTE: The data set WORK.CONTENTS7 has 0 observations and 0 variables.
+NOTE: PROCEDURE CONTENTS used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+NOTE: The SAS System stopped processing this step because of errors.
+
+
+
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+ERROR: Invalid data set name DT.defOu.DT.indexLookup.
+WARNING: Ignoring second data set reference.
+
+NOTE: Statements not processed because of errors noted above.
+NOTE: The data set WORK.CONTENTS8 has 0 observations and 0 variables.
+NOTE: PROCEDURE CONTENTS used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+NOTE: The SAS System stopped processing this step because of errors.
+
+
+
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+ERROR: Invalid data set name DT.defOu.DT.indexLookup.
+WARNING: Ignoring second data set reference.
+
+NOTE: Statements not processed because of errors noted above.
+NOTE: The data set WORK.CONTENTS9 has 0 observations and 0 variables.
+NOTE: PROCEDURE CONTENTS used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+5                                                                   The SAS System                                       15:26 Wednesday, May 24, 2017
+
+      
+NOTE: The SAS System stopped processing this step because of errors.
+
+
+
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+ERROR: Invalid data set name DT.defOu.DT.indexLookup.
+WARNING: Ignoring second data set reference.
+
+NOTE: Statements not processed because of errors noted above.
+NOTE: The data set WORK.CONTENTS10 has 0 observations and 0 variables.
+NOTE: PROCEDURE CONTENTS used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+NOTE: The SAS System stopped processing this step because of errors.
+
+
+
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+ERROR: Invalid data set name DT.defOu.DT.indexLookup.
+WARNING: Ignoring second data set reference.
+
+NOTE: Statements not processed because of errors noted above.
+NOTE: The data set WORK.CONTENTS11 has 0 observations and 0 variables.
+NOTE: PROCEDURE CONTENTS used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+NOTE: The SAS System stopped processing this step because of errors.
+
+
+
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+ERROR: Invalid data set name DT.defOu.DT.indexLookup.
+WARNING: Ignoring second data set reference.
+
+NOTE: Statements not processed because of errors noted above.
+NOTE: The data set WORK.CONTENTS12 has 0 observations and 0 variables.
+NOTE: PROCEDURE CONTENTS used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+NOTE: The SAS System stopped processing this step because of errors.
+
+
+
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+ERROR: Invalid data set name DT.defOu.DT.indexLookup.
+WARNING: Ignoring second data set reference.
+
+NOTE: Statements not processed because of errors noted above.
+NOTE: The data set WORK.CONTENTS13 has 0 observations and 0 variables.
+NOTE: PROCEDURE CONTENTS used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+6                                                                   The SAS System                                       15:26 Wednesday, May 24, 2017
+
+      
+NOTE: The SAS System stopped processing this step because of errors.
+
+
+
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+ERROR: Invalid data set name DT.defOu.DT.indexLookup.
+WARNING: Ignoring second data set reference.
+
+NOTE: Statements not processed because of errors noted above.
+NOTE: The data set WORK.CONTENTS14 has 0 observations and 0 variables.
+NOTE: PROCEDURE CONTENTS used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+NOTE: The SAS System stopped processing this step because of errors.
+
+
+
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+ERROR: Invalid data set name DT.defOu.DT.indexLookup.
+WARNING: Ignoring second data set reference.
+
+NOTE: Statements not processed because of errors noted above.
+NOTE: The data set WORK.CONTENTS15 has 0 observations and 0 variables.
+NOTE: PROCEDURE CONTENTS used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+NOTE: The SAS System stopped processing this step because of errors.
+
+
+
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+ERROR: Invalid data set name DT.defOu.DT.indexLookup.
+WARNING: Ignoring second data set reference.
+
+NOTE: Statements not processed because of errors noted above.
+NOTE: The data set WORK.CONTENTS16 has 0 observations and 0 variables.
+NOTE: PROCEDURE CONTENTS used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+NOTE: The SAS System stopped processing this step because of errors.
+
+
+
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+ERROR: Invalid data set name DT.defOu.DT.indexLookup.
+WARNING: Ignoring second data set reference.
+
+NOTE: Statements not processed because of errors noted above.
+NOTE: The data set WORK.CONTENTS17 has 0 observations and 0 variables.
+NOTE: PROCEDURE CONTENTS used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.00 seconds
+7                                                                   The SAS System                                       15:26 Wednesday, May 24, 2017
+
+      
+NOTE: The SAS System stopped processing this step because of errors.
+
+
+
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+ERROR: Invalid data set name DT.defOu.DT.indexLookup.
+WARNING: Ignoring second data set reference.
+
+NOTE: Statements not processed because of errors noted above.
+NOTE: The data set WORK.CONTENTS18 has 0 observations and 0 variables.
+NOTE: PROCEDURE CONTENTS used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+NOTE: The SAS System stopped processing this step because of errors.
+
+
+
+NOTE: The data set WORK.CONTENTSALL has 0 observations and 0 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+      
+
+152        
+153        
+154        
+155        ods html close;
+156        
+157        proc export
+158          data = Work.contentsAll
+NOTE: PROCEDURE EXPORT used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+159          outfile = "data\processed\&cmt..csv"
+160          dbms = csv
+161          replace;
+
+162          delimiter = ",";
+             _________
+             180
+
+ERROR 180-322: Statement is not valid or it is used out of proper order.
+
+163        run;
+164        
+165        
+166        ods html close;
+ERROR: Errors printed on pages 2,3,4,5,6,7.
+
+NOTE: SAS Institute Inc., SAS Campus Drive, Cary, NC USA 27513-2414
+NOTE: The SAS System used:
+      real time           0.57 seconds
+      cpu time            0.46 seconds
+      

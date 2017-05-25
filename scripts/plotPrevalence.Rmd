@@ -48,7 +48,7 @@ h <- 33
   ggsave(., plotPrev("Medicare"), width = w, height = h, units = "in", dpi = 300)
 ```
 
-Table.
+Table of **prevalence per 1,000**
 
 ```{r}
 foo <- function(db, exp) {
@@ -59,13 +59,13 @@ foo <- function(db, exp) {
       filter(exposure == exp) %>% 
       select(col)
 }
-df1a <- foo("MPCD", "NSAID")
+df1a <- foo("MPCD", "NSAID or no exposure")
 df1b <- foo("MPCD", "DMARD")
 df1c <- foo("MPCD", "TNF")
-df2a <- foo("Marketscan", "NSAID")
+df2a <- foo("Marketscan", "NSAID or no exposure")
 df2b <- foo("Marketscan", "DMARD")
 df2c <- foo("Marketscan", "TNF")
-df3a <- foo("Medicare", "NSAID")
+df3a <- foo("Medicare", "NSAID or no exposure")
 df3b <- foo("Medicare", "DMARD")
 df3c <- foo("Medicare", "TNF")
 foo <- function (a, b, c) {
@@ -76,6 +76,9 @@ foo <- function (a, b, c) {
                 by = by, all = TRUE, suffixes = c("_DMARD", "_TNF")), 
           by = by, all = TRUE) %>% 
     rename(prevPer1000_NSAID = prevPer1000) %>% 
+    rename("NSAID or no exposure" = prevPer1000_NSAID,
+           "DMARD" = prevPer1000_DMARD,
+           "TNF" = prevPer1000_TNF) %>% 
     kable(digits = 2)
 }
 foo(df1a, df1b, df1c)

@@ -1,0 +1,2624 @@
+1                                                          The SAS System                              15:26 Wednesday, May 24, 2017
+
+NOTE: Unable to open SASUSER.REGSTRY. WORK.REGSTRY will be opened instead.
+NOTE: All registry changes will be lost at the end of the session.
+
+WARNING: Unable to copy SASUSER registry to WORK registry. Because of this, you will not see registry customizations during this 
+         session.
+NOTE: Unable to open SASUSER.PROFILE. WORK.PROFILE will be opened instead.
+NOTE: All profile changes will be lost at the end of the session.
+NOTE: Copyright (c) 2002-2012 by SAS Institute Inc., Cary, NC, USA. 
+NOTE: SAS (r) Proprietary Software 9.4 (TS1M1) 
+      Licensed to UNIVERSITY OF ALABAMA AT BIRMINGHAM - SFA - T&R, Site 70058223.
+NOTE: This session is executing on the W32_ES08R2  platform.
+
+
+
+NOTE: Updated analytical products:
+      
+      SAS/STAT 13.1
+      SAS/ETS 13.1
+      SAS/OR 13.1
+      SAS/IML 13.1
+      SAS/QC 13.1
+
+NOTE: Additional host information:
+
+ W32_ES08R2 WIN 6.1.7601 Service Pack 1 Server
+
+--- PEER News and Updates ---
+
+: SECURITY REMINDER :
+Please remember not to copy any data files that contain PHI (protected health identifiers) to any of the shared folders.
+
+ 
+
+
+NOTE: SAS initialization used:
+      real time           0.09 seconds
+      cpu time            0.10 seconds
+      
+1          *  University of Alabama at Birmingham                               *
+2          *  AS project                                            *
+3          **********************************************************************;
+4          options pagesize=74 linesize=150 pageno=1 missing=' ' date FORMCHAR="|----|+|---+=|-/\<>*";
+5          * Programmer    : Benjamin Chan <chanb@ohsu.edu>
+6          * Creation date :
+7          * Modify date   :
+8          ;
+9          %let cmt=queryPrevalentComorbidities; * type the name of your program here (without the filename extension);
+10         %let pgm=&cmt..sas;
+11         %include "lib\libname.sas" ;
+NOTE: Libref CCW5STD was successfully assigned as follows: 
+      Engine:        SPDE 
+      Physical Name: h:\studies\osteo\data\CDM\5pct\
+NOTE: Libref STD_SABR was successfully assigned as follows: 
+      Engine:        SPDE 
+      Physical Name: q:\data\std_SABER\
+NOTE: Libref MPSTD was successfully assigned as follows: 
+      Engine:        SPDE 
+      Physical Name: h:\studies\mpcd\data\stddata\
+NOTE: Libref UCBSTD was successfully assigned as follows: 
+      Engine:        SPDE 
+      Physical Name: q:\studies\AS\data\stddata\
+NOTE: Libref UCB was successfully assigned as follows: 
+      Engine:        SPDE 
+      Physical Name: q:\studies\AS\data\UCB\
+NOTE: Libref DT was successfully assigned as follows: 
+      Engine:        V9 
+      Physical Name: V:\studies\AS\data
+89         footnote "&pgm.";
+90         * footnote2 "%sysfunc(datetime(),datetime14.)";
+91         title1 '--- AS project ---';
+92         **********************************************************************;
+93         options macrogen mlogic mprint symbolgen;
+2                                                                   The SAS System                                       15:26 Wednesday, May 24, 2017
+
+94         options nomacrogen nomlogic nomprint nosymbolgen;
+95         
+96         
+97         ods html
+98           body = "output\&cmt..html"
+99           style = Statistical;
+NOTE: Writing HTML Body file: output\queryPrevalentComorbidities.html
+100        
+101        
+102        /*
+103        Calculate the prevalence of each comorbidity over various time intervals, by
+104        disease cohort (AS vs. non-AS). We will explore how the prevalence of each
+105        condition varies according to the amount of data available. Outcomes will be
+106        examined in discrete 12 month increments (i.e. using 12 months of data, 24
+107        months, 36 months, etc.) using the 6 months baseline plus an additional 6
+108        (1st year), 18 (1st and 2nd year), 30 (1st, 2nd, and 3rd year), etc. months
+109        of follow-up.
+110         */
+111        
+112        
+113        /*
+114        See the *Compact Outcome Definition* worksheet in `AS Project Cohort Outcome Codebook-20170410.xlsx`
+115         */
+116        
+117        
+118        proc sql;
+119        
+120          %let select1 = select A.*, B.enc_type, B.admit_date, B.begin_date, B.discharge_date, B.end_date, B.dx_type, B.dx, B.pdx, "ICD9-DX" as
+120      ! codeType, B.dx as code;
+121          %let on1 = on (A.patid = B.patid);
+122          %let select2 = select patid, enc_type, admit_date, begin_date, discharge_date, end_date, dx_type, dx, pdx;
+123          %let where2 = where dx_type = "09";
+124          %let selectfrom3 = select * from DT.indexLookup;
+125          create table UCB.tempDxMPCD as
+126            &select1 from (&selectfrom3 where database = "MPCD") A inner join (&select2 from MPSTD.DX_07_10 &where2) B &on1;
+NOTE: Table UCB.TEMPDXMPCD created, with 502873 rows and 18 columns.
+
+127          create table UCB.tempDxUCB as
+128            &select1 from (&selectfrom3 where database = "Marketscan") A inner join (&select2 from UCBSTD.DX_2010 &where2) B &on1 union corr
+129            &select1 from (&selectfrom3 where database = "Marketscan") A inner join (&select2 from UCBSTD.DX_2011 &where2) B &on1 union corr
+130            &select1 from (&selectfrom3 where database = "Marketscan") A inner join (&select2 from UCBSTD.DX_2012 &where2) B &on1 union corr
+131            &select1 from (&selectfrom3 where database = "Marketscan") A inner join (&select2 from UCBSTD.DX_2013 &where2) B &on1 union corr
+132            &select1 from (&selectfrom3 where database = "Marketscan") A inner join (&select2 from UCBSTD.DX_2014 &where2) B &on1 ;
+NOTE: Table UCB.TEMPDXUCB created, with 3894682 rows and 18 columns.
+
+133          create table UCB.tempDxSABR as
+134            &select1 from (&selectfrom3 where database = "Medicare") A inner join (&select2 from STD_SABR.STD_DX_2006    &where2) B &on1 union corr
+135            &select1 from (&selectfrom3 where database = "Medicare") A inner join (&select2 from STD_SABR.STD_DX_2007    &where2) B &on1 union corr
+136            &select1 from (&selectfrom3 where database = "Medicare") A inner join (&select2 from STD_SABR.STD_DX_2008_V2 &where2) B &on1 union corr
+137            &select1 from (&selectfrom3 where database = "Medicare") A inner join (&select2 from STD_SABR.STD_DX_2009    &where2) B &on1 union corr
+138            &select1 from (&selectfrom3 where database = "Medicare") A inner join (&select2 from STD_SABR.STD_DX_2010    &where2) B &on1 union corr
+139            &select1 from (&selectfrom3 where database = "Medicare") A inner join (&select2 from STD_SABR.STD_DX_2011    &where2) B &on1 union corr
+140            &select1 from (&selectfrom3 where database = "Medicare") A inner join (&select2 from STD_SABR.STD_DX_2012    &where2) B &on1 union corr
+141            &select1 from (&selectfrom3 where database = "Medicare") A inner join (&select2 from STD_SABR.STD_DX_2013    &where2) B &on1 union corr
+142            &select1 from (&selectfrom3 where database = "Medicare") A inner join (&select2 from STD_SABR.STD_DX_2014    &where2) B &on1 ;
+NOTE: Table UCB.TEMPDXSABR created, with 39509361 rows and 18 columns.
+
+143        
+144          %let select1 = select A.*, B.admit_date, B.begin_date, B.discharge_date, B.end_date, B.px_date, B.px_type, B.px, case when B.px_type =
+144      ! "09" then "ICD9-PX" when B.px_type = "C1" then "CPT" when B.px_type = "H1" then "HCPCS" else "" end as codeType, B.px as code;
+145          %let on1 = on (A.patid = B.patid);
+146          %let select2 = select patid, admit_date, begin_date, discharge_date, end_date, px_date, px_type, px;
+147          %let selectfrom3 = select * from DT.indexLookup;
+148          create table UCB.tempPxMPCD as
+149            &select1 from (&selectfrom3 where database = "MPCD") A inner join (&select2 from MPSTD.PX_07_10) B &on1;
+NOTE: Table UCB.TEMPPXMPCD created, with 880584 rows and 17 columns.
+
+150          create table UCB.tempPxUCB as
+151            &select1 from (&selectfrom3 where database = "Marketscan") A inner join (&select2 from UCBSTD.PX_2010) B &on1 union corr
+152            &select1 from (&selectfrom3 where database = "Marketscan") A inner join (&select2 from UCBSTD.PX_2011) B &on1 union corr
+153            &select1 from (&selectfrom3 where database = "Marketscan") A inner join (&select2 from UCBSTD.PX_2012) B &on1 union corr
+154            &select1 from (&selectfrom3 where database = "Marketscan") A inner join (&select2 from UCBSTD.PX_2013) B &on1 union corr
+3                                                                   The SAS System                                       15:26 Wednesday, May 24, 2017
+
+155            &select1 from (&selectfrom3 where database = "Marketscan") A inner join (&select2 from UCBSTD.PX_2014) B &on1 ;
+NOTE: Table UCB.TEMPPXUCB created, with 4303647 rows and 17 columns.
+
+156          create table UCB.tempPxSABR as
+157            &select1 from (&selectfrom3 where database = "Medicare") A inner join (&select2 from STD_SABR.STD_PX_2006) B &on1 union corr
+158            &select1 from (&selectfrom3 where database = "Medicare") A inner join (&select2 from STD_SABR.STD_PX_2007) B &on1 union corr
+159            &select1 from (&selectfrom3 where database = "Medicare") A inner join (&select2 from STD_SABR.STD_PX_2008) B &on1 union corr
+160            &select1 from (&selectfrom3 where database = "Medicare") A inner join (&select2 from STD_SABR.STD_PX_2009) B &on1 union corr
+161            &select1 from (&selectfrom3 where database = "Medicare") A inner join (&select2 from STD_SABR.STD_PX_2010) B &on1 union corr
+162            &select1 from (&selectfrom3 where database = "Medicare") A inner join (&select2 from STD_SABR.STD_PX_2011) B &on1 union corr
+163            &select1 from (&selectfrom3 where database = "Medicare") A inner join (&select2 from STD_SABR.STD_PX_2012) B &on1 union corr
+164            &select1 from (&selectfrom3 where database = "Medicare") A inner join (&select2 from STD_SABR.STD_PX_2013) B &on1 union corr
+165            &select1 from (&selectfrom3 where database = "Medicare") A inner join (&select2 from STD_SABR.STD_PX_2014) B &on1 ;
+NOTE: Table UCB.TEMPPXSABR created, with 29446396 rows and 17 columns.
+
+166        
+167        quit;
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           3:27:41.09
+      cpu time            3:11:58.94
+      
+
+168        
+169        
+170        /*
+171        Call interstitial lung disease macro
+172         */
+173        %include "lib\IPP_2IPSOPplusPX_ILD.sas" / source2;
+NOTE: %INCLUDE (level 1) file lib\IPP_2IPSOPplusPX_ILD.sas is file U:\studies\AS\pgms\bchan\lib\IPP_2IPSOPplusPX_ILD.sas.
+174       +/*
+175       +Interstitial lung disease;
+176       +1)  One or more diagnosis codes for ILD from primary discharge
+177       +Or
+178       +2)  (Two or more diagnosis codes for ILD from secondary discharge or physician EMM ) plus one or more diagnosis tests within 90 days prior
+178      !+to (inclusive) one of the diagnosis code for ILD
+179       +*/
+180       +%macro IPP_2IPSOPplusPX_ILD(outdata=,ids=,Dxs=, Pxs=);
+181       +*DXs=diagnosis code in followup, Pxs=CPT code in follow up;
+182       +*do not name outData as IPPILD dxIPSILD dxOPILD dxIPSOPILD pxILD dxpxIPSOPILD IPSOPILD;
+183       +
+184       +data IPPILD dxIPSILD dxOPILD;
+185       +set &dxs();
+186       +length dx1_date 4;
+187       +format dx1_date mmddyy10.;
+188       +dx1_date=min(ADMIT_DATE,  BEGIN_DATE);
+189       +
+190       +if dx in :('515','51630','51631','51632','51633','51634','51635','51636','51637',
+191       +           '5164','5165','5166','5168','5169','71481');
+192       +
+193       +if enc_type='IP' and pdx='P'
+194       +    then output IPPILD;
+195       +if enc_type='IP' and pdx ne 'P'
+196       +    then output dxIPSILD;
+197       +if enc_type not in ('IP','IF', 'OT', " ")
+198       +    then output dxOPILD;
+199       +run;
+200       +
+201       +data dxIPSOPILD; *ILD from secondary discharge or physician EMM;
+202       +set dxIPSILD dxOPILD;
+203       +run;
+204       +
+205       +data pxILD; *diagnosis tests;
+206       +set &pxs();
+207       +if (px_type='09' and px in ('8741','8742')) or
+208       +   (px_type='C1' and px in ('71250','71260','71270','71275','31625','31628',
+209       +                             '31629','31632','31633','32095','32096','32097',
+210       +                             '32098','32400','32405','32604','32606','32607',
+211       +                             '32608','32609'));
+212       +run;
+213       +proc sort data=pxILD nodupkey; by &IDS px_date;run; * drop duplicate PX date and keep only one;
+214       +
+215       +proc sql;
+4                                                                   The SAS System                                       15:26 Wednesday, May 24, 2017
+
+216       +/*one or more diagnosis tests within 90 days prior to (inclusive) one of the diagnosis code for ILD*/
+217       +create table dxpxIPSOPILD as
+218       +select a.* , b.px_date
+219       +from dxIPSOPILD as a
+220       +    ,
+221       +     pxILD as b
+222       +where a.&IDS=b.&IDS and
+223       +      min(b.ADMIT_DATE, b.BEGIN_DATE)-90<=b.px_date<=min(b.ADMIT_DATE, b.BEGIN_DATE);
+224       +
+225       +/* sencond DX code */
+226       +create table IPSOPILD as
+227       +select a.*, min(b.ADMIT_DATE, b.BEGIN_DATE) as DX2_date length=4 format mmddyy10.
+228       +from dxpxIPSOPILD as a
+229       +    ,
+230       +     dxIPSOPILD(drop=dx1_date) as b
+231       +where a.patid=b.patid and
+232       +      (a.ADMIT_DATE ne b.ADMIT_DATE and a.BEGIN_DATE ne b.BEGIN_DATE)
+233       +order by &IDS,ADMIT_DATE, BEGIN_DATE;
+234       +quit;
+235       +
+236       +
+237       +data &outData;
+238       +set IPPILD IPSOPILD;
+239       +length outcome $20 outcome_date outcome_start_date 4;
+240       +format outcome_date outcome_start_date mmddyy10.;
+241       +outcome="ILD";
+242       +outcome_date=max(dx1_date, dx2_date, px_date);
+243       +outcome_start_date=min(dx1_date, dx2_date, px_date);
+244       +drop ADMIT_DATE BEGIN_DATE DISCHARGE_DATE END_DATE;
+245       +run;
+246       +
+247       +proc sort data=&outData;
+248       +by &IDS outcome_date descending outcome_start_date descending Enc_type;
+249       +run;
+250       +
+251       +data &outData;
+252       +set &outData;
+253       +by &IDS outcome_date descending outcome_start_date;
+254       +if first.outcome_date;
+255       +run;
+256       +
+257       +proc datasets nolist;
+258       +delete IPPILD dxIPSILD dxOPILD dxIPSOPILD pxILD dxpxIPSOPILD IPSOPILD;
+259       +quit;run;
+260       +%mend IPP_2IPSOPplusPX_ILD;
+NOTE: %INCLUDE (level 1) ending.
+261        %IPP_2IPSOPplusPX_ILD(outdata = Work.outcome_ILD_MPCD,
+262                              IDS = indexID,
+263                              Dxs = UCB.tempDxMPCD,
+264                              Pxs = UCB.tempPxMPCD);
+
+NOTE: There were 502873 observations read from the data set UCB.TEMPDXMPCD.
+NOTE: The data set WORK.IPPILD has 4 observations and 19 variables.
+NOTE: The data set WORK.DXIPSILD has 46 observations and 19 variables.
+NOTE: The data set WORK.DXOPILD has 204 observations and 19 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.91 seconds
+      cpu time            0.26 seconds
+      
+
+
+NOTE: There were 46 observations read from the data set WORK.DXIPSILD.
+NOTE: There were 204 observations read from the data set WORK.DXOPILD.
+NOTE: The data set WORK.DXIPSOPILD has 250 observations and 19 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.01 seconds
+      
+
+
+NOTE: There were 880584 observations read from the data set UCB.TEMPPXMPCD.
+NOTE: The data set WORK.PXILD has 1327 observations and 17 variables.
+5                                                                   The SAS System                                       15:26 Wednesday, May 24, 2017
+
+NOTE: DATA statement used (Total process time):
+      real time           3.23 seconds
+      cpu time            0.17 seconds
+      
+
+
+NOTE: There were 1327 observations read from the data set WORK.PXILD.
+NOTE: 236 observations with duplicate key values were deleted.
+NOTE: The data set WORK.PXILD has 1091 observations and 17 variables.
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.00 seconds
+      
+
+NOTE: Table WORK.DXPXIPSOPILD created, with 678 rows and 20 columns.
+
+NOTE: Table WORK.IPSOPILD created, with 456 rows and 21 columns.
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.06 seconds
+      cpu time            0.03 seconds
+      
+
+
+NOTE: There were 4 observations read from the data set WORK.IPPILD.
+NOTE: There were 456 observations read from the data set WORK.IPSOPILD.
+NOTE: The data set WORK.OUTCOME_ILD_MPCD has 460 observations and 20 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.01 seconds
+      
+
+
+NOTE: There were 460 observations read from the data set WORK.OUTCOME_ILD_MPCD.
+NOTE: The data set WORK.OUTCOME_ILD_MPCD has 460 observations and 20 variables.
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+
+NOTE: There were 460 observations read from the data set WORK.OUTCOME_ILD_MPCD.
+NOTE: The data set WORK.OUTCOME_ILD_MPCD has 18 observations and 20 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+
+NOTE: Deleting WORK.IPPILD (memtype=DATA).
+NOTE: Deleting WORK.DXIPSILD (memtype=DATA).
+NOTE: Deleting WORK.DXOPILD (memtype=DATA).
+NOTE: Deleting WORK.DXIPSOPILD (memtype=DATA).
+NOTE: Deleting WORK.PXILD (memtype=DATA).
+NOTE: Deleting WORK.DXPXIPSOPILD (memtype=DATA).
+NOTE: Deleting WORK.IPSOPILD (memtype=DATA).
+NOTE: PROCEDURE DATASETS used (Total process time):
+      real time           0.10 seconds
+      cpu time            0.03 seconds
+      
+
+265        %IPP_2IPSOPplusPX_ILD(outdata = Work.outcome_ILD_UCB,
+266                              IDS = indexID,
+267                              Dxs = UCB.tempDxUCB,
+268                              Pxs = UCB.tempPxUCB);
+
+NOTE: There were 3894682 observations read from the data set UCB.TEMPDXUCB.
+NOTE: The data set WORK.IPPILD has 15 observations and 19 variables.
+NOTE: The data set WORK.DXIPSILD has 250 observations and 19 variables.
+NOTE: The data set WORK.DXOPILD has 456 observations and 19 variables.
+NOTE: DATA statement used (Total process time):
+      real time           13.49 seconds
+6                                                                   The SAS System                                       15:26 Wednesday, May 24, 2017
+
+      cpu time            1.88 seconds
+      
+
+
+NOTE: There were 250 observations read from the data set WORK.DXIPSILD.
+NOTE: There were 456 observations read from the data set WORK.DXOPILD.
+NOTE: The data set WORK.DXIPSOPILD has 706 observations and 19 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+      
+
+
+NOTE: There were 4303647 observations read from the data set UCB.TEMPPXUCB.
+NOTE: The data set WORK.PXILD has 6781 observations and 17 variables.
+NOTE: DATA statement used (Total process time):
+      real time           18.58 seconds
+      cpu time            1.32 seconds
+      
+
+
+NOTE: There were 6781 observations read from the data set WORK.PXILD.
+NOTE: 865 observations with duplicate key values were deleted.
+NOTE: The data set WORK.PXILD has 5916 observations and 17 variables.
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.00 seconds
+      
+
+NOTE: Table WORK.DXPXIPSOPILD created, with 2358 rows and 20 columns.
+
+NOTE: Table WORK.IPSOPILD created, with 18708 rows and 21 columns.
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.09 seconds
+      cpu time            0.07 seconds
+      
+
+
+NOTE: There were 15 observations read from the data set WORK.IPPILD.
+NOTE: There were 18708 observations read from the data set WORK.IPSOPILD.
+NOTE: The data set WORK.OUTCOME_ILD_UCB has 18723 observations and 20 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.04 seconds
+      cpu time            0.01 seconds
+      
+
+
+NOTE: There were 18723 observations read from the data set WORK.OUTCOME_ILD_UCB.
+NOTE: The data set WORK.OUTCOME_ILD_UCB has 18723 observations and 20 variables.
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           0.04 seconds
+      cpu time            0.01 seconds
+      
+
+
+NOTE: There were 18723 observations read from the data set WORK.OUTCOME_ILD_UCB.
+NOTE: The data set WORK.OUTCOME_ILD_UCB has 225 observations and 20 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+      
+
+
+NOTE: Deleting WORK.IPPILD (memtype=DATA).
+NOTE: Deleting WORK.DXIPSILD (memtype=DATA).
+NOTE: Deleting WORK.DXOPILD (memtype=DATA).
+NOTE: Deleting WORK.DXIPSOPILD (memtype=DATA).
+NOTE: Deleting WORK.PXILD (memtype=DATA).
+NOTE: Deleting WORK.DXPXIPSOPILD (memtype=DATA).
+NOTE: Deleting WORK.IPSOPILD (memtype=DATA).
+NOTE: PROCEDURE DATASETS used (Total process time):
+7                                                                   The SAS System                                       15:26 Wednesday, May 24, 2017
+
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+269        %IPP_2IPSOPplusPX_ILD(outdata = Work.outcome_ILD_SABR,
+270                              IDS = indexID,
+271                              Dxs = UCB.tempDxSABR,
+272                              Pxs = UCB.tempPxSABR);
+
+NOTE: There were 39509361 observations read from the data set UCB.TEMPDXSABR.
+NOTE: The data set WORK.IPPILD has 244 observations and 19 variables.
+NOTE: The data set WORK.DXIPSILD has 2762 observations and 19 variables.
+NOTE: The data set WORK.DXOPILD has 11073 observations and 19 variables.
+NOTE: DATA statement used (Total process time):
+      real time           3:05.06
+      cpu time            17.75 seconds
+      
+
+
+NOTE: There were 2762 observations read from the data set WORK.DXIPSILD.
+NOTE: There were 11073 observations read from the data set WORK.DXOPILD.
+NOTE: The data set WORK.DXIPSOPILD has 13835 observations and 19 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.00 seconds
+      
+
+
+NOTE: There were 29446396 observations read from the data set UCB.TEMPPXSABR.
+NOTE: The data set WORK.PXILD has 705 observations and 17 variables.
+NOTE: DATA statement used (Total process time):
+      real time           8.64 seconds
+      cpu time            8.51 seconds
+      
+
+
+NOTE: There were 705 observations read from the data set WORK.PXILD.
+NOTE: 4 observations with duplicate key values were deleted.
+NOTE: The data set WORK.PXILD has 701 observations and 17 variables.
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+      
+
+NOTE: Table WORK.DXPXIPSOPILD created, with 328 rows and 20 columns.
+
+NOTE: Table WORK.IPSOPILD created, with 1908 rows and 21 columns.
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.04 seconds
+      cpu time            0.04 seconds
+      
+
+
+NOTE: There were 244 observations read from the data set WORK.IPPILD.
+NOTE: There were 1908 observations read from the data set WORK.IPSOPILD.
+NOTE: The data set WORK.OUTCOME_ILD_SABR has 2152 observations and 20 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+
+NOTE: There were 2152 observations read from the data set WORK.OUTCOME_ILD_SABR.
+NOTE: The data set WORK.OUTCOME_ILD_SABR has 2152 observations and 20 variables.
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+      
+
+
+NOTE: There were 2152 observations read from the data set WORK.OUTCOME_ILD_SABR.
+8                                                                   The SAS System                                       15:26 Wednesday, May 24, 2017
+
+NOTE: The data set WORK.OUTCOME_ILD_SABR has 297 observations and 20 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+
+NOTE: Deleting WORK.IPPILD (memtype=DATA).
+NOTE: Deleting WORK.DXIPSILD (memtype=DATA).
+NOTE: Deleting WORK.DXOPILD (memtype=DATA).
+NOTE: Deleting WORK.DXIPSOPILD (memtype=DATA).
+NOTE: Deleting WORK.PXILD (memtype=DATA).
+NOTE: Deleting WORK.DXPXIPSOPILD (memtype=DATA).
+NOTE: Deleting WORK.IPSOPILD (memtype=DATA).
+NOTE: PROCEDURE DATASETS used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+      
+
+273        
+274        
+275        proc sql;
+276        
+277          create table Work.defOutcomes as
+278            select *
+279            from DT.defOutcomes
+280            where outcomeCategory ^in ("Cancer", "Hospitalized infection", "Opportunistic infection") &
+281                  disease ^in ("Interstitial lung disease");
+NOTE: Table WORK.DEFOUTCOMES created, with 62 rows and 6 columns.
+
+282        
+283          %let select1 = select A.*, B.outcomeCategory, B.disease;
+284          %let join1 = inner join Work.defOutcomes B on (A.codeType = B.codeType & A.code = B.code);
+285          %let where1a = where B.disease ^= "Myocardial infarction";
+286          %let where1b = | (B.disease = "Myocardial infarction" & A.enc_type = "IP");
+287          %let select2 = select database, exposure, patid, indexGNN, indexDate, indexID, enc_type, age, sex, "Lung disease" as outcomeCategory,
+287      ! "Interstitial lung disease" as disease, outcome_start_date as begin_date;
+288          create table Work.comorbidities as
+289            select C.database, C.exposure, C.patid, C.indexGNN, C.indexDate, C.indexID, C.age, C.sex,
+290                   C.outcomeCategory,
+291                   C.disease,
+292                   sum(C.begin_date < C.indexDate) > 0 as indPrevPriorToIndex,
+293                   sum(0 <= C.indexDate  - C.begin_date <= 183 |
+294                       0 <= C.begin_date - C.indexDate  <= (183 * 1)) > 0 as indPrev12mo,
+295                   sum(0 <= C.indexDate  - C.begin_date <= 183 |
+296                       0 <= C.begin_date - C.indexDate  <= (183 * 3)) > 0 as indPrev24mo,
+297                   sum(0 <= C.indexDate  - C.begin_date <= 183 |
+298                       0 <= C.begin_date - C.indexDate  <= (183 * 5)) > 0 as indPrev36mo
+299            from (&select1 from UCB.tempDxMPCD A &join1 &where1a &where1b union corr
+300                  &select1 from UCB.tempDxUCB  A &join1 &where1a &where1b union corr
+301                  &select1 from UCB.tempDxSABR A &join1 &where1a &where1b union corr
+302                  &select1 from UCB.tempPxMPCD A &join1 &where1a union corr
+303                  &select1 from UCB.tempPxUCB  A &join1 &where1a union corr
+304                  &select1 from UCB.tempPxSABR A &join1 &where1a union corr
+305                  &select2 from Work.outcome_ILD_MPCD union corr
+306                  &select2 from Work.outcome_ILD_UCB  union corr
+307                  &select2 from Work.outcome_ILD_SABR ) C
+308            group by C.database, C.exposure, C.patid, C.indexGNN, C.indexDate, C.indexID, C.age, C.sex,
+309                     C.outcomeCategory,
+310                     C.disease
+311            having calculated indPrevPriorToIndex > 0 |
+312                   calculated indPrev12mo > 0 |
+313                   calculated indPrev24mo > 0 |
+314                   calculated indPrev36mo > 0;
+NOTE: Parallel WHERE evaluation suppressed due to sort order on table.
+NOTE: Parallel WHERE evaluation suppressed due to sort order on table.
+NOTE: Parallel WHERE evaluation suppressed due to sort order on table.
+NOTE: Parallel WHERE evaluation suppressed due to sort order on table.
+NOTE: Table WORK.COMORBIDITIES created, with 53880 rows and 14 columns.
+
+315        
+316          create table Work.denominator as
+9                                                                   The SAS System                                       15:26 Wednesday, May 24, 2017
+
+317            select database,
+318                   exposure,
+319                   count(distinct patid) as denomPatid,
+320                   count(distinct indexID) as denomIndexExp
+321            from DT.indexLookup
+322            group by database, exposure;
+NOTE: Table WORK.DENOMINATOR created, with 9 rows and 4 columns.
+
+323        
+324          create table Work.prev as
+325            select A.database, A.exposure, A.outcomeCategory, A.disease,
+326                   B.denomPatid,
+327                   B.denomIndexExp,
+328                   "Prior to index" as timeWindow,
+329                   sum(A.indPrevPriorToIndex) as numer,
+330                   sum(A.indPrevPriorToIndex) / B.denomIndexExp * 1000 as prevPer1000
+331            from Work.comorbidities A inner join
+332                 Work.denominator B on (A.database = B.database & A.exposure = B.exposure)
+333            group by A.database, A.exposure, A.outcomeCategory, A.disease, B.denomPatid, B.denomIndexExp
+334            union corr
+335            select A.database, A.exposure, A.outcomeCategory, A.disease,
+336                   B.denomPatid,
+337                   B.denomIndexExp,
+338                   "12 months" as timeWindow,
+339                   sum(A.indPrev12mo) as numer,
+340                   sum(A.indPrev12mo) / B.denomIndexExp * 1000 as prevPer1000
+341            from Work.comorbidities A inner join
+342                 Work.denominator B on (A.database = B.database & A.exposure = B.exposure)
+343            group by A.database, A.exposure, A.outcomeCategory, A.disease, B.denomPatid, B.denomIndexExp
+344            union corr
+345            select A.database, A.exposure, A.outcomeCategory, A.disease,
+346                   B.denomPatid,
+347                   B.denomIndexExp,
+348                   "24 months" as timeWindow,
+349                   sum(A.indPrev24mo) as numer,
+350                   sum(A.indPrev24mo) / B.denomIndexExp * 1000 as prevPer1000
+351            from Work.comorbidities A inner join
+352                 Work.denominator B on (A.database = B.database & A.exposure = B.exposure)
+353            group by A.database, A.exposure, A.outcomeCategory, A.disease, B.denomPatid, B.denomIndexExp
+354            union corr
+355            select A.database, A.exposure, A.outcomeCategory, A.disease,
+356                   B.denomPatid,
+357                   B.denomIndexExp,
+358                   "36 months" as timeWindow,
+359                   sum(A.indPrev36mo) as numer,
+360                   sum(A.indPrev36mo) / B.denomIndexExp * 1000 as prevPer1000
+361            from Work.comorbidities A inner join
+362                 Work.denominator B on (A.database = B.database & A.exposure = B.exposure)
+363            group by A.database, A.exposure, A.outcomeCategory, A.disease, B.denomPatid, B.denomIndexExp;
+NOTE: Table WORK.PREV created, with 536 rows and 9 columns.
+
+364          select * from Work.prev;
+                                                                  --- AS project ---                                 15:26 Wednesday, May 24, 2017   1
+
+                                                                                                            denom     denom
+database    exposure              Disease Category            Disease                                       Patid  IndexExp  timeWindow         numer
+    prev
+ Per1000
+-----------------------------------------------------------------------------------------------------------------------------------------------------
+MPCD        DMARD                 Cardiac disease             Aortic Insufficiency/Aortic Regurgitation       421       481  12 months              5
+10.39501
+
+MPCD        DMARD                 Cardiac disease             Aortic Insufficiency/Aortic Regurgitation       421       481  24 months              6
+12.47401
+
+MPCD        DMARD                 Cardiac disease             Aortic Insufficiency/Aortic Regurgitation       421       481  36 months              7
+14.55301
+
+MPCD        DMARD                 Cardiac disease             Aortic Insufficiency/Aortic Regurgitation       421       481  Prior to index         4
+8.316008
+
+MPCD        DMARD                 Cardiac disease             Conduction Block                                421       481  12 months              0
+       0
+
+MPCD        DMARD                 Cardiac disease             Conduction Block                                421       481  24 months              0
+       0
+
+MPCD        DMARD                 Cardiac disease             Conduction Block                                421       481  36 months              0
+       0
+
+MPCD        DMARD                 Cardiac disease             Conduction Block                                421       481  Prior to index         4
+8.316008
+
+MPCD        DMARD                 Inflammatory bowel disease  Crohn’s Disease                                 421       481  12 months             19
+39.50104
+
+MPCD        DMARD                 Inflammatory bowel disease  Crohn’s Disease                                 421       481  24 months             21
+43.65904
+
+MPCD        DMARD                 Inflammatory bowel disease  Crohn’s Disease                                 421       481  36 months             21
+43.65904
+
+MPCD        DMARD                 Inflammatory bowel disease  Crohn’s Disease                                 421       481  Prior to index        20
+41.58004
+
+MPCD        DMARD                 Inflammatory bowel disease  Ulcerative Colitis                              421       481  12 months             12
+24.94802
+
+MPCD        DMARD                 Inflammatory bowel disease  Ulcerative Colitis                              421       481  24 months             13
+27.02703
+
+MPCD        DMARD                 Inflammatory bowel disease  Ulcerative Colitis                              421       481  36 months             13
+27.02703
+
+MPCD        DMARD                 Inflammatory bowel disease  Ulcerative Colitis                              421       481  Prior to index        15
+31.18503
+
+MPCD        DMARD                 Kidney disease              IgA nephropathy                                 421       481  12 months              1
+2.079002
+
+MPCD        DMARD                 Kidney disease              IgA nephropathy                                 421       481  24 months              1
+2.079002
+
+MPCD        DMARD                 Kidney disease              IgA nephropathy                                 421       481  36 months              1
+2.079002
+
+MPCD        DMARD                 Kidney disease              IgA nephropathy                                 421       481  Prior to index         1
+2.079002
+
+MPCD        DMARD                 Kidney disease              Nephrotic syndrome                              421       481  12 months              1
+2.079002
+
+MPCD        DMARD                 Kidney disease              Nephrotic syndrome                              421       481  24 months              1
+2.079002
+ 
+                                                           queryPrevalentComorbidities.sas
+                                                                  --- AS project ---                                 15:26 Wednesday, May 24, 2017   2
+
+                                                                                                            denom     denom
+database    exposure              Disease Category            Disease                                       Patid  IndexExp  timeWindow         numer
+    prev
+ Per1000
+-----------------------------------------------------------------------------------------------------------------------------------------------------
+MPCD        DMARD                 Kidney disease              Nephrotic syndrome                              421       481  36 months              1
+2.079002
+
+MPCD        DMARD                 Kidney disease              Nephrotic syndrome                              421       481  Prior to index         0
+       0
+
+MPCD        DMARD                 Lung disease                Restrictive lung disease                        421       481  12 months              2
+4.158004
+
+MPCD        DMARD                 Lung disease                Restrictive lung disease                        421       481  24 months              3
+6.237006
+
+MPCD        DMARD                 Lung disease                Restrictive lung disease                        421       481  36 months              4
+8.316008
+
+MPCD        DMARD                 Lung disease                Restrictive lung disease                        421       481  Prior to index         3
+6.237006
+
+MPCD        DMARD                 PsO/PsA                     Psoriasis                                       421       481  12 months              7
+14.55301
+
+MPCD        DMARD                 PsO/PsA                     Psoriasis                                       421       481  24 months             11
+22.86902
+
+MPCD        DMARD                 PsO/PsA                     Psoriasis                                       421       481  36 months             14
+29.10603
+
+MPCD        DMARD                 PsO/PsA                     Psoriasis                                       421       481  Prior to index        12
+24.94802
+
+MPCD        DMARD                 PsO/PsA                     Psoriatic arthritis                             421       481  12 months             26
+54.05405
+
+MPCD        DMARD                 PsO/PsA                     Psoriatic arthritis                             421       481  24 months             30
+62.37006
+
+MPCD        DMARD                 PsO/PsA                     Psoriatic arthritis                             421       481  36 months             31
+64.44906
+
+MPCD        DMARD                 PsO/PsA                     Psoriatic arthritis                             421       481  Prior to index        23
+47.81705
+
+MPCD        DMARD                 Uveitis                     Uveitis                                         421       481  12 months             35
+72.76507
+
+MPCD        DMARD                 Uveitis                     Uveitis                                         421       481  24 months             40
+83.16008
+
+MPCD        DMARD                 Uveitis                     Uveitis                                         421       481  36 months             42
+87.31809
+
+MPCD        DMARD                 Uveitis                     Uveitis                                         421       481  Prior to index        41
+85.23909
+
+MPCD        NSAID or no exposure  Cardiac disease             Aortic Insufficiency/Aortic Regurgitation      2083      2593  12 months             48
+18.51138
+
+MPCD        NSAID or no exposure  Cardiac disease             Aortic Insufficiency/Aortic Regurgitation      2083      2593  24 months             64
+24.68184
+
+MPCD        NSAID or no exposure  Cardiac disease             Aortic Insufficiency/Aortic Regurgitation      2083      2593  36 months             71
+27.38141
+
+MPCD        NSAID or no exposure  Cardiac disease             Aortic Insufficiency/Aortic Regurgitation      2083      2593  Prior to index        52
+20.05399
+ 
+                                                           queryPrevalentComorbidities.sas
+                                                                  --- AS project ---                                 15:26 Wednesday, May 24, 2017   3
+
+                                                                                                            denom     denom
+database    exposure              Disease Category            Disease                                       Patid  IndexExp  timeWindow         numer
+    prev
+ Per1000
+-----------------------------------------------------------------------------------------------------------------------------------------------------
+MPCD        NSAID or no exposure  Cardiac disease             Conduction Block                               2083      2593  12 months             25
+9.641342
+
+MPCD        NSAID or no exposure  Cardiac disease             Conduction Block                               2083      2593  24 months             32
+12.34092
+
+MPCD        NSAID or no exposure  Cardiac disease             Conduction Block                               2083      2593  36 months             37
+14.26919
+
+MPCD        NSAID or no exposure  Cardiac disease             Conduction Block                               2083      2593  Prior to index        21
+8.098727
+
+MPCD        NSAID or no exposure  Cardiac disease             Myocardial infarction                          2083      2593  12 months             13
+5.013498
+
+MPCD        NSAID or no exposure  Cardiac disease             Myocardial infarction                          2083      2593  24 months             24
+9.255688
+
+MPCD        NSAID or no exposure  Cardiac disease             Myocardial infarction                          2083      2593  36 months             25
+9.641342
+
+MPCD        NSAID or no exposure  Cardiac disease             Myocardial infarction                          2083      2593  Prior to index        12
+4.627844
+
+MPCD        NSAID or no exposure  Inflammatory bowel disease  Crohn’s Disease                                2083      2593  12 months             88
+33.93752
+
+MPCD        NSAID or no exposure  Inflammatory bowel disease  Crohn’s Disease                                2083      2593  24 months            101
+38.95102
+
+MPCD        NSAID or no exposure  Inflammatory bowel disease  Crohn’s Disease                                2083      2593  36 months            108
+ 41.6506
+
+MPCD        NSAID or no exposure  Inflammatory bowel disease  Crohn’s Disease                                2083      2593  Prior to index        76
+29.30968
+
+MPCD        NSAID or no exposure  Inflammatory bowel disease  Ulcerative Colitis                             2083      2593  12 months             49
+18.89703
+
+MPCD        NSAID or no exposure  Inflammatory bowel disease  Ulcerative Colitis                             2083      2593  24 months             58
+22.36791
+
+MPCD        NSAID or no exposure  Inflammatory bowel disease  Ulcerative Colitis                             2083      2593  36 months             60
+23.13922
+
+MPCD        NSAID or no exposure  Inflammatory bowel disease  Ulcerative Colitis                             2083      2593  Prior to index        52
+20.05399
+
+MPCD        NSAID or no exposure  Kidney disease              Amyloidosis                                    2083      2593  12 months              1
+0.385654
+
+MPCD        NSAID or no exposure  Kidney disease              Amyloidosis                                    2083      2593  24 months              2
+0.771307
+
+MPCD        NSAID or no exposure  Kidney disease              Amyloidosis                                    2083      2593  36 months              3
+1.156961
+
+MPCD        NSAID or no exposure  Kidney disease              Amyloidosis                                    2083      2593  Prior to index         1
+0.385654
+
+MPCD        NSAID or no exposure  Kidney disease              IgA nephropathy                                2083      2593  12 months              3
+1.156961
+
+MPCD        NSAID or no exposure  Kidney disease              IgA nephropathy                                2083      2593  24 months              6
+2.313922
+ 
+                                                           queryPrevalentComorbidities.sas
+                                                                  --- AS project ---                                 15:26 Wednesday, May 24, 2017   4
+
+                                                                                                            denom     denom
+database    exposure              Disease Category            Disease                                       Patid  IndexExp  timeWindow         numer
+    prev
+ Per1000
+-----------------------------------------------------------------------------------------------------------------------------------------------------
+MPCD        NSAID or no exposure  Kidney disease              IgA nephropathy                                2083      2593  36 months              8
+3.085229
+
+MPCD        NSAID or no exposure  Kidney disease              IgA nephropathy                                2083      2593  Prior to index         2
+0.771307
+
+MPCD        NSAID or no exposure  Kidney disease              Nephrotic syndrome                             2083      2593  12 months              0
+       0
+
+MPCD        NSAID or no exposure  Kidney disease              Nephrotic syndrome                             2083      2593  24 months              1
+0.385654
+
+MPCD        NSAID or no exposure  Kidney disease              Nephrotic syndrome                             2083      2593  36 months              1
+0.385654
+
+MPCD        NSAID or no exposure  Kidney disease              Nephrotic syndrome                             2083      2593  Prior to index         0
+       0
+
+MPCD        NSAID or no exposure  Lung disease                Apical Pulmonary fibrosis                      2083      2593  12 months              0
+       0
+
+MPCD        NSAID or no exposure  Lung disease                Apical Pulmonary fibrosis                      2083      2593  24 months              1
+0.385654
+
+MPCD        NSAID or no exposure  Lung disease                Apical Pulmonary fibrosis                      2083      2593  36 months              1
+0.385654
+
+MPCD        NSAID or no exposure  Lung disease                Apical Pulmonary fibrosis                      2083      2593  Prior to index         0
+       0
+
+MPCD        NSAID or no exposure  Lung disease                Interstitial lung disease                      2083      2593  12 months              2
+0.771307
+
+MPCD        NSAID or no exposure  Lung disease                Interstitial lung disease                      2083      2593  24 months              4
+1.542615
+
+MPCD        NSAID or no exposure  Lung disease                Interstitial lung disease                      2083      2593  36 months              4
+1.542615
+
+MPCD        NSAID or no exposure  Lung disease                Interstitial lung disease                      2083      2593  Prior to index         1
+0.385654
+
+MPCD        NSAID or no exposure  Lung disease                Restrictive lung disease                       2083      2593  12 months             45
+17.35442
+
+MPCD        NSAID or no exposure  Lung disease                Restrictive lung disease                       2083      2593  24 months             68
+26.22445
+
+MPCD        NSAID or no exposure  Lung disease                Restrictive lung disease                       2083      2593  36 months             75
+28.92403
+
+MPCD        NSAID or no exposure  Lung disease                Restrictive lung disease                       2083      2593  Prior to index        41
+ 15.8118
+
+MPCD        NSAID or no exposure  Neurological Disease        Cauda Equina syndrome                          2083      2593  12 months              4
+1.542615
+
+MPCD        NSAID or no exposure  Neurological Disease        Cauda Equina syndrome                          2083      2593  24 months              5
+1.928268
+
+MPCD        NSAID or no exposure  Neurological Disease        Cauda Equina syndrome                          2083      2593  36 months              5
+1.928268
+
+MPCD        NSAID or no exposure  Neurological Disease        Cauda Equina syndrome                          2083      2593  Prior to index         3
+1.156961
+ 
+                                                           queryPrevalentComorbidities.sas
+                                                                  --- AS project ---                                 15:26 Wednesday, May 24, 2017   5
+
+                                                                                                            denom     denom
+database    exposure              Disease Category            Disease                                       Patid  IndexExp  timeWindow         numer
+    prev
+ Per1000
+-----------------------------------------------------------------------------------------------------------------------------------------------------
+MPCD        NSAID or no exposure  Neurological Disease        Spinal Cord compression                        2083      2593  12 months              9
+3.470883
+
+MPCD        NSAID or no exposure  Neurological Disease        Spinal Cord compression                        2083      2593  24 months             11
+4.242191
+
+MPCD        NSAID or no exposure  Neurological Disease        Spinal Cord compression                        2083      2593  36 months             13
+5.013498
+
+MPCD        NSAID or no exposure  Neurological Disease        Spinal Cord compression                        2083      2593  Prior to index         7
+2.699576
+
+MPCD        NSAID or no exposure  PsO/PsA                     Psoriasis                                      2083      2593  12 months             50
+19.28268
+
+MPCD        NSAID or no exposure  PsO/PsA                     Psoriasis                                      2083      2593  24 months             67
+ 25.8388
+
+MPCD        NSAID or no exposure  PsO/PsA                     Psoriasis                                      2083      2593  36 months             72
+27.76707
+
+MPCD        NSAID or no exposure  PsO/PsA                     Psoriasis                                      2083      2593  Prior to index        69
+ 26.6101
+
+MPCD        NSAID or no exposure  PsO/PsA                     Psoriatic arthritis                            2083      2593  12 months             63
+24.29618
+
+MPCD        NSAID or no exposure  PsO/PsA                     Psoriatic arthritis                            2083      2593  24 months             76
+29.30968
+
+MPCD        NSAID or no exposure  PsO/PsA                     Psoriatic arthritis                            2083      2593  36 months             86
+33.16622
+
+MPCD        NSAID or no exposure  PsO/PsA                     Psoriatic arthritis                            2083      2593  Prior to index        63
+24.29618
+
+MPCD        NSAID or no exposure  Uveitis                     Uveitis                                        2083      2593  12 months            162
+ 62.4759
+
+MPCD        NSAID or no exposure  Uveitis                     Uveitis                                        2083      2593  24 months            190
+ 73.2742
+
+MPCD        NSAID or no exposure  Uveitis                     Uveitis                                        2083      2593  36 months            202
+77.90204
+
+MPCD        NSAID or no exposure  Uveitis                     Uveitis                                        2083      2593  Prior to index       191
+73.65985
+
+MPCD        TNF                   Cardiac disease             Aortic Insufficiency/Aortic Regurgitation      1107      1279  12 months             23
+ 17.9828
+
+MPCD        TNF                   Cardiac disease             Aortic Insufficiency/Aortic Regurgitation      1107      1279  24 months             30
+23.45582
+
+MPCD        TNF                   Cardiac disease             Aortic Insufficiency/Aortic Regurgitation      1107      1279  36 months             31
+24.23769
+
+MPCD        TNF                   Cardiac disease             Aortic Insufficiency/Aortic Regurgitation      1107      1279  Prior to index        19
+14.85536
+
+MPCD        TNF                   Cardiac disease             Conduction Block                               1107      1279  12 months              3
+2.345582
+
+MPCD        TNF                   Cardiac disease             Conduction Block                               1107      1279  24 months              5
+3.909304
+ 
+                                                           queryPrevalentComorbidities.sas
+                                                                  --- AS project ---                                 15:26 Wednesday, May 24, 2017   6
+
+                                                                                                            denom     denom
+database    exposure              Disease Category            Disease                                       Patid  IndexExp  timeWindow         numer
+    prev
+ Per1000
+-----------------------------------------------------------------------------------------------------------------------------------------------------
+MPCD        TNF                   Cardiac disease             Conduction Block                               1107      1279  36 months              5
+3.909304
+
+MPCD        TNF                   Cardiac disease             Conduction Block                               1107      1279  Prior to index         5
+3.909304
+
+MPCD        TNF                   Cardiac disease             Myocardial infarction                          1107      1279  12 months              4
+3.127443
+
+MPCD        TNF                   Cardiac disease             Myocardial infarction                          1107      1279  24 months              7
+5.473026
+
+MPCD        TNF                   Cardiac disease             Myocardial infarction                          1107      1279  36 months              7
+5.473026
+
+MPCD        TNF                   Cardiac disease             Myocardial infarction                          1107      1279  Prior to index         4
+3.127443
+
+MPCD        TNF                   Inflammatory bowel disease  Crohn’s Disease                                1107      1279  12 months             75
+58.63956
+
+MPCD        TNF                   Inflammatory bowel disease  Crohn’s Disease                                1107      1279  24 months             82
+64.11259
+
+MPCD        TNF                   Inflammatory bowel disease  Crohn’s Disease                                1107      1279  36 months             85
+66.45817
+
+MPCD        TNF                   Inflammatory bowel disease  Crohn’s Disease                                1107      1279  Prior to index        78
+60.98514
+
+MPCD        TNF                   Inflammatory bowel disease  Ulcerative Colitis                             1107      1279  12 months             40
+31.27443
+
+MPCD        TNF                   Inflammatory bowel disease  Ulcerative Colitis                             1107      1279  24 months             46
+ 35.9656
+
+MPCD        TNF                   Inflammatory bowel disease  Ulcerative Colitis                             1107      1279  36 months             50
+39.09304
+
+MPCD        TNF                   Inflammatory bowel disease  Ulcerative Colitis                             1107      1279  Prior to index        47
+36.74746
+
+MPCD        TNF                   Kidney disease              IgA nephropathy                                1107      1279  12 months              4
+3.127443
+
+MPCD        TNF                   Kidney disease              IgA nephropathy                                1107      1279  24 months              4
+3.127443
+
+MPCD        TNF                   Kidney disease              IgA nephropathy                                1107      1279  36 months              4
+3.127443
+
+MPCD        TNF                   Kidney disease              IgA nephropathy                                1107      1279  Prior to index         1
+0.781861
+
+MPCD        TNF                   Kidney disease              Nephrotic syndrome                             1107      1279  12 months              2
+1.563722
+
+MPCD        TNF                   Kidney disease              Nephrotic syndrome                             1107      1279  24 months              2
+1.563722
+
+MPCD        TNF                   Kidney disease              Nephrotic syndrome                             1107      1279  36 months              2
+1.563722
+
+MPCD        TNF                   Kidney disease              Nephrotic syndrome                             1107      1279  Prior to index         0
+       0
+ 
+                                                           queryPrevalentComorbidities.sas
+                                                                  --- AS project ---                                 15:26 Wednesday, May 24, 2017   7
+
+                                                                                                            denom     denom
+database    exposure              Disease Category            Disease                                       Patid  IndexExp  timeWindow         numer
+    prev
+ Per1000
+-----------------------------------------------------------------------------------------------------------------------------------------------------
+MPCD        TNF                   Lung disease                Interstitial lung disease                      1107      1279  12 months              0
+       0
+
+MPCD        TNF                   Lung disease                Interstitial lung disease                      1107      1279  24 months              0
+       0
+
+MPCD        TNF                   Lung disease                Interstitial lung disease                      1107      1279  36 months              0
+       0
+
+MPCD        TNF                   Lung disease                Interstitial lung disease                      1107      1279  Prior to index         2
+1.563722
+
+MPCD        TNF                   Lung disease                Restrictive lung disease                       1107      1279  12 months              9
+7.036747
+
+MPCD        TNF                   Lung disease                Restrictive lung disease                       1107      1279  24 months             15
+11.72791
+
+MPCD        TNF                   Lung disease                Restrictive lung disease                       1107      1279  36 months             17
+13.29163
+
+MPCD        TNF                   Lung disease                Restrictive lung disease                       1107      1279  Prior to index        13
+10.16419
+
+MPCD        TNF                   Neurological Disease        Spinal Cord compression                        1107      1279  12 months              2
+1.563722
+
+MPCD        TNF                   Neurological Disease        Spinal Cord compression                        1107      1279  24 months              2
+1.563722
+
+MPCD        TNF                   Neurological Disease        Spinal Cord compression                        1107      1279  36 months              2
+1.563722
+
+MPCD        TNF                   Neurological Disease        Spinal Cord compression                        1107      1279  Prior to index         1
+0.781861
+
+MPCD        TNF                   PsO/PsA                     Psoriasis                                      1107      1279  12 months             55
+43.00235
+
+MPCD        TNF                   PsO/PsA                     Psoriasis                                      1107      1279  24 months             67
+52.38468
+
+MPCD        TNF                   PsO/PsA                     Psoriasis                                      1107      1279  36 months             72
+56.29398
+
+MPCD        TNF                   PsO/PsA                     Psoriasis                                      1107      1279  Prior to index        53
+41.43862
+
+MPCD        TNF                   PsO/PsA                     Psoriatic arthritis                            1107      1279  12 months             83
+64.89445
+
+MPCD        TNF                   PsO/PsA                     Psoriatic arthritis                            1107      1279  24 months             98
+76.62236
+
+MPCD        TNF                   PsO/PsA                     Psoriatic arthritis                            1107      1279  36 months            103
+80.53167
+
+MPCD        TNF                   PsO/PsA                     Psoriatic arthritis                            1107      1279  Prior to index        84
+65.67631
+
+MPCD        TNF                   Uveitis                     Uveitis                                        1107      1279  12 months            108
+84.44097
+
+MPCD        TNF                   Uveitis                     Uveitis                                        1107      1279  24 months            121
+94.60516
+ 
+                                                           queryPrevalentComorbidities.sas
+                                                                  --- AS project ---                                 15:26 Wednesday, May 24, 2017   8
+
+                                                                                                            denom     denom
+database    exposure              Disease Category            Disease                                       Patid  IndexExp  timeWindow         numer
+    prev
+ Per1000
+-----------------------------------------------------------------------------------------------------------------------------------------------------
+MPCD        TNF                   Uveitis                     Uveitis                                        1107      1279  36 months            126
+98.51446
+
+MPCD        TNF                   Uveitis                     Uveitis                                        1107      1279  Prior to index       145
+113.3698
+
+Marketscan  DMARD                 Cardiac disease             Aortic Insufficiency/Aortic Regurgitation      1799      2045  12 months             38
+18.58191
+
+Marketscan  DMARD                 Cardiac disease             Aortic Insufficiency/Aortic Regurgitation      1799      2045  24 months             49
+23.96088
+
+Marketscan  DMARD                 Cardiac disease             Aortic Insufficiency/Aortic Regurgitation      1799      2045  36 months             54
+26.40587
+
+Marketscan  DMARD                 Cardiac disease             Aortic Insufficiency/Aortic Regurgitation      1799      2045  Prior to index        43
+21.02689
+
+Marketscan  DMARD                 Cardiac disease             Conduction Block                               1799      2045  12 months             37
+18.09291
+
+Marketscan  DMARD                 Cardiac disease             Conduction Block                               1799      2045  24 months             50
+24.44988
+
+Marketscan  DMARD                 Cardiac disease             Conduction Block                               1799      2045  36 months             50
+24.44988
+
+Marketscan  DMARD                 Cardiac disease             Conduction Block                               1799      2045  Prior to index        50
+24.44988
+
+Marketscan  DMARD                 Cardiac disease             Myocardial infarction                          1799      2045  12 months              3
+1.466993
+
+Marketscan  DMARD                 Cardiac disease             Myocardial infarction                          1799      2045  24 months              6
+2.933985
+
+Marketscan  DMARD                 Cardiac disease             Myocardial infarction                          1799      2045  36 months              8
+ 3.91198
+
+Marketscan  DMARD                 Cardiac disease             Myocardial infarction                          1799      2045  Prior to index        10
+4.889976
+
+Marketscan  DMARD                 Inflammatory bowel disease  Crohn’s Disease                                1799      2045  12 months             84
+41.07579
+
+Marketscan  DMARD                 Inflammatory bowel disease  Crohn’s Disease                                1799      2045  24 months             96
+46.94377
+
+Marketscan  DMARD                 Inflammatory bowel disease  Crohn’s Disease                                1799      2045  36 months            100
+48.89976
+
+Marketscan  DMARD                 Inflammatory bowel disease  Crohn’s Disease                                1799      2045  Prior to index        98
+47.92176
+
+Marketscan  DMARD                 Inflammatory bowel disease  Ulcerative Colitis                             1799      2045  12 months             68
+33.25183
+
+Marketscan  DMARD                 Inflammatory bowel disease  Ulcerative Colitis                             1799      2045  24 months             83
+ 40.5868
+
+Marketscan  DMARD                 Inflammatory bowel disease  Ulcerative Colitis                             1799      2045  36 months             87
+42.54279
+
+Marketscan  DMARD                 Inflammatory bowel disease  Ulcerative Colitis                             1799      2045  Prior to index        61
+29.82885
+ 
+                                                           queryPrevalentComorbidities.sas
+                                                                  --- AS project ---                                 15:26 Wednesday, May 24, 2017   9
+
+                                                                                                            denom     denom
+database    exposure              Disease Category            Disease                                       Patid  IndexExp  timeWindow         numer
+    prev
+ Per1000
+-----------------------------------------------------------------------------------------------------------------------------------------------------
+Marketscan  DMARD                 Kidney disease              Amyloidosis                                    1799      2045  12 months              0
+       0
+
+Marketscan  DMARD                 Kidney disease              Amyloidosis                                    1799      2045  24 months              1
+0.488998
+
+Marketscan  DMARD                 Kidney disease              Amyloidosis                                    1799      2045  36 months              1
+0.488998
+
+Marketscan  DMARD                 Kidney disease              Amyloidosis                                    1799      2045  Prior to index         1
+0.488998
+
+Marketscan  DMARD                 Kidney disease              IgA nephropathy                                1799      2045  12 months              3
+1.466993
+
+Marketscan  DMARD                 Kidney disease              IgA nephropathy                                1799      2045  24 months              3
+1.466993
+
+Marketscan  DMARD                 Kidney disease              IgA nephropathy                                1799      2045  36 months              3
+1.466993
+
+Marketscan  DMARD                 Kidney disease              IgA nephropathy                                1799      2045  Prior to index         4
+ 1.95599
+
+Marketscan  DMARD                 Kidney disease              Nephrotic syndrome                             1799      2045  12 months              1
+0.488998
+
+Marketscan  DMARD                 Kidney disease              Nephrotic syndrome                             1799      2045  24 months              2
+0.977995
+
+Marketscan  DMARD                 Kidney disease              Nephrotic syndrome                             1799      2045  36 months              3
+1.466993
+
+Marketscan  DMARD                 Kidney disease              Nephrotic syndrome                             1799      2045  Prior to index         2
+0.977995
+
+Marketscan  DMARD                 Lung disease                Interstitial lung disease                      1799      2045  12 months              3
+1.466993
+
+Marketscan  DMARD                 Lung disease                Interstitial lung disease                      1799      2045  24 months              4
+ 1.95599
+
+Marketscan  DMARD                 Lung disease                Interstitial lung disease                      1799      2045  36 months              4
+ 1.95599
+
+Marketscan  DMARD                 Lung disease                Interstitial lung disease                      1799      2045  Prior to index         5
+2.444988
+
+Marketscan  DMARD                 Lung disease                Restrictive lung disease                       1799      2045  12 months             64
+31.29584
+
+Marketscan  DMARD                 Lung disease                Restrictive lung disease                       1799      2045  24 months             81
+ 39.6088
+
+Marketscan  DMARD                 Lung disease                Restrictive lung disease                       1799      2045  36 months             90
+44.00978
+
+Marketscan  DMARD                 Lung disease                Restrictive lung disease                       1799      2045  Prior to index        91
+44.49878
+
+Marketscan  DMARD                 Neurological Disease        Cauda Equina syndrome                          1799      2045  12 months              3
+1.466993
+
+Marketscan  DMARD                 Neurological Disease        Cauda Equina syndrome                          1799      2045  24 months              3
+1.466993
+ 
+                                                           queryPrevalentComorbidities.sas
+                                                                  --- AS project ---                                 15:26 Wednesday, May 24, 2017  10
+
+                                                                                                            denom     denom
+database    exposure              Disease Category            Disease                                       Patid  IndexExp  timeWindow         numer
+    prev
+ Per1000
+-----------------------------------------------------------------------------------------------------------------------------------------------------
+Marketscan  DMARD                 Neurological Disease        Cauda Equina syndrome                          1799      2045  36 months              3
+1.466993
+
+Marketscan  DMARD                 Neurological Disease        Cauda Equina syndrome                          1799      2045  Prior to index         5
+2.444988
+
+Marketscan  DMARD                 Neurological Disease        Spinal Cord compression                        1799      2045  12 months             11
+5.378973
+
+Marketscan  DMARD                 Neurological Disease        Spinal Cord compression                        1799      2045  24 months             19
+9.290954
+
+Marketscan  DMARD                 Neurological Disease        Spinal Cord compression                        1799      2045  36 months             21
+10.26895
+
+Marketscan  DMARD                 Neurological Disease        Spinal Cord compression                        1799      2045  Prior to index        10
+4.889976
+
+Marketscan  DMARD                 PsO/PsA                     Psoriasis                                      1799      2045  12 months             78
+38.14181
+
+Marketscan  DMARD                 PsO/PsA                     Psoriasis                                      1799      2045  24 months             92
+44.98778
+
+Marketscan  DMARD                 PsO/PsA                     Psoriasis                                      1799      2045  36 months            105
+51.34474
+
+Marketscan  DMARD                 PsO/PsA                     Psoriasis                                      1799      2045  Prior to index        78
+38.14181
+
+Marketscan  DMARD                 PsO/PsA                     Psoriatic arthritis                            1799      2045  12 months            149
+72.86064
+
+Marketscan  DMARD                 PsO/PsA                     Psoriatic arthritis                            1799      2045  24 months            168
+82.15159
+
+Marketscan  DMARD                 PsO/PsA                     Psoriatic arthritis                            1799      2045  36 months            176
+86.06357
+
+Marketscan  DMARD                 PsO/PsA                     Psoriatic arthritis                            1799      2045  Prior to index       126
+61.61369
+
+Marketscan  DMARD                 Uveitis                     Uveitis                                        1799      2045  12 months            185
+90.46455
+
+Marketscan  DMARD                 Uveitis                     Uveitis                                        1799      2045  24 months            212
+103.6675
+
+Marketscan  DMARD                 Uveitis                     Uveitis                                        1799      2045  36 months            225
+110.0244
+
+Marketscan  DMARD                 Uveitis                     Uveitis                                        1799      2045  Prior to index       225
+110.0244
+
+Marketscan  NSAID or no exposure  Cardiac disease             Aortic Insufficiency/Aortic Regurgitation      8025     10589  12 months            239
+22.57059
+
+Marketscan  NSAID or no exposure  Cardiac disease             Aortic Insufficiency/Aortic Regurgitation      8025     10589  24 months            299
+28.23685
+
+Marketscan  NSAID or no exposure  Cardiac disease             Aortic Insufficiency/Aortic Regurgitation      8025     10589  36 months            333
+31.44773
+
+Marketscan  NSAID or no exposure  Cardiac disease             Aortic Insufficiency/Aortic Regurgitation      8025     10589  Prior to index       298
+28.14241
+ 
+                                                           queryPrevalentComorbidities.sas
+                                                                  --- AS project ---                                 15:26 Wednesday, May 24, 2017  11
+
+                                                                                                            denom     denom
+database    exposure              Disease Category            Disease                                       Patid  IndexExp  timeWindow         numer
+    prev
+ Per1000
+-----------------------------------------------------------------------------------------------------------------------------------------------------
+Marketscan  NSAID or no exposure  Cardiac disease             Conduction Block                               8025     10589  12 months            245
+23.13722
+
+Marketscan  NSAID or no exposure  Cardiac disease             Conduction Block                               8025     10589  24 months            330
+31.16442
+
+Marketscan  NSAID or no exposure  Cardiac disease             Conduction Block                               8025     10589  36 months            362
+34.18642
+
+Marketscan  NSAID or no exposure  Cardiac disease             Conduction Block                               8025     10589  Prior to index       261
+24.64822
+
+Marketscan  NSAID or no exposure  Cardiac disease             Myocardial infarction                          8025     10589  12 months             70
+6.610634
+
+Marketscan  NSAID or no exposure  Cardiac disease             Myocardial infarction                          8025     10589  24 months             86
+8.121636
+
+Marketscan  NSAID or no exposure  Cardiac disease             Myocardial infarction                          8025     10589  36 months             99
+9.349325
+
+Marketscan  NSAID or no exposure  Cardiac disease             Myocardial infarction                          8025     10589  Prior to index        55
+5.194069
+
+Marketscan  NSAID or no exposure  Inflammatory bowel disease  Crohn’s Disease                                8025     10589  12 months            333
+31.44773
+
+Marketscan  NSAID or no exposure  Inflammatory bowel disease  Crohn’s Disease                                8025     10589  24 months            381
+35.98073
+
+Marketscan  NSAID or no exposure  Inflammatory bowel disease  Crohn’s Disease                                8025     10589  36 months            403
+38.05836
+
+Marketscan  NSAID or no exposure  Inflammatory bowel disease  Crohn’s Disease                                8025     10589  Prior to index       345
+32.58098
+
+Marketscan  NSAID or no exposure  Inflammatory bowel disease  Ulcerative Colitis                             8025     10589  12 months            266
+25.12041
+
+Marketscan  NSAID or no exposure  Inflammatory bowel disease  Ulcerative Colitis                             8025     10589  24 months            305
+28.80348
+
+Marketscan  NSAID or no exposure  Inflammatory bowel disease  Ulcerative Colitis                             8025     10589  36 months            326
+30.78667
+
+Marketscan  NSAID or no exposure  Inflammatory bowel disease  Ulcerative Colitis                             8025     10589  Prior to index       277
+26.15922
+
+Marketscan  NSAID or no exposure  Kidney disease              Amyloidosis                                    8025     10589  12 months              3
+0.283313
+
+Marketscan  NSAID or no exposure  Kidney disease              Amyloidosis                                    8025     10589  24 months              3
+0.283313
+
+Marketscan  NSAID or no exposure  Kidney disease              Amyloidosis                                    8025     10589  36 months              3
+0.283313
+
+Marketscan  NSAID or no exposure  Kidney disease              Amyloidosis                                    8025     10589  Prior to index         3
+0.283313
+
+Marketscan  NSAID or no exposure  Kidney disease              IgA nephropathy                                8025     10589  12 months             10
+0.944376
+
+Marketscan  NSAID or no exposure  Kidney disease              IgA nephropathy                                8025     10589  24 months             14
+1.322127
+ 
+                                                           queryPrevalentComorbidities.sas
+                                                                  --- AS project ---                                 15:26 Wednesday, May 24, 2017  12
+
+                                                                                                            denom     denom
+database    exposure              Disease Category            Disease                                       Patid  IndexExp  timeWindow         numer
+    prev
+ Per1000
+-----------------------------------------------------------------------------------------------------------------------------------------------------
+Marketscan  NSAID or no exposure  Kidney disease              IgA nephropathy                                8025     10589  36 months             17
+ 1.60544
+
+Marketscan  NSAID or no exposure  Kidney disease              IgA nephropathy                                8025     10589  Prior to index        14
+1.322127
+
+Marketscan  NSAID or no exposure  Kidney disease              Nephrotic syndrome                             8025     10589  12 months              5
+0.472188
+
+Marketscan  NSAID or no exposure  Kidney disease              Nephrotic syndrome                             8025     10589  24 months              7
+0.661063
+
+Marketscan  NSAID or no exposure  Kidney disease              Nephrotic syndrome                             8025     10589  36 months              7
+0.661063
+
+Marketscan  NSAID or no exposure  Kidney disease              Nephrotic syndrome                             8025     10589  Prior to index         6
+0.566626
+
+Marketscan  NSAID or no exposure  Lung disease                Apical Pulmonary fibrosis                      8025     10589  12 months              2
+0.188875
+
+Marketscan  NSAID or no exposure  Lung disease                Apical Pulmonary fibrosis                      8025     10589  24 months              2
+0.188875
+
+Marketscan  NSAID or no exposure  Lung disease                Apical Pulmonary fibrosis                      8025     10589  36 months              2
+0.188875
+
+Marketscan  NSAID or no exposure  Lung disease                Apical Pulmonary fibrosis                      8025     10589  Prior to index         2
+0.188875
+
+Marketscan  NSAID or no exposure  Lung disease                Interstitial lung disease                      8025     10589  12 months             11
+1.038814
+
+Marketscan  NSAID or no exposure  Lung disease                Interstitial lung disease                      8025     10589  24 months             13
+1.227689
+
+Marketscan  NSAID or no exposure  Lung disease                Interstitial lung disease                      8025     10589  36 months             14
+1.322127
+
+Marketscan  NSAID or no exposure  Lung disease                Interstitial lung disease                      8025     10589  Prior to index        15
+1.416564
+
+Marketscan  NSAID or no exposure  Lung disease                Restrictive lung disease                       8025     10589  12 months            380
+ 35.8863
+
+Marketscan  NSAID or no exposure  Lung disease                Restrictive lung disease                       8025     10589  24 months            484
+45.70781
+
+Marketscan  NSAID or no exposure  Lung disease                Restrictive lung disease                       8025     10589  36 months            556
+52.50732
+
+Marketscan  NSAID or no exposure  Lung disease                Restrictive lung disease                       8025     10589  Prior to index       495
+46.74662
+
+Marketscan  NSAID or no exposure  Neurological Disease        Cauda Equina syndrome                          8025     10589  12 months              9
+0.849939
+
+Marketscan  NSAID or no exposure  Neurological Disease        Cauda Equina syndrome                          8025     10589  24 months             10
+0.944376
+
+Marketscan  NSAID or no exposure  Neurological Disease        Cauda Equina syndrome                          8025     10589  36 months             10
+0.944376
+
+Marketscan  NSAID or no exposure  Neurological Disease        Cauda Equina syndrome                          8025     10589  Prior to index        10
+0.944376
+ 
+                                                           queryPrevalentComorbidities.sas
+                                                                  --- AS project ---                                 15:26 Wednesday, May 24, 2017  13
+
+                                                                                                            denom     denom
+database    exposure              Disease Category            Disease                                       Patid  IndexExp  timeWindow         numer
+    prev
+ Per1000
+-----------------------------------------------------------------------------------------------------------------------------------------------------
+Marketscan  NSAID or no exposure  Neurological Disease        Spinal Cord compression                        8025     10589  12 months             68
+6.421758
+
+Marketscan  NSAID or no exposure  Neurological Disease        Spinal Cord compression                        8025     10589  24 months             87
+8.216073
+
+Marketscan  NSAID or no exposure  Neurological Disease        Spinal Cord compression                        8025     10589  36 months             93
+8.782699
+
+Marketscan  NSAID or no exposure  Neurological Disease        Spinal Cord compression                        8025     10589  Prior to index        56
+5.288507
+
+Marketscan  NSAID or no exposure  PsO/PsA                     Psoriasis                                      8025     10589  12 months            235
+22.19284
+
+Marketscan  NSAID or no exposure  PsO/PsA                     Psoriasis                                      8025     10589  24 months            289
+27.29247
+
+Marketscan  NSAID or no exposure  PsO/PsA                     Psoriasis                                      8025     10589  36 months            329
+31.06998
+
+Marketscan  NSAID or no exposure  PsO/PsA                     Psoriasis                                      8025     10589  Prior to index       248
+23.42053
+
+Marketscan  NSAID or no exposure  PsO/PsA                     Psoriatic arthritis                            8025     10589  12 months            307
+28.99235
+
+Marketscan  NSAID or no exposure  PsO/PsA                     Psoriatic arthritis                            8025     10589  24 months            363
+34.28086
+
+Marketscan  NSAID or no exposure  PsO/PsA                     Psoriatic arthritis                            8025     10589  36 months            395
+37.30286
+
+Marketscan  NSAID or no exposure  PsO/PsA                     Psoriatic arthritis                            8025     10589  Prior to index       303
+ 28.6146
+
+Marketscan  NSAID or no exposure  Uveitis                     Uveitis                                        8025     10589  12 months           1042
+  98.404
+
+Marketscan  NSAID or no exposure  Uveitis                     Uveitis                                        8025     10589  24 months           1188
+112.1919
+
+Marketscan  NSAID or no exposure  Uveitis                     Uveitis                                        8025     10589  36 months           1244
+117.4804
+
+Marketscan  NSAID or no exposure  Uveitis                     Uveitis                                        8025     10589  Prior to index      1186
+ 112.003
+
+Marketscan  TNF                   Cardiac disease             Aortic Insufficiency/Aortic Regurgitation      4797      5779  12 months             81
+14.01627
+
+Marketscan  TNF                   Cardiac disease             Aortic Insufficiency/Aortic Regurgitation      4797      5779  24 months            107
+18.51531
+
+Marketscan  TNF                   Cardiac disease             Aortic Insufficiency/Aortic Regurgitation      4797      5779  36 months            120
+20.76484
+
+Marketscan  TNF                   Cardiac disease             Aortic Insufficiency/Aortic Regurgitation      4797      5779  Prior to index       106
+18.34227
+
+Marketscan  TNF                   Cardiac disease             Conduction Block                               4797      5779  12 months             72
+ 12.4589
+
+Marketscan  TNF                   Cardiac disease             Conduction Block                               4797      5779  24 months            101
+17.47707
+ 
+                                                           queryPrevalentComorbidities.sas
+                                                                  --- AS project ---                                 15:26 Wednesday, May 24, 2017  14
+
+                                                                                                            denom     denom
+database    exposure              Disease Category            Disease                                       Patid  IndexExp  timeWindow         numer
+    prev
+ Per1000
+-----------------------------------------------------------------------------------------------------------------------------------------------------
+Marketscan  TNF                   Cardiac disease             Conduction Block                               4797      5779  36 months            114
+ 19.7266
+
+Marketscan  TNF                   Cardiac disease             Conduction Block                               4797      5779  Prior to index        98
+16.95795
+
+Marketscan  TNF                   Cardiac disease             Myocardial infarction                          4797      5779  12 months             11
+1.903444
+
+Marketscan  TNF                   Cardiac disease             Myocardial infarction                          4797      5779  24 months             20
+3.460806
+
+Marketscan  TNF                   Cardiac disease             Myocardial infarction                          4797      5779  36 months             21
+3.633847
+
+Marketscan  TNF                   Cardiac disease             Myocardial infarction                          4797      5779  Prior to index        30
+ 5.19121
+
+Marketscan  TNF                   Inflammatory bowel disease  Crohn’s Disease                                4797      5779  12 months            352
+60.91019
+
+Marketscan  TNF                   Inflammatory bowel disease  Crohn’s Disease                                4797      5779  24 months            396
+68.52397
+
+Marketscan  TNF                   Inflammatory bowel disease  Crohn’s Disease                                4797      5779  36 months            406
+70.25437
+
+Marketscan  TNF                   Inflammatory bowel disease  Crohn’s Disease                                4797      5779  Prior to index       369
+63.85188
+
+Marketscan  TNF                   Inflammatory bowel disease  Ulcerative Colitis                             4797      5779  12 months            251
+43.43312
+
+Marketscan  TNF                   Inflammatory bowel disease  Ulcerative Colitis                             4797      5779  24 months            287
+49.66257
+
+Marketscan  TNF                   Inflammatory bowel disease  Ulcerative Colitis                             4797      5779  36 months            300
+ 51.9121
+
+Marketscan  TNF                   Inflammatory bowel disease  Ulcerative Colitis                             4797      5779  Prior to index       283
+48.97041
+
+Marketscan  TNF                   Kidney disease              Amyloidosis                                    4797      5779  12 months              2
+0.346081
+
+Marketscan  TNF                   Kidney disease              Amyloidosis                                    4797      5779  24 months              4
+0.692161
+
+Marketscan  TNF                   Kidney disease              Amyloidosis                                    4797      5779  36 months              4
+0.692161
+
+Marketscan  TNF                   Kidney disease              Amyloidosis                                    4797      5779  Prior to index         2
+0.346081
+
+Marketscan  TNF                   Kidney disease              IgA nephropathy                                4797      5779  12 months             10
+1.730403
+
+Marketscan  TNF                   Kidney disease              IgA nephropathy                                4797      5779  24 months             12
+2.076484
+
+Marketscan  TNF                   Kidney disease              IgA nephropathy                                4797      5779  36 months             13
+2.249524
+
+Marketscan  TNF                   Kidney disease              IgA nephropathy                                4797      5779  Prior to index        13
+2.249524
+ 
+                                                           queryPrevalentComorbidities.sas
+                                                                  --- AS project ---                                 15:26 Wednesday, May 24, 2017  15
+
+                                                                                                            denom     denom
+database    exposure              Disease Category            Disease                                       Patid  IndexExp  timeWindow         numer
+    prev
+ Per1000
+-----------------------------------------------------------------------------------------------------------------------------------------------------
+Marketscan  TNF                   Kidney disease              Nephrotic syndrome                             4797      5779  12 months              4
+0.692161
+
+Marketscan  TNF                   Kidney disease              Nephrotic syndrome                             4797      5779  24 months              6
+1.038242
+
+Marketscan  TNF                   Kidney disease              Nephrotic syndrome                             4797      5779  36 months              7
+1.211282
+
+Marketscan  TNF                   Kidney disease              Nephrotic syndrome                             4797      5779  Prior to index         8
+1.384323
+
+Marketscan  TNF                   Lung disease                Apical Pulmonary fibrosis                      4797      5779  12 months              1
+ 0.17304
+
+Marketscan  TNF                   Lung disease                Apical Pulmonary fibrosis                      4797      5779  24 months              1
+ 0.17304
+
+Marketscan  TNF                   Lung disease                Apical Pulmonary fibrosis                      4797      5779  36 months              1
+ 0.17304
+
+Marketscan  TNF                   Lung disease                Apical Pulmonary fibrosis                      4797      5779  Prior to index         1
+ 0.17304
+
+Marketscan  TNF                   Lung disease                Interstitial lung disease                      4797      5779  12 months              6
+1.038242
+
+Marketscan  TNF                   Lung disease                Interstitial lung disease                      4797      5779  24 months              6
+1.038242
+
+Marketscan  TNF                   Lung disease                Interstitial lung disease                      4797      5779  36 months              6
+1.038242
+
+Marketscan  TNF                   Lung disease                Interstitial lung disease                      4797      5779  Prior to index         4
+0.692161
+
+Marketscan  TNF                   Lung disease                Restrictive lung disease                       4797      5779  12 months            135
+23.36044
+
+Marketscan  TNF                   Lung disease                Restrictive lung disease                       4797      5779  24 months            186
+ 32.1855
+
+Marketscan  TNF                   Lung disease                Restrictive lung disease                       4797      5779  36 months            202
+34.95414
+
+Marketscan  TNF                   Lung disease                Restrictive lung disease                       4797      5779  Prior to index       224
+38.76103
+
+Marketscan  TNF                   Neurological Disease        Cauda Equina syndrome                          4797      5779  12 months              0
+       0
+
+Marketscan  TNF                   Neurological Disease        Cauda Equina syndrome                          4797      5779  24 months              1
+ 0.17304
+
+Marketscan  TNF                   Neurological Disease        Cauda Equina syndrome                          4797      5779  36 months              2
+0.346081
+
+Marketscan  TNF                   Neurological Disease        Cauda Equina syndrome                          4797      5779  Prior to index         3
+0.519121
+
+Marketscan  TNF                   Neurological Disease        Spinal Cord compression                        4797      5779  12 months             15
+2.595605
+
+Marketscan  TNF                   Neurological Disease        Spinal Cord compression                        4797      5779  24 months             27
+4.672089
+ 
+                                                           queryPrevalentComorbidities.sas
+                                                                  --- AS project ---                                 15:26 Wednesday, May 24, 2017  16
+
+                                                                                                            denom     denom
+database    exposure              Disease Category            Disease                                       Patid  IndexExp  timeWindow         numer
+    prev
+ Per1000
+-----------------------------------------------------------------------------------------------------------------------------------------------------
+Marketscan  TNF                   Neurological Disease        Spinal Cord compression                        4797      5779  36 months             36
+6.229451
+
+Marketscan  TNF                   Neurological Disease        Spinal Cord compression                        4797      5779  Prior to index        16
+2.768645
+
+Marketscan  TNF                   PsO/PsA                     Psoriasis                                      4797      5779  12 months            275
+47.58609
+
+Marketscan  TNF                   PsO/PsA                     Psoriasis                                      4797      5779  24 months            347
+60.04499
+
+Marketscan  TNF                   PsO/PsA                     Psoriasis                                      4797      5779  36 months            388
+67.13964
+
+Marketscan  TNF                   PsO/PsA                     Psoriasis                                      4797      5779  Prior to index       294
+50.87385
+
+Marketscan  TNF                   PsO/PsA                     Psoriatic arthritis                            4797      5779  12 months            469
+81.15591
+
+Marketscan  TNF                   PsO/PsA                     Psoriatic arthritis                            4797      5779  24 months            549
+94.99913
+
+Marketscan  TNF                   PsO/PsA                     Psoriatic arthritis                            4797      5779  36 months            570
+98.63298
+
+Marketscan  TNF                   PsO/PsA                     Psoriatic arthritis                            4797      5779  Prior to index       493
+85.30888
+
+Marketscan  TNF                   Uveitis                     Uveitis                                        4797      5779  12 months            597
+103.3051
+
+Marketscan  TNF                   Uveitis                     Uveitis                                        4797      5779  24 months            677
+117.1483
+
+Marketscan  TNF                   Uveitis                     Uveitis                                        4797      5779  36 months            708
+122.5125
+
+Marketscan  TNF                   Uveitis                     Uveitis                                        4797      5779  Prior to index       773
+133.7602
+
+Medicare    DMARD                 Cardiac disease             Aortic Insufficiency/Aortic Regurgitation      4231      5193  12 months            324
+62.39168
+
+Medicare    DMARD                 Cardiac disease             Aortic Insufficiency/Aortic Regurgitation      4231      5193  24 months            484
+93.20239
+
+Medicare    DMARD                 Cardiac disease             Aortic Insufficiency/Aortic Regurgitation      4231      5193  36 months            576
+110.9185
+
+Medicare    DMARD                 Cardiac disease             Aortic Insufficiency/Aortic Regurgitation      4231      5193  Prior to index       564
+108.6077
+
+Medicare    DMARD                 Cardiac disease             Conduction Block                               4231      5193  12 months            255
+49.10456
+
+Medicare    DMARD                 Cardiac disease             Conduction Block                               4231      5193  24 months            386
+74.33083
+
+Medicare    DMARD                 Cardiac disease             Conduction Block                               4231      5193  36 months            466
+89.73618
+
+Medicare    DMARD                 Cardiac disease             Conduction Block                               4231      5193  Prior to index       446
+85.88484
+ 
+                                                           queryPrevalentComorbidities.sas
+                                                                  --- AS project ---                                 15:26 Wednesday, May 24, 2017  17
+
+                                                                                                            denom     denom
+database    exposure              Disease Category            Disease                                       Patid  IndexExp  timeWindow         numer
+    prev
+ Per1000
+-----------------------------------------------------------------------------------------------------------------------------------------------------
+Medicare    DMARD                 Cardiac disease             Myocardial infarction                          4231      5193  12 months             47
+9.050645
+
+Medicare    DMARD                 Cardiac disease             Myocardial infarction                          4231      5193  24 months             86
+16.56075
+
+Medicare    DMARD                 Cardiac disease             Myocardial infarction                          4231      5193  36 months            125
+24.07086
+
+Medicare    DMARD                 Cardiac disease             Myocardial infarction                          4231      5193  Prior to index        98
+18.87156
+
+Medicare    DMARD                 Inflammatory bowel disease  Crohn’s Disease                                4231      5193  12 months            361
+69.51666
+
+Medicare    DMARD                 Inflammatory bowel disease  Crohn’s Disease                                4231      5193  24 months            396
+ 76.2565
+
+Medicare    DMARD                 Inflammatory bowel disease  Crohn’s Disease                                4231      5193  36 months            415
+79.91527
+
+Medicare    DMARD                 Inflammatory bowel disease  Crohn’s Disease                                4231      5193  Prior to index       458
+88.19565
+
+Medicare    DMARD                 Inflammatory bowel disease  Ulcerative Colitis                             4231      5193  12 months            241
+46.40863
+
+Medicare    DMARD                 Inflammatory bowel disease  Ulcerative Colitis                             4231      5193  24 months            288
+55.45927
+
+Medicare    DMARD                 Inflammatory bowel disease  Ulcerative Colitis                             4231      5193  36 months            320
+61.62141
+
+Medicare    DMARD                 Inflammatory bowel disease  Ulcerative Colitis                             4231      5193  Prior to index       372
+71.63489
+
+Medicare    DMARD                 Kidney disease              Amyloidosis                                    4231      5193  12 months              3
+0.577701
+
+Medicare    DMARD                 Kidney disease              Amyloidosis                                    4231      5193  24 months              3
+0.577701
+
+Medicare    DMARD                 Kidney disease              Amyloidosis                                    4231      5193  36 months              3
+0.577701
+
+Medicare    DMARD                 Kidney disease              Amyloidosis                                    4231      5193  Prior to index         3
+0.577701
+
+Medicare    DMARD                 Kidney disease              IgA nephropathy                                4231      5193  12 months             16
+3.081071
+
+Medicare    DMARD                 Kidney disease              IgA nephropathy                                4231      5193  24 months             24
+4.621606
+
+Medicare    DMARD                 Kidney disease              IgA nephropathy                                4231      5193  36 months             30
+5.777008
+
+Medicare    DMARD                 Kidney disease              IgA nephropathy                                4231      5193  Prior to index        47
+9.050645
+
+Medicare    DMARD                 Kidney disease              Nephrotic syndrome                             4231      5193  12 months             14
+2.695937
+
+Medicare    DMARD                 Kidney disease              Nephrotic syndrome                             4231      5193  24 months             21
+4.043905
+ 
+                                                           queryPrevalentComorbidities.sas
+                                                                  --- AS project ---                                 15:26 Wednesday, May 24, 2017  18
+
+                                                                                                            denom     denom
+database    exposure              Disease Category            Disease                                       Patid  IndexExp  timeWindow         numer
+    prev
+ Per1000
+-----------------------------------------------------------------------------------------------------------------------------------------------------
+Medicare    DMARD                 Kidney disease              Nephrotic syndrome                             4231      5193  36 months             22
+4.236472
+
+Medicare    DMARD                 Kidney disease              Nephrotic syndrome                             4231      5193  Prior to index        25
+4.814173
+
+Medicare    DMARD                 Lung disease                Apical Pulmonary fibrosis                      4231      5193  12 months              4
+0.770268
+
+Medicare    DMARD                 Lung disease                Apical Pulmonary fibrosis                      4231      5193  24 months              4
+0.770268
+
+Medicare    DMARD                 Lung disease                Apical Pulmonary fibrosis                      4231      5193  36 months              4
+0.770268
+
+Medicare    DMARD                 Lung disease                Apical Pulmonary fibrosis                      4231      5193  Prior to index         3
+0.577701
+
+Medicare    DMARD                 Lung disease                Interstitial lung disease                      4231      5193  12 months             20
+3.851338
+
+Medicare    DMARD                 Lung disease                Interstitial lung disease                      4231      5193  24 months             29
+5.584441
+
+Medicare    DMARD                 Lung disease                Interstitial lung disease                      4231      5193  36 months             34
+6.547275
+
+Medicare    DMARD                 Lung disease                Interstitial lung disease                      4231      5193  Prior to index        25
+4.814173
+
+Medicare    DMARD                 Lung disease                Restrictive lung disease                       4231      5193  12 months            546
+105.1415
+
+Medicare    DMARD                 Lung disease                Restrictive lung disease                       4231      5193  24 months            753
+145.0029
+
+Medicare    DMARD                 Lung disease                Restrictive lung disease                       4231      5193  36 months            915
+176.1987
+
+Medicare    DMARD                 Lung disease                Restrictive lung disease                       4231      5193  Prior to index      1046
+ 201.425
+
+Medicare    DMARD                 Neurological Disease        Cauda Equina syndrome                          4231      5193  12 months              1
+0.192567
+
+Medicare    DMARD                 Neurological Disease        Cauda Equina syndrome                          4231      5193  24 months              3
+0.577701
+
+Medicare    DMARD                 Neurological Disease        Cauda Equina syndrome                          4231      5193  36 months              5
+0.962835
+
+Medicare    DMARD                 Neurological Disease        Cauda Equina syndrome                          4231      5193  Prior to index        17
+3.273638
+
+Medicare    DMARD                 Neurological Disease        Spinal Cord compression                        4231      5193  12 months             40
+7.702677
+
+Medicare    DMARD                 Neurological Disease        Spinal Cord compression                        4231      5193  24 months             63
+12.13172
+
+Medicare    DMARD                 Neurological Disease        Spinal Cord compression                        4231      5193  36 months             70
+13.47968
+
+Medicare    DMARD                 Neurological Disease        Spinal Cord compression                        4231      5193  Prior to index       103
+19.83439
+ 
+                                                           queryPrevalentComorbidities.sas
+                                                                  --- AS project ---                                 15:26 Wednesday, May 24, 2017  19
+
+                                                                                                            denom     denom
+database    exposure              Disease Category            Disease                                       Patid  IndexExp  timeWindow         numer
+    prev
+ Per1000
+-----------------------------------------------------------------------------------------------------------------------------------------------------
+Medicare    DMARD                 PsO/PsA                     Psoriasis                                      4231      5193  12 months            276
+53.14847
+
+Medicare    DMARD                 PsO/PsA                     Psoriasis                                      4231      5193  24 months            360
+69.32409
+
+Medicare    DMARD                 PsO/PsA                     Psoriasis                                      4231      5193  36 months            415
+79.91527
+
+Medicare    DMARD                 PsO/PsA                     Psoriasis                                      4231      5193  Prior to index       415
+79.91527
+
+Medicare    DMARD                 PsO/PsA                     Psoriatic arthritis                            4231      5193  12 months            477
+91.85442
+
+Medicare    DMARD                 PsO/PsA                     Psoriatic arthritis                            4231      5193  24 months            548
+105.5267
+
+Medicare    DMARD                 PsO/PsA                     Psoriatic arthritis                            4231      5193  36 months            590
+113.6145
+
+Medicare    DMARD                 PsO/PsA                     Psoriatic arthritis                            4231      5193  Prior to index       526
+101.2902
+
+Medicare    DMARD                 Uveitis                     Uveitis                                        4231      5193  12 months            339
+65.28018
+
+Medicare    DMARD                 Uveitis                     Uveitis                                        4231      5193  24 months            424
+81.64837
+
+Medicare    DMARD                 Uveitis                     Uveitis                                        4231      5193  36 months            473
+91.08415
+
+Medicare    DMARD                 Uveitis                     Uveitis                                        4231      5193  Prior to index       522
+100.5199
+
+Medicare    NSAID or no exposure  Cardiac disease             Aortic Insufficiency/Aortic Regurgitation     17983     26122  12 months           2070
+79.24355
+
+Medicare    NSAID or no exposure  Cardiac disease             Aortic Insufficiency/Aortic Regurgitation     17983     26122  24 months           2747
+105.1604
+
+Medicare    NSAID or no exposure  Cardiac disease             Aortic Insufficiency/Aortic Regurgitation     17983     26122  36 months           3162
+121.0474
+
+Medicare    NSAID or no exposure  Cardiac disease             Aortic Insufficiency/Aortic Regurgitation     17983     26122  Prior to index      3047
+ 116.645
+
+Medicare    NSAID or no exposure  Cardiac disease             Conduction Block                              17983     26122  12 months           1970
+75.41536
+
+Medicare    NSAID or no exposure  Cardiac disease             Conduction Block                              17983     26122  24 months           2664
+ 101.983
+
+Medicare    NSAID or no exposure  Cardiac disease             Conduction Block                              17983     26122  36 months           3114
+119.2099
+
+Medicare    NSAID or no exposure  Cardiac disease             Conduction Block                              17983     26122  Prior to index      2745
+105.0838
+
+Medicare    NSAID or no exposure  Cardiac disease             Myocardial infarction                         17983     26122  12 months            438
+16.76748
+
+Medicare    NSAID or no exposure  Cardiac disease             Myocardial infarction                         17983     26122  24 months            649
+24.84496
+ 
+                                                           queryPrevalentComorbidities.sas
+                                                                  --- AS project ---                                 15:26 Wednesday, May 24, 2017  20
+
+                                                                                                            denom     denom
+database    exposure              Disease Category            Disease                                       Patid  IndexExp  timeWindow         numer
+    prev
+ Per1000
+-----------------------------------------------------------------------------------------------------------------------------------------------------
+Medicare    NSAID or no exposure  Cardiac disease             Myocardial infarction                         17983     26122  36 months            786
+30.08958
+
+Medicare    NSAID or no exposure  Cardiac disease             Myocardial infarction                         17983     26122  Prior to index       617
+23.61994
+
+Medicare    NSAID or no exposure  Inflammatory bowel disease  Crohn’s Disease                               17983     26122  12 months           1145
+43.83278
+
+Medicare    NSAID or no exposure  Inflammatory bowel disease  Crohn’s Disease                               17983     26122  24 months           1290
+49.38366
+
+Medicare    NSAID or no exposure  Inflammatory bowel disease  Crohn’s Disease                               17983     26122  36 months           1378
+52.75247
+
+Medicare    NSAID or no exposure  Inflammatory bowel disease  Crohn’s Disease                               17983     26122  Prior to index      1527
+58.45647
+
+Medicare    NSAID or no exposure  Inflammatory bowel disease  Ulcerative Colitis                            17983     26122  12 months            721
+27.60126
+
+Medicare    NSAID or no exposure  Inflammatory bowel disease  Ulcerative Colitis                            17983     26122  24 months            922
+35.29592
+
+Medicare    NSAID or no exposure  Inflammatory bowel disease  Ulcerative Colitis                            17983     26122  36 months           1045
+40.00459
+
+Medicare    NSAID or no exposure  Inflammatory bowel disease  Ulcerative Colitis                            17983     26122  Prior to index      1272
+48.69459
+
+Medicare    NSAID or no exposure  Kidney disease              Amyloidosis                                   17983     26122  12 months             29
+1.110175
+
+Medicare    NSAID or no exposure  Kidney disease              Amyloidosis                                   17983     26122  24 months             33
+1.263303
+
+Medicare    NSAID or no exposure  Kidney disease              Amyloidosis                                   17983     26122  36 months             38
+1.454713
+
+Medicare    NSAID or no exposure  Kidney disease              Amyloidosis                                   17983     26122  Prior to index        49
+1.875813
+
+Medicare    NSAID or no exposure  Kidney disease              IgA nephropathy                               17983     26122  12 months             83
+3.177398
+
+Medicare    NSAID or no exposure  Kidney disease              IgA nephropathy                               17983     26122  24 months            121
+4.632111
+
+Medicare    NSAID or no exposure  Kidney disease              IgA nephropathy                               17983     26122  36 months            151
+5.780568
+
+Medicare    NSAID or no exposure  Kidney disease              IgA nephropathy                               17983     26122  Prior to index       157
+ 6.01026
+
+Medicare    NSAID or no exposure  Kidney disease              Nephrotic syndrome                            17983     26122  12 months             56
+2.143787
+
+Medicare    NSAID or no exposure  Kidney disease              Nephrotic syndrome                            17983     26122  24 months             74
+2.832861
+
+Medicare    NSAID or no exposure  Kidney disease              Nephrotic syndrome                            17983     26122  36 months             83
+3.177398
+
+Medicare    NSAID or no exposure  Kidney disease              Nephrotic syndrome                            17983     26122  Prior to index        81
+3.100835
+ 
+                                                           queryPrevalentComorbidities.sas
+                                                                  --- AS project ---                                 15:26 Wednesday, May 24, 2017  21
+
+                                                                                                            denom     denom
+database    exposure              Disease Category            Disease                                       Patid  IndexExp  timeWindow         numer
+    prev
+ Per1000
+-----------------------------------------------------------------------------------------------------------------------------------------------------
+Medicare    NSAID or no exposure  Lung disease                Apical Pulmonary fibrosis                     17983     26122  12 months             10
+0.382819
+
+Medicare    NSAID or no exposure  Lung disease                Apical Pulmonary fibrosis                     17983     26122  24 months             12
+0.459383
+
+Medicare    NSAID or no exposure  Lung disease                Apical Pulmonary fibrosis                     17983     26122  36 months             13
+0.497665
+
+Medicare    NSAID or no exposure  Lung disease                Apical Pulmonary fibrosis                     17983     26122  Prior to index        13
+0.497665
+
+Medicare    NSAID or no exposure  Lung disease                Interstitial lung disease                     17983     26122  12 months             37
+1.416431
+
+Medicare    NSAID or no exposure  Lung disease                Interstitial lung disease                     17983     26122  24 months             53
+2.028941
+
+Medicare    NSAID or no exposure  Lung disease                Interstitial lung disease                     17983     26122  36 months             67
+2.564888
+
+Medicare    NSAID or no exposure  Lung disease                Interstitial lung disease                     17983     26122  Prior to index        62
+2.373478
+
+Medicare    NSAID or no exposure  Lung disease                Restrictive lung disease                      17983     26122  12 months           2790
+106.8065
+
+Medicare    NSAID or no exposure  Lung disease                Restrictive lung disease                      17983     26122  24 months           3926
+150.2948
+
+Medicare    NSAID or no exposure  Lung disease                Restrictive lung disease                      17983     26122  36 months           4615
+ 176.671
+
+Medicare    NSAID or no exposure  Lung disease                Restrictive lung disease                      17983     26122  Prior to index      4694
+179.6953
+
+Medicare    NSAID or no exposure  Neurological Disease        Cauda Equina syndrome                         17983     26122  12 months             56
+2.143787
+
+Medicare    NSAID or no exposure  Neurological Disease        Cauda Equina syndrome                         17983     26122  24 months             69
+2.641452
+
+Medicare    NSAID or no exposure  Neurological Disease        Cauda Equina syndrome                         17983     26122  36 months             72
+2.756297
+
+Medicare    NSAID or no exposure  Neurological Disease        Cauda Equina syndrome                         17983     26122  Prior to index        83
+3.177398
+
+Medicare    NSAID or no exposure  Neurological Disease        Spinal Cord compression                       17983     26122  12 months            384
+14.70025
+
+Medicare    NSAID or no exposure  Neurological Disease        Spinal Cord compression                       17983     26122  24 months            464
+17.76281
+
+Medicare    NSAID or no exposure  Neurological Disease        Spinal Cord compression                       17983     26122  36 months            516
+19.75346
+
+Medicare    NSAID or no exposure  Neurological Disease        Spinal Cord compression                       17983     26122  Prior to index       622
+23.81135
+
+Medicare    NSAID or no exposure  PsO/PsA                     Psoriasis                                     17983     26122  12 months            886
+33.91777
+
+Medicare    NSAID or no exposure  PsO/PsA                     Psoriasis                                     17983     26122  24 months           1157
+44.29217
+ 
+                                                           queryPrevalentComorbidities.sas
+                                                                  --- AS project ---                                 15:26 Wednesday, May 24, 2017  22
+
+                                                                                                            denom     denom
+database    exposure              Disease Category            Disease                                       Patid  IndexExp  timeWindow         numer
+    prev
+ Per1000
+-----------------------------------------------------------------------------------------------------------------------------------------------------
+Medicare    NSAID or no exposure  PsO/PsA                     Psoriasis                                     17983     26122  36 months           1296
+49.61335
+
+Medicare    NSAID or no exposure  PsO/PsA                     Psoriasis                                     17983     26122  Prior to index      1513
+57.92053
+
+Medicare    NSAID or no exposure  PsO/PsA                     Psoriatic arthritis                           17983     26122  12 months            919
+35.18107
+
+Medicare    NSAID or no exposure  PsO/PsA                     Psoriatic arthritis                           17983     26122  24 months           1091
+41.76556
+
+Medicare    NSAID or no exposure  PsO/PsA                     Psoriatic arthritis                           17983     26122  36 months           1194
+ 45.7086
+
+Medicare    NSAID or no exposure  PsO/PsA                     Psoriatic arthritis                           17983     26122  Prior to index      1409
+53.93921
+
+Medicare    NSAID or no exposure  Uveitis                     Uveitis                                       17983     26122  12 months           1303
+49.88133
+
+Medicare    NSAID or no exposure  Uveitis                     Uveitis                                       17983     26122  24 months           1666
+63.77766
+
+Medicare    NSAID or no exposure  Uveitis                     Uveitis                                       17983     26122  36 months           1868
+ 71.5106
+
+Medicare    NSAID or no exposure  Uveitis                     Uveitis                                       17983     26122  Prior to index      2092
+80.08575
+
+Medicare    TNF                   Cardiac disease             Aortic Insufficiency/Aortic Regurgitation      4866      5929  12 months            269
+45.37021
+
+Medicare    TNF                   Cardiac disease             Aortic Insufficiency/Aortic Regurgitation      4866      5929  24 months            388
+65.44105
+
+Medicare    TNF                   Cardiac disease             Aortic Insufficiency/Aortic Regurgitation      4866      5929  36 months            464
+ 78.2594
+
+Medicare    TNF                   Cardiac disease             Aortic Insufficiency/Aortic Regurgitation      4866      5929  Prior to index       475
+80.11469
+
+Medicare    TNF                   Cardiac disease             Conduction Block                               4866      5929  12 months            218
+36.76843
+
+Medicare    TNF                   Cardiac disease             Conduction Block                               4866      5929  24 months            332
+55.99595
+
+Medicare    TNF                   Cardiac disease             Conduction Block                               4866      5929  36 months            416
+ 70.1636
+
+Medicare    TNF                   Cardiac disease             Conduction Block                               4866      5929  Prior to index       403
+67.97099
+
+Medicare    TNF                   Cardiac disease             Myocardial infarction                          4866      5929  12 months             29
+4.891213
+
+Medicare    TNF                   Cardiac disease             Myocardial infarction                          4866      5929  24 months             62
+10.45708
+
+Medicare    TNF                   Cardiac disease             Myocardial infarction                          4866      5929  36 months             87
+14.67364
+
+Medicare    TNF                   Cardiac disease             Myocardial infarction                          4866      5929  Prior to index       101
+17.03491
+ 
+                                                           queryPrevalentComorbidities.sas
+                                                                  --- AS project ---                                 15:26 Wednesday, May 24, 2017  23
+
+                                                                                                            denom     denom
+database    exposure              Disease Category            Disease                                       Patid  IndexExp  timeWindow         numer
+    prev
+ Per1000
+-----------------------------------------------------------------------------------------------------------------------------------------------------
+Medicare    TNF                   Inflammatory bowel disease  Crohn’s Disease                                4866      5929  12 months            527
+88.88514
+
+Medicare    TNF                   Inflammatory bowel disease  Crohn’s Disease                                4866      5929  24 months            572
+96.47495
+
+Medicare    TNF                   Inflammatory bowel disease  Crohn’s Disease                                4866      5929  36 months            594
+100.1855
+
+Medicare    TNF                   Inflammatory bowel disease  Crohn’s Disease                                4866      5929  Prior to index       614
+103.5588
+
+Medicare    TNF                   Inflammatory bowel disease  Ulcerative Colitis                             4866      5929  12 months            283
+47.73149
+
+Medicare    TNF                   Inflammatory bowel disease  Ulcerative Colitis                             4866      5929  24 months            353
+59.53786
+
+Medicare    TNF                   Inflammatory bowel disease  Ulcerative Colitis                             4866      5929  36 months            390
+65.77838
+
+Medicare    TNF                   Inflammatory bowel disease  Ulcerative Colitis                             4866      5929  Prior to index       436
+73.53685
+
+Medicare    TNF                   Kidney disease              Amyloidosis                                    4866      5929  12 months              6
+1.011975
+
+Medicare    TNF                   Kidney disease              Amyloidosis                                    4866      5929  24 months             12
+ 2.02395
+
+Medicare    TNF                   Kidney disease              Amyloidosis                                    4866      5929  36 months             12
+ 2.02395
+
+Medicare    TNF                   Kidney disease              Amyloidosis                                    4866      5929  Prior to index         6
+1.011975
+
+Medicare    TNF                   Kidney disease              IgA nephropathy                                4866      5929  12 months             15
+2.529938
+
+Medicare    TNF                   Kidney disease              IgA nephropathy                                4866      5929  24 months             28
+ 4.72255
+
+Medicare    TNF                   Kidney disease              IgA nephropathy                                4866      5929  36 months             36
+ 6.07185
+
+Medicare    TNF                   Kidney disease              IgA nephropathy                                4866      5929  Prior to index        40
+  6.7465
+
+Medicare    TNF                   Kidney disease              Nephrotic syndrome                             4866      5929  12 months             14
+2.361275
+
+Medicare    TNF                   Kidney disease              Nephrotic syndrome                             4866      5929  24 months             25
+4.216563
+
+Medicare    TNF                   Kidney disease              Nephrotic syndrome                             4866      5929  36 months             32
+  5.3972
+
+Medicare    TNF                   Kidney disease              Nephrotic syndrome                             4866      5929  Prior to index        14
+2.361275
+
+Medicare    TNF                   Lung disease                Apical Pulmonary fibrosis                      4866      5929  12 months              0
+       0
+
+Medicare    TNF                   Lung disease                Apical Pulmonary fibrosis                      4866      5929  24 months              0
+       0
+ 
+                                                           queryPrevalentComorbidities.sas
+                                                                  --- AS project ---                                 15:26 Wednesday, May 24, 2017  24
+
+                                                                                                            denom     denom
+database    exposure              Disease Category            Disease                                       Patid  IndexExp  timeWindow         numer
+    prev
+ Per1000
+-----------------------------------------------------------------------------------------------------------------------------------------------------
+Medicare    TNF                   Lung disease                Apical Pulmonary fibrosis                      4866      5929  36 months              0
+       0
+
+Medicare    TNF                   Lung disease                Apical Pulmonary fibrosis                      4866      5929  Prior to index         1
+0.168663
+
+Medicare    TNF                   Lung disease                Interstitial lung disease                      4866      5929  12 months              6
+1.011975
+
+Medicare    TNF                   Lung disease                Interstitial lung disease                      4866      5929  24 months             11
+1.855288
+
+Medicare    TNF                   Lung disease                Interstitial lung disease                      4866      5929  36 months             15
+2.529938
+
+Medicare    TNF                   Lung disease                Interstitial lung disease                      4866      5929  Prior to index        20
+ 3.37325
+
+Medicare    TNF                   Lung disease                Restrictive lung disease                       4866      5929  12 months            430
+72.52488
+
+Medicare    TNF                   Lung disease                Restrictive lung disease                       4866      5929  24 months            678
+114.3532
+
+Medicare    TNF                   Lung disease                Restrictive lung disease                       4866      5929  36 months            825
+139.1466
+
+Medicare    TNF                   Lung disease                Restrictive lung disease                       4866      5929  Prior to index       921
+155.3382
+
+Medicare    TNF                   Neurological Disease        Cauda Equina syndrome                          4866      5929  12 months              8
+  1.3493
+
+Medicare    TNF                   Neurological Disease        Cauda Equina syndrome                          4866      5929  24 months             14
+2.361275
+
+Medicare    TNF                   Neurological Disease        Cauda Equina syndrome                          4866      5929  36 months             15
+2.529938
+
+Medicare    TNF                   Neurological Disease        Cauda Equina syndrome                          4866      5929  Prior to index        13
+2.192613
+
+Medicare    TNF                   Neurological Disease        Spinal Cord compression                        4866      5929  12 months             35
+5.903188
+
+Medicare    TNF                   Neurological Disease        Spinal Cord compression                        4866      5929  24 months             54
+9.107775
+
+Medicare    TNF                   Neurological Disease        Spinal Cord compression                        4866      5929  36 months             70
+11.80638
+
+Medicare    TNF                   Neurological Disease        Spinal Cord compression                        4866      5929  Prior to index        99
+16.69759
+
+Medicare    TNF                   PsO/PsA                     Psoriasis                                      4866      5929  12 months            447
+75.39214
+
+Medicare    TNF                   PsO/PsA                     Psoriasis                                      4866      5929  24 months            555
+93.60769
+
+Medicare    TNF                   PsO/PsA                     Psoriasis                                      4866      5929  36 months            603
+101.7035
+
+Medicare    TNF                   PsO/PsA                     Psoriasis                                      4866      5929  Prior to index       589
+99.34222
+ 
+                                                           queryPrevalentComorbidities.sas
+                                                                  --- AS project ---                                 15:26 Wednesday, May 24, 2017  25
+
+                                                                                                            denom     denom
+database    exposure              Disease Category            Disease                                       Patid  IndexExp  timeWindow         numer
+    prev
+ Per1000
+-----------------------------------------------------------------------------------------------------------------------------------------------------
+Medicare    TNF                   PsO/PsA                     Psoriatic arthritis                            4866      5929  12 months            694
+117.0518
+
+Medicare    TNF                   PsO/PsA                     Psoriatic arthritis                            4866      5929  24 months            790
+133.2434
+
+Medicare    TNF                   PsO/PsA                     Psoriatic arthritis                            4866      5929  36 months            850
+143.3631
+
+Medicare    TNF                   PsO/PsA                     Psoriatic arthritis                            4866      5929  Prior to index       824
+138.9779
+
+Medicare    TNF                   Uveitis                     Uveitis                                        4866      5929  12 months            564
+95.12565
+
+Medicare    TNF                   Uveitis                     Uveitis                                        4866      5929  24 months            688
+116.0398
+
+Medicare    TNF                   Uveitis                     Uveitis                                        4866      5929  36 months            774
+130.5448
+
+Medicare    TNF                   Uveitis                     Uveitis                                        4866      5929  Prior to index       797
+ 134.424
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+                                                           queryPrevalentComorbidities.sas
+365        
+366          drop table UCB.tempDxMPCD;
+NOTE: Table UCB.TEMPDXMPCD has been dropped.
+367          drop table UCB.tempDxUCB;
+NOTE: Table UCB.TEMPDXUCB has been dropped.
+368          drop table UCB.tempDxSABR;
+NOTE: Table UCB.TEMPDXSABR has been dropped.
+369          drop table UCB.tempPxMPCD;
+NOTE: Table UCB.TEMPPXMPCD has been dropped.
+370          drop table UCB.tempPxUCB;
+NOTE: Table UCB.TEMPPXUCB has been dropped.
+371          drop table UCB.tempPxSABR;
+NOTE: Table UCB.TEMPPXSABR has been dropped.
+372        
+373        quit;
+NOTE: The PROCEDURE SQL printed pages 1-25.
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           30.52 seconds
+      cpu time            40.01 seconds
+      
+10                                                                  The SAS System                                       15:26 Wednesday, May 24, 2017
+
+
+374        
+375        
+376        proc export
+377          data = Work.prev
+378          outfile = "data\processed\&cmt..csv"
+379          dbms = csv
+380          replace;
+381          delimiter = ",";
+382        run;
+
+383         /**********************************************************************
+384         *   PRODUCT:   SAS
+385         *   VERSION:   9.4
+386         *   CREATOR:   External File Interface
+387         *   DATE:      24MAY17
+388         *   DESC:      Generated SAS Datastep Code
+389         *   TEMPLATE SOURCE:  (None Specified.)
+390         ***********************************************************************/
+391            data _null_;
+392            %let _EFIERR_ = 0; /* set the ERROR detection macro variable */
+393            %let _EFIREC_ = 0;     /* clear export record count macro variable */
+394            file 'data\processed\queryPrevalentComorbidities.csv' delimiter=',' DSD DROPOVER lrecl=32767;
+395            if _n_ = 1 then        /* write column names or labels */
+396             do;
+397               put
+398                  "database"
+399               ','
+400                  "exposure"
+401               ','
+402                  "outcomeCategory"
+403               ','
+404                  "Disease"
+405               ','
+406                  "denomPatid"
+407               ','
+408                  "denomIndexExp"
+409               ','
+410                  "timeWindow"
+411               ','
+412                  "numer"
+413               ','
+414                  "prevPer1000"
+415               ;
+416             end;
+417           set  WORK.PREV   end=EFIEOD;
+418               format database $10. ;
+419               format exposure $20. ;
+420               format outcomeCategory $26. ;
+421               format Disease $41. ;
+422               format denomPatid best12. ;
+423               format denomIndexExp best12. ;
+424               format timeWindow $14. ;
+425               format numer best12. ;
+426               format prevPer1000 best12. ;
+427             do;
+428               EFIOUT + 1;
+429               put database $ @;
+430               put exposure $ @;
+431               put outcomeCategory $ @;
+432               put Disease $ @;
+433               put denomPatid @;
+434               put denomIndexExp @;
+435               put timeWindow $ @;
+436               put numer @;
+437               put prevPer1000 ;
+438               ;
+439             end;
+440            if _ERROR_ then call symputx('_EFIERR_',1);  /* set ERROR detection macro variable */
+441            if EFIEOD then call symputx('_EFIREC_',EFIOUT);
+442            run;
+
+11                                                                  The SAS System                                       15:26 Wednesday, May 24, 2017
+
+NOTE: The file 'data\processed\queryPrevalentComorbidities.csv' is:
+      Filename=U:\studies\AS\pgms\bchan\data\processed\queryPrevalentComorbidities.csv,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=24May2017:18:58:57,
+      Create Time=24May2017:18:58:57
+
+NOTE: 537 records were written to the file 'data\processed\queryPrevalentComorbidities.csv'.
+      The minimum record length was 59.
+      The maximum record length was 132.
+NOTE: There were 536 observations read from the data set WORK.PREV.
+NOTE: DATA statement used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.01 seconds
+      
+
+536 records created in data\processed\queryPrevalentComorbidities.csv from WORK.PREV.
+  
+  
+NOTE: "data\processed\queryPrevalentComorbidities.csv" file was successfully created.
+NOTE: PROCEDURE EXPORT used (Total process time):
+      real time           0.53 seconds
+      cpu time            0.04 seconds
+      
+
+443        
+444        
+445        ods html close;
+NOTE: SAS Institute Inc., SAS Campus Drive, Cary, NC USA 27513-2414
+NOTE: The SAS System used:
+      real time           3:32:03.18
+      cpu time            3:13:09.60
+      
