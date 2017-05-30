@@ -50,32 +50,51 @@ If you have question, please let me know.
 
 
 proc sql;
-  /* create table Work.countDistinctIndexes as
-    select patid,
-           count(distinct indexID) as countDistinctIndexes
-    from DT.indexLookup
-    group by patid;
-  select countDistinctIndexes, count(*) as n from Work.countDistinctIndexes group by countDistinctIndexes;
-  create table Work.oneIndex as
-    select A.*
-    from DT.indexLookup A inner join
-         Work.countDistinctIndexes B on (A.patid = B.patid)
-    where B.countDistinctIndexes = 1;
-  select database, exposure, count(distinct patid) as countDistinctPatid
-    from Work.oneIndex
-    group by database, exposure;
-  create table Work.multipleIndexes as
-    select A.*
-    from DT.indexLookup A inner join
-         Work.countDistinctIndexes B on (A.patid = B.patid)
-    where B.countDistinctIndexes > 1
-    order by A.patid, A.indexDate; */
-
   create table Work.indexLookup as
-    select patid, indexDate, exposure
-    from DT.indexLookup
-    order by patid, indexDate;
-
+    select * from DT.indexLookup 
+    order by database, patid, indexDate;
+/* 
+Attach exposure end dates to exposure segments
+ */  
+  create table Work.temp0 as
+    select A.database,
+           A.patid,
+           A.enr_end_date,
+           A.death_date,
+           A.exposure as exposureA,
+           A.indexDate format = mmddyy10. as indexStartA,
+           min(B.indexDate - 1, A.enr_end_date, A.death_date) format = mmddyy10. as indexEndA,
+           B.exposure as exposureB,
+           B.indexDate format = mmddyy10. as indexStartB
+    from Work.indexLookup A left join
+         Work.indexLookup B on (A.database = B.database &
+                                A.patid = B.patid &
+                                A.indexDate < B.indexDate);
+  create table Work.tempLookup as
+    select database,
+           patid,
+           indexStartA,
+           min(indexEndA) as earliestIndexEndA
+    from Work.temp0
+    group by database,
+             patid,
+             indexStartA;
+  create table Work.tempExposureSegments as
+    select A.database,
+           A.patid,
+           A.enr_end_date,
+           A.death_date,
+           A.exposureA as exposure,
+           A.indexStartA as exposureStart,
+           A.indexEndA as exposureEnd
+    from Work.temp0 A inner join
+         Work.tempLookup B on (A.database = B.database &
+                               A.patid = B.patid &
+                               A.indexStartA = B.indexStartA &
+                               A.indexEndA = B.earliestIndexEndA)
+    order by A.database,
+             A.patid,
+             A.indexStartA;
 quit;
 
 
