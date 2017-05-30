@@ -99,81 +99,35 @@ quit;
 
 
 /* 
-Build therapy exposure timelines
+Collapse exposure segments
+
 See *Starts and Stops: Processing Episode Data With Beginning and Ending Dates*
 http://www2.sas.com/proceedings/sugi29/260-29.pdf
  */
-/* 
-Since Work.episodeStarts will have up to 2 rows per patid,
-the message
-"NOTE: MERGE statement has more than one data set with repeats of BY values."
-is expected.
- */
-data Work.statusChangeDates (keep = patid rxClass statusChangeDate death_date);
-  merge Work.candidateDispenses
-        Work.episodeStarts (in = in keep = patid rxClass cleanPeriodBegin);
-  by patid rxClass;
-  format statusChangeDate mmddyy10.;
-  if in then do;
-    if first.rxClass then do;
-      statusChangeDate = min(indexBronchDate, cleanPeriodBegin);
-      output;
-    end;
-    statusChangeDate = dispense_date;
-    output;
-    if rxEnd < min(death_date, "&studyEndDate"D) then do;
-      statusChangeDate = rxEnd + 1;
-      output;
-    end;
-  end;
-run;
-proc sort data = Work.statusChangeDates out = Work.statusChangeDatesSorted nodupkey;
-  by patid rxClass statusChangeDate;
-run;
-options mergenoby = nowarn;
-data Work.timelineDates (keep = patid rxClass death_date periodStart periodEnd);
-  merge Work.statusChangeDatesSorted (rename = (statusChangeDate = periodStart))
-        Work.statusChangeDatesSorted (firstobs = 2
-                                      rename = (patid = nextPatid
-                                                rxClass = nextRxClass
-                                                statusChangeDate = nextStartDate
-                                                death_date = nextDeathDate));
-  format periodStart periodEnd mmddyy10.;
-  if patid = nextPatid & rxClass = nextRxClass then periodEnd = nextStartDate - 1;
-  else periodEnd = min(death_date, "&studyEndDate"D);
-run;
-options mergenoby = error;
-proc sql;
-  create table Work.uncollapsedTimeline as
-    select
-      A.patid,
-      A.rxClass,
-      A.death_date,
-      A.periodStart,
-      A.periodEnd,
-      max(A.rxClass = B.rxClass) as onTherapy
-    from
-      Work.timelineDates A left join
-      Work.candidateDispenses B on
-        A.patid = B.patid and
-        A.rxClass = B.rxClass and 
-        not (B.rxEnd < A.periodStart | A.periodEnd < B.dispense_date)
-    group by A.patid, A.rxClass, A.death_date, A.periodStart, A.periodEnd
-    order by A.patid, A.rxClass, A.death_date, A.periodStart, A.periodEnd;
-quit;
-data DT.rxTimeline;
-  set Work.uncollapsedTimeline;
-  by patid rxClass onTherapy notsorted;
+data DT.exposureTimeline;
+  set Work.tempExposureSegments;
+  by database patid exposure notsorted;
   format holdPeriodStart mmddyy10.;
   drop holdPeriodStart;
   retain holdPeriodStart;
-  if first.onTherapy then do;  /* Check the last variable in the BY group */
-    holdPeriodStart = periodStart;
+  if first.exposure then do;  /* Check the last variable in the BY group */
+    holdPeriodStart = exposureStart;
   end;
-  if last.onTherapy then do;  /* Check the last variable in the BY group */
-    periodStart = holdPeriodStart;
+  if last.exposure then do;  /* Check the last variable in the BY group */
+    exposureStart = holdPeriodStart;
     output;
   end;
+run;
+proc sql;
+  alter table DT.exposureTimeline add daysExposed numeric;
+  update DT.exposureTimeline
+    set daysExposed = exposureEnd - exposureStart + 1;
+quit ;
+
+
+proc means data = DT.exposureTimeline n mean std min q1 median q3 max maxdec = 1;
+  class database exposure;
+  var daysExposed;
 run;
 
 
