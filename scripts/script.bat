@@ -2,11 +2,12 @@ del ..\output\* /q
 del ..\data\processed\* /q
 
 call :execute contentsSourceDatasets
-call :execute contentsWorkingDatasets
 call :execute importOutcomeCodebook
 call :execute buildIndexLookup
+call :execute buildExposureFollowUp
 call :execute reproduceTables2
 call :execute queryPrevalentComorbidities
+call :execute contentsWorkingDatasets
 
 "C:\Program Files\7-Zip\7z.exe" d ..\output.zip ..\output\*
 "C:\Program Files\7-Zip\7z.exe" a ..\output.zip ..\output\*
