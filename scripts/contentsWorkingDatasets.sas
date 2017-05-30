@@ -46,8 +46,9 @@ UCB ASNSAIDCohortStd_SABR_ex2
 UCB ASNoExpCohortStd_SABR_ex2
 UCB CntlCohortStdC5P
 UCB CntlCohortStdMPCD
-DT.defOutcomes
-DT.indexLookup
+DT defOutcomes
+DT indexLookup
+DT exposureTimeline
   ;
 run;
 proc sort data = Work.WorkingDatasets;
