@@ -163,7 +163,7 @@ proc sql;
            B.denomIndexExp,
            "Prior to index" as timeWindow,
            sum(A.indPrevPriorToIndex) as numer,
-           sum(A.indPrevPriorToIndex) / B.denomIndexExp * 1000 as prevPer1000
+           sum(A.indPrevPriorToIndex) / B.denomIndexExp * 100 as prevPct
     from Work.comorbidities A inner join
          Work.denominator B on (A.database = B.database & A.exposure = B.exposure)
     group by A.database, A.exposure, A.outcomeCategory, A.disease, B.denomPatid, B.denomIndexExp
@@ -173,7 +173,7 @@ proc sql;
            B.denomIndexExp,
            "12 months" as timeWindow,
            sum(A.indPrev12mo) as numer,
-           sum(A.indPrev12mo) / B.denomIndexExp * 1000 as prevPer1000
+           sum(A.indPrev12mo) / B.denomIndexExp * 100 as prevPct
     from Work.comorbidities A inner join
          Work.denominator B on (A.database = B.database & A.exposure = B.exposure)
     group by A.database, A.exposure, A.outcomeCategory, A.disease, B.denomPatid, B.denomIndexExp
@@ -183,7 +183,7 @@ proc sql;
            B.denomIndexExp,
            "24 months" as timeWindow,
            sum(A.indPrev24mo) as numer,
-           sum(A.indPrev24mo) / B.denomIndexExp * 1000 as prevPer1000
+           sum(A.indPrev24mo) / B.denomIndexExp * 100 as prevPct
     from Work.comorbidities A inner join
          Work.denominator B on (A.database = B.database & A.exposure = B.exposure)
     group by A.database, A.exposure, A.outcomeCategory, A.disease, B.denomPatid, B.denomIndexExp
@@ -193,7 +193,7 @@ proc sql;
            B.denomIndexExp,
            "36 months" as timeWindow,
            sum(A.indPrev36mo) as numer,
-           sum(A.indPrev36mo) / B.denomIndexExp * 1000 as prevPer1000
+           sum(A.indPrev36mo) / B.denomIndexExp * 100 as prevPct
     from Work.comorbidities A inner join
          Work.denominator B on (A.database = B.database & A.exposure = B.exposure)
     group by A.database, A.exposure, A.outcomeCategory, A.disease, B.denomPatid, B.denomIndexExp;
