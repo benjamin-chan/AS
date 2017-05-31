@@ -122,6 +122,9 @@ proc sql;
   alter table DT.exposureTimeline add daysExposed numeric;
   update DT.exposureTimeline
     set daysExposed = exposureEnd - exposureStart + 1;
+  alter table DT.exposureTimeline add exposureID numeric;
+  update DT.exposureTimeline
+    set exposureID = monotonic();
 quit ;
 
 
