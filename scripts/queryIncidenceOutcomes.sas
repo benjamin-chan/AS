@@ -6,7 +6,7 @@ options pagesize=74 linesize=150 pageno=1 missing=' ' date FORMCHAR="|----|+|---
 * Creation date : 
 * Modify date   :
 ;
-%let cmt=queryPrevalentComorbidities; * type the name of your program here (without the filename extension);
+%let cmt=queryIncidenceOutcomes; * type the name of your program here (without the filename extension);
 %let pgm=&cmt..sas;
 %include "lib\libname.sas" ;
 footnote "&pgm.";
@@ -23,28 +23,39 @@ ods html
 
 
 /* 
-Calculate the prevalence of each comorbidity over various time intervals, by
-disease cohort (AS vs. non-AS). We will explore how the prevalence of each
-condition varies according to the amount of data available. Outcomes will be
-examined in discrete 12 month increments (i.e. using 12 months of data, 24
-months, 36 months, etc.) using the 6 months baseline plus an additional 6
-(1st year), 18 (1st and 2nd year), 30 (1st, 2nd, and 3rd year), etc. months
-of follow-up.
+See the *Compact Outcome Definition* worksheet in `AS Project Cohort Outcome Codebook-20170410.xlsx`
  */
 
 
 /* 
-See the *Compact Outcome Definition* worksheet in `AS Project Cohort Outcome Codebook-20170410.xlsx`
+From: Xie, Fenglong [mailto:fenglongxie@uabmc.edu] 
+Sent: Wednesday, May 17, 2017 7:03 AM
+To: Benjamin Chan <chanb@ohsu.edu>
+Subject: RE: AS project data
+
+Hi, Ben
+
+The data are stored at UCB library defined as below email.
+
+Attached please find the cohort list.
+
+No exclusion was done except excluded for higher level exposure in six month
+baseline.
+
+You need to do appropriate censor (such as censor for discontinues of
+exposure, switch to same level or higher lever exposure ...).
+
+If you have question, please let me know.
  */
 
 
 proc sql;
 
   %let select1 = select A.*, B.enc_type, B.admit_date, B.begin_date, B.discharge_date, B.end_date, B.dx_type, B.dx, B.pdx, "ICD9-DX" as codeType, B.dx as code;
-  %let on1 = on (A.patid = B.patid);
+  %let on1 = on (A.patid = B.patid & A.exposureStart <= B.begin_date <= A.exposureEnd);
   %let select2 = select patid, enc_type, admit_date, begin_date, discharge_date, end_date, dx_type, dx, pdx;
   %let where2 = where dx_type = "09";
-  %let selectfrom3 = select * from DT.indexLookup;
+  %let selectfrom3 = select * from DT.exposureTimeline;
   create table UCB.tempDxMPCD as
     &select1 from (&selectfrom3 where database = "MPCD") A inner join (&select2 from MPSTD.DX_07_10 &where2) B &on1;
   create table UCB.tempDxUCB as
@@ -65,9 +76,9 @@ proc sql;
     &select1 from (&selectfrom3 where database = "Medicare") A inner join (&select2 from STD_SABR.STD_DX_2014    &where2) B &on1 ;
 
   %let select1 = select A.*, B.admit_date, B.begin_date, B.discharge_date, B.end_date, B.px_date, B.px_type, B.px, case when B.px_type = "09" then "ICD9-PX" when B.px_type = "C1" then "CPT" when B.px_type = "H1" then "HCPCS" else "" end as codeType, B.px as code;
-  %let on1 = on (A.patid = B.patid);
+  %let on1 = on (A.patid = B.patid & A.exposureStart <= B.begin_date <= A.exposureEnd);
   %let select2 = select patid, admit_date, begin_date, discharge_date, end_date, px_date, px_type, px;
-  %let selectfrom3 = select * from DT.indexLookup;
+  %let selectfrom3 = select * from DT.exposureTimeline;
   create table UCB.tempPxMPCD as
     &select1 from (&selectfrom3 where database = "MPCD") A inner join (&select2 from MPSTD.PX_07_10) B &on1;
   create table UCB.tempPxUCB as
@@ -95,15 +106,15 @@ Call interstitial lung disease macro
  */
 %include "lib\IPP_2IPSOPplusPX_ILD.sas" / source2;
 %IPP_2IPSOPplusPX_ILD(outdata = Work.outcome_ILD_MPCD,
-                      IDS = indexID,
+                      IDS = exposureID,
                       Dxs = UCB.tempDxMPCD,
                       Pxs = UCB.tempPxMPCD);
 %IPP_2IPSOPplusPX_ILD(outdata = Work.outcome_ILD_UCB,
-                      IDS = indexID,
+                      IDS = exposureID,
                       Dxs = UCB.tempDxUCB,
                       Pxs = UCB.tempPxUCB);
 %IPP_2IPSOPplusPX_ILD(outdata = Work.outcome_ILD_SABR,
-                      IDS = indexID,
+                      IDS = exposureID,
                       Dxs = UCB.tempDxSABR,
                       Pxs = UCB.tempPxSABR);
 
@@ -115,23 +126,21 @@ proc sql;
     from DT.defOutcomes 
     where outcomeCategory ^in ("Cancer", "Hospitalized infection", "Opportunistic infection") & 
           disease ^in ("Interstitial lung disease");
+  create table Work.lookupDisease as
+    select distinct outcomeCategory, disease
+    from DT.defOutcomes
+    where outcomeCategory ^in ("Cancer", "Hospitalized infection", "Opportunistic infection");
   
   %let select1 = select A.*, B.outcomeCategory, B.disease;
   %let join1 = inner join Work.defOutcomes B on (A.codeType = B.codeType & A.code = B.code);
   %let where1a = where B.disease ^= "Myocardial infarction";
   %let where1b = | (B.disease = "Myocardial infarction" & A.enc_type = "IP");
-  %let select2 = select database, exposure, patid, indexGNN, indexDate, indexID, enc_type, age, sex, "Lung disease" as outcomeCategory, "Interstitial lung disease" as disease, outcome_start_date as begin_date;
-  create table Work.comorbidities as
-    select C.database, C.exposure, C.patid, C.indexGNN, C.indexDate, C.indexID, C.age, C.sex,
+  %let select2 = select database, exposure, patid, exposureID, exposureStart, exposureEnd, enc_type, "Lung disease" as outcomeCategory, "Interstitial lung disease" as disease, outcome_start_date as begin_date;
+  create table Work.incidentDisease as
+    select C.database, C.exposureID, C.patid, C.exposure, C.exposureStart, C.exposureEnd,
            C.outcomeCategory,
            C.disease,
-           sum(C.begin_date < C.indexDate) > 0 as indPrevPriorToIndex,
-           sum(0 <= C.indexDate  - C.begin_date <= 183 |
-               0 <= C.begin_date - C.indexDate  <= (183 * 1)) > 0 as indPrev12mo,
-           sum(0 <= C.indexDate  - C.begin_date <= 183 |
-               0 <= C.begin_date - C.indexDate  <= (183 * 3)) > 0 as indPrev24mo,
-           sum(0 <= C.indexDate  - C.begin_date <= 183 |
-               0 <= C.begin_date - C.indexDate  <= (183 * 5)) > 0 as indPrev36mo
+           C.begin_date
     from (&select1 from UCB.tempDxMPCD A &join1 &where1a &where1b union corr
           &select1 from UCB.tempDxUCB  A &join1 &where1a &where1b union corr
           &select1 from UCB.tempDxSABR A &join1 &where1a &where1b union corr
@@ -141,63 +150,45 @@ proc sql;
           &select2 from Work.outcome_ILD_MPCD union corr
           &select2 from Work.outcome_ILD_UCB  union corr
           &select2 from Work.outcome_ILD_SABR ) C
-    group by C.database, C.exposure, C.patid, C.indexGNN, C.indexDate, C.indexID, C.age, C.sex,
-             C.outcomeCategory,
-             C.disease
-    having calculated indPrevPriorToIndex > 0 | 
-           calculated indPrev12mo > 0 | 
-           calculated indPrev24mo > 0 | 
-           calculated indPrev36mo > 0;
+    order by C.database, C.exposureID, C.outcomeCategory, C.disease, C.begin_date;
+quit;
 
-  create table Work.denominator as
-    select database, 
-           exposure, 
-           count(distinct patid) as denomPatid,
-           count(distinct indexID) as denomIndexExp
-    from DT.indexLookup
-    group by database, exposure;
+/* 
+Take first occurrence of outcome
+ */
+proc sort data = Work.incidentDisease nodupkey;
+  by database exposureID outcomeCategory disease;
+run;
 
-  create table Work.prev as
-    select A.database, A.exposure, A.outcomeCategory, A.disease,
-           B.denomPatid,
-           B.denomIndexExp,
-           "Prior to index" as timeWindow,
-           sum(A.indPrevPriorToIndex) as numer,
-           sum(A.indPrevPriorToIndex) / B.denomIndexExp * 100 as prevPct
-    from Work.comorbidities A inner join
-         Work.denominator B on (A.database = B.database & A.exposure = B.exposure)
-    group by A.database, A.exposure, A.outcomeCategory, A.disease, B.denomPatid, B.denomIndexExp
-    union corr
-    select A.database, A.exposure, A.outcomeCategory, A.disease,
-           B.denomPatid,
-           B.denomIndexExp,
-           "12 months" as timeWindow,
-           sum(A.indPrev12mo) as numer,
-           sum(A.indPrev12mo) / B.denomIndexExp * 100 as prevPct
-    from Work.comorbidities A inner join
-         Work.denominator B on (A.database = B.database & A.exposure = B.exposure)
-    group by A.database, A.exposure, A.outcomeCategory, A.disease, B.denomPatid, B.denomIndexExp
-    union corr
-    select A.database, A.exposure, A.outcomeCategory, A.disease,
-           B.denomPatid,
-           B.denomIndexExp,
-           "24 months" as timeWindow,
-           sum(A.indPrev24mo) as numer,
-           sum(A.indPrev24mo) / B.denomIndexExp * 100 as prevPct
-    from Work.comorbidities A inner join
-         Work.denominator B on (A.database = B.database & A.exposure = B.exposure)
-    group by A.database, A.exposure, A.outcomeCategory, A.disease, B.denomPatid, B.denomIndexExp
-    union corr
-    select A.database, A.exposure, A.outcomeCategory, A.disease,
-           B.denomPatid,
-           B.denomIndexExp,
-           "36 months" as timeWindow,
-           sum(A.indPrev36mo) as numer,
-           sum(A.indPrev36mo) / B.denomIndexExp * 100 as prevPct
-    from Work.comorbidities A inner join
-         Work.denominator B on (A.database = B.database & A.exposure = B.exposure)
-    group by A.database, A.exposure, A.outcomeCategory, A.disease, B.denomPatid, B.denomIndexExp;
-  select * from Work.prev;
+/* 
+Join incident disease outcomes to exposure timelines
+Summarize
+ */
+proc sql;
+  create table DT.incidentDiseaseTimelines as
+    select A.*, 
+           B.begin_date format = mmddyy10. as outcomeDate,
+           missing(B.begin_date) as censor,
+           case
+             when missing(B.begin_date) then daysExposed
+             when ^missing(B.begin_date) then B.begin_date - A.exposureStart + 1
+             else .
+             end as daysToOutcome
+    from (select A.*, B.*
+          from DT.exposureTimeline A, Work.lookupDisease B
+          where A.database = "MPCD") A left join
+         Work.incidentDisease B on (A.exposureID = B.exposureID & 
+                                    A.outcomeCategory = B.outcomeCategory & 
+                                    A.disease = B.disease);
+  create table Work.incidence as
+    select database, exposure, outcomeCategory, disease,
+         count(distinct exposureID) as n,
+           sum(censor = 0) as incidence,
+           sum(daysToOutcome) / 365.25 as personYears,
+           sum(censor = 0) / (sum(daysToOutcome) / 365.25) * 1000 as incidencePer1000PY
+    from DT.incidentDiseaseTimelines
+    group by database, exposure, outcomeCategory, disease;
+  select * from Work.incidence;
 
   drop table UCB.tempDxMPCD;
   drop table UCB.tempDxUCB;
@@ -210,7 +201,7 @@ quit;
 
 
 proc export
-  data = Work.prev
+  data = Work.incidence
   outfile = "data\processed\&cmt..csv"
   dbms = csv
   replace;

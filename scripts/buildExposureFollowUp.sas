@@ -122,10 +122,13 @@ proc sql;
   alter table DT.exposureTimeline add daysExposed numeric;
   update DT.exposureTimeline
     set daysExposed = exposureEnd - exposureStart + 1;
+  alter table DT.exposureTimeline add exposureID numeric;
+  update DT.exposureTimeline
+    set exposureID = monotonic();
 quit ;
 
 
-proc means data = DT.exposureTimeline n mean std min q1 median q3 max maxdec = 1;
+proc means data = DT.exposureTimeline n sum mean std min q1 median q3 max maxdec = 1;
   class database exposure;
   var daysExposed;
 run;
