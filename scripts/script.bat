@@ -7,6 +7,7 @@ call :execute buildIndexLookup
 call :execute buildExposureFollowUp
 call :execute reproduceTables2
 call :execute queryPrevalentComorbidities
+call :execute queryIncidenceOutcomes
 call :execute contentsWorkingDatasets
 
 "C:\Program Files\7-Zip\7z.exe" d ..\output.zip ..\output\*
