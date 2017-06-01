@@ -175,8 +175,8 @@ proc sql;
              else .
              end as daysToOutcome
     from (select A.*, B.*
-          from DT.exposureTimeline A, Work.lookupDisease B
-          where A.database = "MPCD") A left join
+          from DT.exposureTimeline A, 
+               Work.lookupDisease B) A left join
          Work.incidentDisease B on (A.exposureID = B.exposureID & 
                                     A.outcomeCategory = B.outcomeCategory & 
                                     A.disease = B.disease);

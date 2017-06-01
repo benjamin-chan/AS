@@ -1,0 +1,89 @@
+# Summarize prevalence
+
+```
+From: Curtis, Jeffrey R [mailto:jrcurtis@uabmc.edu] 
+Sent: Thursday, May 11, 2017 10:59 AM
+Subject: Table 1 Distribution of Characteristics of AS cohort by data source 1 year baseline
+
+Here is table shell for table 1 for AS cohort. All covariates are measured in
+baseline, although I think that we should have additional rows added for all
+13 outcomes of interest, using all available leftward data (not just
+baseline). So for example, someone who had history of uveitis, or cancer,
+would appear as rows in this table.
+
+This would be the same format for Aim II that provides the corresponding
+information with each column representing the exposure episodes.
+```
+
+Read prevalence data.
+See `queryPrevalentComorbidities.sas`.
+
+```{r}
+df <-
+  "../data/processed/queryPrevalentComorbidities.csv" %>% 
+  read.csv(file = ., na.string = c("NA", "")) %>% 
+  rename(disease = Disease)
+df %>% 
+  select(c(database, exposure, denomPatid, denomIndexExp)) %>% 
+  unique %>% 
+  kable
+```
+
+Table of **prevalence %**
+
+```{r}
+foo <- function(db, exp) {
+    col <- which(names(df) %in% c("database", "outcomeCategory", "disease", "prevPct"))
+    df %>% 
+      filter(timeWindow == "Prior to index") %>% 
+      filter(database == db) %>% 
+      filter(exposure == exp) %>% 
+      select(col)
+}
+df1a <- foo("MPCD", "NSAID or no exposure")
+df1b <- foo("MPCD", "DMARD")
+df1c <- foo("MPCD", "TNF")
+df2a <- foo("Marketscan", "NSAID or no exposure")
+df2b <- foo("Marketscan", "DMARD")
+df2c <- foo("Marketscan", "TNF")
+df3a <- foo("Medicare", "NSAID or no exposure")
+df3b <- foo("Medicare", "DMARD")
+df3c <- foo("Medicare", "TNF")
+foo <- function (a, b, c) {
+    by <- c("database", "outcomeCategory", "disease")
+    merge(a, 
+          merge(b, 
+                c, 
+                by = by, all = TRUE, suffixes = c("_DMARD", "_TNF")), 
+          by = by, all = TRUE) %>% 
+      rename(prevPct_NSAID = prevPct) %>% 
+      select(-c(database))
+}
+prev <- 
+  merge(foo(df1a, df1b, df1c), 
+        merge(foo(df2a, df2b, df2c),
+              foo(df3a, df3b, df3c),
+              by = c("outcomeCategory", "disease"),
+              all = TRUE,
+              suffixes = c("_Marketscan", "_Medicare")),
+        by = c("outcomeCategory", "disease"),
+        all = TRUE) %>% 
+  rename(prevPct_NSAID_MPCD = prevPct_NSAID,
+         prevPct_DMARD_MPCD = prevPct_DMARD,
+         prevPct_TNF_MPCD = prevPct_TNF) %>%
+  select(c(outcomeCategory, disease,
+           prevPct_TNF_MPCD, prevPct_DMARD_MPCD, prevPct_NSAID_MPCD,
+           prevPct_TNF_Marketscan, prevPct_DMARD_Marketscan, prevPct_NSAID_Marketscan,
+           prevPct_TNF_Medicare, prevPct_DMARD_Medicare, prevPct_NSAID_Medicare)) %>% 
+  rename("MPCD NSAID or no exposure" = prevPct_NSAID_MPCD,
+         "MPCD DMARD" = prevPct_DMARD_MPCD,
+         "MPCD TNF" = prevPct_TNF_MPCD,
+         "Marketscan NSAID or no exposure" = prevPct_NSAID_Marketscan,
+         "Marketscan DMARD" = prevPct_DMARD_Marketscan,
+         "Marketscan TNF" = prevPct_TNF_Marketscan,
+         "Medicare NSAID or no exposure" = prevPct_NSAID_Medicare,
+         "Medicare DMARD" = prevPct_DMARD_Medicare,
+         "Medicare TNF" = prevPct_TNF_Medicare)
+prev %>% kable(digits = 2)
+prev %>% write.csv(file = "../data/processed/prevalence.csv", row.names = FALSE)
+```
