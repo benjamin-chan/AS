@@ -748,5 +748,1192 @@ MathJax.Hub.Config({
   showProcessingMessages: false
 });
 </script>
-<title>index</title></head><body><article class="markdown-body"><p>|</p>
+<title>index</title></head><body><article class="markdown-body"><hr>
+<h2>
+<a id="user-content-title-comorbidities-and-disease-manifestations-in-ankylosing-spondylitis-bad-asdate-2017-06-01-164757author-benjamin-chan-chanbohsueduoutputhtml_documenttoc-truetheme-simplex" class="anchor" href="#title-comorbidities-and-disease-manifestations-in-ankylosing-spondylitis-bad-asdate-2017-06-01-164757author-benjamin-chan-chanbohsueduoutputhtml_documenttoc-truetheme-simplex" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>title: "Comorbidities and Disease Manifestations in Ankylosing Spondylitis (BAD AS)"
+date: "2017-06-01 16:47:57"
+author: Benjamin Chan (<a href="mailto:chanb@ohsu.edu">chanb@ohsu.edu</a>)
+output:
+html_document:
+toc: true
+theme: simplex</h2>
+<h1>
+<a id="user-content-preamble" class="anchor" href="#preamble" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Preamble</h1>
+<p>Set working directory.</p>
+<p>Load libraries.</p>
+<pre><code>## 
+## Attaching package: 'dplyr'
+</code></pre>
+<pre><code>## The following objects are masked from 'package:stats':
+## 
+##     filter, lag
+</code></pre>
+<pre><code>## The following objects are masked from 'package:base':
+## 
+##     intersect, setdiff, setequal, union
+</code></pre>
+<p>Reproducibility steps.</p>
+<pre><code>## R version 3.3.3 (2017-03-06)
+## Platform: x86_64-w64-mingw32/x64 (64-bit)
+## Running under: Windows 7 x64 (build 7601) Service Pack 1
+## 
+## attached base packages:
+## [1] stats     graphics  grDevices utils     datasets  base     
+## 
+## other attached packages:
+## [1] epitools_0.5-8   svglite_1.2.0    ggplot2_2.2.1    dplyr_0.5.0     
+## [5] magrittr_1.5     rmarkdown_1.4    knitr_1.15.1     checkpoint_0.4.0
+## 
+## loaded via a namespace (and not attached):
+##  [1] Rcpp_0.12.10     digest_0.6.12    rprojroot_1.2    assertthat_0.1  
+##  [5] plyr_1.8.4       grid_3.3.3       R6_2.2.0         gtable_0.2.0    
+##  [9] DBI_0.6          backports_1.0.5  scales_0.4.1     evaluate_0.10   
+## [13] gdtools_0.1.4    stringi_1.1.3    lazyeval_0.2.0   tools_3.3.3     
+## [17] stringr_1.2.0    munsell_0.4.3    colorspace_1.3-2 htmltools_0.3.5 
+## [21] methods_3.3.3    tibble_1.2
+</code></pre>
+<p>Source user-defined functions.</p>
+<pre><code>##         ../lib/compareIncidenceRates.R ../lib/plotPrev.R
+## value   ?                              ?                
+## visible FALSE                          FALSE
+</code></pre>
+<h2>
+<a id="user-content-references" class="anchor" href="#references" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>References</h2>
+<pre><code>## 
+## To cite R in publications use:
+## 
+##   R Core Team (2017). R: A language and environment for
+##   statistical computing. R Foundation for Statistical Computing,
+##   Vienna, Austria. URL https://www.R-project.org/.
+## 
+## A BibTeX entry for LaTeX users is
+## 
+##   @Manual{,
+##     title = {R: A Language and Environment for Statistical Computing},
+##     author = {{R Core Team}},
+##     organization = {R Foundation for Statistical Computing},
+##     address = {Vienna, Austria},
+##     year = {2017},
+##     url = {https://www.R-project.org/},
+##   }
+## 
+## We have invested a lot of time and effort in creating R, please
+## cite it when using it for data analysis. See also
+## 'citation("pkgname")' for citing R packages.
+</code></pre>
+<h1>
+<a id="user-content-summarize-prevalence" class="anchor" href="#summarize-prevalence" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Summarize prevalence</h1>
+<pre><code>From: Curtis, Jeffrey R [mailto:jrcurtis@uabmc.edu] 
+Sent: Thursday, May 11, 2017 10:59 AM
+Subject: Table 1 Distribution of Characteristics of AS cohort by data source 1 year baseline
+
+Here is table shell for table 1 for AS cohort. All covariates are measured in
+baseline, although I think that we should have additional rows added for all
+13 outcomes of interest, using all available leftward data (not just
+baseline). So for example, someone who had history of uveitis, or cancer,
+would appear as rows in this table.
+
+This would be the same format for Aim II that provides the corresponding
+information with each column representing the exposure episodes.
+</code></pre>
+<p>Read prevalence data.
+See <code>queryPrevalentComorbidities.sas</code>.</p>
+<table>
+<thead>
+<tr>
+<th align="left"></th>
+<th align="left">database</th>
+<th align="left">exposure</th>
+<th align="right">denomPatid</th>
+<th align="right">denomIndexExp</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left">1</td>
+<td align="left">MPCD</td>
+<td align="left">DMARD</td>
+<td align="right">421</td>
+<td align="right">481</td>
+</tr>
+<tr>
+<td align="left">41</td>
+<td align="left">MPCD</td>
+<td align="left">NSAID or no exposure</td>
+<td align="right">2083</td>
+<td align="right">2593</td>
+</tr>
+<tr>
+<td align="left">105</td>
+<td align="left">MPCD</td>
+<td align="left">TNF</td>
+<td align="right">1107</td>
+<td align="right">1279</td>
+</tr>
+<tr>
+<td align="left">157</td>
+<td align="left">Marketscan</td>
+<td align="left">DMARD</td>
+<td align="right">1799</td>
+<td align="right">2045</td>
+</tr>
+<tr>
+<td align="left">217</td>
+<td align="left">Marketscan</td>
+<td align="left">NSAID or no exposure</td>
+<td align="right">8025</td>
+<td align="right">10589</td>
+</tr>
+<tr>
+<td align="left">281</td>
+<td align="left">Marketscan</td>
+<td align="left">TNF</td>
+<td align="right">4797</td>
+<td align="right">5779</td>
+</tr>
+<tr>
+<td align="left">345</td>
+<td align="left">Medicare</td>
+<td align="left">DMARD</td>
+<td align="right">4231</td>
+<td align="right">5193</td>
+</tr>
+<tr>
+<td align="left">409</td>
+<td align="left">Medicare</td>
+<td align="left">NSAID or no exposure</td>
+<td align="right">17983</td>
+<td align="right">26122</td>
+</tr>
+<tr>
+<td align="left">473</td>
+<td align="left">Medicare</td>
+<td align="left">TNF</td>
+<td align="right">4866</td>
+<td align="right">5929</td>
+</tr>
+</tbody>
+</table>
+<p>Table of <strong>prevalence %</strong></p>
+<table>
+<thead>
+<tr>
+<th align="left">outcomeCategory</th>
+<th align="left">disease</th>
+<th align="right">MPCD TNF</th>
+<th align="right">MPCD DMARD</th>
+<th align="right">MPCD NSAID or no exposure</th>
+<th align="right">Marketscan TNF</th>
+<th align="right">Marketscan DMARD</th>
+<th align="right">Marketscan NSAID or no exposure</th>
+<th align="right">Medicare TNF</th>
+<th align="right">Medicare DMARD</th>
+<th align="right">Medicare NSAID or no exposure</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left">Cardiac disease</td>
+<td align="left">Aortic Insufficiency/Aortic Regurgitation</td>
+<td align="right">1.49</td>
+<td align="right">0.83</td>
+<td align="right">2.01</td>
+<td align="right">1.83</td>
+<td align="right">2.10</td>
+<td align="right">2.81</td>
+<td align="right">8.01</td>
+<td align="right">10.86</td>
+<td align="right">11.66</td>
+</tr>
+<tr>
+<td align="left">Cardiac disease</td>
+<td align="left">Conduction Block</td>
+<td align="right">0.39</td>
+<td align="right">0.83</td>
+<td align="right">0.81</td>
+<td align="right">1.70</td>
+<td align="right">2.44</td>
+<td align="right">2.46</td>
+<td align="right">6.80</td>
+<td align="right">8.59</td>
+<td align="right">10.51</td>
+</tr>
+<tr>
+<td align="left">Cardiac disease</td>
+<td align="left">Myocardial infarction</td>
+<td align="right">0.31</td>
+<td align="right">NA</td>
+<td align="right">0.46</td>
+<td align="right">0.52</td>
+<td align="right">0.49</td>
+<td align="right">0.52</td>
+<td align="right">1.70</td>
+<td align="right">1.89</td>
+<td align="right">2.36</td>
+</tr>
+<tr>
+<td align="left">Inflammatory bowel disease</td>
+<td align="left">Crohn’s Disease</td>
+<td align="right">6.10</td>
+<td align="right">4.16</td>
+<td align="right">2.93</td>
+<td align="right">6.39</td>
+<td align="right">4.79</td>
+<td align="right">3.26</td>
+<td align="right">10.36</td>
+<td align="right">8.82</td>
+<td align="right">5.85</td>
+</tr>
+<tr>
+<td align="left">Inflammatory bowel disease</td>
+<td align="left">Ulcerative Colitis</td>
+<td align="right">3.67</td>
+<td align="right">3.12</td>
+<td align="right">2.01</td>
+<td align="right">4.90</td>
+<td align="right">2.98</td>
+<td align="right">2.62</td>
+<td align="right">7.35</td>
+<td align="right">7.16</td>
+<td align="right">4.87</td>
+</tr>
+<tr>
+<td align="left">Kidney disease</td>
+<td align="left">Amyloidosis</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">0.04</td>
+<td align="right">0.03</td>
+<td align="right">0.05</td>
+<td align="right">0.03</td>
+<td align="right">0.10</td>
+<td align="right">0.06</td>
+<td align="right">0.19</td>
+</tr>
+<tr>
+<td align="left">Kidney disease</td>
+<td align="left">IgA nephropathy</td>
+<td align="right">0.08</td>
+<td align="right">0.21</td>
+<td align="right">0.08</td>
+<td align="right">0.22</td>
+<td align="right">0.20</td>
+<td align="right">0.13</td>
+<td align="right">0.67</td>
+<td align="right">0.91</td>
+<td align="right">0.60</td>
+</tr>
+<tr>
+<td align="left">Kidney disease</td>
+<td align="left">Nephrotic syndrome</td>
+<td align="right">0.00</td>
+<td align="right">0.00</td>
+<td align="right">0.00</td>
+<td align="right">0.14</td>
+<td align="right">0.10</td>
+<td align="right">0.06</td>
+<td align="right">0.24</td>
+<td align="right">0.48</td>
+<td align="right">0.31</td>
+</tr>
+<tr>
+<td align="left">Lung disease</td>
+<td align="left">Apical Pulmonary fibrosis</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">0.00</td>
+<td align="right">0.02</td>
+<td align="right">NA</td>
+<td align="right">0.02</td>
+<td align="right">0.02</td>
+<td align="right">0.06</td>
+<td align="right">0.05</td>
+</tr>
+<tr>
+<td align="left">Lung disease</td>
+<td align="left">Interstitial lung disease</td>
+<td align="right">0.16</td>
+<td align="right">NA</td>
+<td align="right">0.04</td>
+<td align="right">0.07</td>
+<td align="right">0.24</td>
+<td align="right">0.14</td>
+<td align="right">0.34</td>
+<td align="right">0.48</td>
+<td align="right">0.24</td>
+</tr>
+<tr>
+<td align="left">Lung disease</td>
+<td align="left">Restrictive lung disease</td>
+<td align="right">1.02</td>
+<td align="right">0.62</td>
+<td align="right">1.58</td>
+<td align="right">3.88</td>
+<td align="right">4.45</td>
+<td align="right">4.67</td>
+<td align="right">15.53</td>
+<td align="right">20.14</td>
+<td align="right">17.97</td>
+</tr>
+<tr>
+<td align="left">Neurological Disease</td>
+<td align="left">Cauda Equina syndrome</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">0.12</td>
+<td align="right">0.05</td>
+<td align="right">0.24</td>
+<td align="right">0.09</td>
+<td align="right">0.22</td>
+<td align="right">0.33</td>
+<td align="right">0.32</td>
+</tr>
+<tr>
+<td align="left">Neurological Disease</td>
+<td align="left">Spinal Cord compression</td>
+<td align="right">0.08</td>
+<td align="right">NA</td>
+<td align="right">0.27</td>
+<td align="right">0.28</td>
+<td align="right">0.49</td>
+<td align="right">0.53</td>
+<td align="right">1.67</td>
+<td align="right">1.98</td>
+<td align="right">2.38</td>
+</tr>
+<tr>
+<td align="left">PsO/PsA</td>
+<td align="left">Psoriasis</td>
+<td align="right">4.14</td>
+<td align="right">2.49</td>
+<td align="right">2.66</td>
+<td align="right">5.09</td>
+<td align="right">3.81</td>
+<td align="right">2.34</td>
+<td align="right">9.93</td>
+<td align="right">7.99</td>
+<td align="right">5.79</td>
+</tr>
+<tr>
+<td align="left">PsO/PsA</td>
+<td align="left">Psoriatic arthritis</td>
+<td align="right">6.57</td>
+<td align="right">4.78</td>
+<td align="right">2.43</td>
+<td align="right">8.53</td>
+<td align="right">6.16</td>
+<td align="right">2.86</td>
+<td align="right">13.90</td>
+<td align="right">10.13</td>
+<td align="right">5.39</td>
+</tr>
+<tr>
+<td align="left">Uveitis</td>
+<td align="left">Uveitis</td>
+<td align="right">11.34</td>
+<td align="right">8.52</td>
+<td align="right">7.37</td>
+<td align="right">13.38</td>
+<td align="right">11.00</td>
+<td align="right">11.20</td>
+<td align="right">13.44</td>
+<td align="right">10.05</td>
+<td align="right">8.01</td>
+</tr>
+</tbody>
+</table>
+<h1>
+<a id="user-content-summarize-incidence" class="anchor" href="#summarize-incidence" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Summarize incidence</h1>
+<pre><code>From: Curtis, Jeffrey R [mailto:jrcurtis@uabmc.edu] 
+Sent: Thursday, May 11, 2017 10:59 AM
+Subject: Table 1 Distribution of Characteristics of AS cohort by data source 1 year baseline
+
+Here is table shell for table 1 for AS cohort. All covariates are measured in
+baseline, although I think that we should have additional rows added for all
+13 outcomes of interest, using all available leftward data (not just
+baseline). So for example, someone who had history of uveitis, or cancer,
+would appear as rows in this table.
+
+This would be the same format for Aim II that provides the corresponding
+information with each column representing the exposure episodes.
+</code></pre>
+<p>Read incidence data.
+See <code>queryIncidenceOutcomes.sas</code>.</p>
+<table>
+<thead>
+<tr>
+<th align="left"></th>
+<th align="left">database</th>
+<th align="left">exposure</th>
+<th align="right">n</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left">1</td>
+<td align="left">MPCD</td>
+<td align="left">DMARD</td>
+<td align="right">423</td>
+</tr>
+<tr>
+<td align="left">17</td>
+<td align="left">MPCD</td>
+<td align="left">NSAID or no exposure</td>
+<td align="right">2093</td>
+</tr>
+<tr>
+<td align="left">33</td>
+<td align="left">MPCD</td>
+<td align="left">TNF</td>
+<td align="right">1108</td>
+</tr>
+<tr>
+<td align="left">49</td>
+<td align="left">Marketscan</td>
+<td align="left">DMARD</td>
+<td align="right">1813</td>
+</tr>
+<tr>
+<td align="left">65</td>
+<td align="left">Marketscan</td>
+<td align="left">NSAID or no exposure</td>
+<td align="right">8122</td>
+</tr>
+<tr>
+<td align="left">81</td>
+<td align="left">Marketscan</td>
+<td align="left">TNF</td>
+<td align="right">4824</td>
+</tr>
+<tr>
+<td align="left">97</td>
+<td align="left">Medicare</td>
+<td align="left">DMARD</td>
+<td align="right">4304</td>
+</tr>
+<tr>
+<td align="left">113</td>
+<td align="left">Medicare</td>
+<td align="left">NSAID or no exposure</td>
+<td align="right">18431</td>
+</tr>
+<tr>
+<td align="left">129</td>
+<td align="left">Medicare</td>
+<td align="left">TNF</td>
+<td align="right">4937</td>
+</tr>
+</tbody>
+</table>
+<p>Table of <strong>incidence per 100 person-years</strong></p>
+<table>
+<thead>
+<tr>
+<th align="left">outcomeCategory</th>
+<th align="left">disease</th>
+<th align="right">MPCD TNF</th>
+<th align="right">MPCD DMARD</th>
+<th align="right">MPCD NSAID or no exposure</th>
+<th align="right">Marketscan TNF</th>
+<th align="right">Marketscan DMARD</th>
+<th align="right">Marketscan NSAID or no exposure</th>
+<th align="right">Medicare TNF</th>
+<th align="right">Medicare DMARD</th>
+<th align="right">Medicare NSAID or no exposure</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left">Cardiac disease</td>
+<td align="left">Aortic Insufficiency/Aortic Regurgitation</td>
+<td align="right">1.34</td>
+<td align="right">0.47</td>
+<td align="right">1.94</td>
+<td align="right">1.19</td>
+<td align="right">1.52</td>
+<td align="right">2.07</td>
+<td align="right">3.23</td>
+<td align="right">4.67</td>
+<td align="right">5.95</td>
+</tr>
+<tr>
+<td align="left">Cardiac disease</td>
+<td align="left">Conduction Block</td>
+<td align="right">0.33</td>
+<td align="right">0.00</td>
+<td align="right">0.91</td>
+<td align="right">1.14</td>
+<td align="right">1.35</td>
+<td align="right">2.44</td>
+<td align="right">2.94</td>
+<td align="right">4.22</td>
+<td align="right">5.93</td>
+</tr>
+<tr>
+<td align="left">Cardiac disease</td>
+<td align="left">Myocardial infarction</td>
+<td align="right">0.33</td>
+<td align="right">0.00</td>
+<td align="right">0.61</td>
+<td align="right">0.21</td>
+<td align="right">0.28</td>
+<td align="right">0.64</td>
+<td align="right">0.69</td>
+<td align="right">1.21</td>
+<td align="right">1.55</td>
+</tr>
+<tr>
+<td align="left">Inflammatory bowel disease</td>
+<td align="left">Crohn’s Disease</td>
+<td align="right">4.69</td>
+<td align="right">3.61</td>
+<td align="right">2.96</td>
+<td align="right">4.77</td>
+<td align="right">4.13</td>
+<td align="right">2.64</td>
+<td align="right">3.89</td>
+<td align="right">3.75</td>
+<td align="right">2.50</td>
+</tr>
+<tr>
+<td align="left">Inflammatory bowel disease</td>
+<td align="left">Ulcerative Colitis</td>
+<td align="right">2.54</td>
+<td align="right">0.95</td>
+<td align="right">1.62</td>
+<td align="right">3.06</td>
+<td align="right">3.16</td>
+<td align="right">2.06</td>
+<td align="right">2.44</td>
+<td align="right">2.60</td>
+<td align="right">1.77</td>
+</tr>
+<tr>
+<td align="left">Kidney disease</td>
+<td align="left">Amyloidosis</td>
+<td align="right">0.00</td>
+<td align="right">0.00</td>
+<td align="right">0.11</td>
+<td align="right">0.03</td>
+<td align="right">0.00</td>
+<td align="right">0.00</td>
+<td align="right">0.07</td>
+<td align="right">0.03</td>
+<td align="right">0.06</td>
+</tr>
+<tr>
+<td align="left">Kidney disease</td>
+<td align="left">IgA nephropathy</td>
+<td align="right">0.20</td>
+<td align="right">0.00</td>
+<td align="right">0.11</td>
+<td align="right">0.13</td>
+<td align="right">0.11</td>
+<td align="right">0.10</td>
+<td align="right">0.26</td>
+<td align="right">0.18</td>
+<td align="right">0.28</td>
+</tr>
+<tr>
+<td align="left">Kidney disease</td>
+<td align="left">Nephrotic syndrome</td>
+<td align="right">0.13</td>
+<td align="right">0.00</td>
+<td align="right">0.00</td>
+<td align="right">0.06</td>
+<td align="right">0.11</td>
+<td align="right">0.05</td>
+<td align="right">0.19</td>
+<td align="right">0.13</td>
+<td align="right">0.13</td>
+</tr>
+<tr>
+<td align="left">Lung disease</td>
+<td align="left">Apical Pulmonary fibrosis</td>
+<td align="right">0.00</td>
+<td align="right">0.00</td>
+<td align="right">0.04</td>
+<td align="right">0.00</td>
+<td align="right">0.00</td>
+<td align="right">0.01</td>
+<td align="right">0.00</td>
+<td align="right">0.04</td>
+<td align="right">0.02</td>
+</tr>
+<tr>
+<td align="left">Lung disease</td>
+<td align="left">Interstitial lung disease</td>
+<td align="right">0.00</td>
+<td align="right">0.00</td>
+<td align="right">0.11</td>
+<td align="right">0.07</td>
+<td align="right">0.11</td>
+<td align="right">0.09</td>
+<td align="right">0.08</td>
+<td align="right">0.22</td>
+<td align="right">0.11</td>
+</tr>
+<tr>
+<td align="left">Lung disease</td>
+<td align="left">Restrictive lung disease</td>
+<td align="right">0.94</td>
+<td align="right">0.00</td>
+<td align="right">2.00</td>
+<td align="right">1.90</td>
+<td align="right">2.40</td>
+<td align="right">3.25</td>
+<td align="right">5.88</td>
+<td align="right">7.68</td>
+<td align="right">8.70</td>
+</tr>
+<tr>
+<td align="left">Neurological Disease</td>
+<td align="left">Cauda Equina syndrome</td>
+<td align="right">0.00</td>
+<td align="right">0.00</td>
+<td align="right">0.15</td>
+<td align="right">0.03</td>
+<td align="right">0.06</td>
+<td align="right">0.06</td>
+<td align="right">0.10</td>
+<td align="right">0.06</td>
+<td align="right">0.12</td>
+</tr>
+<tr>
+<td align="left">Neurological Disease</td>
+<td align="left">Spinal Cord compression</td>
+<td align="right">0.07</td>
+<td align="right">0.00</td>
+<td align="right">0.30</td>
+<td align="right">0.25</td>
+<td align="right">0.39</td>
+<td align="right">0.50</td>
+<td align="right">0.43</td>
+<td align="right">0.51</td>
+<td align="right">0.79</td>
+</tr>
+<tr>
+<td align="left">PsO/PsA</td>
+<td align="left">Psoriasis</td>
+<td align="right">3.50</td>
+<td align="right">0.95</td>
+<td align="right">1.62</td>
+<td align="right">3.78</td>
+<td align="right">3.34</td>
+<td align="right">1.81</td>
+<td align="right">3.78</td>
+<td align="right">3.41</td>
+<td align="right">2.07</td>
+</tr>
+<tr>
+<td align="left">PsO/PsA</td>
+<td align="left">Psoriatic arthritis</td>
+<td align="right">5.27</td>
+<td align="right">5.13</td>
+<td align="right">1.84</td>
+<td align="right">6.10</td>
+<td align="right">7.13</td>
+<td align="right">2.19</td>
+<td align="right">5.43</td>
+<td align="right">4.62</td>
+<td align="right">1.88</td>
+</tr>
+<tr>
+<td align="left">Uveitis</td>
+<td align="left">Uveitis</td>
+<td align="right">4.95</td>
+<td align="right">6.55</td>
+<td align="right">4.86</td>
+<td align="right">7.58</td>
+<td align="right">8.57</td>
+<td align="right">8.03</td>
+<td align="right">5.04</td>
+<td align="right">3.77</td>
+<td align="right">2.96</td>
+</tr>
+</tbody>
+</table>
+<h2>
+<a id="user-content-tnf-versus-nsaid-or-no-exposure" class="anchor" href="#tnf-versus-nsaid-or-no-exposure" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a><strong>TNF</strong> versus <strong>NSAID or no exposure</strong>
+</h2>
+<p><strong>MPCD</strong></p>
+<table>
+<thead>
+<tr>
+<th align="left">database</th>
+<th align="left">outcomeCategory</th>
+<th align="left">disease</th>
+<th align="left">comparison</th>
+<th align="right">rate1</th>
+<th align="right">rate2</th>
+<th align="right">pValue</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left">MPCD</td>
+<td align="left">Cardiac disease</td>
+<td align="left">Aortic Insufficiency/Aortic Regurgitation</td>
+<td align="left">TNF vs NSAID or no exposure</td>
+<td align="right">1.343</td>
+<td align="right">1.940</td>
+<td align="right">0.162</td>
+</tr>
+<tr>
+<td align="left">MPCD</td>
+<td align="left">Cardiac disease</td>
+<td align="left">Conduction Block</td>
+<td align="left">TNF vs NSAID or no exposure</td>
+<td align="right">0.333</td>
+<td align="right">0.914</td>
+<td align="right">0.028</td>
+</tr>
+<tr>
+<td align="left">MPCD</td>
+<td align="left">Cardiac disease</td>
+<td align="left">Myocardial infarction</td>
+<td align="left">TNF vs NSAID or no exposure</td>
+<td align="right">0.333</td>
+<td align="right">0.606</td>
+<td align="right">0.244</td>
+</tr>
+<tr>
+<td align="left">MPCD</td>
+<td align="left">Inflammatory bowel disease</td>
+<td align="left">Crohn.s Disease</td>
+<td align="left">TNF vs NSAID or no exposure</td>
+<td align="right">4.692</td>
+<td align="right">2.956</td>
+<td align="right">0.006</td>
+</tr>
+<tr>
+<td align="left">MPCD</td>
+<td align="left">Inflammatory bowel disease</td>
+<td align="left">Ulcerative Colitis</td>
+<td align="left">TNF vs NSAID or no exposure</td>
+<td align="right">2.536</td>
+<td align="right">1.621</td>
+<td align="right">0.050</td>
+</tr>
+<tr>
+<td align="left">MPCD</td>
+<td align="left">Kidney disease</td>
+<td align="left">Amyloidosis</td>
+<td align="left">TNF vs NSAID or no exposure</td>
+<td align="right">0.000</td>
+<td align="right">0.113</td>
+<td align="right">0.260</td>
+</tr>
+<tr>
+<td align="left">MPCD</td>
+<td align="left">Kidney disease</td>
+<td align="left">IgA nephropathy</td>
+<td align="left">TNF vs NSAID or no exposure</td>
+<td align="right">0.200</td>
+<td align="right">0.113</td>
+<td align="right">0.508</td>
+</tr>
+<tr>
+<td align="left">MPCD</td>
+<td align="left">Kidney disease</td>
+<td align="left">Nephrotic syndrome</td>
+<td align="left">TNF vs NSAID or no exposure</td>
+<td align="right">0.133</td>
+<td align="right">0.000</td>
+<td align="right">0.131</td>
+</tr>
+<tr>
+<td align="left">MPCD</td>
+<td align="left">Lung disease</td>
+<td align="left">Apical Pulmonary fibrosis</td>
+<td align="left">TNF vs NSAID or no exposure</td>
+<td align="right">0.000</td>
+<td align="right">0.038</td>
+<td align="right">0.638</td>
+</tr>
+<tr>
+<td align="left">MPCD</td>
+<td align="left">Lung disease</td>
+<td align="left">Interstitial lung disease</td>
+<td align="left">TNF vs NSAID or no exposure</td>
+<td align="right">0.000</td>
+<td align="right">0.113</td>
+<td align="right">0.260</td>
+</tr>
+<tr>
+<td align="left">MPCD</td>
+<td align="left">Lung disease</td>
+<td align="left">Restrictive lung disease</td>
+<td align="left">TNF vs NSAID or no exposure</td>
+<td align="right">0.942</td>
+<td align="right">2.002</td>
+<td align="right">0.008</td>
+</tr>
+<tr>
+<td align="left">MPCD</td>
+<td align="left">Neurological Disease</td>
+<td align="left">Cauda Equina syndrome</td>
+<td align="left">TNF vs NSAID or no exposure</td>
+<td align="right">0.000</td>
+<td align="right">0.151</td>
+<td align="right">0.165</td>
+</tr>
+<tr>
+<td align="left">MPCD</td>
+<td align="left">Neurological Disease</td>
+<td align="left">Spinal Cord compression</td>
+<td align="left">TNF vs NSAID or no exposure</td>
+<td align="right">0.066</td>
+<td align="right">0.302</td>
+<td align="right">0.124</td>
+</tr>
+<tr>
+<td align="left">MPCD</td>
+<td align="left">PsO/PsA</td>
+<td align="left">Psoriasis</td>
+<td align="left">TNF vs NSAID or no exposure</td>
+<td align="right">3.505</td>
+<td align="right">1.618</td>
+<td align="right">0.000</td>
+</tr>
+<tr>
+<td align="left">MPCD</td>
+<td align="left">PsO/PsA</td>
+<td align="left">Psoriatic arthritis</td>
+<td align="left">TNF vs NSAID or no exposure</td>
+<td align="right">5.275</td>
+<td align="right">1.842</td>
+<td align="right">0.000</td>
+</tr>
+<tr>
+<td align="left">MPCD</td>
+<td align="left">Uveitis</td>
+<td align="left">Uveitis</td>
+<td align="left">TNF vs NSAID or no exposure</td>
+<td align="right">4.951</td>
+<td align="right">4.859</td>
+<td align="right">0.896</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Marketscan</strong></p>
+<table>
+<thead>
+<tr>
+<th align="left">database</th>
+<th align="left">outcomeCategory</th>
+<th align="left">disease</th>
+<th align="left">comparison</th>
+<th align="right">rate1</th>
+<th align="right">rate2</th>
+<th align="right">pValue</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left">Marketscan</td>
+<td align="left">Cardiac disease</td>
+<td align="left">Aortic Insufficiency/Aortic Regurgitation</td>
+<td align="left">TNF vs NSAID or no exposure</td>
+<td align="right">1.192</td>
+<td align="right">2.071</td>
+<td align="right">0.000</td>
+</tr>
+<tr>
+<td align="left">Marketscan</td>
+<td align="left">Cardiac disease</td>
+<td align="left">Conduction Block</td>
+<td align="left">TNF vs NSAID or no exposure</td>
+<td align="right">1.144</td>
+<td align="right">2.441</td>
+<td align="right">0.000</td>
+</tr>
+<tr>
+<td align="left">Marketscan</td>
+<td align="left">Cardiac disease</td>
+<td align="left">Myocardial infarction</td>
+<td align="left">TNF vs NSAID or no exposure</td>
+<td align="right">0.208</td>
+<td align="right">0.641</td>
+<td align="right">0.000</td>
+</tr>
+<tr>
+<td align="left">Marketscan</td>
+<td align="left">Inflammatory bowel disease</td>
+<td align="left">Crohn.s Disease</td>
+<td align="left">TNF vs NSAID or no exposure</td>
+<td align="right">4.765</td>
+<td align="right">2.640</td>
+<td align="right">0.000</td>
+</tr>
+<tr>
+<td align="left">Marketscan</td>
+<td align="left">Inflammatory bowel disease</td>
+<td align="left">Ulcerative Colitis</td>
+<td align="left">TNF vs NSAID or no exposure</td>
+<td align="right">3.056</td>
+<td align="right">2.063</td>
+<td align="right">0.000</td>
+</tr>
+<tr>
+<td align="left">Marketscan</td>
+<td align="left">Kidney disease</td>
+<td align="left">Amyloidosis</td>
+<td align="left">TNF vs NSAID or no exposure</td>
+<td align="right">0.030</td>
+<td align="right">0.000</td>
+<td align="right">0.177</td>
+</tr>
+<tr>
+<td align="left">Marketscan</td>
+<td align="left">Kidney disease</td>
+<td align="left">IgA nephropathy</td>
+<td align="left">TNF vs NSAID or no exposure</td>
+<td align="right">0.134</td>
+<td align="right">0.097</td>
+<td align="right">0.505</td>
+</tr>
+<tr>
+<td align="left">Marketscan</td>
+<td align="left">Kidney disease</td>
+<td align="left">Nephrotic syndrome</td>
+<td align="left">TNF vs NSAID or no exposure</td>
+<td align="right">0.059</td>
+<td align="right">0.054</td>
+<td align="right">0.881</td>
+</tr>
+<tr>
+<td align="left">Marketscan</td>
+<td align="left">Lung disease</td>
+<td align="left">Apical Pulmonary fibrosis</td>
+<td align="left">TNF vs NSAID or no exposure</td>
+<td align="right">0.000</td>
+<td align="right">0.011</td>
+<td align="right">0.579</td>
+</tr>
+<tr>
+<td align="left">Marketscan</td>
+<td align="left">Lung disease</td>
+<td align="left">Interstitial lung disease</td>
+<td align="left">TNF vs NSAID or no exposure</td>
+<td align="right">0.074</td>
+<td align="right">0.086</td>
+<td align="right">0.809</td>
+</tr>
+<tr>
+<td align="left">Marketscan</td>
+<td align="left">Lung disease</td>
+<td align="left">Restrictive lung disease</td>
+<td align="left">TNF vs NSAID or no exposure</td>
+<td align="right">1.897</td>
+<td align="right">3.246</td>
+<td align="right">0.000</td>
+</tr>
+<tr>
+<td align="left">Marketscan</td>
+<td align="left">Neurological Disease</td>
+<td align="left">Cauda Equina syndrome</td>
+<td align="left">TNF vs NSAID or no exposure</td>
+<td align="right">0.030</td>
+<td align="right">0.065</td>
+<td align="right">0.359</td>
+</tr>
+<tr>
+<td align="left">Marketscan</td>
+<td align="left">Neurological Disease</td>
+<td align="left">Spinal Cord compression</td>
+<td align="left">TNF vs NSAID or no exposure</td>
+<td align="right">0.253</td>
+<td align="right">0.499</td>
+<td align="right">0.013</td>
+</tr>
+<tr>
+<td align="left">Marketscan</td>
+<td align="left">PsO/PsA</td>
+<td align="left">Psoriasis</td>
+<td align="left">TNF vs NSAID or no exposure</td>
+<td align="right">3.782</td>
+<td align="right">1.813</td>
+<td align="right">0.000</td>
+</tr>
+<tr>
+<td align="left">Marketscan</td>
+<td align="left">PsO/PsA</td>
+<td align="left">Psoriatic arthritis</td>
+<td align="left">TNF vs NSAID or no exposure</td>
+<td align="right">6.103</td>
+<td align="right">2.190</td>
+<td align="right">0.000</td>
+</tr>
+<tr>
+<td align="left">Marketscan</td>
+<td align="left">Uveitis</td>
+<td align="left">Uveitis</td>
+<td align="left">TNF vs NSAID or no exposure</td>
+<td align="right">7.576</td>
+<td align="right">8.034</td>
+<td align="right">0.329</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Medicare</strong></p>
+<table>
+<thead>
+<tr>
+<th align="left">database</th>
+<th align="left">outcomeCategory</th>
+<th align="left">disease</th>
+<th align="left">comparison</th>
+<th align="right">rate1</th>
+<th align="right">rate2</th>
+<th align="right">pValue</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left">Medicare</td>
+<td align="left">Cardiac disease</td>
+<td align="left">Aortic Insufficiency/Aortic Regurgitation</td>
+<td align="left">TNF vs NSAID or no exposure</td>
+<td align="right">3.227</td>
+<td align="right">5.950</td>
+<td align="right">0.000</td>
+</tr>
+<tr>
+<td align="left">Medicare</td>
+<td align="left">Cardiac disease</td>
+<td align="left">Conduction Block</td>
+<td align="left">TNF vs NSAID or no exposure</td>
+<td align="right">2.940</td>
+<td align="right">5.933</td>
+<td align="right">0.000</td>
+</tr>
+<tr>
+<td align="left">Medicare</td>
+<td align="left">Cardiac disease</td>
+<td align="left">Myocardial infarction</td>
+<td align="left">TNF vs NSAID or no exposure</td>
+<td align="right">0.691</td>
+<td align="right">1.547</td>
+<td align="right">0.000</td>
+</tr>
+<tr>
+<td align="left">Medicare</td>
+<td align="left">Inflammatory bowel disease</td>
+<td align="left">Crohn.s Disease</td>
+<td align="left">TNF vs NSAID or no exposure</td>
+<td align="right">3.893</td>
+<td align="right">2.500</td>
+<td align="right">0.000</td>
+</tr>
+<tr>
+<td align="left">Medicare</td>
+<td align="left">Inflammatory bowel disease</td>
+<td align="left">Ulcerative Colitis</td>
+<td align="left">TNF vs NSAID or no exposure</td>
+<td align="right">2.438</td>
+<td align="right">1.773</td>
+<td align="right">0.000</td>
+</tr>
+<tr>
+<td align="left">Medicare</td>
+<td align="left">Kidney disease</td>
+<td align="left">Amyloidosis</td>
+<td align="left">TNF vs NSAID or no exposure</td>
+<td align="right">0.066</td>
+<td align="right">0.061</td>
+<td align="right">0.818</td>
+</tr>
+<tr>
+<td align="left">Medicare</td>
+<td align="left">Kidney disease</td>
+<td align="left">IgA nephropathy</td>
+<td align="left">TNF vs NSAID or no exposure</td>
+<td align="right">0.259</td>
+<td align="right">0.284</td>
+<td align="right">0.643</td>
+</tr>
+<tr>
+<td align="left">Medicare</td>
+<td align="left">Kidney disease</td>
+<td align="left">Nephrotic syndrome</td>
+<td align="left">TNF vs NSAID or no exposure</td>
+<td align="right">0.192</td>
+<td align="right">0.130</td>
+<td align="right">0.114</td>
+</tr>
+<tr>
+<td align="left">Medicare</td>
+<td align="left">Lung disease</td>
+<td align="left">Apical Pulmonary fibrosis</td>
+<td align="left">TNF vs NSAID or no exposure</td>
+<td align="right">0.000</td>
+<td align="right">0.023</td>
+<td align="right">0.069</td>
+</tr>
+<tr>
+<td align="left">Medicare</td>
+<td align="left">Lung disease</td>
+<td align="left">Interstitial lung disease</td>
+<td align="left">TNF vs NSAID or no exposure</td>
+<td align="right">0.081</td>
+<td align="right">0.107</td>
+<td align="right">0.418</td>
+</tr>
+<tr>
+<td align="left">Medicare</td>
+<td align="left">Lung disease</td>
+<td align="left">Restrictive lung disease</td>
+<td align="left">TNF vs NSAID or no exposure</td>
+<td align="right">5.877</td>
+<td align="right">8.702</td>
+<td align="right">0.000</td>
+</tr>
+<tr>
+<td align="left">Medicare</td>
+<td align="left">Neurological Disease</td>
+<td align="left">Cauda Equina syndrome</td>
+<td align="left">TNF vs NSAID or no exposure</td>
+<td align="right">0.096</td>
+<td align="right">0.120</td>
+<td align="right">0.484</td>
+</tr>
+<tr>
+<td align="left">Medicare</td>
+<td align="left">Neurological Disease</td>
+<td align="left">Spinal Cord compression</td>
+<td align="left">TNF vs NSAID or no exposure</td>
+<td align="right">0.430</td>
+<td align="right">0.794</td>
+<td align="right">0.000</td>
+</tr>
+<tr>
+<td align="left">Medicare</td>
+<td align="left">PsO/PsA</td>
+<td align="left">Psoriasis</td>
+<td align="left">TNF vs NSAID or no exposure</td>
+<td align="right">3.784</td>
+<td align="right">2.071</td>
+<td align="right">0.000</td>
+</tr>
+<tr>
+<td align="left">Medicare</td>
+<td align="left">PsO/PsA</td>
+<td align="left">Psoriatic arthritis</td>
+<td align="left">TNF vs NSAID or no exposure</td>
+<td align="right">5.428</td>
+<td align="right">1.879</td>
+<td align="right">0.000</td>
+</tr>
+<tr>
+<td align="left">Medicare</td>
+<td align="left">Uveitis</td>
+<td align="left">Uveitis</td>
+<td align="left">TNF vs NSAID or no exposure</td>
+<td align="right">5.041</td>
+<td align="right">2.964</td>
+<td align="right">0.000</td>
+</tr>
+</tbody>
+</table>
 </article></body></html>
