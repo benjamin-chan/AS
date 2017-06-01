@@ -4,10 +4,10 @@ compareIncidenceRates <- function (db, exp, cat, dis) {
   require(epitools)
   midp.exact <-
     df %>% 
-    filter(database == db) %>% 
-    filter(exposure %in% exp) %>% 
-    filter(outcomeCategory == cat) %>% 
-    filter(disease == dis) %>% 
+    filter(grepl(db, database)) %>% 
+    filter(grepl(exp[1], exposure) | grepl(exp[2], exposure)) %>% 
+    filter(grepl(cat, outcomeCategory)) %>% 
+    filter(grepl(dis, disease)) %>% 
     select(c(incidence, personYears)) %>% 
     as.matrix %>% 
     rate2by2.test %>% 
