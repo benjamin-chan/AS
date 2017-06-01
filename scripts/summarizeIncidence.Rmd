@@ -29,15 +29,17 @@ df %>%
   kable
 ```
 
-Table of **incidence per 1,000 person-years**
+Table of **incidence per 100 person-years**
 
 ```{r}
 foo <- function(db, exp) {
-    col <- which(names(df) %in% c("database", "outcomeCategory", "disease", "incidencePer1000PY"))
-    df %>% 
+    df1 <- 
+      df %>% 
       filter(database == db) %>% 
-      filter(exposure == exp) %>% 
-      select(col)
+      filter(exposure == exp) %>%
+      mutate(incidenceRate = incidence / personYears * 100)
+    col <- which(names(df1) %in% c("database", "outcomeCategory", "disease", "incidenceRate"))
+    df1 %>% select(col)
 }
 df1a <- foo("MPCD", "NSAID or no exposure")
 df1b <- foo("MPCD", "DMARD")
@@ -55,7 +57,7 @@ foo <- function (a, b, c) {
                 c, 
                 by = by, all = TRUE, suffixes = c("_DMARD", "_TNF")), 
           by = by, all = TRUE) %>% 
-      rename(incidencePer1000PY_NSAID = incidencePer1000PY) %>% 
+      rename(incidenceRate_NSAID = incidenceRate) %>% 
       select(-c(database))
 }
 incidence <- 
@@ -67,22 +69,22 @@ incidence <-
               suffixes = c("_Marketscan", "_Medicare")),
         by = c("outcomeCategory", "disease"),
         all = TRUE) %>% 
-  rename(incidencePer1000PY_NSAID_MPCD = incidencePer1000PY_NSAID,
-         incidencePer1000PY_DMARD_MPCD = incidencePer1000PY_DMARD,
-         incidencePer1000PY_TNF_MPCD = incidencePer1000PY_TNF) %>%
+  rename(incidenceRate_NSAID_MPCD = incidenceRate_NSAID,
+         incidenceRate_DMARD_MPCD = incidenceRate_DMARD,
+         incidenceRate_TNF_MPCD = incidenceRate_TNF) %>%
   select(c(outcomeCategory, disease,
-           incidencePer1000PY_TNF_MPCD, incidencePer1000PY_DMARD_MPCD, incidencePer1000PY_NSAID_MPCD,
-           incidencePer1000PY_TNF_Marketscan, incidencePer1000PY_DMARD_Marketscan, incidencePer1000PY_NSAID_Marketscan,
-           incidencePer1000PY_TNF_Medicare, incidencePer1000PY_DMARD_Medicare, incidencePer1000PY_NSAID_Medicare)) %>% 
-  rename("MPCD NSAID or no exposure" = incidencePer1000PY_NSAID_MPCD,
-         "MPCD DMARD" = incidencePer1000PY_DMARD_MPCD,
-         "MPCD TNF" = incidencePer1000PY_TNF_MPCD,
-         "Marketscan NSAID or no exposure" = incidencePer1000PY_NSAID_Marketscan,
-         "Marketscan DMARD" = incidencePer1000PY_DMARD_Marketscan,
-         "Marketscan TNF" = incidencePer1000PY_TNF_Marketscan,
-         "Medicare NSAID or no exposure" = incidencePer1000PY_NSAID_Medicare,
-         "Medicare DMARD" = incidencePer1000PY_DMARD_Medicare,
-         "Medicare TNF" = incidencePer1000PY_TNF_Medicare)
+           incidenceRate_TNF_MPCD, incidenceRate_DMARD_MPCD, incidenceRate_NSAID_MPCD,
+           incidenceRate_TNF_Marketscan, incidenceRate_DMARD_Marketscan, incidenceRate_NSAID_Marketscan,
+           incidenceRate_TNF_Medicare, incidenceRate_DMARD_Medicare, incidenceRate_NSAID_Medicare)) %>% 
+  rename("MPCD NSAID or no exposure" = incidenceRate_NSAID_MPCD,
+         "MPCD DMARD" = incidenceRate_DMARD_MPCD,
+         "MPCD TNF" = incidenceRate_TNF_MPCD,
+         "Marketscan NSAID or no exposure" = incidenceRate_NSAID_Marketscan,
+         "Marketscan DMARD" = incidenceRate_DMARD_Marketscan,
+         "Marketscan TNF" = incidenceRate_TNF_Marketscan,
+         "Medicare NSAID or no exposure" = incidenceRate_NSAID_Medicare,
+         "Medicare DMARD" = incidenceRate_DMARD_Medicare,
+         "Medicare TNF" = incidenceRate_TNF_Medicare)
 incidence %>% kable(digits = 2)
 incidence %>% write.csv(file = "../data/processed/incidence.csv", row.names = FALSE)
 ```
