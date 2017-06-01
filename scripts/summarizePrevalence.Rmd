@@ -1,4 +1,4 @@
-# Plot prevalence
+# Summarize prevalence
 
 ```
 From: Curtis, Jeffrey R [mailto:jrcurtis@uabmc.edu] 
@@ -52,11 +52,11 @@ h <- 33
   ggsave(., plotPrev("Medicare"), width = w, height = h, units = "in", dpi = 300)
 ```
 
-Table of **prevalence per 1,000**
+Table of **prevalence %**
 
 ```{r}
 foo <- function(db, exp) {
-    col <- which(names(df) %in% c("database", "outcomeCategory", "disease", "prevPer1000"))
+    col <- which(names(df) %in% c("database", "outcomeCategory", "disease", "prevPct"))
     df %>% 
       filter(timeWindow == "Prior to index") %>% 
       filter(database == db) %>% 
@@ -79,7 +79,7 @@ foo <- function (a, b, c) {
                 c, 
                 by = by, all = TRUE, suffixes = c("_DMARD", "_TNF")), 
           by = by, all = TRUE) %>% 
-      rename(prevPer1000_NSAID = prevPer1000) %>% 
+      rename(prevPct_NSAID = prevPct) %>% 
       select(-c(database))
 }
 prev <- 
@@ -91,22 +91,22 @@ prev <-
               suffixes = c("_Marketscan", "_Medicare")),
         by = c("outcomeCategory", "disease"),
         all = TRUE) %>% 
-  rename(prevPer1000_NSAID_MPCD = prevPer1000_NSAID,
-         prevPer1000_DMARD_MPCD = prevPer1000_DMARD,
-         prevPer1000_TNF_MPCD = prevPer1000_TNF) %>%
+  rename(prevPct_NSAID_MPCD = prevPct_NSAID,
+         prevPct_DMARD_MPCD = prevPct_DMARD,
+         prevPct_TNF_MPCD = prevPct_TNF) %>%
   select(c(outcomeCategory, disease,
-           prevPer1000_TNF_MPCD, prevPer1000_DMARD_MPCD, prevPer1000_NSAID_MPCD,
-           prevPer1000_TNF_Marketscan, prevPer1000_DMARD_Marketscan, prevPer1000_NSAID_Marketscan,
-           prevPer1000_TNF_Medicare, prevPer1000_DMARD_Medicare, prevPer1000_NSAID_Medicare)) %>% 
-  rename("MPCD NSAID or no exposure" = prevPer1000_NSAID_MPCD,
-         "MPCD DMARD" = prevPer1000_DMARD_MPCD,
-         "MPCD TNF" = prevPer1000_TNF_MPCD,
-         "Marketscan NSAID or no exposure" = prevPer1000_NSAID_Marketscan,
-         "Marketscan DMARD" = prevPer1000_DMARD_Marketscan,
-         "Marketscan TNF" = prevPer1000_TNF_Marketscan,
-         "Medicare NSAID or no exposure" = prevPer1000_NSAID_Medicare,
-         "Medicare DMARD" = prevPer1000_DMARD_Medicare,
-         "Medicare TNF" = prevPer1000_TNF_Medicare)
+           prevPct_TNF_MPCD, prevPct_DMARD_MPCD, prevPct_NSAID_MPCD,
+           prevPct_TNF_Marketscan, prevPct_DMARD_Marketscan, prevPct_NSAID_Marketscan,
+           prevPct_TNF_Medicare, prevPct_DMARD_Medicare, prevPct_NSAID_Medicare)) %>% 
+  rename("MPCD NSAID or no exposure" = prevPct_NSAID_MPCD,
+         "MPCD DMARD" = prevPct_DMARD_MPCD,
+         "MPCD TNF" = prevPct_TNF_MPCD,
+         "Marketscan NSAID or no exposure" = prevPct_NSAID_Marketscan,
+         "Marketscan DMARD" = prevPct_DMARD_Marketscan,
+         "Marketscan TNF" = prevPct_TNF_Marketscan,
+         "Medicare NSAID or no exposure" = prevPct_NSAID_Medicare,
+         "Medicare DMARD" = prevPct_DMARD_Medicare,
+         "Medicare TNF" = prevPct_TNF_Medicare)
 prev %>% kable(digits = 2)
 prev %>% write.csv(file = "../data/processed/prevalence.csv", row.names = FALSE)
 ```
