@@ -1,0 +1,88 @@
+# Summarize incidence
+
+```
+From: Curtis, Jeffrey R [mailto:jrcurtis@uabmc.edu] 
+Sent: Thursday, May 11, 2017 10:59 AM
+Subject: Table 1 Distribution of Characteristics of AS cohort by data source 1 year baseline
+
+Here is table shell for table 1 for AS cohort. All covariates are measured in
+baseline, although I think that we should have additional rows added for all
+13 outcomes of interest, using all available leftward data (not just
+baseline). So for example, someone who had history of uveitis, or cancer,
+would appear as rows in this table.
+
+This would be the same format for Aim II that provides the corresponding
+information with each column representing the exposure episodes.
+```
+
+Read incidence data.
+See `queryIncidenceOutcomes.sas`.
+
+```{r}
+df <-
+  "../data/processed/queryIncidenceOutcomes.csv" %>% 
+  read.csv(file = ., na.string = c("NA", "")) %>% 
+  rename(disease = Disease)
+df %>% 
+  select(c(database, exposure, n)) %>% 
+  unique %>% 
+  kable
+```
+
+Table of **incidence per 1,000 person-years**
+
+```{r}
+foo <- function(db, exp) {
+    col <- which(names(df) %in% c("database", "outcomeCategory", "disease", "incidencePer1000PY"))
+    df %>% 
+      filter(database == db) %>% 
+      filter(exposure == exp) %>% 
+      select(col)
+}
+df1a <- foo("MPCD", "NSAID or no exposure")
+df1b <- foo("MPCD", "DMARD")
+df1c <- foo("MPCD", "TNF")
+df2a <- foo("Marketscan", "NSAID or no exposure")
+df2b <- foo("Marketscan", "DMARD")
+df2c <- foo("Marketscan", "TNF")
+df3a <- foo("Medicare", "NSAID or no exposure")
+df3b <- foo("Medicare", "DMARD")
+df3c <- foo("Medicare", "TNF")
+foo <- function (a, b, c) {
+    by <- c("database", "outcomeCategory", "disease")
+    merge(a, 
+          merge(b, 
+                c, 
+                by = by, all = TRUE, suffixes = c("_DMARD", "_TNF")), 
+          by = by, all = TRUE) %>% 
+      rename(incidencePer1000PY_NSAID = incidencePer1000PY) %>% 
+      select(-c(database))
+}
+incidence <- 
+  merge(foo(df1a, df1b, df1c), 
+        merge(foo(df2a, df2b, df2c),
+              foo(df3a, df3b, df3c),
+              by = c("outcomeCategory", "disease"),
+              all = TRUE,
+              suffixes = c("_Marketscan", "_Medicare")),
+        by = c("outcomeCategory", "disease"),
+        all = TRUE) %>% 
+  rename(incidencePer1000PY_NSAID_MPCD = incidencePer1000PY_NSAID,
+         incidencePer1000PY_DMARD_MPCD = incidencePer1000PY_DMARD,
+         incidencePer1000PY_TNF_MPCD = incidencePer1000PY_TNF) %>%
+  select(c(outcomeCategory, disease,
+           incidencePer1000PY_TNF_MPCD, incidencePer1000PY_DMARD_MPCD, incidencePer1000PY_NSAID_MPCD,
+           incidencePer1000PY_TNF_Marketscan, incidencePer1000PY_DMARD_Marketscan, incidencePer1000PY_NSAID_Marketscan,
+           incidencePer1000PY_TNF_Medicare, incidencePer1000PY_DMARD_Medicare, incidencePer1000PY_NSAID_Medicare)) %>% 
+  rename("MPCD NSAID or no exposure" = incidencePer1000PY_NSAID_MPCD,
+         "MPCD DMARD" = incidencePer1000PY_DMARD_MPCD,
+         "MPCD TNF" = incidencePer1000PY_TNF_MPCD,
+         "Marketscan NSAID or no exposure" = incidencePer1000PY_NSAID_Marketscan,
+         "Marketscan DMARD" = incidencePer1000PY_DMARD_Marketscan,
+         "Marketscan TNF" = incidencePer1000PY_TNF_Marketscan,
+         "Medicare NSAID or no exposure" = incidencePer1000PY_NSAID_Medicare,
+         "Medicare DMARD" = incidencePer1000PY_DMARD_Medicare,
+         "Medicare TNF" = incidencePer1000PY_TNF_Medicare)
+incidence %>% kable(digits = 2)
+incidence %>% write.csv(file = "../data/processed/incidence.csv", row.names = FALSE)
+```
