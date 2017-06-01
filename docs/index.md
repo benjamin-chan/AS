@@ -1,6 +1,6 @@
 ---
 title: "Comorbidities and Disease Manifestations in Ankylosing Spondylitis (BAD AS)"
-date: "2017-06-01 12:54:40"
+date: "2017-06-01 16:37:07"
 author: Benjamin Chan (chanb@ohsu.edu)
 output:
   html_document:
@@ -45,8 +45,8 @@ Reproducibility steps.
 ## [1] stats     graphics  grDevices utils     datasets  base     
 ## 
 ## other attached packages:
-## [1] svglite_1.2.0    ggplot2_2.2.1    dplyr_0.5.0      magrittr_1.5    
-## [5] rmarkdown_1.4    knitr_1.15.1     checkpoint_0.4.0
+## [1] epitools_0.5-8   svglite_1.2.0    ggplot2_2.2.1    dplyr_0.5.0     
+## [5] magrittr_1.5     rmarkdown_1.4    knitr_1.15.1     checkpoint_0.4.0
 ## 
 ## loaded via a namespace (and not attached):
 ##  [1] Rcpp_0.12.10     digest_0.6.12    rprojroot_1.2    assertthat_0.1  
@@ -61,9 +61,9 @@ Source user-defined functions.
 
 
 ```
-##         ../lib/plotPrev.R
-## value   ?                
-## visible FALSE
+##         ../lib/compareIncidenceRates.R ../lib/plotPrev.R
+## value   ?                              ?                
+## visible FALSE                          FALSE
 ```
 
 
@@ -168,30 +168,104 @@ Read incidence data.
 See `queryIncidenceOutcomes.sas`.
 
 
-|   |database |exposure             |    n|
-|:--|:--------|:--------------------|----:|
-|1  |MPCD     |DMARD                |  423|
-|17 |MPCD     |NSAID or no exposure | 2093|
-|33 |MPCD     |TNF                  | 1108|
+|    |database   |exposure             |     n|
+|:---|:----------|:--------------------|-----:|
+|1   |MPCD       |DMARD                |   423|
+|17  |MPCD       |NSAID or no exposure |  2093|
+|33  |MPCD       |TNF                  |  1108|
+|49  |Marketscan |DMARD                |  1813|
+|65  |Marketscan |NSAID or no exposure |  8122|
+|81  |Marketscan |TNF                  |  4824|
+|97  |Medicare   |DMARD                |  4304|
+|113 |Medicare   |NSAID or no exposure | 18431|
+|129 |Medicare   |TNF                  |  4937|
 
 Table of **incidence per 100 person-years**
 
 
 |outcomeCategory            |disease                                   | MPCD TNF| MPCD DMARD| MPCD NSAID or no exposure| Marketscan TNF| Marketscan DMARD| Marketscan NSAID or no exposure| Medicare TNF| Medicare DMARD| Medicare NSAID or no exposure|
 |:--------------------------|:-----------------------------------------|--------:|----------:|-------------------------:|--------------:|----------------:|-------------------------------:|------------:|--------------:|-----------------------------:|
-|Cardiac disease            |Aortic Insufficiency/Aortic Regurgitation |     1.34|       0.47|                      1.94|             NA|               NA|                              NA|           NA|             NA|                            NA|
-|Cardiac disease            |Conduction Block                          |     0.33|       0.00|                      0.91|             NA|               NA|                              NA|           NA|             NA|                            NA|
-|Cardiac disease            |Myocardial infarction                     |     0.33|       0.00|                      0.61|             NA|               NA|                              NA|           NA|             NA|                            NA|
-|Inflammatory bowel disease |Crohn’s Disease                           |     4.69|       3.61|                      2.96|             NA|               NA|                              NA|           NA|             NA|                            NA|
-|Inflammatory bowel disease |Ulcerative Colitis                        |     2.54|       0.95|                      1.62|             NA|               NA|                              NA|           NA|             NA|                            NA|
-|Kidney disease             |Amyloidosis                               |     0.00|       0.00|                      0.11|             NA|               NA|                              NA|           NA|             NA|                            NA|
-|Kidney disease             |IgA nephropathy                           |     0.20|       0.00|                      0.11|             NA|               NA|                              NA|           NA|             NA|                            NA|
-|Kidney disease             |Nephrotic syndrome                        |     0.13|       0.00|                      0.00|             NA|               NA|                              NA|           NA|             NA|                            NA|
-|Lung disease               |Apical Pulmonary fibrosis                 |     0.00|       0.00|                      0.04|             NA|               NA|                              NA|           NA|             NA|                            NA|
-|Lung disease               |Interstitial lung disease                 |     0.00|       0.00|                      0.11|             NA|               NA|                              NA|           NA|             NA|                            NA|
-|Lung disease               |Restrictive lung disease                  |     0.94|       0.00|                      2.00|             NA|               NA|                              NA|           NA|             NA|                            NA|
-|Neurological Disease       |Cauda Equina syndrome                     |     0.00|       0.00|                      0.15|             NA|               NA|                              NA|           NA|             NA|                            NA|
-|Neurological Disease       |Spinal Cord compression                   |     0.07|       0.00|                      0.30|             NA|               NA|                              NA|           NA|             NA|                            NA|
-|PsO/PsA                    |Psoriasis                                 |     3.50|       0.95|                      1.62|             NA|               NA|                              NA|           NA|             NA|                            NA|
-|PsO/PsA                    |Psoriatic arthritis                       |     5.27|       5.13|                      1.84|             NA|               NA|                              NA|           NA|             NA|                            NA|
-|Uveitis                    |Uveitis                                   |     4.95|       6.55|                      4.86|             NA|               NA|                              NA|           NA|             NA|                            NA|
+|Cardiac disease            |Aortic Insufficiency/Aortic Regurgitation |     1.34|       0.47|                      1.94|           1.19|             1.52|                            2.07|         3.23|           4.67|                          5.95|
+|Cardiac disease            |Conduction Block                          |     0.33|       0.00|                      0.91|           1.14|             1.35|                            2.44|         2.94|           4.22|                          5.93|
+|Cardiac disease            |Myocardial infarction                     |     0.33|       0.00|                      0.61|           0.21|             0.28|                            0.64|         0.69|           1.21|                          1.55|
+|Inflammatory bowel disease |Crohn’s Disease                           |     4.69|       3.61|                      2.96|           4.77|             4.13|                            2.64|         3.89|           3.75|                          2.50|
+|Inflammatory bowel disease |Ulcerative Colitis                        |     2.54|       0.95|                      1.62|           3.06|             3.16|                            2.06|         2.44|           2.60|                          1.77|
+|Kidney disease             |Amyloidosis                               |     0.00|       0.00|                      0.11|           0.03|             0.00|                            0.00|         0.07|           0.03|                          0.06|
+|Kidney disease             |IgA nephropathy                           |     0.20|       0.00|                      0.11|           0.13|             0.11|                            0.10|         0.26|           0.18|                          0.28|
+|Kidney disease             |Nephrotic syndrome                        |     0.13|       0.00|                      0.00|           0.06|             0.11|                            0.05|         0.19|           0.13|                          0.13|
+|Lung disease               |Apical Pulmonary fibrosis                 |     0.00|       0.00|                      0.04|           0.00|             0.00|                            0.01|         0.00|           0.04|                          0.02|
+|Lung disease               |Interstitial lung disease                 |     0.00|       0.00|                      0.11|           0.07|             0.11|                            0.09|         0.08|           0.22|                          0.11|
+|Lung disease               |Restrictive lung disease                  |     0.94|       0.00|                      2.00|           1.90|             2.40|                            3.25|         5.88|           7.68|                          8.70|
+|Neurological Disease       |Cauda Equina syndrome                     |     0.00|       0.00|                      0.15|           0.03|             0.06|                            0.06|         0.10|           0.06|                          0.12|
+|Neurological Disease       |Spinal Cord compression                   |     0.07|       0.00|                      0.30|           0.25|             0.39|                            0.50|         0.43|           0.51|                          0.79|
+|PsO/PsA                    |Psoriasis                                 |     3.50|       0.95|                      1.62|           3.78|             3.34|                            1.81|         3.78|           3.41|                          2.07|
+|PsO/PsA                    |Psoriatic arthritis                       |     5.27|       5.13|                      1.84|           6.10|             7.13|                            2.19|         5.43|           4.62|                          1.88|
+|Uveitis                    |Uveitis                                   |     4.95|       6.55|                      4.86|           7.58|             8.57|                            8.03|         5.04|           3.77|                          2.96|
+
+## **TNF** versus **NSAID or no exposure**
+
+**MPCD**
+
+
+|database |outcomeCategory            |disease                                   |comparison                  | pValue|
+|:--------|:--------------------------|:-----------------------------------------|:---------------------------|------:|
+|MPCD     |Cardiac disease            |Aortic Insufficiency/Aortic Regurgitation |TNF vs NSAID or no exposure |  0.162|
+|MPCD     |Cardiac disease            |Conduction Block                          |TNF vs NSAID or no exposure |  0.028|
+|MPCD     |Cardiac disease            |Myocardial infarction                     |TNF vs NSAID or no exposure |  0.244|
+|MPCD     |Inflammatory bowel disease |Crohn.s Disease                           |TNF vs NSAID or no exposure |  0.006|
+|MPCD     |Inflammatory bowel disease |Ulcerative Colitis                        |TNF vs NSAID or no exposure |  0.050|
+|MPCD     |Kidney disease             |Amyloidosis                               |TNF vs NSAID or no exposure |  0.260|
+|MPCD     |Kidney disease             |IgA nephropathy                           |TNF vs NSAID or no exposure |  0.508|
+|MPCD     |Kidney disease             |Nephrotic syndrome                        |TNF vs NSAID or no exposure |  0.131|
+|MPCD     |Lung disease               |Apical Pulmonary fibrosis                 |TNF vs NSAID or no exposure |  0.638|
+|MPCD     |Lung disease               |Interstitial lung disease                 |TNF vs NSAID or no exposure |  0.260|
+|MPCD     |Lung disease               |Restrictive lung disease                  |TNF vs NSAID or no exposure |  0.008|
+|MPCD     |Neurological Disease       |Cauda Equina syndrome                     |TNF vs NSAID or no exposure |  0.165|
+|MPCD     |Neurological Disease       |Spinal Cord compression                   |TNF vs NSAID or no exposure |  0.124|
+|MPCD     |PsO/PsA                    |Psoriasis                                 |TNF vs NSAID or no exposure |  0.000|
+|MPCD     |PsO/PsA                    |Psoriatic arthritis                       |TNF vs NSAID or no exposure |  0.000|
+|MPCD     |Uveitis                    |Uveitis                                   |TNF vs NSAID or no exposure |  0.896|
+
+**Marketscan**
+
+
+|database   |outcomeCategory            |disease                                   |comparison                  | pValue|
+|:----------|:--------------------------|:-----------------------------------------|:---------------------------|------:|
+|Marketscan |Cardiac disease            |Aortic Insufficiency/Aortic Regurgitation |TNF vs NSAID or no exposure |  0.000|
+|Marketscan |Cardiac disease            |Conduction Block                          |TNF vs NSAID or no exposure |  0.000|
+|Marketscan |Cardiac disease            |Myocardial infarction                     |TNF vs NSAID or no exposure |  0.000|
+|Marketscan |Inflammatory bowel disease |Crohn.s Disease                           |TNF vs NSAID or no exposure |  0.000|
+|Marketscan |Inflammatory bowel disease |Ulcerative Colitis                        |TNF vs NSAID or no exposure |  0.000|
+|Marketscan |Kidney disease             |Amyloidosis                               |TNF vs NSAID or no exposure |  0.177|
+|Marketscan |Kidney disease             |IgA nephropathy                           |TNF vs NSAID or no exposure |  0.505|
+|Marketscan |Kidney disease             |Nephrotic syndrome                        |TNF vs NSAID or no exposure |  0.881|
+|Marketscan |Lung disease               |Apical Pulmonary fibrosis                 |TNF vs NSAID or no exposure |  0.579|
+|Marketscan |Lung disease               |Interstitial lung disease                 |TNF vs NSAID or no exposure |  0.809|
+|Marketscan |Lung disease               |Restrictive lung disease                  |TNF vs NSAID or no exposure |  0.000|
+|Marketscan |Neurological Disease       |Cauda Equina syndrome                     |TNF vs NSAID or no exposure |  0.359|
+|Marketscan |Neurological Disease       |Spinal Cord compression                   |TNF vs NSAID or no exposure |  0.013|
+|Marketscan |PsO/PsA                    |Psoriasis                                 |TNF vs NSAID or no exposure |  0.000|
+|Marketscan |PsO/PsA                    |Psoriatic arthritis                       |TNF vs NSAID or no exposure |  0.000|
+|Marketscan |Uveitis                    |Uveitis                                   |TNF vs NSAID or no exposure |  0.329|
+
+**Medicare**
+
+
+|database |outcomeCategory            |disease                                   |comparison                  | pValue|
+|:--------|:--------------------------|:-----------------------------------------|:---------------------------|------:|
+|Medicare |Cardiac disease            |Aortic Insufficiency/Aortic Regurgitation |TNF vs NSAID or no exposure |  0.000|
+|Medicare |Cardiac disease            |Conduction Block                          |TNF vs NSAID or no exposure |  0.000|
+|Medicare |Cardiac disease            |Myocardial infarction                     |TNF vs NSAID or no exposure |  0.000|
+|Medicare |Inflammatory bowel disease |Crohn.s Disease                           |TNF vs NSAID or no exposure |  0.000|
+|Medicare |Inflammatory bowel disease |Ulcerative Colitis                        |TNF vs NSAID or no exposure |  0.000|
+|Medicare |Kidney disease             |Amyloidosis                               |TNF vs NSAID or no exposure |  0.818|
+|Medicare |Kidney disease             |IgA nephropathy                           |TNF vs NSAID or no exposure |  0.643|
+|Medicare |Kidney disease             |Nephrotic syndrome                        |TNF vs NSAID or no exposure |  0.114|
+|Medicare |Lung disease               |Apical Pulmonary fibrosis                 |TNF vs NSAID or no exposure |  0.069|
+|Medicare |Lung disease               |Interstitial lung disease                 |TNF vs NSAID or no exposure |  0.418|
+|Medicare |Lung disease               |Restrictive lung disease                  |TNF vs NSAID or no exposure |  0.000|
+|Medicare |Neurological Disease       |Cauda Equina syndrome                     |TNF vs NSAID or no exposure |  0.484|
+|Medicare |Neurological Disease       |Spinal Cord compression                   |TNF vs NSAID or no exposure |  0.000|
+|Medicare |PsO/PsA                    |Psoriasis                                 |TNF vs NSAID or no exposure |  0.000|
+|Medicare |PsO/PsA                    |Psoriatic arthritis                       |TNF vs NSAID or no exposure |  0.000|
+|Medicare |Uveitis                    |Uveitis                                   |TNF vs NSAID or no exposure |  0.000|

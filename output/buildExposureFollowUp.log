@@ -1,4 +1,4 @@
-1                                                          The SAS System                                15:33 Tuesday, May 30, 2017
+1                                                          The SAS System                               10:36 Thursday, June 1, 2017
 
 NOTE: Copyright (c) 2002-2012 by SAS Institute Inc., Cary, NC, USA. 
 NOTE: SAS (r) Proprietary Software 9.4 (TS1M1) 
@@ -28,7 +28,7 @@ Please remember not to copy any data files that contain PHI (protected health id
 
 
 NOTE: SAS initialization used:
-      real time           0.20 seconds
+      real time           0.25 seconds
       cpu time            0.12 seconds
       
 1          *  University of Alabama at Birmingham                               *
@@ -72,7 +72,7 @@ NOTE: Libref DT was successfully assigned as follows:
 98           body = "output\&cmt..html"
 99           style = Statistical;
 NOTE: Writing HTML Body file: output\buildExposureFollowUp.html
-2                                                                   The SAS System                                         15:33 Tuesday, May 30, 2017
+2                                                                   The SAS System                                        10:36 Thursday, June 1, 2017
 
 100        
 101        
@@ -146,7 +146,7 @@ NOTE: Table WORK.TEMPLOOKUP created, with 59836 rows and 4 columns.
 163                   A.death_date,
 164                   A.exposureA as exposure,
 165                   A.indexStartA as exposureStart,
-3                                                                   The SAS System                                         15:33 Tuesday, May 30, 2017
+3                                                                   The SAS System                                        10:36 Thursday, June 1, 2017
 
 166                   A.indexEndA as exposureEnd
 167            from Work.temp0 A inner join
@@ -161,8 +161,8 @@ NOTE: Table WORK.TEMPEXPOSURESEGMENTS created, with 60252 rows and 7 columns.
 
 175        quit;
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           0.72 seconds
-      cpu time            0.45 seconds
+      real time           0.73 seconds
+      cpu time            0.51 seconds
       
 
 176        
@@ -191,8 +191,8 @@ NOTE: PROCEDURE SQL used (Total process time):
 NOTE: There were 60252 observations read from the data set WORK.TEMPEXPOSURESEGMENTS.
 NOTE: The data set DT.EXPOSURETIMELINE has 46055 observations and 7 variables.
 NOTE: DATA statement used (Total process time):
-      real time           0.07 seconds
-      cpu time            0.03 seconds
+      real time           0.13 seconds
+      cpu time            0.04 seconds
       
 
 198        proc sql;
@@ -202,69 +202,77 @@ NOTE: Table DT.EXPOSURETIMELINE has been modified, with 8 columns.
 201            set daysExposed = exposureEnd - exposureStart + 1;
 NOTE: 46055 rows were updated in DT.EXPOSURETIMELINE.
 
-202        quit ;
+202          alter table DT.exposureTimeline add exposureID numeric;
+NOTE: Table DT.EXPOSURETIMELINE has been modified, with 9 columns.
+203          update DT.exposureTimeline
+204            set exposureID = monotonic();
+NOTE: 46055 rows were updated in DT.EXPOSURETIMELINE.
+
+205        quit ;
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           0.23 seconds
-      cpu time            0.09 seconds
+      real time           0.42 seconds
+      cpu time            0.21 seconds
       
 
-203        
-204        
-205        proc means data = DT.exposureTimeline n mean std min q1 median q3 max maxdec = 1;
-206          class database exposure;
-207          var daysExposed;
-208        run;
+206        
+207        
+208        proc means data = DT.exposureTimeline n sum mean std min q1 median q3 max maxdec = 1;
+209          class database exposure;
+210          var daysExposed;
+211        run;
+4                                                                   The SAS System                                        10:36 Thursday, June 1, 2017
 
-                                                                  --- AS project ---                                   15:33 Tuesday, May 30, 2017   1
+
+                                                                  --- AS project ---                                  10:36 Thursday, June 1, 2017   1
 
                                                                  The MEANS Procedure
 
                                                            Analysis Variable : daysExposed 
  
-                                                                                                    Lower                       Upper
-   database    exposure              N Obs      N          Mean       Std Dev       Minimum      Quartile        Median      Quartile       Maximum
+                                                                                                                  Lower                       Upper
+   database    exposure              N Obs      N           Sum          Mean       Std Dev       Minimum      Quartile        Median      Quartile
    ------------------------------------------------------------------------------------------------------------------------------------------------
-   MPCD        DMARD                   423    423         368.8         319.8           1.0         102.0         295.0         551.0        1227.0
+   MPCD        DMARD                   423    423      156022.0         368.8         319.8           1.0         102.0         295.0         551.0
 
-               NSAID or no exposure   2093   2093         463.0         385.5           1.0         127.0         375.0         726.0        1278.0
+               NSAID or no exposure   2093   2093      969119.0         463.0         385.5           1.0         127.0         375.0         726.0
 
-               TNF                    1108   1108         496.3         341.4           1.0         221.0         434.0         742.5        1276.0
+               TNF                    1108   1108      549883.0         496.3         341.4           1.0         221.0         434.0         742.5
 
-   Marketscan  DMARD                  1813   1813         362.6         355.2           1.0          88.0         238.0         527.0        1625.0
+   Marketscan  DMARD                  1813   1813      657448.0         362.6         355.2           1.0          88.0         238.0         527.0
 
-               NSAID or no exposure   8122   8122         416.4         423.8           1.0          85.0         251.0         625.0        1643.0
+               NSAID or no exposure   8122   8122     3382321.0         416.4         423.8           1.0          85.0         251.0         625.0
 
-               TNF                    4824   4824         509.7         407.4           1.0         169.0         412.0         762.0        1637.0
+               TNF                    4824   4824     2458598.0         509.7         407.4           1.0         169.0         412.0         762.0
 
-   Medicare    DMARD                  4304   4304         769.3         704.8           1.0         207.0         534.0        1146.5        3101.0
+   Medicare    DMARD                  4304   4304     3311124.0         769.3         704.8           1.0         207.0         534.0        1146.5
 
-               NSAID or no exposure  18431  18431         779.1         776.9           1.0         182.0         547.0        1127.0        3104.0
+               NSAID or no exposure  18431  18431    14359942.0         779.1         776.9           1.0         182.0         547.0        1127.0
 
-               TNF                    4937   4937        1007.3         785.8           1.0         351.0         805.0        1519.0        3095.0
+               TNF                    4937   4937     4973067.0        1007.3         785.8           1.0         351.0         805.0        1519.0
    ------------------------------------------------------------------------------------------------------------------------------------------------
+
+                                                          Analysis Variable : daysExposed 
  
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
+                                                database    exposure              N Obs       Maximum
+                                                -----------------------------------------------------
+                                                MPCD        DMARD                   423        1227.0
+
+                                                            NSAID or no exposure   2093        1278.0
+
+                                                            TNF                    1108        1276.0
+
+                                                Marketscan  DMARD                  1813        1625.0
+
+                                                            NSAID or no exposure   8122        1643.0
+
+                                                            TNF                    4824        1637.0
+
+                                                Medicare    DMARD                  4304        3101.0
+
+                                                            NSAID or no exposure  18431        3104.0
+
+                                                            TNF                    4937        3095.0
+                                                -----------------------------------------------------
  
  
  
@@ -292,17 +300,15 @@ NOTE: PROCEDURE SQL used (Total process time):
 NOTE: There were 46055 observations read from the data set DT.EXPOSURETIMELINE.
 NOTE: The PROCEDURE MEANS printed page 1.
 NOTE: PROCEDURE MEANS used (Total process time):
-      real time           0.12 seconds
-      cpu time            0.06 seconds
-4                                                                   The SAS System                                         15:33 Tuesday, May 30, 2017
-
+      real time           0.10 seconds
+      cpu time            0.10 seconds
       
 
-209        
-210        
-211        ods html close;
+212        
+213        
+214        ods html close;
 NOTE: SAS Institute Inc., SAS Campus Drive, Cary, NC USA 27513-2414
 NOTE: The SAS System used:
-      real time           1.61 seconds
-      cpu time            0.98 seconds
+      real time           1.93 seconds
+      cpu time            1.24 seconds
       
