@@ -85,12 +85,17 @@ incidence <-
          "Medicare NSAID or no exposure" = incidenceRate_NSAID_Medicare,
          "Medicare DMARD" = incidenceRate_DMARD_Medicare,
          "Medicare TNF" = incidenceRate_TNF_Medicare)
-incidence %>% kable(digits = 2)
+incidence %>% kable(digits = 1)
 incidence %>% write.csv(file = "../data/processed/incidence.csv", row.names = FALSE)
 ```
 
 ## **TNF** versus **NSAID or no exposure**
 
+```{r}
+digits <- c(rep(0, 4), 1, 1, 3)
+```
+
+digits <- c(rep(0, 4), 1, 1, 3)
 **MPCD**
 
 ```{r}
@@ -113,7 +118,7 @@ compare <-
             compareIncidenceRates(db, exp, "PsO/PsA", "Psoriasis"),
             compareIncidenceRates(db, exp, "PsO/PsA", "Psoriatic arthritis"),
             compareIncidenceRates(db, exp, "Uveitis", "Uveitis"))
-compare %>% kable(digits = 3)
+compare %>% kable(digits = digits)
 ```
 
 **Marketscan**
@@ -138,7 +143,7 @@ compare <-
             compareIncidenceRates(db, exp, "PsO/PsA", "Psoriasis"),
             compareIncidenceRates(db, exp, "PsO/PsA", "Psoriatic arthritis"),
             compareIncidenceRates(db, exp, "Uveitis", "Uveitis"))
-compare %>% kable(digits = 3)
+compare %>% kable(digits = digits)
 ```
 
 **Medicare**
@@ -163,5 +168,5 @@ compare <-
             compareIncidenceRates(db, exp, "PsO/PsA", "Psoriasis"),
             compareIncidenceRates(db, exp, "PsO/PsA", "Psoriatic arthritis"),
             compareIncidenceRates(db, exp, "Uveitis", "Uveitis"))
-compare %>% kable(digits = 3)
+compare %>% kable(digits = digits)
 ```
