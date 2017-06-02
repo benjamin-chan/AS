@@ -9,7 +9,8 @@ sink("script.log")
 files <- c("header.yaml",
            "preamble.Rmd",
            "summarizePrevalence.Rmd",
-           "summarizeIncidence.Rmd")
+           "summarizeIncidence.Rmd",
+           "abstractACR2017.Rmd")
 f <- file("master.Rmd", open = "w")
 for (i in 1:length(files)) {
     x <- readLines(files[i])
