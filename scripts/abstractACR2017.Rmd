@@ -1,0 +1,120 @@
+# ACR 2017 abstract
+
+Build tables for Atul's 2017 ACR abstract.
+Collects code chunks from `summarizePrevalence.Rmd` and `summarizeIncidence.Rmd`.
+
+* Title
+  * **Do TNF Inhibitors Reduce the Incidence of Cardiac, Pulmonary and Neurologic Comorbidities in Ankylosing Spondylitis? An Analysis of Three Large US Claims Databases.**
+* Authors
+  * Atul Deodhar, Kevin Winthrop, Benjamin Chan, Sarah Siegel, Jeffery Stark, Robert Suruki, Rhonda Bohn, Huifeng Yun, Lang Chen, Jeffery Curtis
+
+
+## Prevalence
+
+```{r}
+df <-
+  "../data/processed/queryPrevalentComorbidities.csv" %>% 
+  read.csv(file = ., na.string = c("NA", "")) %>% 
+  rename(disease = Disease)
+foo <- function(db, exp) {
+    col <- which(names(df) %in% c("database", "outcomeCategory", "disease", "prevPct"))
+    df %>% 
+      filter(timeWindow == "Prior to index") %>% 
+      filter(database == db) %>% 
+      filter(exposure == exp) %>% 
+      select(col)
+}
+df1a <- foo("MPCD", "NSAID or no exposure")
+df1b <- foo("MPCD", "DMARD")
+df1c <- foo("MPCD", "TNF")
+df2a <- foo("Marketscan", "NSAID or no exposure")
+df2b <- foo("Marketscan", "DMARD")
+df2c <- foo("Marketscan", "TNF")
+df3a <- foo("Medicare", "NSAID or no exposure")
+df3b <- foo("Medicare", "DMARD")
+df3c <- foo("Medicare", "TNF")
+foo <- function (a, b, c) {
+    by <- c("database", "outcomeCategory", "disease")
+    merge(a, 
+          merge(b, 
+                c, 
+                by = by, all = TRUE, suffixes = c("_DMARD", "_TNF")), 
+          by = by, all = TRUE) %>% 
+      rename(prevPct_NSAID = prevPct) %>% 
+      select(-c(database))
+}
+prev <- 
+  merge(foo(df1a, df1b, df1c), 
+        merge(foo(df2a, df2b, df2c),
+              foo(df3a, df3b, df3c),
+              by = c("outcomeCategory", "disease"),
+              all = TRUE,
+              suffixes = c("_Marketscan", "_Medicare")),
+        by = c("outcomeCategory", "disease"),
+        all = TRUE) %>% 
+  rename(prevPct_NSAID_MPCD = prevPct_NSAID,
+         prevPct_DMARD_MPCD = prevPct_DMARD,
+         prevPct_TNF_MPCD = prevPct_TNF) %>%
+  select(c(outcomeCategory, disease,
+           prevPct_TNF_MPCD, prevPct_DMARD_MPCD, prevPct_NSAID_MPCD,
+           prevPct_TNF_Marketscan, prevPct_DMARD_Marketscan, prevPct_NSAID_Marketscan,
+           prevPct_TNF_Medicare, prevPct_DMARD_Medicare, prevPct_NSAID_Medicare)) %>% 
+  rename("MPCD NSAID or no exposure" = prevPct_NSAID_MPCD,
+         "MPCD DMARD" = prevPct_DMARD_MPCD,
+         "MPCD TNF" = prevPct_TNF_MPCD,
+         "Marketscan NSAID or no exposure" = prevPct_NSAID_Marketscan,
+         "Marketscan DMARD" = prevPct_DMARD_Marketscan,
+         "Marketscan TNF" = prevPct_TNF_Marketscan,
+         "Medicare NSAID or no exposure" = prevPct_NSAID_Medicare,
+         "Medicare DMARD" = prevPct_DMARD_Medicare,
+         "Medicare TNF" = prevPct_TNF_Medicare)
+prev %>% kable(digits = 1)
+```
+
+
+## Incidence
+
+```{r}
+df <-
+  "../data/processed/queryIncidenceOutcomes.csv" %>% 
+  read.csv(file = ., na.string = c("NA", "")) %>% 
+  rename(disease = Disease)
+exp <- c("TNF", "NSAID or no exposure")
+digits <- c(rep(0, 4), 1, 1, 3)
+db <- "MPCD"
+compare <-
+  bind_rows(compareIncidenceRates(db, exp, "Cardiac disease", "Aortic Insufficiency/Aortic Regurgitation"),
+            compareIncidenceRates(db, exp, "Cardiac disease", "Conduction Block"),
+            compareIncidenceRates(db, exp, "Cardiac disease", "Myocardial infarction"),
+            compareIncidenceRates(db, exp, "Lung disease", "Restrictive lung disease"),
+            compareIncidenceRates(db, exp, "Neurological Disease", "Spinal Cord compression"),
+            compareIncidenceRates(db, exp, "PsO/PsA", "Psoriasis"),
+            compareIncidenceRates(db, exp, "Inflammatory bowel disease", "Crohn.s Disease"),
+            compareIncidenceRates(db, exp, "Inflammatory bowel disease", "Ulcerative Colitis"),
+            compareIncidenceRates(db, exp, "Uveitis", "Uveitis"))
+compare %>% kable(digits = digits)
+db <- "Marketscan"
+compare <-
+  bind_rows(compareIncidenceRates(db, exp, "Cardiac disease", "Aortic Insufficiency/Aortic Regurgitation"),
+            compareIncidenceRates(db, exp, "Cardiac disease", "Conduction Block"),
+            compareIncidenceRates(db, exp, "Cardiac disease", "Myocardial infarction"),
+            compareIncidenceRates(db, exp, "Lung disease", "Restrictive lung disease"),
+            compareIncidenceRates(db, exp, "Neurological Disease", "Spinal Cord compression"),
+            compareIncidenceRates(db, exp, "PsO/PsA", "Psoriasis"),
+            compareIncidenceRates(db, exp, "Inflammatory bowel disease", "Crohn.s Disease"),
+            compareIncidenceRates(db, exp, "Inflammatory bowel disease", "Ulcerative Colitis"),
+            compareIncidenceRates(db, exp, "Uveitis", "Uveitis"))
+compare %>% kable(digits = digits)
+db <- "Medicare"
+compare <-
+  bind_rows(compareIncidenceRates(db, exp, "Cardiac disease", "Aortic Insufficiency/Aortic Regurgitation"),
+            compareIncidenceRates(db, exp, "Cardiac disease", "Conduction Block"),
+            compareIncidenceRates(db, exp, "Cardiac disease", "Myocardial infarction"),
+            compareIncidenceRates(db, exp, "Lung disease", "Restrictive lung disease"),
+            compareIncidenceRates(db, exp, "Neurological Disease", "Spinal Cord compression"),
+            compareIncidenceRates(db, exp, "PsO/PsA", "Psoriasis"),
+            compareIncidenceRates(db, exp, "Inflammatory bowel disease", "Crohn.s Disease"),
+            compareIncidenceRates(db, exp, "Inflammatory bowel disease", "Ulcerative Colitis"),
+            compareIncidenceRates(db, exp, "Uveitis", "Uveitis"))
+compare %>% kable(digits = digits)
+```
