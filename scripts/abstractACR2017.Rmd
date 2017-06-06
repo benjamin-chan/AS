@@ -68,6 +68,7 @@ prev <-
          "Medicare NSAID or no exposure" = prevPct_NSAID_Medicare,
          "Medicare DMARD" = prevPct_DMARD_Medicare,
          "Medicare TNF" = prevPct_TNF_Medicare)
+prev[is.na(prev)] <- 0
 prev %>% kable(digits = 1)
 ```
 
@@ -98,18 +99,19 @@ foo <- function (db, exp) {
   names(compare) <- sub("pValue", sprintf("%s p-value", db), names(compare))
   compare
 }
+bar <- function () {
+  merge(foo("MPCD", exp), 
+        merge(foo("Marketscan", exp), 
+              foo("Medicare", exp), 
+              by = c("outcomeCategory", "disease")),
+        by = c("outcomeCategory", "disease"))
+}
 exp <- c("TNF", "NSAID or no exposure")
-merge(foo("MPCD", exp), 
-      merge(foo("Marketscan", exp), 
-            foo("Medicare", exp), 
-            by = c("outcomeCategory", "disease")),
-      by = c("outcomeCategory", "disease")) %>% 
-  kable(digits = c(rep(0, 2), rep(c(1, 1, 3), 3)))
+inc <- bar()
+inc[is.na(inc)] <- 0
+inc %>% kable(digits = c(rep(0, 2), rep(c(1, 1, 3), 3)))
 exp <- c("TNF", "DMARD")
-merge(foo("MPCD", exp), 
-      merge(foo("Marketscan", exp), 
-            foo("Medicare", exp), 
-            by = c("outcomeCategory", "disease")),
-      by = c("outcomeCategory", "disease")) %>% 
-  kable(digits = c(rep(0, 2), rep(c(1, 1, 3), 3)))
+inc <- bar()
+inc[is.na(inc)] <- 0
+inc %>% kable(digits = c(rep(0, 2), rep(c(1, 1, 3), 3)))
 ```
