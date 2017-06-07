@@ -33,7 +33,7 @@ Table of **prevalence %**
 
 ```{r}
 foo <- function(db, exp) {
-    col <- which(names(df) %in% c("database", "outcomeCategory", "disease", "prevPct"))
+    col <- which(names(df) %in% c("database", "outcomeCategory", "timeWindow", "disease", "prevPct"))
     df %>% 
       filter(timeWindow == "Prior to index") %>% 
       filter(database == db) %>% 
@@ -49,8 +49,8 @@ df2c <- foo("Marketscan", "TNF")
 df3a <- foo("Medicare", "NSAID or no exposure")
 df3b <- foo("Medicare", "DMARD")
 df3c <- foo("Medicare", "TNF")
+by <- c("database", "outcomeCategory", "disease", "timeWindow")
 foo <- function (a, b, c) {
-    by <- c("database", "outcomeCategory", "disease")
     merge(a, 
           merge(b, 
                 c, 
@@ -63,15 +63,15 @@ prev <-
   merge(foo(df1a, df1b, df1c), 
         merge(foo(df2a, df2b, df2c),
               foo(df3a, df3b, df3c),
-              by = c("outcomeCategory", "disease"),
+              by = by[2:length(by)],
               all = TRUE,
               suffixes = c("_Marketscan", "_Medicare")),
-        by = c("outcomeCategory", "disease"),
+        by = by[2:length(by)],
         all = TRUE) %>% 
   rename(prevPct_NSAID_MPCD = prevPct_NSAID,
          prevPct_DMARD_MPCD = prevPct_DMARD,
          prevPct_TNF_MPCD = prevPct_TNF) %>%
-  select(c(outcomeCategory, disease,
+  select(c(outcomeCategory, disease, timeWindow,
            prevPct_TNF_MPCD, prevPct_DMARD_MPCD, prevPct_NSAID_MPCD,
            prevPct_TNF_Marketscan, prevPct_DMARD_Marketscan, prevPct_NSAID_Marketscan,
            prevPct_TNF_Medicare, prevPct_DMARD_Medicare, prevPct_NSAID_Medicare)) %>% 
