@@ -161,7 +161,7 @@ proc sql;
     select A.database, A.exposure, A.outcomeCategory, A.disease,
            B.denomPatid,
            B.denomIndexExp,
-           "Prior to index" as timeWindow,
+           "AS cohort entry to exposure" as timeWindow,
            sum(A.indPrevPriorToIndex) as numer,
            sum(A.indPrevPriorToIndex) / B.denomIndexExp * 100 as prevPct
     from Work.comorbidities A inner join
