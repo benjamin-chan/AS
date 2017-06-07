@@ -113,7 +113,7 @@ proc sql;
   create table Work.defOutcomes as
     select * 
     from DT.defOutcomes 
-    where outcomeCategory ^in ("Cancer", "Hospitalized infection", "Opportunistic infection") & 
+    where outcomeCategory ^in ("Hospitalized infection", "Opportunistic infection") & 
           disease ^in ("Interstitial lung disease");
   
   %let select1 = select A.*, B.outcomeCategory, B.disease;

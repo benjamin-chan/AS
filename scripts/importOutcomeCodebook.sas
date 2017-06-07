@@ -93,7 +93,7 @@ proc sql;
       from Work.defLNK;
   select outcomeCategory, disease, count(distinct codeType) as countCodeTypes, count(distinct code) as countCodes
     from DT.defOutcomes
-    where outcomeCategory ^in ("Cancer", "Hospitalized infection", "Opportunistic infection")
+    where outcomeCategory ^in ("Hospitalized infection", "Opportunistic infection")
     group by outcomeCategory, disease;
 quit;
 
