@@ -1,6 +1,6 @@
 ---
 title: "Comorbidities and Disease Manifestations in Ankylosing Spondylitis (BAD AS)"
-date: "2017-06-02 11:59:33"
+date: "2017-06-06 12:40:48"
 author: Benjamin Chan (chanb@ohsu.edu)
 output:
   html_document:
@@ -92,6 +92,24 @@ Source user-defined functions.
 ## We have invested a lot of time and effort in creating R, please
 ## cite it when using it for data analysis. See also
 ## 'citation("pkgname")' for citing R packages.
+```
+
+```
+## 
+## To cite package 'epitools' in publications use:
+## 
+##   Tomas J. Aragon (2017). epitools: Epidemiology Tools. R package
+##   version 0.5-8. https://CRAN.R-project.org/package=epitools
+## 
+## A BibTeX entry for LaTeX users is
+## 
+##   @Manual{,
+##     title = {epitools: Epidemiology Tools},
+##     author = {Tomas J. Aragon},
+##     year = {2017},
+##     note = {R package version 0.5-8},
+##     url = {https://CRAN.R-project.org/package=epitools},
+##   }
 ```
 # Summarize prevalence
 
@@ -359,17 +377,17 @@ Collects code chunks from `summarizePrevalence.Rmd` and `summarizeIncidence.Rmd`
 |:--------------------------|:-----------------------------------------|--------:|----------:|-------------------------:|--------------:|----------------:|-------------------------------:|------------:|--------------:|-----------------------------:|
 |Cardiac disease            |Aortic Insufficiency/Aortic Regurgitation |      1.5|        0.8|                       2.0|            1.8|              2.1|                             2.8|          8.0|           10.9|                          11.7|
 |Cardiac disease            |Conduction Block                          |      0.4|        0.8|                       0.8|            1.7|              2.4|                             2.5|          6.8|            8.6|                          10.5|
-|Cardiac disease            |Myocardial infarction                     |      0.3|         NA|                       0.5|            0.5|              0.5|                             0.5|          1.7|            1.9|                           2.4|
+|Cardiac disease            |Myocardial infarction                     |      0.3|        0.0|                       0.5|            0.5|              0.5|                             0.5|          1.7|            1.9|                           2.4|
 |Inflammatory bowel disease |Crohn’s Disease                           |      6.1|        4.2|                       2.9|            6.4|              4.8|                             3.3|         10.4|            8.8|                           5.8|
 |Inflammatory bowel disease |Ulcerative Colitis                        |      3.7|        3.1|                       2.0|            4.9|              3.0|                             2.6|          7.4|            7.2|                           4.9|
-|Kidney disease             |Amyloidosis                               |       NA|         NA|                       0.0|            0.0|              0.0|                             0.0|          0.1|            0.1|                           0.2|
+|Kidney disease             |Amyloidosis                               |      0.0|        0.0|                       0.0|            0.0|              0.0|                             0.0|          0.1|            0.1|                           0.2|
 |Kidney disease             |IgA nephropathy                           |      0.1|        0.2|                       0.1|            0.2|              0.2|                             0.1|          0.7|            0.9|                           0.6|
 |Kidney disease             |Nephrotic syndrome                        |      0.0|        0.0|                       0.0|            0.1|              0.1|                             0.1|          0.2|            0.5|                           0.3|
-|Lung disease               |Apical Pulmonary fibrosis                 |       NA|         NA|                       0.0|            0.0|               NA|                             0.0|          0.0|            0.1|                           0.0|
-|Lung disease               |Interstitial lung disease                 |      0.2|         NA|                       0.0|            0.1|              0.2|                             0.1|          0.3|            0.5|                           0.2|
+|Lung disease               |Apical Pulmonary fibrosis                 |      0.0|        0.0|                       0.0|            0.0|              0.0|                             0.0|          0.0|            0.1|                           0.0|
+|Lung disease               |Interstitial lung disease                 |      0.2|        0.0|                       0.0|            0.1|              0.2|                             0.1|          0.3|            0.5|                           0.2|
 |Lung disease               |Restrictive lung disease                  |      1.0|        0.6|                       1.6|            3.9|              4.4|                             4.7|         15.5|           20.1|                          18.0|
-|Neurological Disease       |Cauda Equina syndrome                     |       NA|         NA|                       0.1|            0.1|              0.2|                             0.1|          0.2|            0.3|                           0.3|
-|Neurological Disease       |Spinal Cord compression                   |      0.1|         NA|                       0.3|            0.3|              0.5|                             0.5|          1.7|            2.0|                           2.4|
+|Neurological Disease       |Cauda Equina syndrome                     |      0.0|        0.0|                       0.1|            0.1|              0.2|                             0.1|          0.2|            0.3|                           0.3|
+|Neurological Disease       |Spinal Cord compression                   |      0.1|        0.0|                       0.3|            0.3|              0.5|                             0.5|          1.7|            2.0|                           2.4|
 |PsO/PsA                    |Psoriasis                                 |      4.1|        2.5|                       2.7|            5.1|              3.8|                             2.3|          9.9|            8.0|                           5.8|
 |PsO/PsA                    |Psoriatic arthritis                       |      6.6|        4.8|                       2.4|            8.5|              6.2|                             2.9|         13.9|           10.1|                           5.4|
 |Uveitis                    |Uveitis                                   |     11.3|        8.5|                       7.4|           13.4|             11.0|                            11.2|         13.4|           10.1|                           8.0|
