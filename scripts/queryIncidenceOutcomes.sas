@@ -124,12 +124,12 @@ proc sql;
   create table Work.defOutcomes as
     select * 
     from DT.defOutcomes 
-    where outcomeCategory ^in ("Cancer", "Hospitalized infection", "Opportunistic infection") & 
+    where outcomeCategory ^in ("Hospitalized infection", "Opportunistic infection") & 
           disease ^in ("Interstitial lung disease");
   create table Work.lookupDisease as
     select distinct outcomeCategory, disease
     from DT.defOutcomes
-    where outcomeCategory ^in ("Cancer", "Hospitalized infection", "Opportunistic infection");
+    where outcomeCategory ^in ("Hospitalized infection", "Opportunistic infection");
   
   %let select1 = select A.*, B.outcomeCategory, B.disease;
   %let join1 = inner join Work.defOutcomes B on (A.codeType = B.codeType & A.code = B.code);

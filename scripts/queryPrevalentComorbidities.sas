@@ -113,7 +113,7 @@ proc sql;
   create table Work.defOutcomes as
     select * 
     from DT.defOutcomes 
-    where outcomeCategory ^in ("Cancer", "Hospitalized infection", "Opportunistic infection") & 
+    where outcomeCategory ^in ("Hospitalized infection", "Opportunistic infection") & 
           disease ^in ("Interstitial lung disease");
   
   %let select1 = select A.*, B.outcomeCategory, B.disease;
@@ -161,7 +161,7 @@ proc sql;
     select A.database, A.exposure, A.outcomeCategory, A.disease,
            B.denomPatid,
            B.denomIndexExp,
-           "Prior to index" as timeWindow,
+           "AS cohort entry to exposure" as timeWindow,
            sum(A.indPrevPriorToIndex) as numer,
            sum(A.indPrevPriorToIndex) / B.denomIndexExp * 100 as prevPct
     from Work.comorbidities A inner join
