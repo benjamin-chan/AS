@@ -125,7 +125,7 @@ proc sql;
     select C.database, C.exposure, C.patid, C.ASCohortDate, C.indexGNN, C.indexDate, C.indexID, C.age, C.sex,
            C.outcomeCategory,
            C.disease,
-           sum(C.ASCohortDate <= C.begin_date < C.indexDate) > 0 as indPrevPriorToIndex,
+           sum(C.ASCohortDate <= C.begin_date <= C.indexDate) > 0 as indPrevPriorToIndex,
            sum(0 <= C.indexDate  - C.begin_date <= 183 |
                0 <= C.begin_date - C.indexDate  <= (183 * 1)) > 0 as indPrev12mo,
            sum(0 <= C.indexDate  - C.begin_date <= 183 |
