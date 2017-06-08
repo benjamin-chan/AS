@@ -152,6 +152,9 @@ proc sql;
   create table Work.denominator as
     select database, 
            exposure, 
+           mean(indexDate - ASCohortDate) as meanDaysASCohortToExposure,
+           min(indexDate - ASCohortDate) as minDaysASCohortToExposure,
+           max(indexDate - ASCohortDate) as maxDaysASCohortToExposure,
            count(distinct patid) as denomPatid,
            count(distinct indexID) as denomIndexExp
     from DT.indexLookup
