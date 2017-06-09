@@ -1,6 +1,6 @@
 ---
 title: "Comorbidities and Disease Manifestations in Ankylosing Spondylitis (BAD AS)"
-date: "2017-06-07 07:27:31"
+date: "2017-06-09 10:14:56"
 author: Benjamin Chan (chanb@ohsu.edu)
 output:
   html_document:
@@ -135,36 +135,39 @@ See `queryPrevalentComorbidities.sas`.
 |    |database   |exposure             | denomPatid| denomIndexExp|
 |:---|:----------|:--------------------|----------:|-------------:|
 |1   |MPCD       |DMARD                |        421|           481|
-|37  |MPCD       |NSAID or no exposure |       2083|          2593|
-|101 |MPCD       |TNF                  |       1107|          1279|
-|149 |Marketscan |DMARD                |       1799|          2045|
-|209 |Marketscan |NSAID or no exposure |       8025|         10589|
-|273 |Marketscan |TNF                  |       4797|          5779|
-|337 |Medicare   |DMARD                |       4231|          5193|
-|401 |Medicare   |NSAID or no exposure |      17983|         26122|
-|465 |Medicare   |TNF                  |       4866|          5929|
+|45  |MPCD       |NSAID or no exposure |       2083|          2593|
+|117 |MPCD       |TNF                  |       1107|          1279|
+|173 |Marketscan |DMARD                |       1799|          2045|
+|245 |Marketscan |NSAID or no exposure |       8025|         10589|
+|321 |Marketscan |TNF                  |       4797|          5779|
+|397 |Medicare   |DMARD                |       4231|          5193|
+|473 |Medicare   |NSAID or no exposure |      17983|         26122|
+|549 |Medicare   |TNF                  |       4866|          5929|
 
 Table of **prevalence %**
 
 
-|outcomeCategory            |disease                                   | MPCD TNF| MPCD DMARD| MPCD NSAID or no exposure| Marketscan TNF| Marketscan DMARD| Marketscan NSAID or no exposure| Medicare TNF| Medicare DMARD| Medicare NSAID or no exposure|
-|:--------------------------|:-----------------------------------------|--------:|----------:|-------------------------:|--------------:|----------------:|-------------------------------:|------------:|--------------:|-----------------------------:|
-|Cardiac disease            |Aortic Insufficiency/Aortic Regurgitation |      1.3|        0.4|                       0.1|            0.9|              0.9|                             0.7|          4.8|            5.8|                           3.9|
-|Cardiac disease            |Conduction Block                          |      0.2|         NA|                       0.1|            0.9|              1.2|                             0.6|          3.9|            4.6|                           3.5|
-|Cardiac disease            |Myocardial infarction                     |      0.2|         NA|                       0.0|            0.3|              0.2|                             0.2|          1.0|            1.0|                           0.6|
-|Inflammatory bowel disease |Crohn’s Disease                           |      5.0|        2.9|                       0.7|            4.8|              3.4|                             0.9|          8.3|            6.5|                           2.1|
-|Inflammatory bowel disease |Ulcerative Colitis                        |      2.1|        1.5|                       0.6|            3.3|              1.6|                             0.6|          5.1|            4.6|                           1.6|
-|Kidney disease             |Amyloidosis                               |       NA|         NA|                       0.0|            0.0|              0.0|                             0.0|          0.1|            0.1|                           0.1|
-|Kidney disease             |IgA nephropathy                           |      0.1|        0.2|                       0.1|            0.1|              0.1|                             0.0|          0.4|            0.4|                           0.3|
-|Kidney disease             |Nephrotic syndrome                        |      0.0|        0.0|                       0.0|            0.1|              0.0|                             0.0|          0.1|            0.2|                           0.1|
-|Lung disease               |Apical Pulmonary fibrosis                 |       NA|         NA|                       0.0|            0.0|               NA|                             0.0|          0.0|            0.1|                           0.0|
-|Lung disease               |Interstitial lung disease                 |       NA|         NA|                       0.0|            0.1|              0.1|                             0.0|          0.2|            0.3|                           0.1|
-|Lung disease               |Restrictive lung disease                  |      0.7|        0.4|                       0.4|            2.1|              2.3|                             1.1|          9.0|           11.4|                           6.2|
-|Neurological Disease       |Cauda Equina syndrome                     |       NA|         NA|                       0.0|            0.0|              0.1|                             0.0|          0.1|            0.2|                           0.1|
-|Neurological Disease       |Spinal Cord compression                   |      0.0|         NA|                       0.1|            0.1|              0.2|                             0.2|          1.0|            1.1|                           0.7|
-|PsO/PsA                    |Psoriasis                                 |      2.7|        1.0|                       0.6|            3.3|              2.2|                             0.8|          7.0|            5.1|                           2.0|
-|PsO/PsA                    |Psoriatic arthritis                       |      5.2|        2.9|                       0.5|            6.5|              4.0|                             1.1|         11.4|            7.7|                           2.3|
-|Uveitis                    |Uveitis                                   |      6.7|        5.2|                       2.0|            8.6|              5.4|                             3.1|          9.8|            6.6|                           3.6|
+|outcomeCategory            |disease                                   |timeWindow                  | MPCD TNF| MPCD DMARD| MPCD NSAID or no exposure| Marketscan TNF| Marketscan DMARD| Marketscan NSAID or no exposure| Medicare TNF| Medicare DMARD| Medicare NSAID or no exposure|
+|:--------------------------|:-----------------------------------------|:---------------------------|--------:|----------:|-------------------------:|--------------:|----------------:|-------------------------------:|------------:|--------------:|-----------------------------:|
+|Cancer                     |Hematologic Cancer                        |AS cohort entry to exposure |      0.4|        0.2|                       0.1|            0.1|              0.7|                             0.5|          1.2|            2.2|                           1.4|
+|Cancer                     |Non Melanoma Skin Cancer                  |AS cohort entry to exposure |       NA|         NA|                        NA|            1.1|              1.1|                             0.9|          1.8|            1.9|                           1.5|
+|Cancer                     |Solid Cancer                              |AS cohort entry to exposure |      1.6|        1.2|                       1.7|            1.9|              3.7|                             2.5|          6.9|            8.7|                           7.4|
+|Cardiac disease            |Aortic Insufficiency/Aortic Regurgitation |AS cohort entry to exposure |      1.4|        0.4|                       0.3|            1.0|              0.9|                             1.0|          4.8|            5.8|                           4.4|
+|Cardiac disease            |Conduction Block                          |AS cohort entry to exposure |      0.2|         NA|                       0.2|            0.9|              1.2|                             1.0|          3.9|            4.6|                           4.2|
+|Cardiac disease            |Myocardial infarction                     |AS cohort entry to exposure |      0.2|         NA|                       0.0|            0.3|              0.2|                             0.4|          1.0|            1.0|                           1.0|
+|Inflammatory bowel disease |Crohn’s Disease                           |AS cohort entry to exposure |      5.2|        2.9|                       1.4|            5.0|              3.6|                             1.7|          8.4|            6.8|                           2.9|
+|Inflammatory bowel disease |Ulcerative Colitis                        |AS cohort entry to exposure |      2.1|        1.5|                       1.0|            3.4|              1.8|                             1.0|          5.2|            4.7|                           1.8|
+|Kidney disease             |Amyloidosis                               |AS cohort entry to exposure |       NA|         NA|                       0.0|            0.0|              0.0|                             0.0|          0.1|            0.1|                           0.1|
+|Kidney disease             |IgA nephropathy                           |AS cohort entry to exposure |      0.1|        0.2|                       0.1|            0.1|              0.1|                             0.0|          0.4|            0.4|                           0.3|
+|Kidney disease             |Nephrotic syndrome                        |AS cohort entry to exposure |      0.0|        0.0|                       0.0|            0.1|              0.0|                             0.0|          0.1|            0.2|                           0.1|
+|Lung disease               |Apical Pulmonary fibrosis                 |AS cohort entry to exposure |       NA|         NA|                       0.0|            0.0|               NA|                             0.0|          0.0|            0.1|                           0.0|
+|Lung disease               |Interstitial lung disease                 |AS cohort entry to exposure |       NA|         NA|                       0.0|            0.1|              0.1|                             0.1|          0.2|            0.3|                           0.1|
+|Lung disease               |Restrictive lung disease                  |AS cohort entry to exposure |      0.8|        0.4|                       0.8|            2.1|              2.4|                             1.4|          9.0|           11.5|                           6.8|
+|Neurological Disease       |Cauda Equina syndrome                     |AS cohort entry to exposure |       NA|         NA|                       0.1|            0.0|              0.1|                             0.0|          0.1|            0.2|                           0.1|
+|Neurological Disease       |Spinal Cord compression                   |AS cohort entry to exposure |      0.0|         NA|                       0.2|            0.1|              0.2|                             0.3|          1.0|            1.1|                           0.8|
+|PsO/PsA                    |Psoriasis                                 |AS cohort entry to exposure |      2.9|        1.2|                       1.0|            3.4|              2.6|                             1.1|          7.1|            5.3|                           2.4|
+|PsO/PsA                    |Psoriatic arthritis                       |AS cohort entry to exposure |      5.5|        4.4|                       1.1|            6.9|              4.8|                             1.7|         11.8|            8.5|                           3.0|
+|Uveitis                    |Uveitis                                   |AS cohort entry to exposure |      7.0|        5.8|                       3.2|            8.7|              6.3|                             4.5|          9.8|            6.9|                           3.9|
 # Summarize incidence
 
 ```
@@ -189,20 +192,23 @@ See `queryIncidenceOutcomes.sas`.
 |    |database   |exposure             |     n|
 |:---|:----------|:--------------------|-----:|
 |1   |MPCD       |DMARD                |   423|
-|17  |MPCD       |NSAID or no exposure |  2093|
-|33  |MPCD       |TNF                  |  1108|
-|49  |Marketscan |DMARD                |  1813|
-|65  |Marketscan |NSAID or no exposure |  8122|
-|81  |Marketscan |TNF                  |  4824|
-|97  |Medicare   |DMARD                |  4304|
-|113 |Medicare   |NSAID or no exposure | 18431|
-|129 |Medicare   |TNF                  |  4937|
+|20  |MPCD       |NSAID or no exposure |  2093|
+|39  |MPCD       |TNF                  |  1108|
+|58  |Marketscan |DMARD                |  1813|
+|77  |Marketscan |NSAID or no exposure |  8122|
+|96  |Marketscan |TNF                  |  4824|
+|115 |Medicare   |DMARD                |  4304|
+|134 |Medicare   |NSAID or no exposure | 18431|
+|153 |Medicare   |TNF                  |  4937|
 
 Table of **incidence per 100 person-years**
 
 
 |outcomeCategory            |disease                                   | MPCD TNF| MPCD DMARD| MPCD NSAID or no exposure| Marketscan TNF| Marketscan DMARD| Marketscan NSAID or no exposure| Medicare TNF| Medicare DMARD| Medicare NSAID or no exposure|
 |:--------------------------|:-----------------------------------------|--------:|----------:|-------------------------:|--------------:|----------------:|-------------------------------:|------------:|--------------:|-----------------------------:|
+|Cancer                     |Hematologic Cancer                        |      0.3|        0.2|                       0.6|            0.3|              1.0|                             0.8|          0.7|            1.4|                           1.5|
+|Cancer                     |Non Melanoma Skin Cancer                  |      0.0|        0.0|                       0.0|            1.6|              2.6|                             1.9|          2.2|            2.7|                           3.5|
+|Cancer                     |Solid Cancer                              |      2.2|        1.9|                       4.7|            2.3|              5.4|                             5.1|          4.7|            7.2|                           9.2|
 |Cardiac disease            |Aortic Insufficiency/Aortic Regurgitation |      1.3|        0.5|                       1.9|            1.2|              1.5|                             2.1|          3.2|            4.7|                           6.0|
 |Cardiac disease            |Conduction Block                          |      0.3|        0.0|                       0.9|            1.1|              1.4|                             2.4|          2.9|            4.2|                           5.9|
 |Cardiac disease            |Myocardial infarction                     |      0.3|        0.0|                       0.6|            0.2|              0.3|                             0.6|          0.7|            1.2|                           1.5|
@@ -373,24 +379,27 @@ Collects code chunks from `summarizePrevalence.Rmd` and `summarizeIncidence.Rmd`
 ## Prevalence
 
 
-|outcomeCategory            |disease                                   | MPCD TNF| MPCD DMARD| MPCD NSAID or no exposure| Marketscan TNF| Marketscan DMARD| Marketscan NSAID or no exposure| Medicare TNF| Medicare DMARD| Medicare NSAID or no exposure|
-|:--------------------------|:-----------------------------------------|--------:|----------:|-------------------------:|--------------:|----------------:|-------------------------------:|------------:|--------------:|-----------------------------:|
-|Cardiac disease            |Aortic Insufficiency/Aortic Regurgitation |      1.3|        0.4|                       0.1|            0.9|              0.9|                             0.7|          4.8|            5.8|                           3.9|
-|Cardiac disease            |Conduction Block                          |      0.2|        0.0|                       0.1|            0.9|              1.2|                             0.6|          3.9|            4.6|                           3.5|
-|Cardiac disease            |Myocardial infarction                     |      0.2|        0.0|                       0.0|            0.3|              0.2|                             0.2|          1.0|            1.0|                           0.6|
-|Inflammatory bowel disease |Crohn’s Disease                           |      5.0|        2.9|                       0.7|            4.8|              3.4|                             0.9|          8.3|            6.5|                           2.1|
-|Inflammatory bowel disease |Ulcerative Colitis                        |      2.1|        1.5|                       0.6|            3.3|              1.6|                             0.6|          5.1|            4.6|                           1.6|
-|Kidney disease             |Amyloidosis                               |      0.0|        0.0|                       0.0|            0.0|              0.0|                             0.0|          0.1|            0.1|                           0.1|
-|Kidney disease             |IgA nephropathy                           |      0.1|        0.2|                       0.1|            0.1|              0.1|                             0.0|          0.4|            0.4|                           0.3|
-|Kidney disease             |Nephrotic syndrome                        |      0.0|        0.0|                       0.0|            0.1|              0.0|                             0.0|          0.1|            0.2|                           0.1|
-|Lung disease               |Apical Pulmonary fibrosis                 |      0.0|        0.0|                       0.0|            0.0|              0.0|                             0.0|          0.0|            0.1|                           0.0|
-|Lung disease               |Interstitial lung disease                 |      0.0|        0.0|                       0.0|            0.1|              0.1|                             0.0|          0.2|            0.3|                           0.1|
-|Lung disease               |Restrictive lung disease                  |      0.7|        0.4|                       0.4|            2.1|              2.3|                             1.1|          9.0|           11.4|                           6.2|
-|Neurological Disease       |Cauda Equina syndrome                     |      0.0|        0.0|                       0.0|            0.0|              0.1|                             0.0|          0.1|            0.2|                           0.1|
-|Neurological Disease       |Spinal Cord compression                   |      0.0|        0.0|                       0.1|            0.1|              0.2|                             0.2|          1.0|            1.1|                           0.7|
-|PsO/PsA                    |Psoriasis                                 |      2.7|        1.0|                       0.6|            3.3|              2.2|                             0.8|          7.0|            5.1|                           2.0|
-|PsO/PsA                    |Psoriatic arthritis                       |      5.2|        2.9|                       0.5|            6.5|              4.0|                             1.1|         11.4|            7.7|                           2.3|
-|Uveitis                    |Uveitis                                   |      6.7|        5.2|                       2.0|            8.6|              5.4|                             3.1|          9.8|            6.6|                           3.6|
+|outcomeCategory            |disease                                   |timeWindow                  | MPCD TNF| MPCD DMARD| MPCD NSAID or no exposure| Marketscan TNF| Marketscan DMARD| Marketscan NSAID or no exposure| Medicare TNF| Medicare DMARD| Medicare NSAID or no exposure|
+|:--------------------------|:-----------------------------------------|:---------------------------|--------:|----------:|-------------------------:|--------------:|----------------:|-------------------------------:|------------:|--------------:|-----------------------------:|
+|Cancer                     |Hematologic Cancer                        |AS cohort entry to exposure |      0.4|        0.2|                       0.1|            0.1|              0.7|                             0.5|          1.2|            2.2|                           1.4|
+|Cancer                     |Non Melanoma Skin Cancer                  |AS cohort entry to exposure |      0.0|        0.0|                       0.0|            1.1|              1.1|                             0.9|          1.8|            1.9|                           1.5|
+|Cancer                     |Solid Cancer                              |AS cohort entry to exposure |      1.6|        1.2|                       1.7|            1.9|              3.7|                             2.5|          6.9|            8.7|                           7.4|
+|Cardiac disease            |Aortic Insufficiency/Aortic Regurgitation |AS cohort entry to exposure |      1.4|        0.4|                       0.3|            1.0|              0.9|                             1.0|          4.8|            5.8|                           4.4|
+|Cardiac disease            |Conduction Block                          |AS cohort entry to exposure |      0.2|        0.0|                       0.2|            0.9|              1.2|                             1.0|          3.9|            4.6|                           4.2|
+|Cardiac disease            |Myocardial infarction                     |AS cohort entry to exposure |      0.2|        0.0|                       0.0|            0.3|              0.2|                             0.4|          1.0|            1.0|                           1.0|
+|Inflammatory bowel disease |Crohn’s Disease                           |AS cohort entry to exposure |      5.2|        2.9|                       1.4|            5.0|              3.6|                             1.7|          8.4|            6.8|                           2.9|
+|Inflammatory bowel disease |Ulcerative Colitis                        |AS cohort entry to exposure |      2.1|        1.5|                       1.0|            3.4|              1.8|                             1.0|          5.2|            4.7|                           1.8|
+|Kidney disease             |Amyloidosis                               |AS cohort entry to exposure |      0.0|        0.0|                       0.0|            0.0|              0.0|                             0.0|          0.1|            0.1|                           0.1|
+|Kidney disease             |IgA nephropathy                           |AS cohort entry to exposure |      0.1|        0.2|                       0.1|            0.1|              0.1|                             0.0|          0.4|            0.4|                           0.3|
+|Kidney disease             |Nephrotic syndrome                        |AS cohort entry to exposure |      0.0|        0.0|                       0.0|            0.1|              0.0|                             0.0|          0.1|            0.2|                           0.1|
+|Lung disease               |Apical Pulmonary fibrosis                 |AS cohort entry to exposure |      0.0|        0.0|                       0.0|            0.0|              0.0|                             0.0|          0.0|            0.1|                           0.0|
+|Lung disease               |Interstitial lung disease                 |AS cohort entry to exposure |      0.0|        0.0|                       0.0|            0.1|              0.1|                             0.1|          0.2|            0.3|                           0.1|
+|Lung disease               |Restrictive lung disease                  |AS cohort entry to exposure |      0.8|        0.4|                       0.8|            2.1|              2.4|                             1.4|          9.0|           11.5|                           6.8|
+|Neurological Disease       |Cauda Equina syndrome                     |AS cohort entry to exposure |      0.0|        0.0|                       0.1|            0.0|              0.1|                             0.0|          0.1|            0.2|                           0.1|
+|Neurological Disease       |Spinal Cord compression                   |AS cohort entry to exposure |      0.0|        0.0|                       0.2|            0.1|              0.2|                             0.3|          1.0|            1.1|                           0.8|
+|PsO/PsA                    |Psoriasis                                 |AS cohort entry to exposure |      2.9|        1.2|                       1.0|            3.4|              2.6|                             1.1|          7.1|            5.3|                           2.4|
+|PsO/PsA                    |Psoriatic arthritis                       |AS cohort entry to exposure |      5.5|        4.4|                       1.1|            6.9|              4.8|                             1.7|         11.8|            8.5|                           3.0|
+|Uveitis                    |Uveitis                                   |AS cohort entry to exposure |      7.0|        5.8|                       3.2|            8.7|              6.3|                             4.5|          9.8|            6.9|                           3.9|
 
 
 ## Incidence
