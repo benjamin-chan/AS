@@ -1,6 +1,6 @@
 ---
 title: "Comorbidities and Disease Manifestations in Ankylosing Spondylitis (BAD AS)"
-date: "2017-06-13 08:38:05"
+date: "2017-06-13 10:46:29"
 author: Benjamin Chan (chanb@ohsu.edu)
 output:
   html_document:
@@ -405,28 +405,28 @@ Collects code chunks from `summarizePrevalence.Rmd` and `summarizeIncidence.Rmd`
 ## Incidence
 
 
-|outcomeCategory            |disease                                   | MPCD TNF| MPCD NSAID or no exposure| MPCD p-value| Marketscan TNF| Marketscan NSAID or no exposure| Marketscan p-value| Medicare TNF| Medicare NSAID or no exposure| Medicare p-value|
-|:--------------------------|:-----------------------------------------|--------:|-------------------------:|------------:|--------------:|-------------------------------:|------------------:|------------:|-----------------------------:|----------------:|
-|Cardiac disease            |Aortic Insufficiency/Aortic Regurgitation |      1.3|                       1.9|        0.162|            1.2|                             2.1|              0.000|          3.2|                           6.0|                0|
-|Cardiac disease            |Conduction Block                          |      0.3|                       0.9|        0.028|            1.1|                             2.4|              0.000|          2.9|                           5.9|                0|
-|Cardiac disease            |Myocardial infarction                     |      0.3|                       0.6|        0.244|            0.2|                             0.6|              0.000|          0.7|                           1.5|                0|
-|Inflammatory bowel disease |Crohn.s Disease                           |      4.7|                       3.0|        0.006|            4.8|                             2.6|              0.000|          3.9|                           2.5|                0|
-|Inflammatory bowel disease |Ulcerative Colitis                        |      2.5|                       1.6|        0.050|            3.1|                             2.1|              0.000|          2.4|                           1.8|                0|
-|Lung disease               |Restrictive lung disease                  |      0.9|                       2.0|        0.008|            1.9|                             3.2|              0.000|          5.9|                           8.7|                0|
-|Neurological Disease       |Spinal Cord compression                   |      0.1|                       0.3|        0.124|            0.3|                             0.5|              0.013|          0.4|                           0.8|                0|
-|PsO/PsA                    |Psoriasis                                 |      3.5|                       1.6|        0.000|            3.8|                             1.8|              0.000|          3.8|                           2.1|                0|
-|Uveitis                    |Uveitis                                   |      5.0|                       4.9|        0.896|            7.6|                             8.0|              0.329|          5.0|                           3.0|                0|
+|outcomeCategory            |disease                                   | MPCD TNF| MPCD NSAID or no exposure|MPCD p-value | Marketscan TNF| Marketscan NSAID or no exposure|Marketscan p-value | Medicare TNF| Medicare NSAID or no exposure|Medicare p-value |
+|:--------------------------|:-----------------------------------------|--------:|-------------------------:|:------------|--------------:|-------------------------------:|:------------------|------------:|-----------------------------:|:----------------|
+|Cardiac disease            |Aortic Insufficiency/Aortic Regurgitation |      1.3|                       1.9|NS           |            1.2|                             2.1|<0.001             |          3.2|                           6.0|<0.001           |
+|Cardiac disease            |Conduction Block                          |      0.3|                       0.9|0.028        |            1.1|                             2.4|<0.001             |          2.9|                           5.9|<0.001           |
+|Cardiac disease            |Myocardial infarction                     |      0.3|                       0.6|NS           |            0.2|                             0.6|<0.001             |          0.7|                           1.5|<0.001           |
+|Inflammatory bowel disease |Crohn.s Disease                           |      4.7|                       3.0|0.006        |            4.8|                             2.6|<0.001             |          3.9|                           2.5|<0.001           |
+|Inflammatory bowel disease |Ulcerative Colitis                        |      2.5|                       1.6|0.050        |            3.1|                             2.1|<0.001             |          2.4|                           1.8|<0.001           |
+|Lung disease               |Restrictive lung disease                  |      0.9|                       2.0|0.008        |            1.9|                             3.2|<0.001             |          5.9|                           8.7|<0.001           |
+|Neurological Disease       |Spinal Cord compression                   |      0.1|                       0.3|NS           |            0.3|                             0.5|0.013              |          0.4|                           0.8|<0.001           |
+|PsO/PsA                    |Psoriasis                                 |      3.5|                       1.6|<0.001       |            3.8|                             1.8|<0.001             |          3.8|                           2.1|<0.001           |
+|Uveitis                    |Uveitis                                   |      5.0|                       4.9|NS           |            7.6|                             8.0|NS                 |          5.0|                           3.0|<0.001           |
 
 
 
-|outcomeCategory            |disease                                   | MPCD TNF| MPCD DMARD| MPCD p-value| Marketscan TNF| Marketscan DMARD| Marketscan p-value| Medicare TNF| Medicare DMARD| Medicare p-value|
-|:--------------------------|:-----------------------------------------|--------:|----------:|------------:|--------------:|----------------:|------------------:|------------:|--------------:|----------------:|
-|Cardiac disease            |Aortic Insufficiency/Aortic Regurgitation |      1.3|        0.5|        0.132|            1.2|              1.5|              0.279|          3.2|            4.7|            0.000|
-|Cardiac disease            |Conduction Block                          |      0.3|        0.0|        0.286|            1.1|              1.4|              0.473|          2.9|            4.2|            0.000|
-|Cardiac disease            |Myocardial infarction                     |      0.3|        0.0|        0.286|            0.2|              0.3|              0.568|          0.7|            1.2|            0.000|
-|Inflammatory bowel disease |Crohn.s Disease                           |      4.7|        3.6|        0.365|            4.8|              4.1|              0.276|          3.9|            3.7|            0.605|
-|Inflammatory bowel disease |Ulcerative Colitis                        |      2.5|        0.9|        0.041|            3.1|              3.2|              0.816|          2.4|            2.6|            0.472|
-|Lung disease               |Restrictive lung disease                  |      0.9|        0.0|        0.029|            1.9|              2.4|              0.190|          5.9|            7.7|            0.000|
-|Neurological Disease       |Spinal Cord compression                   |      0.1|        0.0|        0.779|            0.3|              0.4|              0.341|          0.4|            0.5|            0.373|
-|PsO/PsA                    |Psoriasis                                 |      3.5|        1.0|        0.003|            3.8|              3.3|              0.397|          3.8|            3.4|            0.161|
-|Uveitis                    |Uveitis                                   |      5.0|        6.5|        0.228|            7.6|              8.6|              0.200|          5.0|            3.8|            0.000|
+|outcomeCategory            |disease                                   | MPCD TNF| MPCD DMARD|MPCD p-value | Marketscan TNF| Marketscan DMARD|Marketscan p-value | Medicare TNF| Medicare DMARD|Medicare p-value |
+|:--------------------------|:-----------------------------------------|--------:|----------:|:------------|--------------:|----------------:|:------------------|------------:|--------------:|:----------------|
+|Cardiac disease            |Aortic Insufficiency/Aortic Regurgitation |      1.3|        0.5|NS           |            1.2|              1.5|NS                 |          3.2|            4.7|<0.001           |
+|Cardiac disease            |Conduction Block                          |      0.3|        0.0|NS           |            1.1|              1.4|NS                 |          2.9|            4.2|<0.001           |
+|Cardiac disease            |Myocardial infarction                     |      0.3|        0.0|NS           |            0.2|              0.3|NS                 |          0.7|            1.2|<0.001           |
+|Inflammatory bowel disease |Crohn.s Disease                           |      4.7|        3.6|NS           |            4.8|              4.1|NS                 |          3.9|            3.7|NS               |
+|Inflammatory bowel disease |Ulcerative Colitis                        |      2.5|        0.9|0.041        |            3.1|              3.2|NS                 |          2.4|            2.6|NS               |
+|Lung disease               |Restrictive lung disease                  |      0.9|        0.0|0.029        |            1.9|              2.4|NS                 |          5.9|            7.7|<0.001           |
+|Neurological Disease       |Spinal Cord compression                   |      0.1|        0.0|NS           |            0.3|              0.4|NS                 |          0.4|            0.5|NS               |
+|PsO/PsA                    |Psoriasis                                 |      3.5|        1.0|0.003        |            3.8|              3.3|NS                 |          3.8|            3.4|NS               |
+|Uveitis                    |Uveitis                                   |      5.0|        6.5|NS           |            7.6|              8.6|NS                 |          5.0|            3.8|<0.001           |
