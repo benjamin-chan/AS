@@ -19,7 +19,8 @@ df <-
 foo <- function(db, exp) {
     col <- which(names(df) %in% c("database", "outcomeCategory", "timeWindow", "disease", "prevPct"))
     df %>% 
-      filter(timeWindow == "AS cohort entry to exposure") %>% 
+      filter(timeWindow == "12 months") %>% 
+      mutate(timeWindow = "12-month (6-month baseline to 6-month follow-up)") %>% 
       filter(database == db) %>% 
       filter(exposure == exp) %>% 
       select(col)
