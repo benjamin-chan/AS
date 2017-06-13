@@ -94,7 +94,10 @@ foo <- function (db, exp) {
               compareIncidenceRates(db, exp, "Inflammatory bowel disease", "Crohn.s Disease"),
               compareIncidenceRates(db, exp, "Inflammatory bowel disease", "Ulcerative Colitis"),
               compareIncidenceRates(db, exp, "Uveitis", "Uveitis")) %>% 
-    select(c(outcomeCategory, disease, rate1, rate2, pValue))
+    select(c(outcomeCategory, disease, rate1, rate2, pValue)) %>%
+    mutate(pValue = case_when(.$pValue > 0.05 ~ "NS",
+                              .$pValue < 0.001 ~ "<0.001",
+                              TRUE ~ sprintf("%.03f", .$pValue)))
   names(compare) <- sub("rate1", sprintf("%s %s", db, exp[1]), names(compare))
   names(compare) <- sub("rate2", sprintf("%s %s", db, exp[2]), names(compare))
   names(compare) <- sub("pValue", sprintf("%s p-value", db), names(compare))
