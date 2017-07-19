@@ -202,6 +202,67 @@ proc sql;
     group by A.database, A.exposure, A.outcomeCategory, A.disease, B.denomPatid, B.denomIndexExp;
   select * from Work.prev;
 
+/* 
+FRACTURES
+
+See "ALGORITHMS TO ENHANCE SPECIFICITY OF FRACTURE IDENTIFICATION_ 100316.docx"
+ */
+proc sql;
+  create table Work.fractureDiagnosis as
+    select C.database, C.exposure, C.patid, C.ASCohortDate, C.indexGNN, C.indexDate, C.indexID, C.age, C.sex,
+           "Osteoporotic fracture" as outcomeCategory,
+           case
+             when substr(code, 1, 3) in ("805", "806") | code = "73313" then "Clinical vertebral fracture"
+             else                                                            "Non-vertebral osteoporotic fracture"
+             end as disease,
+           case
+             when substr(code, 1, 3) in ("805", "806") | code = "73313" then "Spine, Incident"
+             when substr(code, 1, 3) in ("808"       )                  then "Pelvis"
+             when substr(code, 1, 3) in ("810"       )                  then "Clavicle"
+             when substr(code, 1, 3) in ("811"       )                  then "Scapula"
+             when substr(code, 1, 3) in ("812"       ) | code = "73311" then "Humerus"
+             when substr(code, 1, 3) in ("813"       ) | code = "73312" then "Radius_ulna"
+             when substr(code, 1, 3) in ("814"       )                  then "Carpal"
+             when substr(code, 1, 3) in ("820"       ) | code = "73314" then "Hip"
+             when substr(code, 1, 3) in ("821"       ) | code = "73315" then "Other femur"
+             when substr(code, 1, 3) in ("822"       )                  then "Patella"
+             when substr(code, 1, 3) in ("823"       ) | code = "73316" then "Tibia/fibula"
+             when substr(code, 1, 3) in ("824"       )                  then "Ankle"
+             else ""
+             end as fractureSite,
+           case
+             when substr(code, 1, 4) in ("8050", "8052", "8054", "8058") | code = "73313" then 1
+             when substr(code, 1, 4) in ("8080", "8082", "8084", "8088")                  then 1
+             when substr(code, 1, 4) in ("8100")                                          then 1
+             when substr(code, 1, 4) in ("8120", "8122", "8124"        ) | code = "73311" then 1
+             when substr(code, 1, 4) in ("8200", "8202",         "8208") | code = "73314" then 1
+             when substr(code, 1, 4) in ("8210", "8212"                ) | code = "73315" then 1
+             when substr(code, 1, 4) in ("8230", "8232",         "8238") | code = "73316" then 1
+             else 0
+             end as indFractureClosed,
+           sum(C.ASCohortDate <= C.begin_date <= C.indexDate) > 0 as indPrevPriorToIndex,
+           sum(0 <= C.indexDate  - C.begin_date <= 183 |
+               0 <= C.begin_date - C.indexDate  <= (183 * 1)) > 0 as indPrev12mo,
+           sum(0 <= C.indexDate  - C.begin_date <= 183 |
+               0 <= C.begin_date - C.indexDate  <= (183 * 3)) > 0 as indPrev24mo,
+           sum(0 <= C.indexDate  - C.begin_date <= 183 |
+               0 <= C.begin_date - C.indexDate  <= (183 * 5)) > 0 as indPrev36mo
+    from (select A.* from UCB.tempDxMPCD A union corr
+          select A.* from UCB.tempDxUCB  A union corr
+          select A.* from UCB.tempDxSABR A ) C
+    group by C.database, C.exposure, C.patid, C.ASCohortDate, C.indexGNN, C.indexDate, C.indexID, C.age, C.sex,
+             outcomeCategory,
+             disease,
+             fractureSite,
+             indFractureClosed
+    having ^missing(fractureSite) & 
+           (calculated indPrevPriorToIndex > 0 | 
+            calculated indPrev12mo > 0 | 
+            calculated indPrev24mo > 0 | 
+            calculated indPrev36mo > 0 );
+quit;
+
+
   drop table UCB.tempDxMPCD;
   drop table UCB.tempDxUCB;
   drop table UCB.tempDxSABR;
