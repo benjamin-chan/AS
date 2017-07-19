@@ -201,6 +201,8 @@ proc sql;
          Work.denominator B on (A.database = B.database & A.exposure = B.exposure)
     group by A.database, A.exposure, A.outcomeCategory, A.disease, B.denomPatid, B.denomIndexExp;
   select * from Work.prev;
+quit;
+
 
 /* 
 FRACTURES
@@ -263,13 +265,13 @@ proc sql;
 quit;
 
 
+proc sql;
   drop table UCB.tempDxMPCD;
   drop table UCB.tempDxUCB;
   drop table UCB.tempDxSABR;
   drop table UCB.tempPxMPCD;
   drop table UCB.tempPxUCB;
   drop table UCB.tempPxSABR;
-
 quit;
 
 
