@@ -211,7 +211,9 @@ See "ALGORITHMS TO ENHANCE SPECIFICITY OF FRACTURE IDENTIFICATION_ 100316.docx"
  */
 proc sql;
   create table Work.fractureDiagnosis as
-    select C.database, C.exposure, C.patid, C.ASCohortDate, C.indexGNN, C.indexDate, C.indexID, C.age, C.sex,
+    select distinct
+           C.database, C.exposure, C.patid, C.ASCohortDate, C.indexGNN, C.indexDate, C.indexID, C.age, C.sex,
+           C.enc_type, C.begin_date,
            "Osteoporotic fracture" as outcomeCategory,
            case
              when substr(code, 1, 3) in ("805", "806") | code = "73313" then "Clinical vertebral fracture"
@@ -241,27 +243,11 @@ proc sql;
              when substr(code, 1, 4) in ("8210", "8212"                ) | code = "73315" then 1
              when substr(code, 1, 4) in ("8230", "8232",         "8238") | code = "73316" then 1
              else 0
-             end as indFractureClosed,
-           sum(C.ASCohortDate <= C.begin_date <= C.indexDate) > 0 as indPrevPriorToIndex,
-           sum(0 <= C.indexDate  - C.begin_date <= 183 |
-               0 <= C.begin_date - C.indexDate  <= (183 * 1)) > 0 as indPrev12mo,
-           sum(0 <= C.indexDate  - C.begin_date <= 183 |
-               0 <= C.begin_date - C.indexDate  <= (183 * 3)) > 0 as indPrev24mo,
-           sum(0 <= C.indexDate  - C.begin_date <= 183 |
-               0 <= C.begin_date - C.indexDate  <= (183 * 5)) > 0 as indPrev36mo
+             end as indFractureClosed
     from (select A.* from UCB.tempDxMPCD A union corr
           select A.* from UCB.tempDxUCB  A union corr
           select A.* from UCB.tempDxSABR A ) C
-    group by C.database, C.exposure, C.patid, C.ASCohortDate, C.indexGNN, C.indexDate, C.indexID, C.age, C.sex,
-             outcomeCategory,
-             disease,
-             fractureSite,
-             indFractureClosed
-    having ^missing(fractureSite) & 
-           (calculated indPrevPriorToIndex > 0 | 
-            calculated indPrev12mo > 0 | 
-            calculated indPrev24mo > 0 | 
-            calculated indPrev36mo > 0 );
+    where ^missing(calculated fractureSite);
 quit;
 
 
