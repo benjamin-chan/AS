@@ -64,7 +64,15 @@ proc sql;
     &select1 from (&selectfrom3 where database = "Medicare") A inner join (&select2 from STD_SABR.STD_DX_2013    &where2) B &on1 union corr
     &select1 from (&selectfrom3 where database = "Medicare") A inner join (&select2 from STD_SABR.STD_DX_2014    &where2) B &on1 ;
 
-  %let select1 = select A.*, B.admit_date, B.begin_date, B.discharge_date, B.end_date, B.px_date, B.px_type, B.px, case when B.px_type = "09" then "ICD9-PX" when B.px_type = "C1" then "CPT" when B.px_type = "H1" then "HCPCS" else "" end as codeType, B.px as code;
+  %let select1 = select A.*, 
+                        B.admit_date, B.begin_date, B.discharge_date, B.end_date, B.px_date, B.px_type, B.px, 
+                        case 
+                          when B.px_type = "09" then "ICD9-PX" 
+                          when B.px_type = "C1" | ^anyalpha(strip(B.px)) then "CPT" 
+                          when B.px_type = "H1" & anyalpha(substr(strip(B.px), 1, 1)) & ^anyalpha(strip(B.px), 2) then "HCPCS" 
+                          else "" 
+                          end as codeType, 
+                        B.px as code;
   %let on1 = on (A.patid = B.patid);
   %let select2 = select patid, admit_date, begin_date, discharge_date, end_date, px_date, px_type, px;
   %let selectfrom3 = select * from DT.indexLookup;
