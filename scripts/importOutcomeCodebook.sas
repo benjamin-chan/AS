@@ -66,8 +66,8 @@ quit;
 
 proc sql;
   create table Work.defOutcomesICD9 as
-    select "Cardiac disease" as outcomeCategory, * from Work.defCardiac union corr
-    select "Cancer" as outcomeCategory, * from Work.defCancer union corr
+    select "Cardiac disease" as outcomeCategory, disease, icd9_list, description from Work.defCardiac union corr
+    select "Cancer" as outcomeCategory, disease, icd9_list, description from Work.defCancer union corr
     select "Infection" as outcomeCategory, "Hospitalized infection" as disease, icd9_list, Descriptions as description from Work.defHospInf union corr
     select "Infection" as outcomeCategory, "Opportunistic infection" as disease, icd9_list, Descriptions as description from Work.defOI union corr
     select case
@@ -77,7 +77,9 @@ proc sql;
              when disease in ("Uveitis") then "Uveitis"
              else ""
              end as outcomeCategory, 
-           A.* 
+           A.disease,
+           A.icd9_list,
+           A.description
       from Work.defSpondy A;
   alter table Work.defOutcomesICD9 add codeType varchar(7), code varchar(5), enc_type varchar(2);
   update Work.defOutcomesICD9
