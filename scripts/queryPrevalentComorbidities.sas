@@ -64,7 +64,15 @@ proc sql;
     &select1 from (&selectfrom3 where database = "Medicare") A inner join (&select2 from STD_SABR.STD_DX_2013    &where2) B &on1 union corr
     &select1 from (&selectfrom3 where database = "Medicare") A inner join (&select2 from STD_SABR.STD_DX_2014    &where2) B &on1 ;
 
-  %let select1 = select A.*, B.admit_date, B.begin_date, B.discharge_date, B.end_date, B.px_date, B.px_type, B.px, case when B.px_type = "09" then "ICD9-PX" when B.px_type = "C1" then "CPT" when B.px_type = "H1" then "HCPCS" else "" end as codeType, B.px as code;
+  %let select1 = select A.*, 
+                        B.admit_date, B.begin_date, B.discharge_date, B.end_date, B.px_date, B.px_type, B.px, 
+                        case 
+                          when B.px_type = "09" then "ICD9-PX" 
+                          when B.px_type = "C1" | ^anyalpha(strip(B.px)) then "CPT" 
+                          when B.px_type = "H1" & anyalpha(substr(strip(B.px), 1, 1)) & ^anyalpha(strip(B.px), 2) then "HCPCS" 
+                          else "" 
+                          end as codeType, 
+                        B.px as code;
   %let on1 = on (A.patid = B.patid);
   %let select2 = select patid, admit_date, begin_date, discharge_date, end_date, px_date, px_type, px;
   %let selectfrom3 = select * from DT.indexLookup;
@@ -113,8 +121,7 @@ proc sql;
   create table Work.defOutcomes as
     select * 
     from DT.defOutcomes 
-    where outcomeCategory ^in ("Hospitalized infection", "Opportunistic infection") & 
-          disease ^in ("Interstitial lung disease");
+    where disease ^in ("Interstitial lung disease");
   
   %let select1 = select A.*, B.outcomeCategory, B.disease;
   %let join1 = inner join Work.defOutcomes B on (A.codeType = B.codeType & A.code = B.code);
@@ -201,14 +208,63 @@ proc sql;
          Work.denominator B on (A.database = B.database & A.exposure = B.exposure)
     group by A.database, A.exposure, A.outcomeCategory, A.disease, B.denomPatid, B.denomIndexExp;
   select * from Work.prev;
+quit;
 
+
+/* 
+FRACTURES
+
+See "ALGORITHMS TO ENHANCE SPECIFICITY OF FRACTURE IDENTIFICATION_ 100316.docx"
+ */
+proc sql;
+  create table Work.fractureDiagnosis as
+    select distinct
+           C.database, C.exposure, C.patid, C.ASCohortDate, C.indexGNN, C.indexDate, C.indexID, C.age, C.sex,
+           C.enc_type, C.begin_date,
+           "Osteoporotic fracture" as outcomeCategory,
+           case
+             when substr(code, 1, 3) in ("805", "806") | code = "73313" then "Clinical vertebral fracture"
+             else                                                            "Non-vertebral osteoporotic fracture"
+             end as disease,
+           case
+             when substr(code, 1, 3) in ("805", "806") | code = "73313" then "Spine, Incident"
+             when substr(code, 1, 3) in ("808"       )                  then "Pelvis"
+             when substr(code, 1, 3) in ("810"       )                  then "Clavicle"
+             when substr(code, 1, 3) in ("811"       )                  then "Scapula"
+             when substr(code, 1, 3) in ("812"       ) | code = "73311" then "Humerus"
+             when substr(code, 1, 3) in ("813"       ) | code = "73312" then "Radius_ulna"
+             when substr(code, 1, 3) in ("814"       )                  then "Carpal"
+             when substr(code, 1, 3) in ("820"       ) | code = "73314" then "Hip"
+             when substr(code, 1, 3) in ("821"       ) | code = "73315" then "Other femur"
+             when substr(code, 1, 3) in ("822"       )                  then "Patella"
+             when substr(code, 1, 3) in ("823"       ) | code = "73316" then "Tibia/fibula"
+             when substr(code, 1, 3) in ("824"       )                  then "Ankle"
+             else ""
+             end as fractureSite,
+           case
+             when substr(code, 1, 4) in ("8050", "8052", "8054", "8058") | code = "73313" then 1
+             when substr(code, 1, 4) in ("8080", "8082", "8084", "8088")                  then 1
+             when substr(code, 1, 4) in ("8100")                                          then 1
+             when substr(code, 1, 4) in ("8120", "8122", "8124"        ) | code = "73311" then 1
+             when substr(code, 1, 4) in ("8200", "8202",         "8208") | code = "73314" then 1
+             when substr(code, 1, 4) in ("8210", "8212"                ) | code = "73315" then 1
+             when substr(code, 1, 4) in ("8230", "8232",         "8238") | code = "73316" then 1
+             else 0
+             end as indFractureClosed
+    from (select A.* from UCB.tempDxMPCD A union corr
+          select A.* from UCB.tempDxUCB  A union corr
+          select A.* from UCB.tempDxSABR A ) C
+    where ^missing(calculated fractureSite);
+quit;
+
+
+proc sql;
   drop table UCB.tempDxMPCD;
   drop table UCB.tempDxUCB;
   drop table UCB.tempDxSABR;
   drop table UCB.tempPxMPCD;
   drop table UCB.tempPxUCB;
   drop table UCB.tempPxSABR;
-
 quit;
 
 
