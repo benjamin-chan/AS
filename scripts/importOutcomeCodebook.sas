@@ -68,8 +68,8 @@ proc sql;
   create table Work.defOutcomesICD9 as
     select "Cardiac disease" as outcomeCategory, * from Work.defCardiac union corr
     select "Cancer" as outcomeCategory, * from Work.defCancer union corr
-    select "Hospitalized infection" as outcomeCategory, *, Descriptions as Description from Work.defHospInf union corr
-    select "Opportunistic infection" as outcomeCategory, *, Descriptions as Description from Work.defOI union corr
+    select "Infection" as outcomeCategory, "Hospitalized infection" as disease, icd9_list, Descriptions as description from Work.defHospInf union corr
+    select "Infection" as outcomeCategory, "Opportunistic infection" as disease, icd9_list, Descriptions as description from Work.defOI union corr
     select case
              when disease in ("Psoriasis", "Psoriatic arthritis") then "PsO/PsA" 
              when disease in ("Crohn’s Disease", "Ulcerative Colitis") then "Inflammatory bowel disease"
