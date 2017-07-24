@@ -139,6 +139,102 @@ quit;
 %mend;
 %comballfxdgns;
 
+/*Now, assign a more specific fracture site (e.g., closed, other) (site) that is used in the CQ algorithms*/
+/*Since Expanded Diagnosis Codes (V Codes) apply to sub-categories of each broad fracture site, clone records for these so they appear in both places*/
+
+data fx_dgns_2;
+    set fx_dgns;
+
+    length site $30;
+
+    site="";
+
+    *Spine-closed and Spine-other;  
+    if fx_site='(805, 806, 73313) spine' then
+        do;
+            site = 'spine_cls'; /*Includes V Codes and 73313 here*/
+            if substr(strip(DX),1,3) in ('805' '806') and substr(strip(DX),1,4) ^in ('8050', '8052', '8054', '8058') then
+                site = 'spine_oth';
+        end;
+
+    *Pelvis-closed and Pelvis-other... No V Codes;
+    if fx_site='(808) pelvis' then
+        do;
+            site = 'pelvis_cls';
+            if substr(strip(DX),1,3)='808' and substr(strip(DX),1,4) ^in ('8080', '8082', '8084', '8088') then
+                site = 'pelvis_oth';
+        end;
+
+    *Clavicle-closed and Clavicle-other.... No V Codes;
+    if fx_site='(810) clavicle' then
+        do;
+            site = 'clv_cls';
+            if substr(strip(DX),1,3) = '810' and substr(strip(DX),1,4) ^in ('8100') then
+                site = 'clv_oth'; 
+        end;
+
+    *Humerus-closed and Humerus-other;
+    if fx_site='(812, 73311) humerus' then
+        do;
+            site = 'hmrs_cls'; /*Includes V Codes and 73311 here*/
+            if substr(strip(DX),1,3)= '812' and substr(strip(DX),1,4) ^in ('8120', '8122', '8124') then
+                site = 'hmrs_oth'; 
+        end;
+
+    *Distal radius/ulna and Radius/ulna-other;
+    if fx_site='(813, 73312) radius_ulna' then
+        do;
+         site = 'dist4arm'; /*Includes V Codes and 73312 here*/
+            if substr(strip(DX),1,3) = '813' and substr(strip(DX),1,4) ^in ('8134', '8135') then
+                site = 'rad_ul_oth'; 
+        end;
+
+    *Carpal... V Codes present but only one category;
+    if fx_site='(814) carpal' then
+        do;
+            site = 'carpal';
+         end;
+
+    *Hip-closed and Hip-other;
+    if fx_site='(820, 73314) hip' then
+            do;
+            site = 'hip_cls'; /*Includes V Codes and 73314 here*/
+            if substr(strip(DX),1,3)='820' and substr(strip(DX),1,4) ^in ('8200', '8202', '8208') then
+                site = 'hip_oth'; 
+        end;
+
+    *Other femur-closed and Other femur-other;     
+    if fx_site='(821, 73315) femur' then
+        do;
+            site = 'oth_fem_cls'; /*Includes V Codes and 73315 here*/
+            if substr(strip(DX),1,3)='821' and substr(strip(DX),1,4) ^in ('8210', '8212') then
+                site = 'oth_fem_oth'; 
+        end;
+
+    *Tib/fib-closed and Tib/fib-other;
+    if fx_site='(823, 73316) tib_fib' then
+        do;
+            site = 'tib_fib_cls'; /*Includes V Codes and 73316 here*/
+            if substr(strip(DX),1,3)='823' and substr(strip(DX),1,4) ^in ('8230', '8232', '8238') then
+                site = 'tib_fib_oth'; 
+        end;
+
+    *Ankle... V Codes present but only one category;
+    if fx_site='(824) ankle' then
+        do;
+            site = 'ankle'; 
+        end;
+
+    /*Assign site for other fx_sites that do not have CQ algorithm and thus no sub categories*/
+    if site = "" then do;
+        site = fx_site;
+    end;     
+
+    label site = 'CQ Algorithm Fracture Site (Specific)';  
+
+run;
+
+
 proc sql;
   drop table UCB.tempFracDxMPCD;
   drop table UCB.tempFracDxUCB;
