@@ -1,4 +1,4 @@
-1                                                          The SAS System                               14:50 Thursday, June 8, 2017
+1                                                          The SAS System                                14:27 Friday, July 21, 2017
 
 NOTE: Copyright (c) 2002-2012 by SAS Institute Inc., Cary, NC, USA. 
 NOTE: SAS (r) Proprietary Software 9.4 (TS1M1) 
@@ -28,8 +28,8 @@ Please remember not to copy any data files that contain PHI (protected health id
 
 
 NOTE: SAS initialization used:
-      real time           0.12 seconds
-      cpu time            0.10 seconds
+      real time           0.15 seconds
+      cpu time            0.14 seconds
       
 1          *  University of Alabama at Birmingham                               *
 2          *  AS project                                            *
@@ -72,7 +72,7 @@ NOTE: Libref DT was successfully assigned as follows:
 98           body = "output\&cmt..html"
 99           style = Statistical;
 NOTE: Writing HTML Body file: output\queryPrevalentComorbidities.html
-2                                                                   The SAS System                                        14:50 Thursday, June 8, 2017
+2                                                                   The SAS System                                         14:27 Friday, July 21, 2017
 
 100        
 101        
@@ -125,154 +125,161 @@ NOTE: Table UCB.TEMPDXUCB created, with 3894682 rows and 23 columns.
 NOTE: Table UCB.TEMPDXSABR created, with 39509361 rows and 23 columns.
 
 143        
-144          %let select1 = select A.*, B.admit_date, B.begin_date, B.discharge_date, B.end_date, B.px_date, B.px_type, B.px, case when B.px_type =
-144      ! "09" then "ICD9-PX" when B.px_type = "C1" then "CPT" when B.px_type = "H1" then "HCPCS" else "" end as codeType, B.px as code;
-145          %let on1 = on (A.patid = B.patid);
-146          %let select2 = select patid, admit_date, begin_date, discharge_date, end_date, px_date, px_type, px;
-147          %let selectfrom3 = select * from DT.indexLookup;
-148          create table UCB.tempPxMPCD as
-149            &select1 from (&selectfrom3 where database = "MPCD") A inner join (&select2 from MPSTD.PX_07_10) B &on1;
+144          %let select1 = select A.*,
+145                                B.admit_date, B.begin_date, B.discharge_date, B.end_date, B.px_date, B.px_type, B.px,
+146                                case
+147                                  when B.px_type = "09" then "ICD9-PX"
+148                                  when B.px_type = "C1" | ^anyalpha(strip(B.px)) then "CPT"
+149                                  when B.px_type = "H1" & anyalpha(substr(strip(B.px), 1, 1)) & ^anyalpha(strip(B.px), 2) then "HCPCS"
+150                                  else ""
+151                                  end as codeType,
+152                                B.px as code;
+153          %let on1 = on (A.patid = B.patid);
+154          %let select2 = select patid, admit_date, begin_date, discharge_date, end_date, px_date, px_type, px;
+155          %let selectfrom3 = select * from DT.indexLookup;
+156          create table UCB.tempPxMPCD as
+157            &select1 from (&selectfrom3 where database = "MPCD") A inner join (&select2 from MPSTD.PX_07_10) B &on1;
 NOTE: Table UCB.TEMPPXMPCD created, with 880584 rows and 22 columns.
 
-150          create table UCB.tempPxUCB as
-151            &select1 from (&selectfrom3 where database = "Marketscan") A inner join (&select2 from UCBSTD.PX_2010) B &on1 union corr
-152            &select1 from (&selectfrom3 where database = "Marketscan") A inner join (&select2 from UCBSTD.PX_2011) B &on1 union corr
-153            &select1 from (&selectfrom3 where database = "Marketscan") A inner join (&select2 from UCBSTD.PX_2012) B &on1 union corr
-154            &select1 from (&selectfrom3 where database = "Marketscan") A inner join (&select2 from UCBSTD.PX_2013) B &on1 union corr
-155            &select1 from (&selectfrom3 where database = "Marketscan") A inner join (&select2 from UCBSTD.PX_2014) B &on1 ;
+158          create table UCB.tempPxUCB as
+159            &select1 from (&selectfrom3 where database = "Marketscan") A inner join (&select2 from UCBSTD.PX_2010) B &on1 union corr
+160            &select1 from (&selectfrom3 where database = "Marketscan") A inner join (&select2 from UCBSTD.PX_2011) B &on1 union corr
+161            &select1 from (&selectfrom3 where database = "Marketscan") A inner join (&select2 from UCBSTD.PX_2012) B &on1 union corr
+162            &select1 from (&selectfrom3 where database = "Marketscan") A inner join (&select2 from UCBSTD.PX_2013) B &on1 union corr
+3                                                                   The SAS System                                         14:27 Friday, July 21, 2017
+
+163            &select1 from (&selectfrom3 where database = "Marketscan") A inner join (&select2 from UCBSTD.PX_2014) B &on1 ;
 NOTE: Table UCB.TEMPPXUCB created, with 4303647 rows and 22 columns.
 
-156          create table UCB.tempPxSABR as
-157            &select1 from (&selectfrom3 where database = "Medicare") A inner join (&select2 from STD_SABR.STD_PX_2006) B &on1 union corr
-158            &select1 from (&selectfrom3 where database = "Medicare") A inner join (&select2 from STD_SABR.STD_PX_2007) B &on1 union corr
-159            &select1 from (&selectfrom3 where database = "Medicare") A inner join (&select2 from STD_SABR.STD_PX_2008) B &on1 union corr
-3                                                                   The SAS System                                        14:50 Thursday, June 8, 2017
-
-160            &select1 from (&selectfrom3 where database = "Medicare") A inner join (&select2 from STD_SABR.STD_PX_2009) B &on1 union corr
-161            &select1 from (&selectfrom3 where database = "Medicare") A inner join (&select2 from STD_SABR.STD_PX_2010) B &on1 union corr
-162            &select1 from (&selectfrom3 where database = "Medicare") A inner join (&select2 from STD_SABR.STD_PX_2011) B &on1 union corr
-163            &select1 from (&selectfrom3 where database = "Medicare") A inner join (&select2 from STD_SABR.STD_PX_2012) B &on1 union corr
-164            &select1 from (&selectfrom3 where database = "Medicare") A inner join (&select2 from STD_SABR.STD_PX_2013) B &on1 union corr
-165            &select1 from (&selectfrom3 where database = "Medicare") A inner join (&select2 from STD_SABR.STD_PX_2014) B &on1 ;
+164          create table UCB.tempPxSABR as
+165            &select1 from (&selectfrom3 where database = "Medicare") A inner join (&select2 from STD_SABR.STD_PX_2006) B &on1 union corr
+166            &select1 from (&selectfrom3 where database = "Medicare") A inner join (&select2 from STD_SABR.STD_PX_2007) B &on1 union corr
+167            &select1 from (&selectfrom3 where database = "Medicare") A inner join (&select2 from STD_SABR.STD_PX_2008) B &on1 union corr
+168            &select1 from (&selectfrom3 where database = "Medicare") A inner join (&select2 from STD_SABR.STD_PX_2009) B &on1 union corr
+169            &select1 from (&selectfrom3 where database = "Medicare") A inner join (&select2 from STD_SABR.STD_PX_2010) B &on1 union corr
+170            &select1 from (&selectfrom3 where database = "Medicare") A inner join (&select2 from STD_SABR.STD_PX_2011) B &on1 union corr
+171            &select1 from (&selectfrom3 where database = "Medicare") A inner join (&select2 from STD_SABR.STD_PX_2012) B &on1 union corr
+172            &select1 from (&selectfrom3 where database = "Medicare") A inner join (&select2 from STD_SABR.STD_PX_2013) B &on1 union corr
+173            &select1 from (&selectfrom3 where database = "Medicare") A inner join (&select2 from STD_SABR.STD_PX_2014) B &on1 ;
 NOTE: Table UCB.TEMPPXSABR created, with 29446396 rows and 22 columns.
 
-166        
-167        quit;
+174        
+175        quit;
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           3:34:25.85
-      cpu time            2:52:27.54
+      real time           3:39:56.05
+      cpu time            3:38:11.99
       
 
-168        
-169        
-170        /*
-171        Call interstitial lung disease macro
-172         */
-173        %include "lib\IPP_2IPSOPplusPX_ILD.sas" / source2;
+176        
+177        
+178        /*
+179        Call interstitial lung disease macro
+180         */
+181        %include "lib\IPP_2IPSOPplusPX_ILD.sas" / source2;
 NOTE: %INCLUDE (level 1) file lib\IPP_2IPSOPplusPX_ILD.sas is file U:\studies\AS\pgms\bchan\lib\IPP_2IPSOPplusPX_ILD.sas.
-174       +/*
-175       +Interstitial lung disease;
-176       +1)  One or more diagnosis codes for ILD from primary discharge
-177       +Or
-178       +2)  (Two or more diagnosis codes for ILD from secondary discharge or physician EMM ) plus one or more diagnosis tests within 90 days prior
-178      !+to (inclusive) one of the diagnosis code for ILD
-179       +*/
-180       +%macro IPP_2IPSOPplusPX_ILD(outdata=,ids=,Dxs=, Pxs=);
-181       +*DXs=diagnosis code in followup, Pxs=CPT code in follow up;
-182       +*do not name outData as IPPILD dxIPSILD dxOPILD dxIPSOPILD pxILD dxpxIPSOPILD IPSOPILD;
-183       +
-184       +data IPPILD dxIPSILD dxOPILD;
-185       +set &dxs();
-186       +length dx1_date 4;
-187       +format dx1_date mmddyy10.;
-188       +dx1_date=min(ADMIT_DATE,  BEGIN_DATE);
-189       +
-190       +if dx in :('515','51630','51631','51632','51633','51634','51635','51636','51637',
-191       +           '5164','5165','5166','5168','5169','71481');
-192       +
-193       +if enc_type='IP' and pdx='P'
-194       +    then output IPPILD;
-195       +if enc_type='IP' and pdx ne 'P'
-196       +    then output dxIPSILD;
-197       +if enc_type not in ('IP','IF', 'OT', " ")
-198       +    then output dxOPILD;
-199       +run;
+182       +/*
+183       +Interstitial lung disease;
+184       +1)  One or more diagnosis codes for ILD from primary discharge
+185       +Or
+186       +2)  (Two or more diagnosis codes for ILD from secondary discharge or physician EMM ) plus one or more diagnosis tests within 90 days prior
+186      !+to (inclusive) one of the diagnosis code for ILD
+187       +*/
+188       +%macro IPP_2IPSOPplusPX_ILD(outdata=,ids=,Dxs=, Pxs=);
+189       +*DXs=diagnosis code in followup, Pxs=CPT code in follow up;
+190       +*do not name outData as IPPILD dxIPSILD dxOPILD dxIPSOPILD pxILD dxpxIPSOPILD IPSOPILD;
+191       +
+192       +data IPPILD dxIPSILD dxOPILD;
+193       +set &dxs();
+194       +length dx1_date 4;
+195       +format dx1_date mmddyy10.;
+196       +dx1_date=min(ADMIT_DATE,  BEGIN_DATE);
+197       +
+198       +if dx in :('515','51630','51631','51632','51633','51634','51635','51636','51637',
+199       +           '5164','5165','5166','5168','5169','71481');
 200       +
-201       +data dxIPSOPILD; *ILD from secondary discharge or physician EMM;
-202       +set dxIPSILD dxOPILD;
-203       +run;
-204       +
-205       +data pxILD; *diagnosis tests;
-206       +set &pxs();
-207       +if (px_type='09' and px in ('8741','8742')) or
-208       +   (px_type='C1' and px in ('71250','71260','71270','71275','31625','31628',
-209       +                             '31629','31632','31633','32095','32096','32097',
-210       +                             '32098','32400','32405','32604','32606','32607',
-211       +                             '32608','32609'));
-212       +run;
-213       +proc sort data=pxILD nodupkey; by &IDS px_date;run; * drop duplicate PX date and keep only one;
-214       +
-215       +proc sql;
-216       +/*one or more diagnosis tests within 90 days prior to (inclusive) one of the diagnosis code for ILD*/
-217       +create table dxpxIPSOPILD as
-218       +select a.* , b.px_date
-219       +from dxIPSOPILD as a
-220       +    ,
-221       +     pxILD as b
-222       +where a.&IDS=b.&IDS and
-4                                                                   The SAS System                                        14:50 Thursday, June 8, 2017
+201       +if enc_type='IP' and pdx='P'
+202       +    then output IPPILD;
+203       +if enc_type='IP' and pdx ne 'P'
+204       +    then output dxIPSILD;
+205       +if enc_type not in ('IP','IF', 'OT', " ")
+206       +    then output dxOPILD;
+207       +run;
+208       +
+209       +data dxIPSOPILD; *ILD from secondary discharge or physician EMM;
+210       +set dxIPSILD dxOPILD;
+211       +run;
+212       +
+213       +data pxILD; *diagnosis tests;
+214       +set &pxs();
+215       +if (px_type='09' and px in ('8741','8742')) or
+216       +   (px_type='C1' and px in ('71250','71260','71270','71275','31625','31628',
+217       +                             '31629','31632','31633','32095','32096','32097',
+218       +                             '32098','32400','32405','32604','32606','32607',
+219       +                             '32608','32609'));
+220       +run;
+221       +proc sort data=pxILD nodupkey; by &IDS px_date;run; * drop duplicate PX date and keep only one;
+222       +
+223       +proc sql;
+4                                                                   The SAS System                                         14:27 Friday, July 21, 2017
 
-223       +      min(b.ADMIT_DATE, b.BEGIN_DATE)-90<=b.px_date<=min(b.ADMIT_DATE, b.BEGIN_DATE);
-224       +
-225       +/* sencond DX code */
-226       +create table IPSOPILD as
-227       +select a.*, min(b.ADMIT_DATE, b.BEGIN_DATE) as DX2_date length=4 format mmddyy10.
-228       +from dxpxIPSOPILD as a
-229       +    ,
-230       +     dxIPSOPILD(drop=dx1_date) as b
-231       +where a.patid=b.patid and
-232       +      (a.ADMIT_DATE ne b.ADMIT_DATE and a.BEGIN_DATE ne b.BEGIN_DATE)
-233       +order by &IDS,ADMIT_DATE, BEGIN_DATE;
-234       +quit;
-235       +
-236       +
-237       +data &outData;
-238       +set IPPILD IPSOPILD;
-239       +length outcome $20 outcome_date outcome_start_date 4;
-240       +format outcome_date outcome_start_date mmddyy10.;
-241       +outcome="ILD";
-242       +outcome_date=max(dx1_date, dx2_date, px_date);
-243       +outcome_start_date=min(dx1_date, dx2_date, px_date);
-244       +drop ADMIT_DATE BEGIN_DATE DISCHARGE_DATE END_DATE;
-245       +run;
-246       +
-247       +proc sort data=&outData;
-248       +by &IDS outcome_date descending outcome_start_date descending Enc_type;
-249       +run;
-250       +
-251       +data &outData;
-252       +set &outData;
-253       +by &IDS outcome_date descending outcome_start_date;
-254       +if first.outcome_date;
-255       +run;
-256       +
-257       +proc datasets nolist;
-258       +delete IPPILD dxIPSILD dxOPILD dxIPSOPILD pxILD dxpxIPSOPILD IPSOPILD;
-259       +quit;run;
-260       +%mend IPP_2IPSOPplusPX_ILD;
+224       +/*one or more diagnosis tests within 90 days prior to (inclusive) one of the diagnosis code for ILD*/
+225       +create table dxpxIPSOPILD as
+226       +select a.* , b.px_date
+227       +from dxIPSOPILD as a
+228       +    ,
+229       +     pxILD as b
+230       +where a.&IDS=b.&IDS and
+231       +      min(b.ADMIT_DATE, b.BEGIN_DATE)-90<=b.px_date<=min(b.ADMIT_DATE, b.BEGIN_DATE);
+232       +
+233       +/* sencond DX code */
+234       +create table IPSOPILD as
+235       +select a.*, min(b.ADMIT_DATE, b.BEGIN_DATE) as DX2_date length=4 format mmddyy10.
+236       +from dxpxIPSOPILD as a
+237       +    ,
+238       +     dxIPSOPILD(drop=dx1_date) as b
+239       +where a.patid=b.patid and
+240       +      (a.ADMIT_DATE ne b.ADMIT_DATE and a.BEGIN_DATE ne b.BEGIN_DATE)
+241       +order by &IDS,ADMIT_DATE, BEGIN_DATE;
+242       +quit;
+243       +
+244       +
+245       +data &outData;
+246       +set IPPILD IPSOPILD;
+247       +length outcome $20 outcome_date outcome_start_date 4;
+248       +format outcome_date outcome_start_date mmddyy10.;
+249       +outcome="ILD";
+250       +outcome_date=max(dx1_date, dx2_date, px_date);
+251       +outcome_start_date=min(dx1_date, dx2_date, px_date);
+252       +drop ADMIT_DATE BEGIN_DATE DISCHARGE_DATE END_DATE;
+253       +run;
+254       +
+255       +proc sort data=&outData;
+256       +by &IDS outcome_date descending outcome_start_date descending Enc_type;
+257       +run;
+258       +
+259       +data &outData;
+260       +set &outData;
+261       +by &IDS outcome_date descending outcome_start_date;
+262       +if first.outcome_date;
+263       +run;
+264       +
+265       +proc datasets nolist;
+266       +delete IPPILD dxIPSILD dxOPILD dxIPSOPILD pxILD dxpxIPSOPILD IPSOPILD;
+267       +quit;run;
+268       +%mend IPP_2IPSOPplusPX_ILD;
 NOTE: %INCLUDE (level 1) ending.
-261        %IPP_2IPSOPplusPX_ILD(outdata = Work.outcome_ILD_MPCD,
-262                              IDS = indexID,
-263                              Dxs = UCB.tempDxMPCD,
-264                              Pxs = UCB.tempPxMPCD);
+269        %IPP_2IPSOPplusPX_ILD(outdata = Work.outcome_ILD_MPCD,
+270                              IDS = indexID,
+271                              Dxs = UCB.tempDxMPCD,
+272                              Pxs = UCB.tempPxMPCD);
 
 NOTE: There were 502873 observations read from the data set UCB.TEMPDXMPCD.
 NOTE: The data set WORK.IPPILD has 4 observations and 24 variables.
 NOTE: The data set WORK.DXIPSILD has 46 observations and 24 variables.
 NOTE: The data set WORK.DXOPILD has 204 observations and 24 variables.
 NOTE: DATA statement used (Total process time):
-      real time           1.48 seconds
-      cpu time            0.26 seconds
+      real time           2.15 seconds
+      cpu time            0.20 seconds
       
 
 
@@ -280,27 +287,27 @@ NOTE: There were 46 observations read from the data set WORK.DXIPSILD.
 NOTE: There were 204 observations read from the data set WORK.DXOPILD.
 NOTE: The data set WORK.DXIPSOPILD has 250 observations and 24 variables.
 NOTE: DATA statement used (Total process time):
-      real time           0.01 seconds
-      cpu time            0.01 seconds
+      real time           0.04 seconds
+      cpu time            0.00 seconds
       
 
 
 NOTE: There were 880584 observations read from the data set UCB.TEMPPXMPCD.
 NOTE: The data set WORK.PXILD has 1327 observations and 22 variables.
+5                                                                   The SAS System                                         14:27 Friday, July 21, 2017
+
 NOTE: DATA statement used (Total process time):
-      real time           2.77 seconds
-      cpu time            0.18 seconds
+      real time           4.73 seconds
+      cpu time            0.40 seconds
       
 
 
 NOTE: There were 1327 observations read from the data set WORK.PXILD.
-5                                                                   The SAS System                                        14:50 Thursday, June 8, 2017
-
 NOTE: 236 observations with duplicate key values were deleted.
 NOTE: The data set WORK.PXILD has 1091 observations and 22 variables.
 NOTE: PROCEDURE SORT used (Total process time):
-      real time           0.06 seconds
-      cpu time            0.00 seconds
+      real time           0.09 seconds
+      cpu time            0.01 seconds
       
 
 NOTE: Table WORK.DXPXIPSOPILD created, with 678 rows and 25 columns.
@@ -308,8 +315,8 @@ NOTE: Table WORK.DXPXIPSOPILD created, with 678 rows and 25 columns.
 NOTE: Table WORK.IPSOPILD created, with 456 rows and 26 columns.
 
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           0.03 seconds
-      cpu time            0.01 seconds
+      real time           0.14 seconds
+      cpu time            0.03 seconds
       
 
 
@@ -317,7 +324,7 @@ NOTE: There were 4 observations read from the data set WORK.IPPILD.
 NOTE: There were 456 observations read from the data set WORK.IPSOPILD.
 NOTE: The data set WORK.OUTCOME_ILD_MPCD has 460 observations and 25 variables.
 NOTE: DATA statement used (Total process time):
-      real time           0.01 seconds
+      real time           0.04 seconds
       cpu time            0.00 seconds
       
 
@@ -325,16 +332,16 @@ NOTE: DATA statement used (Total process time):
 NOTE: There were 460 observations read from the data set WORK.OUTCOME_ILD_MPCD.
 NOTE: The data set WORK.OUTCOME_ILD_MPCD has 460 observations and 25 variables.
 NOTE: PROCEDURE SORT used (Total process time):
-      real time           0.03 seconds
-      cpu time            0.00 seconds
+      real time           0.06 seconds
+      cpu time            0.01 seconds
       
 
 
 NOTE: There were 460 observations read from the data set WORK.OUTCOME_ILD_MPCD.
 NOTE: The data set WORK.OUTCOME_ILD_MPCD has 18 observations and 25 variables.
 NOTE: DATA statement used (Total process time):
-      real time           0.00 seconds
-      cpu time            0.00 seconds
+      real time           0.06 seconds
+      cpu time            0.01 seconds
       
 
 
@@ -346,32 +353,32 @@ NOTE: Deleting WORK.PXILD (memtype=DATA).
 NOTE: Deleting WORK.DXPXIPSOPILD (memtype=DATA).
 NOTE: Deleting WORK.IPSOPILD (memtype=DATA).
 NOTE: PROCEDURE DATASETS used (Total process time):
-      real time           0.15 seconds
-      cpu time            0.03 seconds
+      real time           0.07 seconds
+      cpu time            0.06 seconds
       
 
-265        %IPP_2IPSOPplusPX_ILD(outdata = Work.outcome_ILD_UCB,
-266                              IDS = indexID,
-267                              Dxs = UCB.tempDxUCB,
-268                              Pxs = UCB.tempPxUCB);
+273        %IPP_2IPSOPplusPX_ILD(outdata = Work.outcome_ILD_UCB,
+274                              IDS = indexID,
+275                              Dxs = UCB.tempDxUCB,
+276                              Pxs = UCB.tempPxUCB);
 
 NOTE: There were 3894682 observations read from the data set UCB.TEMPDXUCB.
 NOTE: The data set WORK.IPPILD has 15 observations and 24 variables.
 NOTE: The data set WORK.DXIPSILD has 250 observations and 24 variables.
 NOTE: The data set WORK.DXOPILD has 456 observations and 24 variables.
 NOTE: DATA statement used (Total process time):
-      real time           14.54 seconds
-      cpu time            1.40 seconds
+      real time           18.59 seconds
+6                                                                   The SAS System                                         14:27 Friday, July 21, 2017
+
+      cpu time            1.88 seconds
       
 
 
 NOTE: There were 250 observations read from the data set WORK.DXIPSILD.
 NOTE: There were 456 observations read from the data set WORK.DXOPILD.
 NOTE: The data set WORK.DXIPSOPILD has 706 observations and 24 variables.
-6                                                                   The SAS System                                        14:50 Thursday, June 8, 2017
-
 NOTE: DATA statement used (Total process time):
-      real time           0.01 seconds
+      real time           0.04 seconds
       cpu time            0.00 seconds
       
 
@@ -379,8 +386,8 @@ NOTE: DATA statement used (Total process time):
 NOTE: There were 4303647 observations read from the data set UCB.TEMPPXUCB.
 NOTE: The data set WORK.PXILD has 6781 observations and 22 variables.
 NOTE: DATA statement used (Total process time):
-      real time           16.32 seconds
-      cpu time            1.29 seconds
+      real time           24.16 seconds
+      cpu time            1.15 seconds
       
 
 
@@ -388,8 +395,8 @@ NOTE: There were 6781 observations read from the data set WORK.PXILD.
 NOTE: 865 observations with duplicate key values were deleted.
 NOTE: The data set WORK.PXILD has 5916 observations and 22 variables.
 NOTE: PROCEDURE SORT used (Total process time):
-      real time           0.01 seconds
-      cpu time            0.01 seconds
+      real time           0.07 seconds
+      cpu time            0.00 seconds
       
 
 NOTE: Table WORK.DXPXIPSOPILD created, with 2358 rows and 25 columns.
@@ -397,7 +404,7 @@ NOTE: Table WORK.DXPXIPSOPILD created, with 2358 rows and 25 columns.
 NOTE: Table WORK.IPSOPILD created, with 18708 rows and 26 columns.
 
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           0.07 seconds
+      real time           0.18 seconds
       cpu time            0.06 seconds
       
 
@@ -406,7 +413,7 @@ NOTE: There were 15 observations read from the data set WORK.IPPILD.
 NOTE: There were 18708 observations read from the data set WORK.IPSOPILD.
 NOTE: The data set WORK.OUTCOME_ILD_UCB has 18723 observations and 25 variables.
 NOTE: DATA statement used (Total process time):
-      real time           0.04 seconds
+      real time           0.12 seconds
       cpu time            0.01 seconds
       
 
@@ -414,7 +421,7 @@ NOTE: DATA statement used (Total process time):
 NOTE: There were 18723 observations read from the data set WORK.OUTCOME_ILD_UCB.
 NOTE: The data set WORK.OUTCOME_ILD_UCB has 18723 observations and 25 variables.
 NOTE: PROCEDURE SORT used (Total process time):
-      real time           0.03 seconds
+      real time           0.09 seconds
       cpu time            0.03 seconds
       
 
@@ -423,7 +430,7 @@ NOTE: There were 18723 observations read from the data set WORK.OUTCOME_ILD_UCB.
 NOTE: The data set WORK.OUTCOME_ILD_UCB has 225 observations and 25 variables.
 NOTE: DATA statement used (Total process time):
       real time           0.03 seconds
-      cpu time            0.01 seconds
+      cpu time            0.00 seconds
       
 
 
@@ -435,24 +442,24 @@ NOTE: Deleting WORK.PXILD (memtype=DATA).
 NOTE: Deleting WORK.DXPXIPSOPILD (memtype=DATA).
 NOTE: Deleting WORK.IPSOPILD (memtype=DATA).
 NOTE: PROCEDURE DATASETS used (Total process time):
-      real time           0.00 seconds
-      cpu time            0.00 seconds
+7                                                                   The SAS System                                         14:27 Friday, July 21, 2017
+
+      real time           0.01 seconds
+      cpu time            0.01 seconds
       
 
-269        %IPP_2IPSOPplusPX_ILD(outdata = Work.outcome_ILD_SABR,
-270                              IDS = indexID,
-271                              Dxs = UCB.tempDxSABR,
-7                                                                   The SAS System                                        14:50 Thursday, June 8, 2017
-
-272                              Pxs = UCB.tempPxSABR);
+277        %IPP_2IPSOPplusPX_ILD(outdata = Work.outcome_ILD_SABR,
+278                              IDS = indexID,
+279                              Dxs = UCB.tempDxSABR,
+280                              Pxs = UCB.tempPxSABR);
 
 NOTE: There were 39509361 observations read from the data set UCB.TEMPDXSABR.
 NOTE: The data set WORK.IPPILD has 244 observations and 24 variables.
 NOTE: The data set WORK.DXIPSILD has 2762 observations and 24 variables.
 NOTE: The data set WORK.DXOPILD has 11073 observations and 24 variables.
 NOTE: DATA statement used (Total process time):
-      real time           2:35.72
-      cpu time            16.73 seconds
+      real time           3:44.91
+      cpu time            22.76 seconds
       
 
 
@@ -460,7 +467,7 @@ NOTE: There were 2762 observations read from the data set WORK.DXIPSILD.
 NOTE: There were 11073 observations read from the data set WORK.DXOPILD.
 NOTE: The data set WORK.DXIPSOPILD has 13835 observations and 24 variables.
 NOTE: DATA statement used (Total process time):
-      real time           0.01 seconds
+      real time           0.07 seconds
       cpu time            0.01 seconds
       
 
@@ -468,8 +475,8 @@ NOTE: DATA statement used (Total process time):
 NOTE: There were 29446396 observations read from the data set UCB.TEMPPXSABR.
 NOTE: The data set WORK.PXILD has 705 observations and 22 variables.
 NOTE: DATA statement used (Total process time):
-      real time           9.35 seconds
-      cpu time            9.14 seconds
+      real time           9.65 seconds
+      cpu time            9.50 seconds
       
 
 
@@ -477,8 +484,8 @@ NOTE: There were 705 observations read from the data set WORK.PXILD.
 NOTE: 4 observations with duplicate key values were deleted.
 NOTE: The data set WORK.PXILD has 701 observations and 22 variables.
 NOTE: PROCEDURE SORT used (Total process time):
-      real time           0.01 seconds
-      cpu time            0.01 seconds
+      real time           0.04 seconds
+      cpu time            0.00 seconds
       
 
 NOTE: Table WORK.DXPXIPSOPILD created, with 328 rows and 25 columns.
@@ -486,8 +493,8 @@ NOTE: Table WORK.DXPXIPSOPILD created, with 328 rows and 25 columns.
 NOTE: Table WORK.IPSOPILD created, with 1908 rows and 26 columns.
 
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           0.04 seconds
-      cpu time            0.03 seconds
+      real time           0.11 seconds
+      cpu time            0.04 seconds
       
 
 
@@ -495,28 +502,28 @@ NOTE: There were 244 observations read from the data set WORK.IPPILD.
 NOTE: There were 1908 observations read from the data set WORK.IPSOPILD.
 NOTE: The data set WORK.OUTCOME_ILD_SABR has 2152 observations and 25 variables.
 NOTE: DATA statement used (Total process time):
-      real time           0.00 seconds
-      cpu time            0.00 seconds
+      real time           0.04 seconds
+      cpu time            0.01 seconds
       
 
 
 NOTE: There were 2152 observations read from the data set WORK.OUTCOME_ILD_SABR.
 NOTE: The data set WORK.OUTCOME_ILD_SABR has 2152 observations and 25 variables.
 NOTE: PROCEDURE SORT used (Total process time):
-      real time           0.01 seconds
-      cpu time            0.01 seconds
-      
-
-
-NOTE: There were 2152 observations read from the data set WORK.OUTCOME_ILD_SABR.
-NOTE: The data set WORK.OUTCOME_ILD_SABR has 297 observations and 25 variables.
-NOTE: DATA statement used (Total process time):
-      real time           0.00 seconds
+      real time           0.06 seconds
       cpu time            0.00 seconds
       
 
 
-8                                                                   The SAS System                                        14:50 Thursday, June 8, 2017
+NOTE: There were 2152 observations read from the data set WORK.OUTCOME_ILD_SABR.
+8                                                                   The SAS System                                         14:27 Friday, July 21, 2017
+
+NOTE: The data set WORK.OUTCOME_ILD_SABR has 297 observations and 25 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.04 seconds
+      cpu time            0.00 seconds
+      
+
 
 NOTE: Deleting WORK.IPPILD (memtype=DATA).
 NOTE: Deleting WORK.DXIPSILD (memtype=DATA).
@@ -526,121 +533,120 @@ NOTE: Deleting WORK.PXILD (memtype=DATA).
 NOTE: Deleting WORK.DXPXIPSOPILD (memtype=DATA).
 NOTE: Deleting WORK.IPSOPILD (memtype=DATA).
 NOTE: PROCEDURE DATASETS used (Total process time):
-      real time           0.01 seconds
+      real time           0.00 seconds
       cpu time            0.01 seconds
       
 
-273        
-274        
-275        proc sql;
-276        
-277          create table Work.defOutcomes as
-278            select *
-279            from DT.defOutcomes
-280            where outcomeCategory ^in ("Hospitalized infection", "Opportunistic infection") &
-281                  disease ^in ("Interstitial lung disease");
-NOTE: Table WORK.DEFOUTCOMES created, with 760 rows and 6 columns.
-
+281        
 282        
-283          %let select1 = select A.*, B.outcomeCategory, B.disease;
-284          %let join1 = inner join Work.defOutcomes B on (A.codeType = B.codeType & A.code = B.code);
-285          %let where1a = where B.disease ^= "Myocardial infarction";
-286          %let where1b = | (B.disease = "Myocardial infarction" & A.enc_type = "IP");
-287          %let select2 = select database, exposure, patid, ASCohortDate, indexGNN, indexDate, indexID, enc_type, age, sex, "Lung disease" as
-287      ! outcomeCategory, "Interstitial lung disease" as disease, outcome_start_date as begin_date;
-288          create table Work.comorbidities as
-289            select C.database, C.exposure, C.patid, C.ASCohortDate, C.indexGNN, C.indexDate, C.indexID, C.age, C.sex,
-290                   C.outcomeCategory,
-291                   C.disease,
-292                   sum(C.ASCohortDate <= C.begin_date <= C.indexDate) > 0 as indPrevPriorToIndex,
-293                   sum(0 <= C.indexDate  - C.begin_date <= 183 |
-294                       0 <= C.begin_date - C.indexDate  <= (183 * 1)) > 0 as indPrev12mo,
-295                   sum(0 <= C.indexDate  - C.begin_date <= 183 |
-296                       0 <= C.begin_date - C.indexDate  <= (183 * 3)) > 0 as indPrev24mo,
-297                   sum(0 <= C.indexDate  - C.begin_date <= 183 |
-298                       0 <= C.begin_date - C.indexDate  <= (183 * 5)) > 0 as indPrev36mo
-299            from (&select1 from UCB.tempDxMPCD A &join1 &where1a &where1b union corr
-300                  &select1 from UCB.tempDxUCB  A &join1 &where1a &where1b union corr
-301                  &select1 from UCB.tempDxSABR A &join1 &where1a &where1b union corr
-302                  &select1 from UCB.tempPxMPCD A &join1 &where1a union corr
-303                  &select1 from UCB.tempPxUCB  A &join1 &where1a union corr
-304                  &select1 from UCB.tempPxSABR A &join1 &where1a union corr
-305                  &select2 from Work.outcome_ILD_MPCD union corr
-306                  &select2 from Work.outcome_ILD_UCB  union corr
-307                  &select2 from Work.outcome_ILD_SABR ) C
-308            group by C.database, C.exposure, C.patid, C.ASCohortDate, C.indexGNN, C.indexDate, C.indexID, C.age, C.sex,
-309                     C.outcomeCategory,
-310                     C.disease
-311            having calculated indPrevPriorToIndex > 0 |
-312                   calculated indPrev12mo > 0 |
-313                   calculated indPrev24mo > 0 |
-314                   calculated indPrev36mo > 0;
-NOTE: Parallel WHERE evaluation suppressed due to sort order on table.
-NOTE: Parallel WHERE evaluation suppressed due to sort order on table.
-NOTE: Parallel WHERE evaluation suppressed due to sort order on table.
-NOTE: Parallel WHERE evaluation suppressed due to sort order on table.
-NOTE: Table WORK.COMORBIDITIES created, with 57223 rows and 15 columns.
+283        proc sql;
+284        
+285          create table Work.defOutcomes as
+286            select *
+287            from DT.defOutcomes
+288            where disease ^in ("Interstitial lung disease");
+NOTE: Table WORK.DEFOUTCOMES created, with 2664 rows and 6 columns.
 
-315        
-316          create table Work.denominator as
-317            select database,
-318                   exposure,
-319                   mean(indexDate - ASCohortDate) as meanDaysASCohortToExposure,
-320                   min(indexDate - ASCohortDate) as minDaysASCohortToExposure,
-321                   max(indexDate - ASCohortDate) as maxDaysASCohortToExposure,
-322                   count(distinct patid) as denomPatid,
-323                   count(distinct indexID) as denomIndexExp
-9                                                                   The SAS System                                        14:50 Thursday, June 8, 2017
+289        
+290          %let select1 = select A.*, B.outcomeCategory, B.disease;
+291          %let join1 = inner join Work.defOutcomes B on (A.codeType = B.codeType & A.code = B.code);
+292          %let where1a = where B.disease ^= "Myocardial infarction";
+293          %let where1b = | (B.disease = "Myocardial infarction" & A.enc_type = "IP");
+294          %let select2 = select database, exposure, patid, ASCohortDate, indexGNN, indexDate, indexID, enc_type, age, sex, "Lung disease" as
+294      ! outcomeCategory, "Interstitial lung disease" as disease, outcome_start_date as begin_date;
+295          create table Work.comorbidities as
+296            select C.database, C.exposure, C.patid, C.ASCohortDate, C.indexGNN, C.indexDate, C.indexID, C.age, C.sex,
+297                   C.outcomeCategory,
+298                   C.disease,
+299                   sum(C.ASCohortDate <= C.begin_date <= C.indexDate) > 0 as indPrevPriorToIndex,
+300                   sum(0 <= C.indexDate  - C.begin_date <= 183 |
+301                       0 <= C.begin_date - C.indexDate  <= (183 * 1)) > 0 as indPrev12mo,
+302                   sum(0 <= C.indexDate  - C.begin_date <= 183 |
+303                       0 <= C.begin_date - C.indexDate  <= (183 * 3)) > 0 as indPrev24mo,
+304                   sum(0 <= C.indexDate  - C.begin_date <= 183 |
+305                       0 <= C.begin_date - C.indexDate  <= (183 * 5)) > 0 as indPrev36mo
+306            from (&select1 from UCB.tempDxMPCD A &join1 &where1a &where1b union corr
+307                  &select1 from UCB.tempDxUCB  A &join1 &where1a &where1b union corr
+308                  &select1 from UCB.tempDxSABR A &join1 &where1a &where1b union corr
+309                  &select1 from UCB.tempPxMPCD A &join1 &where1a union corr
+310                  &select1 from UCB.tempPxUCB  A &join1 &where1a union corr
+311                  &select1 from UCB.tempPxSABR A &join1 &where1a union corr
+312                  &select2 from Work.outcome_ILD_MPCD union corr
+313                  &select2 from Work.outcome_ILD_UCB  union corr
+314                  &select2 from Work.outcome_ILD_SABR ) C
+315            group by C.database, C.exposure, C.patid, C.ASCohortDate, C.indexGNN, C.indexDate, C.indexID, C.age, C.sex,
+316                     C.outcomeCategory,
+317                     C.disease
+318            having calculated indPrevPriorToIndex > 0 |
+319                   calculated indPrev12mo > 0 |
+320                   calculated indPrev24mo > 0 |
+321                   calculated indPrev36mo > 0;
+NOTE: Parallel WHERE evaluation suppressed due to sort order on table.
+NOTE: Parallel WHERE evaluation suppressed due to sort order on table.
+NOTE: Parallel WHERE evaluation suppressed due to sort order on table.
+NOTE: Parallel WHERE evaluation suppressed due to sort order on table.
+NOTE: Table WORK.COMORBIDITIES created, with 106483 rows and 15 columns.
 
-324            from DT.indexLookup
-325            group by database, exposure;
+322        
+323          create table Work.denominator as
+324            select database,
+9                                                                   The SAS System                                         14:27 Friday, July 21, 2017
+
+325                   exposure,
+326                   mean(indexDate - ASCohortDate) as meanDaysASCohortToExposure,
+327                   min(indexDate - ASCohortDate) as minDaysASCohortToExposure,
+328                   max(indexDate - ASCohortDate) as maxDaysASCohortToExposure,
+329                   count(distinct patid) as denomPatid,
+330                   count(distinct indexID) as denomIndexExp
+331            from DT.indexLookup
+332            group by database, exposure;
 NOTE: Table WORK.DENOMINATOR created, with 9 rows and 7 columns.
 
-326        
-327          create table Work.prev as
-328            select A.database, A.exposure, A.outcomeCategory, A.disease,
-329                   B.denomPatid,
-330                   B.denomIndexExp,
-331                   "AS cohort entry to exposure" as timeWindow,
-332                   sum(A.indPrevPriorToIndex) as numer,
-333                   sum(A.indPrevPriorToIndex) / B.denomIndexExp * 100 as prevPct
-334            from Work.comorbidities A inner join
-335                 Work.denominator B on (A.database = B.database & A.exposure = B.exposure)
-336            group by A.database, A.exposure, A.outcomeCategory, A.disease, B.denomPatid, B.denomIndexExp
-337            union corr
-338            select A.database, A.exposure, A.outcomeCategory, A.disease,
-339                   B.denomPatid,
-340                   B.denomIndexExp,
-341                   "12 months" as timeWindow,
-342                   sum(A.indPrev12mo) as numer,
-343                   sum(A.indPrev12mo) / B.denomIndexExp * 100 as prevPct
-344            from Work.comorbidities A inner join
-345                 Work.denominator B on (A.database = B.database & A.exposure = B.exposure)
-346            group by A.database, A.exposure, A.outcomeCategory, A.disease, B.denomPatid, B.denomIndexExp
-347            union corr
-348            select A.database, A.exposure, A.outcomeCategory, A.disease,
-349                   B.denomPatid,
-350                   B.denomIndexExp,
-351                   "24 months" as timeWindow,
-352                   sum(A.indPrev24mo) as numer,
-353                   sum(A.indPrev24mo) / B.denomIndexExp * 100 as prevPct
-354            from Work.comorbidities A inner join
-355                 Work.denominator B on (A.database = B.database & A.exposure = B.exposure)
-356            group by A.database, A.exposure, A.outcomeCategory, A.disease, B.denomPatid, B.denomIndexExp
-357            union corr
-358            select A.database, A.exposure, A.outcomeCategory, A.disease,
-359                   B.denomPatid,
-360                   B.denomIndexExp,
-361                   "36 months" as timeWindow,
-362                   sum(A.indPrev36mo) as numer,
-363                   sum(A.indPrev36mo) / B.denomIndexExp * 100 as prevPct
-364            from Work.comorbidities A inner join
-365                 Work.denominator B on (A.database = B.database & A.exposure = B.exposure)
-366            group by A.database, A.exposure, A.outcomeCategory, A.disease, B.denomPatid, B.denomIndexExp;
-NOTE: Table WORK.PREV created, with 624 rows and 9 columns.
+333        
+334          create table Work.prev as
+335            select A.database, A.exposure, A.outcomeCategory, A.disease,
+336                   B.denomPatid,
+337                   B.denomIndexExp,
+338                   "AS cohort entry to exposure" as timeWindow,
+339                   sum(A.indPrevPriorToIndex) as numer,
+340                   sum(A.indPrevPriorToIndex) / B.denomIndexExp * 100 as prevPct
+341            from Work.comorbidities A inner join
+342                 Work.denominator B on (A.database = B.database & A.exposure = B.exposure)
+343            group by A.database, A.exposure, A.outcomeCategory, A.disease, B.denomPatid, B.denomIndexExp
+344            union corr
+345            select A.database, A.exposure, A.outcomeCategory, A.disease,
+346                   B.denomPatid,
+347                   B.denomIndexExp,
+348                   "12 months" as timeWindow,
+349                   sum(A.indPrev12mo) as numer,
+350                   sum(A.indPrev12mo) / B.denomIndexExp * 100 as prevPct
+351            from Work.comorbidities A inner join
+352                 Work.denominator B on (A.database = B.database & A.exposure = B.exposure)
+353            group by A.database, A.exposure, A.outcomeCategory, A.disease, B.denomPatid, B.denomIndexExp
+354            union corr
+355            select A.database, A.exposure, A.outcomeCategory, A.disease,
+356                   B.denomPatid,
+357                   B.denomIndexExp,
+358                   "24 months" as timeWindow,
+359                   sum(A.indPrev24mo) as numer,
+360                   sum(A.indPrev24mo) / B.denomIndexExp * 100 as prevPct
+361            from Work.comorbidities A inner join
+362                 Work.denominator B on (A.database = B.database & A.exposure = B.exposure)
+363            group by A.database, A.exposure, A.outcomeCategory, A.disease, B.denomPatid, B.denomIndexExp
+364            union corr
+365            select A.database, A.exposure, A.outcomeCategory, A.disease,
+366                   B.denomPatid,
+367                   B.denomIndexExp,
+368                   "36 months" as timeWindow,
+369                   sum(A.indPrev36mo) as numer,
+370                   sum(A.indPrev36mo) / B.denomIndexExp * 100 as prevPct
+371            from Work.comorbidities A inner join
+372                 Work.denominator B on (A.database = B.database & A.exposure = B.exposure)
+373            group by A.database, A.exposure, A.outcomeCategory, A.disease, B.denomPatid, B.denomIndexExp;
+NOTE: Table WORK.PREV created, with 696 rows and 9 columns.
 
-367          select * from Work.prev;
-                                                                  --- AS project ---                                  14:50 Thursday, June 8, 2017   1
+374          select * from Work.prev;
+                                                                  --- AS project ---                                   14:27 Friday, July 21, 2017   1
 
                                                                                                                                  denomIndex
           database    exposure              Disease Category            Disease                                    denomPatid           Exp
@@ -682,12 +688,44 @@ NOTE: Table WORK.PREV created, with 624 rows and 9 columns.
           MPCD        DMARD                 Cardiac disease             Aortic Insufficiency/Aortic Regurgitation         421           481
           AS cohort entry to exposure         2    0.4158
 
+          MPCD        DMARD                 Infection                   Hospitalized infection                            421           481
+          12 months                         182  37.83784
+
+          MPCD        DMARD                 Infection                   Hospitalized infection                            421           481
+          24 months                         243  50.51975
+
+          MPCD        DMARD                 Infection                   Hospitalized infection                            421           481
+          36 months                         253  52.59875
+
+          MPCD        DMARD                 Infection                   Hospitalized infection                            421           481
+          AS cohort entry to exposure       107  22.24532
+
+          MPCD        DMARD                 Infection                   Opportunistic infection                           421           481
+          12 months                           6  1.247401
+
+          MPCD        DMARD                 Infection                   Opportunistic infection                           421           481
+          24 months                          12  2.494802
+
+          MPCD        DMARD                 Infection                   Opportunistic infection                           421           481
+          36 months                          16  3.326403
+
+          MPCD        DMARD                 Infection                   Opportunistic infection                           421           481
+          AS cohort entry to exposure         4  0.831601
+
           MPCD        DMARD                 Inflammatory bowel disease  Crohn’s Disease                                   421           481
           12 months                          19  3.950104
 
           MPCD        DMARD                 Inflammatory bowel disease  Crohn’s Disease                                   421           481
           24 months                          21  4.365904
+ 
+ 
+                                                           queryPrevalentComorbidities.sas
+                                                                  --- AS project ---                                   14:27 Friday, July 21, 2017   2
 
+                                                                                                                                 denomIndex
+          database    exposure              Disease Category            Disease                                    denomPatid           Exp
+          timeWindow                      numer   prevPct
+          ---------------------------------------------------------------------------------------------------------------------------------
           MPCD        DMARD                 Inflammatory bowel disease  Crohn’s Disease                                   421           481
           36 months                          21  4.365904
 
@@ -711,15 +749,7 @@ NOTE: Table WORK.PREV created, with 624 rows and 9 columns.
 
           MPCD        DMARD                 Kidney disease              IgA nephropathy                                   421           481
           24 months                           1    0.2079
- 
- 
-                                                           queryPrevalentComorbidities.sas
-                                                                  --- AS project ---                                  14:50 Thursday, June 8, 2017   2
 
-                                                                                                                                 denomIndex
-          database    exposure              Disease Category            Disease                                    denomPatid           Exp
-          timeWindow                      numer   prevPct
-          ---------------------------------------------------------------------------------------------------------------------------------
           MPCD        DMARD                 Kidney disease              IgA nephropathy                                   421           481
           36 months                           1    0.2079
 
@@ -761,7 +791,15 @@ NOTE: Table WORK.PREV created, with 624 rows and 9 columns.
 
           MPCD        DMARD                 PsO/PsA                     Psoriasis                                         421           481
           AS cohort entry to exposure         6  1.247401
+ 
+ 
+                                                           queryPrevalentComorbidities.sas
+                                                                  --- AS project ---                                   14:27 Friday, July 21, 2017   3
 
+                                                                                                                                 denomIndex
+          database    exposure              Disease Category            Disease                                    denomPatid           Exp
+          timeWindow                      numer   prevPct
+          ---------------------------------------------------------------------------------------------------------------------------------
           MPCD        DMARD                 PsO/PsA                     Psoriatic arthritis                               421           481
           12 months                          26  5.405405
 
@@ -785,15 +823,7 @@ NOTE: Table WORK.PREV created, with 624 rows and 9 columns.
 
           MPCD        DMARD                 Uveitis                     Uveitis                                           421           481
           AS cohort entry to exposure        28  5.821206
- 
- 
-                                                           queryPrevalentComorbidities.sas
-                                                                  --- AS project ---                                  14:50 Thursday, June 8, 2017   3
 
-                                                                                                                                 denomIndex
-          database    exposure              Disease Category            Disease                                    denomPatid           Exp
-          timeWindow                      numer   prevPct
-          ---------------------------------------------------------------------------------------------------------------------------------
           MPCD        NSAID or no exposure  Cancer                      Hematologic Cancer                               2083          2593
           12 months                          14  0.539915
 
@@ -835,7 +865,15 @@ NOTE: Table WORK.PREV created, with 624 rows and 9 columns.
 
           MPCD        NSAID or no exposure  Cardiac disease             Conduction Block                                 2083          2593
           24 months                          32  1.234092
+ 
+ 
+                                                           queryPrevalentComorbidities.sas
+                                                                  --- AS project ---                                   14:27 Friday, July 21, 2017   4
 
+                                                                                                                                 denomIndex
+          database    exposure              Disease Category            Disease                                    denomPatid           Exp
+          timeWindow                      numer   prevPct
+          ---------------------------------------------------------------------------------------------------------------------------------
           MPCD        NSAID or no exposure  Cardiac disease             Conduction Block                                 2083          2593
           36 months                          37  1.426919
 
@@ -854,20 +892,36 @@ NOTE: Table WORK.PREV created, with 624 rows and 9 columns.
           MPCD        NSAID or no exposure  Cardiac disease             Myocardial infarction                            2083          2593
           AS cohort entry to exposure         1  0.038565
 
+          MPCD        NSAID or no exposure  Infection                   Hospitalized infection                           2083          2593
+          12 months                         994  38.33398
+
+          MPCD        NSAID or no exposure  Infection                   Hospitalized infection                           2083          2593
+          24 months                        1261  48.63093
+
+          MPCD        NSAID or no exposure  Infection                   Hospitalized infection                           2083          2593
+          36 months                        1352  52.14038
+
+          MPCD        NSAID or no exposure  Infection                   Hospitalized infection                           2083          2593
+          AS cohort entry to exposure       354  13.65214
+
+          MPCD        NSAID or no exposure  Infection                   Opportunistic infection                          2083          2593
+          12 months                          24  0.925569
+
+          MPCD        NSAID or no exposure  Infection                   Opportunistic infection                          2083          2593
+          24 months                          29  1.118396
+
+          MPCD        NSAID or no exposure  Infection                   Opportunistic infection                          2083          2593
+          36 months                          35  1.349788
+
+          MPCD        NSAID or no exposure  Infection                   Opportunistic infection                          2083          2593
+          AS cohort entry to exposure         8  0.308523
+
           MPCD        NSAID or no exposure  Inflammatory bowel disease  Crohn’s Disease                                  2083          2593
           12 months                          88  3.393752
 
           MPCD        NSAID or no exposure  Inflammatory bowel disease  Crohn’s Disease                                  2083          2593
           24 months                         101  3.895102
- 
- 
-                                                           queryPrevalentComorbidities.sas
-                                                                  --- AS project ---                                  14:50 Thursday, June 8, 2017   4
 
-                                                                                                                                 denomIndex
-          database    exposure              Disease Category            Disease                                    denomPatid           Exp
-          timeWindow                      numer   prevPct
-          ---------------------------------------------------------------------------------------------------------------------------------
           MPCD        NSAID or no exposure  Inflammatory bowel disease  Crohn’s Disease                                  2083          2593
           36 months                         108   4.16506
 
@@ -885,7 +939,15 @@ NOTE: Table WORK.PREV created, with 624 rows and 9 columns.
 
           MPCD        NSAID or no exposure  Inflammatory bowel disease  Ulcerative Colitis                               2083          2593
           AS cohort entry to exposure        25  0.964134
+ 
+ 
+                                                           queryPrevalentComorbidities.sas
+                                                                  --- AS project ---                                   14:27 Friday, July 21, 2017   5
 
+                                                                                                                                 denomIndex
+          database    exposure              Disease Category            Disease                                    denomPatid           Exp
+          timeWindow                      numer   prevPct
+          ---------------------------------------------------------------------------------------------------------------------------------
           MPCD        NSAID or no exposure  Kidney disease              Amyloidosis                                      2083          2593
           12 months                           1  0.038565
 
@@ -933,15 +995,7 @@ NOTE: Table WORK.PREV created, with 624 rows and 9 columns.
 
           MPCD        NSAID or no exposure  Lung disease                Apical Pulmonary fibrosis                        2083          2593
           AS cohort entry to exposure         0         0
- 
- 
-                                                           queryPrevalentComorbidities.sas
-                                                                  --- AS project ---                                  14:50 Thursday, June 8, 2017   5
 
-                                                                                                                                 denomIndex
-          database    exposure              Disease Category            Disease                                    denomPatid           Exp
-          timeWindow                      numer   prevPct
-          ---------------------------------------------------------------------------------------------------------------------------------
           MPCD        NSAID or no exposure  Lung disease                Interstitial lung disease                        2083          2593
           12 months                           2  0.077131
 
@@ -959,7 +1013,15 @@ NOTE: Table WORK.PREV created, with 624 rows and 9 columns.
 
           MPCD        NSAID or no exposure  Lung disease                Restrictive lung disease                         2083          2593
           24 months                          68  2.622445
+ 
+ 
+                                                           queryPrevalentComorbidities.sas
+                                                                  --- AS project ---                                   14:27 Friday, July 21, 2017   6
 
+                                                                                                                                 denomIndex
+          database    exposure              Disease Category            Disease                                    denomPatid           Exp
+          timeWindow                      numer   prevPct
+          ---------------------------------------------------------------------------------------------------------------------------------
           MPCD        NSAID or no exposure  Lung disease                Restrictive lung disease                         2083          2593
           36 months                          75  2.892403
 
@@ -1007,15 +1069,7 @@ NOTE: Table WORK.PREV created, with 624 rows and 9 columns.
 
           MPCD        NSAID or no exposure  PsO/PsA                     Psoriatic arthritis                              2083          2593
           24 months                          76  2.930968
- 
- 
-                                                           queryPrevalentComorbidities.sas
-                                                                  --- AS project ---                                  14:50 Thursday, June 8, 2017   6
 
-                                                                                                                                 denomIndex
-          database    exposure              Disease Category            Disease                                    denomPatid           Exp
-          timeWindow                      numer   prevPct
-          ---------------------------------------------------------------------------------------------------------------------------------
           MPCD        NSAID or no exposure  PsO/PsA                     Psoriatic arthritis                              2083          2593
           36 months                          86  3.316622
 
@@ -1033,7 +1087,15 @@ NOTE: Table WORK.PREV created, with 624 rows and 9 columns.
 
           MPCD        NSAID or no exposure  Uveitis                     Uveitis                                          2083          2593
           AS cohort entry to exposure        82   3.16236
+ 
+ 
+                                                           queryPrevalentComorbidities.sas
+                                                                  --- AS project ---                                   14:27 Friday, July 21, 2017   7
 
+                                                                                                                                 denomIndex
+          database    exposure              Disease Category            Disease                                    denomPatid           Exp
+          timeWindow                      numer   prevPct
+          ---------------------------------------------------------------------------------------------------------------------------------
           MPCD        TNF                   Cancer                      Hematologic Cancer                               1107          1279
           12 months                           4  0.312744
 
@@ -1081,15 +1143,7 @@ NOTE: Table WORK.PREV created, with 624 rows and 9 columns.
 
           MPCD        TNF                   Cardiac disease             Conduction Block                                 1107          1279
           AS cohort entry to exposure         2  0.156372
- 
- 
-                                                           queryPrevalentComorbidities.sas
-                                                                  --- AS project ---                                  14:50 Thursday, June 8, 2017   7
 
-                                                                                                                                 denomIndex
-          database    exposure              Disease Category            Disease                                    denomPatid           Exp
-          timeWindow                      numer   prevPct
-          ---------------------------------------------------------------------------------------------------------------------------------
           MPCD        TNF                   Cardiac disease             Myocardial infarction                            1107          1279
           12 months                           4  0.312744
 
@@ -1101,6 +1155,38 @@ NOTE: Table WORK.PREV created, with 624 rows and 9 columns.
 
           MPCD        TNF                   Cardiac disease             Myocardial infarction                            1107          1279
           AS cohort entry to exposure         3  0.234558
+
+          MPCD        TNF                   Infection                   Hospitalized infection                           1107          1279
+          12 months                         463  36.20016
+
+          MPCD        TNF                   Infection                   Hospitalized infection                           1107          1279
+          24 months                         601  46.98984
+ 
+ 
+                                                           queryPrevalentComorbidities.sas
+                                                                  --- AS project ---                                   14:27 Friday, July 21, 2017   8
+
+                                                                                                                                 denomIndex
+          database    exposure              Disease Category            Disease                                    denomPatid           Exp
+          timeWindow                      numer   prevPct
+          ---------------------------------------------------------------------------------------------------------------------------------
+          MPCD        TNF                   Infection                   Hospitalized infection                           1107          1279
+          36 months                         641  50.11728
+
+          MPCD        TNF                   Infection                   Hospitalized infection                           1107          1279
+          AS cohort entry to exposure       290  22.67396
+
+          MPCD        TNF                   Infection                   Opportunistic infection                          1107          1279
+          12 months                          18  1.407349
+
+          MPCD        TNF                   Infection                   Opportunistic infection                          1107          1279
+          24 months                          23   1.79828
+
+          MPCD        TNF                   Infection                   Opportunistic infection                          1107          1279
+          36 months                          24  1.876466
+
+          MPCD        TNF                   Infection                   Opportunistic infection                          1107          1279
+          AS cohort entry to exposure        11  0.860047
 
           MPCD        TNF                   Inflammatory bowel disease  Crohn’s Disease                                  1107          1279
           12 months                          75  5.863956
@@ -1149,21 +1235,21 @@ NOTE: Table WORK.PREV created, with 624 rows and 9 columns.
 
           MPCD        TNF                   Kidney disease              Nephrotic syndrome                               1107          1279
           AS cohort entry to exposure         0         0
-
-          MPCD        TNF                   Lung disease                Restrictive lung disease                         1107          1279
-          12 months                           9  0.703675
-
-          MPCD        TNF                   Lung disease                Restrictive lung disease                         1107          1279
-          24 months                          15  1.172791
  
  
                                                            queryPrevalentComorbidities.sas
-                                                                  --- AS project ---                                  14:50 Thursday, June 8, 2017   8
+                                                                  --- AS project ---                                   14:27 Friday, July 21, 2017   9
 
                                                                                                                                  denomIndex
           database    exposure              Disease Category            Disease                                    denomPatid           Exp
           timeWindow                      numer   prevPct
           ---------------------------------------------------------------------------------------------------------------------------------
+          MPCD        TNF                   Lung disease                Restrictive lung disease                         1107          1279
+          12 months                           9  0.703675
+
+          MPCD        TNF                   Lung disease                Restrictive lung disease                         1107          1279
+          24 months                          15  1.172791
+
           MPCD        TNF                   Lung disease                Restrictive lung disease                         1107          1279
           36 months                          17  1.329163
 
@@ -1223,21 +1309,21 @@ NOTE: Table WORK.PREV created, with 624 rows and 9 columns.
 
           Marketscan  DMARD                 Cancer                      Hematologic Cancer                               1799          2045
           24 months                          28  1.369193
-
-          Marketscan  DMARD                 Cancer                      Hematologic Cancer                               1799          2045
-          36 months                          31  1.515892
-
-          Marketscan  DMARD                 Cancer                      Hematologic Cancer                               1799          2045
-          AS cohort entry to exposure        14  0.684597
  
  
                                                            queryPrevalentComorbidities.sas
-                                                                  --- AS project ---                                  14:50 Thursday, June 8, 2017   9
+                                                                  --- AS project ---                                   14:27 Friday, July 21, 2017  10
 
                                                                                                                                  denomIndex
           database    exposure              Disease Category            Disease                                    denomPatid           Exp
           timeWindow                      numer   prevPct
           ---------------------------------------------------------------------------------------------------------------------------------
+          Marketscan  DMARD                 Cancer                      Hematologic Cancer                               1799          2045
+          36 months                          31  1.515892
+
+          Marketscan  DMARD                 Cancer                      Hematologic Cancer                               1799          2045
+          AS cohort entry to exposure        14  0.684597
+
           Marketscan  DMARD                 Cancer                      Non Melanoma Skin Cancer                         1799          2045
           12 months                          35  1.711491
 
@@ -1297,21 +1383,45 @@ NOTE: Table WORK.PREV created, with 624 rows and 9 columns.
 
           Marketscan  DMARD                 Cardiac disease             Myocardial infarction                            1799          2045
           AS cohort entry to exposure         5  0.244499
+ 
+ 
+                                                           queryPrevalentComorbidities.sas
+                                                                  --- AS project ---                                   14:27 Friday, July 21, 2017  11
+
+                                                                                                                                 denomIndex
+          database    exposure              Disease Category            Disease                                    denomPatid           Exp
+          timeWindow                      numer   prevPct
+          ---------------------------------------------------------------------------------------------------------------------------------
+          Marketscan  DMARD                 Infection                   Hospitalized infection                           1799          2045
+          12 months                        1101  53.83863
+
+          Marketscan  DMARD                 Infection                   Hospitalized infection                           1799          2045
+          24 months                        1295  63.32518
+
+          Marketscan  DMARD                 Infection                   Hospitalized infection                           1799          2045
+          36 months                        1344  65.72127
+
+          Marketscan  DMARD                 Infection                   Hospitalized infection                           1799          2045
+          AS cohort entry to exposure       585  28.60636
+
+          Marketscan  DMARD                 Infection                   Opportunistic infection                          1799          2045
+          12 months                          52  2.542787
+
+          Marketscan  DMARD                 Infection                   Opportunistic infection                          1799          2045
+          24 months                          66  3.227384
+
+          Marketscan  DMARD                 Infection                   Opportunistic infection                          1799          2045
+          36 months                          70  3.422983
+
+          Marketscan  DMARD                 Infection                   Opportunistic infection                          1799          2045
+          AS cohort entry to exposure        30  1.466993
 
           Marketscan  DMARD                 Inflammatory bowel disease  Crohn’s Disease                                  1799          2045
           12 months                          84  4.107579
 
           Marketscan  DMARD                 Inflammatory bowel disease  Crohn’s Disease                                  1799          2045
           24 months                          96  4.694377
- 
- 
-                                                           queryPrevalentComorbidities.sas
-                                                                  --- AS project ---                                  14:50 Thursday, June 8, 2017  10
 
-                                                                                                                                 denomIndex
-          database    exposure              Disease Category            Disease                                    denomPatid           Exp
-          timeWindow                      numer   prevPct
-          ---------------------------------------------------------------------------------------------------------------------------------
           Marketscan  DMARD                 Inflammatory bowel disease  Crohn’s Disease                                  1799          2045
           36 months                         100  4.889976
 
@@ -1347,7 +1457,15 @@ NOTE: Table WORK.PREV created, with 624 rows and 9 columns.
 
           Marketscan  DMARD                 Kidney disease              IgA nephropathy                                  1799          2045
           24 months                           3  0.146699
+ 
+ 
+                                                           queryPrevalentComorbidities.sas
+                                                                  --- AS project ---                                   14:27 Friday, July 21, 2017  12
 
+                                                                                                                                 denomIndex
+          database    exposure              Disease Category            Disease                                    denomPatid           Exp
+          timeWindow                      numer   prevPct
+          ---------------------------------------------------------------------------------------------------------------------------------
           Marketscan  DMARD                 Kidney disease              IgA nephropathy                                  1799          2045
           36 months                           3  0.146699
 
@@ -1377,15 +1495,7 @@ NOTE: Table WORK.PREV created, with 624 rows and 9 columns.
 
           Marketscan  DMARD                 Lung disease                Interstitial lung disease                        1799          2045
           AS cohort entry to exposure         2    0.0978
- 
- 
-                                                           queryPrevalentComorbidities.sas
-                                                                  --- AS project ---                                  14:50 Thursday, June 8, 2017  11
 
-                                                                                                                                 denomIndex
-          database    exposure              Disease Category            Disease                                    denomPatid           Exp
-          timeWindow                      numer   prevPct
-          ---------------------------------------------------------------------------------------------------------------------------------
           Marketscan  DMARD                 Lung disease                Restrictive lung disease                         1799          2045
           12 months                          64  3.129584
 
@@ -1421,7 +1531,15 @@ NOTE: Table WORK.PREV created, with 624 rows and 9 columns.
 
           Marketscan  DMARD                 Neurological Disease        Spinal Cord compression                          1799          2045
           AS cohort entry to exposure         5  0.244499
+ 
+ 
+                                                           queryPrevalentComorbidities.sas
+                                                                  --- AS project ---                                   14:27 Friday, July 21, 2017  13
 
+                                                                                                                                 denomIndex
+          database    exposure              Disease Category            Disease                                    denomPatid           Exp
+          timeWindow                      numer   prevPct
+          ---------------------------------------------------------------------------------------------------------------------------------
           Marketscan  DMARD                 PsO/PsA                     Psoriasis                                        1799          2045
           12 months                          78  3.814181
 
@@ -1451,15 +1569,7 @@ NOTE: Table WORK.PREV created, with 624 rows and 9 columns.
 
           Marketscan  DMARD                 Uveitis                     Uveitis                                          1799          2045
           24 months                         212  10.36675
- 
- 
-                                                           queryPrevalentComorbidities.sas
-                                                                  --- AS project ---                                  14:50 Thursday, June 8, 2017  12
 
-                                                                                                                                 denomIndex
-          database    exposure              Disease Category            Disease                                    denomPatid           Exp
-          timeWindow                      numer   prevPct
-          ---------------------------------------------------------------------------------------------------------------------------------
           Marketscan  DMARD                 Uveitis                     Uveitis                                          1799          2045
           36 months                         225  11.00244
 
@@ -1495,7 +1605,15 @@ NOTE: Table WORK.PREV created, with 624 rows and 9 columns.
 
           Marketscan  NSAID or no exposure  Cancer                      Solid Cancer                                     8025         10589
           24 months                         677  6.393427
+ 
+ 
+                                                           queryPrevalentComorbidities.sas
+                                                                  --- AS project ---                                   14:27 Friday, July 21, 2017  14
 
+                                                                                                                                 denomIndex
+          database    exposure              Disease Category            Disease                                    denomPatid           Exp
+          timeWindow                      numer   prevPct
+          ---------------------------------------------------------------------------------------------------------------------------------
           Marketscan  NSAID or no exposure  Cancer                      Solid Cancer                                     8025         10589
           36 months                         724  6.837284
 
@@ -1525,15 +1643,7 @@ NOTE: Table WORK.PREV created, with 624 rows and 9 columns.
 
           Marketscan  NSAID or no exposure  Cardiac disease             Conduction Block                                 8025         10589
           AS cohort entry to exposure       102  0.963264
- 
- 
-                                                           queryPrevalentComorbidities.sas
-                                                                  --- AS project ---                                  14:50 Thursday, June 8, 2017  13
 
-                                                                                                                                 denomIndex
-          database    exposure              Disease Category            Disease                                    denomPatid           Exp
-          timeWindow                      numer   prevPct
-          ---------------------------------------------------------------------------------------------------------------------------------
           Marketscan  NSAID or no exposure  Cardiac disease             Myocardial infarction                            8025         10589
           12 months                          70  0.661063
 
@@ -1546,6 +1656,38 @@ NOTE: Table WORK.PREV created, with 624 rows and 9 columns.
           Marketscan  NSAID or no exposure  Cardiac disease             Myocardial infarction                            8025         10589
           AS cohort entry to exposure        39  0.368307
 
+          Marketscan  NSAID or no exposure  Infection                   Hospitalized infection                           8025         10589
+          12 months                        5149  48.62593
+
+          Marketscan  NSAID or no exposure  Infection                   Hospitalized infection                           8025         10589
+          24 months                        6175  58.31523
+
+          Marketscan  NSAID or no exposure  Infection                   Hospitalized infection                           8025         10589
+          36 months                        6514  61.51667
+
+          Marketscan  NSAID or no exposure  Infection                   Hospitalized infection                           8025         10589
+          AS cohort entry to exposure      2186  20.64406
+
+          Marketscan  NSAID or no exposure  Infection                   Opportunistic infection                          8025         10589
+          12 months                         150  1.416564
+
+          Marketscan  NSAID or no exposure  Infection                   Opportunistic infection                          8025         10589
+          24 months                         197  1.860421
+
+          Marketscan  NSAID or no exposure  Infection                   Opportunistic infection                          8025         10589
+          36 months                         228  2.153178
+
+          Marketscan  NSAID or no exposure  Infection                   Opportunistic infection                          8025         10589
+          AS cohort entry to exposure        56  0.528851
+ 
+ 
+                                                           queryPrevalentComorbidities.sas
+                                                                  --- AS project ---                                   14:27 Friday, July 21, 2017  15
+
+                                                                                                                                 denomIndex
+          database    exposure              Disease Category            Disease                                    denomPatid           Exp
+          timeWindow                      numer   prevPct
+          ---------------------------------------------------------------------------------------------------------------------------------
           Marketscan  NSAID or no exposure  Inflammatory bowel disease  Crohn’s Disease                                  8025         10589
           12 months                         333  3.144773
 
@@ -1599,15 +1741,7 @@ NOTE: Table WORK.PREV created, with 624 rows and 9 columns.
 
           Marketscan  NSAID or no exposure  Kidney disease              Nephrotic syndrome                               8025         10589
           24 months                           7  0.066106
- 
- 
-                                                           queryPrevalentComorbidities.sas
-                                                                  --- AS project ---                                  14:50 Thursday, June 8, 2017  14
 
-                                                                                                                                 denomIndex
-          database    exposure              Disease Category            Disease                                    denomPatid           Exp
-          timeWindow                      numer   prevPct
-          ---------------------------------------------------------------------------------------------------------------------------------
           Marketscan  NSAID or no exposure  Kidney disease              Nephrotic syndrome                               8025         10589
           36 months                           7  0.066106
 
@@ -1619,7 +1753,15 @@ NOTE: Table WORK.PREV created, with 624 rows and 9 columns.
 
           Marketscan  NSAID or no exposure  Lung disease                Apical Pulmonary fibrosis                        8025         10589
           24 months                           2  0.018888
+ 
+ 
+                                                           queryPrevalentComorbidities.sas
+                                                                  --- AS project ---                                   14:27 Friday, July 21, 2017  16
 
+                                                                                                                                 denomIndex
+          database    exposure              Disease Category            Disease                                    denomPatid           Exp
+          timeWindow                      numer   prevPct
+          ---------------------------------------------------------------------------------------------------------------------------------
           Marketscan  NSAID or no exposure  Lung disease                Apical Pulmonary fibrosis                        8025         10589
           36 months                           2  0.018888
 
@@ -1673,15 +1815,7 @@ NOTE: Table WORK.PREV created, with 624 rows and 9 columns.
 
           Marketscan  NSAID or no exposure  Neurological Disease        Spinal Cord compression                          8025         10589
           AS cohort entry to exposure        29  0.273869
- 
- 
-                                                           queryPrevalentComorbidities.sas
-                                                                  --- AS project ---                                  14:50 Thursday, June 8, 2017  15
 
-                                                                                                                                 denomIndex
-          database    exposure              Disease Category            Disease                                    denomPatid           Exp
-          timeWindow                      numer   prevPct
-          ---------------------------------------------------------------------------------------------------------------------------------
           Marketscan  NSAID or no exposure  PsO/PsA                     Psoriasis                                        8025         10589
           12 months                         235  2.219284
 
@@ -1693,7 +1827,15 @@ NOTE: Table WORK.PREV created, with 624 rows and 9 columns.
 
           Marketscan  NSAID or no exposure  PsO/PsA                     Psoriasis                                        8025         10589
           AS cohort entry to exposure       113  1.067145
+ 
+ 
+                                                           queryPrevalentComorbidities.sas
+                                                                  --- AS project ---                                   14:27 Friday, July 21, 2017  17
 
+                                                                                                                                 denomIndex
+          database    exposure              Disease Category            Disease                                    denomPatid           Exp
+          timeWindow                      numer   prevPct
+          ---------------------------------------------------------------------------------------------------------------------------------
           Marketscan  NSAID or no exposure  PsO/PsA                     Psoriatic arthritis                              8025         10589
           12 months                         307  2.899235
 
@@ -1747,15 +1889,7 @@ NOTE: Table WORK.PREV created, with 624 rows and 9 columns.
 
           Marketscan  TNF                   Cancer                      Solid Cancer                                     4797          5779
           24 months                         196   3.39159
- 
- 
-                                                           queryPrevalentComorbidities.sas
-                                                                  --- AS project ---                                  14:50 Thursday, June 8, 2017  16
 
-                                                                                                                                 denomIndex
-          database    exposure              Disease Category            Disease                                    denomPatid           Exp
-          timeWindow                      numer   prevPct
-          ---------------------------------------------------------------------------------------------------------------------------------
           Marketscan  TNF                   Cancer                      Solid Cancer                                     4797          5779
           36 months                         210  3.633847
 
@@ -1767,7 +1901,15 @@ NOTE: Table WORK.PREV created, with 624 rows and 9 columns.
 
           Marketscan  TNF                   Cardiac disease             Aortic Insufficiency/Aortic Regurgitation        4797          5779
           24 months                         107  1.851531
+ 
+ 
+                                                           queryPrevalentComorbidities.sas
+                                                                  --- AS project ---                                   14:27 Friday, July 21, 2017  18
 
+                                                                                                                                 denomIndex
+          database    exposure              Disease Category            Disease                                    denomPatid           Exp
+          timeWindow                      numer   prevPct
+          ---------------------------------------------------------------------------------------------------------------------------------
           Marketscan  TNF                   Cardiac disease             Aortic Insufficiency/Aortic Regurgitation        4797          5779
           36 months                         120  2.076484
 
@@ -1798,6 +1940,30 @@ NOTE: Table WORK.PREV created, with 624 rows and 9 columns.
           Marketscan  TNF                   Cardiac disease             Myocardial infarction                            4797          5779
           AS cohort entry to exposure        16  0.276865
 
+          Marketscan  TNF                   Infection                   Hospitalized infection                           4797          5779
+          12 months                        2934  50.77003
+
+          Marketscan  TNF                   Infection                   Hospitalized infection                           4797          5779
+          24 months                        3533  61.13514
+
+          Marketscan  TNF                   Infection                   Hospitalized infection                           4797          5779
+          36 months                        3688  63.81727
+
+          Marketscan  TNF                   Infection                   Hospitalized infection                           4797          5779
+          AS cohort entry to exposure      1897  32.82575
+
+          Marketscan  TNF                   Infection                   Opportunistic infection                          4797          5779
+          12 months                         141  2.439868
+
+          Marketscan  TNF                   Infection                   Opportunistic infection                          4797          5779
+          24 months                         175  3.028206
+
+          Marketscan  TNF                   Infection                   Opportunistic infection                          4797          5779
+          36 months                         188  3.253158
+
+          Marketscan  TNF                   Infection                   Opportunistic infection                          4797          5779
+          AS cohort entry to exposure       121  2.093788
+
           Marketscan  TNF                   Inflammatory bowel disease  Crohn’s Disease                                  4797          5779
           12 months                         352  6.091019
 
@@ -1809,7 +1975,15 @@ NOTE: Table WORK.PREV created, with 624 rows and 9 columns.
 
           Marketscan  TNF                   Inflammatory bowel disease  Crohn’s Disease                                  4797          5779
           AS cohort entry to exposure       287  4.966257
+ 
+ 
+                                                           queryPrevalentComorbidities.sas
+                                                                  --- AS project ---                                   14:27 Friday, July 21, 2017  19
 
+                                                                                                                                 denomIndex
+          database    exposure              Disease Category            Disease                                    denomPatid           Exp
+          timeWindow                      numer   prevPct
+          ---------------------------------------------------------------------------------------------------------------------------------
           Marketscan  TNF                   Inflammatory bowel disease  Ulcerative Colitis                               4797          5779
           12 months                         251  4.343312
 
@@ -1821,15 +1995,7 @@ NOTE: Table WORK.PREV created, with 624 rows and 9 columns.
 
           Marketscan  TNF                   Inflammatory bowel disease  Ulcerative Colitis                               4797          5779
           AS cohort entry to exposure       196   3.39159
- 
- 
-                                                           queryPrevalentComorbidities.sas
-                                                                  --- AS project ---                                  14:50 Thursday, June 8, 2017  17
 
-                                                                                                                                 denomIndex
-          database    exposure              Disease Category            Disease                                    denomPatid           Exp
-          timeWindow                      numer   prevPct
-          ---------------------------------------------------------------------------------------------------------------------------------
           Marketscan  TNF                   Kidney disease              Amyloidosis                                      4797          5779
           12 months                           2  0.034608
 
@@ -1883,7 +2049,15 @@ NOTE: Table WORK.PREV created, with 624 rows and 9 columns.
 
           Marketscan  TNF                   Lung disease                Interstitial lung disease                        4797          5779
           24 months                           6  0.103824
+ 
+ 
+                                                           queryPrevalentComorbidities.sas
+                                                                  --- AS project ---                                   14:27 Friday, July 21, 2017  20
 
+                                                                                                                                 denomIndex
+          database    exposure              Disease Category            Disease                                    denomPatid           Exp
+          timeWindow                      numer   prevPct
+          ---------------------------------------------------------------------------------------------------------------------------------
           Marketscan  TNF                   Lung disease                Interstitial lung disease                        4797          5779
           36 months                           6  0.103824
 
@@ -1895,15 +2069,7 @@ NOTE: Table WORK.PREV created, with 624 rows and 9 columns.
 
           Marketscan  TNF                   Lung disease                Restrictive lung disease                         4797          5779
           24 months                         186   3.21855
- 
- 
-                                                           queryPrevalentComorbidities.sas
-                                                                  --- AS project ---                                  14:50 Thursday, June 8, 2017  18
 
-                                                                                                                                 denomIndex
-          database    exposure              Disease Category            Disease                                    denomPatid           Exp
-          timeWindow                      numer   prevPct
-          ---------------------------------------------------------------------------------------------------------------------------------
           Marketscan  TNF                   Lung disease                Restrictive lung disease                         4797          5779
           36 months                         202  3.495414
 
@@ -1957,7 +2123,15 @@ NOTE: Table WORK.PREV created, with 624 rows and 9 columns.
 
           Marketscan  TNF                   PsO/PsA                     Psoriatic arthritis                              4797          5779
           AS cohort entry to exposure       397  6.869701
+ 
+ 
+                                                           queryPrevalentComorbidities.sas
+                                                                  --- AS project ---                                   14:27 Friday, July 21, 2017  21
 
+                                                                                                                                 denomIndex
+          database    exposure              Disease Category            Disease                                    denomPatid           Exp
+          timeWindow                      numer   prevPct
+          ---------------------------------------------------------------------------------------------------------------------------------
           Marketscan  TNF                   Uveitis                     Uveitis                                          4797          5779
           12 months                         597  10.33051
 
@@ -1969,15 +2143,7 @@ NOTE: Table WORK.PREV created, with 624 rows and 9 columns.
 
           Marketscan  TNF                   Uveitis                     Uveitis                                          4797          5779
           AS cohort entry to exposure       502  8.686624
- 
- 
-                                                           queryPrevalentComorbidities.sas
-                                                                  --- AS project ---                                  14:50 Thursday, June 8, 2017  19
 
-                                                                                                                                 denomIndex
-          database    exposure              Disease Category            Disease                                    denomPatid           Exp
-          timeWindow                      numer   prevPct
-          ---------------------------------------------------------------------------------------------------------------------------------
           Medicare    DMARD                 Cancer                      Hematologic Cancer                               4231          5193
           12 months                         111  2.137493
 
@@ -2031,7 +2197,15 @@ NOTE: Table WORK.PREV created, with 624 rows and 9 columns.
 
           Medicare    DMARD                 Cardiac disease             Conduction Block                                 4231          5193
           24 months                         386  7.433083
+ 
+ 
+                                                           queryPrevalentComorbidities.sas
+                                                                  --- AS project ---                                   14:27 Friday, July 21, 2017  22
 
+                                                                                                                                 denomIndex
+          database    exposure              Disease Category            Disease                                    denomPatid           Exp
+          timeWindow                      numer   prevPct
+          ---------------------------------------------------------------------------------------------------------------------------------
           Medicare    DMARD                 Cardiac disease             Conduction Block                                 4231          5193
           36 months                         466  8.973618
 
@@ -2043,20 +2217,36 @@ NOTE: Table WORK.PREV created, with 624 rows and 9 columns.
 
           Medicare    DMARD                 Cardiac disease             Myocardial infarction                            4231          5193
           24 months                          86  1.656075
- 
- 
-                                                           queryPrevalentComorbidities.sas
-                                                                  --- AS project ---                                  14:50 Thursday, June 8, 2017  20
 
-                                                                                                                                 denomIndex
-          database    exposure              Disease Category            Disease                                    denomPatid           Exp
-          timeWindow                      numer   prevPct
-          ---------------------------------------------------------------------------------------------------------------------------------
           Medicare    DMARD                 Cardiac disease             Myocardial infarction                            4231          5193
           36 months                         125  2.407086
 
           Medicare    DMARD                 Cardiac disease             Myocardial infarction                            4231          5193
           AS cohort entry to exposure        54  1.039861
+
+          Medicare    DMARD                 Infection                   Hospitalized infection                           4231          5193
+          12 months                        3443  66.30079
+
+          Medicare    DMARD                 Infection                   Hospitalized infection                           4231          5193
+          24 months                        4028  77.56595
+
+          Medicare    DMARD                 Infection                   Hospitalized infection                           4231          5193
+          36 months                        4245  81.74466
+
+          Medicare    DMARD                 Infection                   Hospitalized infection                           4231          5193
+          AS cohort entry to exposure      2768  53.30252
+
+          Medicare    DMARD                 Infection                   Opportunistic infection                          4231          5193
+          12 months                         213  4.101675
+
+          Medicare    DMARD                 Infection                   Opportunistic infection                          4231          5193
+          24 months                         297  5.719237
+
+          Medicare    DMARD                 Infection                   Opportunistic infection                          4231          5193
+          36 months                         358  6.893896
+
+          Medicare    DMARD                 Infection                   Opportunistic infection                          4231          5193
+          AS cohort entry to exposure       221  4.255729
 
           Medicare    DMARD                 Inflammatory bowel disease  Crohn’s Disease                                  4231          5193
           12 months                         361  6.951666
@@ -2081,7 +2271,15 @@ NOTE: Table WORK.PREV created, with 624 rows and 9 columns.
 
           Medicare    DMARD                 Inflammatory bowel disease  Ulcerative Colitis                               4231          5193
           AS cohort entry to exposure       246  4.737146
+ 
+ 
+                                                           queryPrevalentComorbidities.sas
+                                                                  --- AS project ---                                   14:27 Friday, July 21, 2017  23
 
+                                                                                                                                 denomIndex
+          database    exposure              Disease Category            Disease                                    denomPatid           Exp
+          timeWindow                      numer   prevPct
+          ---------------------------------------------------------------------------------------------------------------------------------
           Medicare    DMARD                 Kidney disease              Amyloidosis                                      4231          5193
           12 months                           3   0.05777
 
@@ -2117,15 +2315,7 @@ NOTE: Table WORK.PREV created, with 624 rows and 9 columns.
 
           Medicare    DMARD                 Kidney disease              Nephrotic syndrome                               4231          5193
           AS cohort entry to exposure         9   0.17331
- 
- 
-                                                           queryPrevalentComorbidities.sas
-                                                                  --- AS project ---                                  14:50 Thursday, June 8, 2017  21
 
-                                                                                                                                 denomIndex
-          database    exposure              Disease Category            Disease                                    denomPatid           Exp
-          timeWindow                      numer   prevPct
-          ---------------------------------------------------------------------------------------------------------------------------------
           Medicare    DMARD                 Lung disease                Apical Pulmonary fibrosis                        4231          5193
           12 months                           4  0.077027
 
@@ -2155,7 +2345,15 @@ NOTE: Table WORK.PREV created, with 624 rows and 9 columns.
 
           Medicare    DMARD                 Lung disease                Restrictive lung disease                         4231          5193
           24 months                         753  14.50029
+ 
+ 
+                                                           queryPrevalentComorbidities.sas
+                                                                  --- AS project ---                                   14:27 Friday, July 21, 2017  24
 
+                                                                                                                                 denomIndex
+          database    exposure              Disease Category            Disease                                    denomPatid           Exp
+          timeWindow                      numer   prevPct
+          ---------------------------------------------------------------------------------------------------------------------------------
           Medicare    DMARD                 Lung disease                Restrictive lung disease                         4231          5193
           36 months                         915  17.61987
 
@@ -2191,15 +2389,7 @@ NOTE: Table WORK.PREV created, with 624 rows and 9 columns.
 
           Medicare    DMARD                 PsO/PsA                     Psoriasis                                        4231          5193
           24 months                         360  6.932409
- 
- 
-                                                           queryPrevalentComorbidities.sas
-                                                                  --- AS project ---                                  14:50 Thursday, June 8, 2017  22
 
-                                                                                                                                 denomIndex
-          database    exposure              Disease Category            Disease                                    denomPatid           Exp
-          timeWindow                      numer   prevPct
-          ---------------------------------------------------------------------------------------------------------------------------------
           Medicare    DMARD                 PsO/PsA                     Psoriasis                                        4231          5193
           36 months                         415  7.991527
 
@@ -2229,7 +2419,15 @@ NOTE: Table WORK.PREV created, with 624 rows and 9 columns.
 
           Medicare    DMARD                 Uveitis                     Uveitis                                          4231          5193
           AS cohort entry to exposure       359  6.913152
+ 
+ 
+                                                           queryPrevalentComorbidities.sas
+                                                                  --- AS project ---                                   14:27 Friday, July 21, 2017  25
 
+                                                                                                                                 denomIndex
+          database    exposure              Disease Category            Disease                                    denomPatid           Exp
+          timeWindow                      numer   prevPct
+          ---------------------------------------------------------------------------------------------------------------------------------
           Medicare    NSAID or no exposure  Cancer                      Hematologic Cancer                              17983         26122
           12 months                         597   2.28543
 
@@ -2265,15 +2463,7 @@ NOTE: Table WORK.PREV created, with 624 rows and 9 columns.
 
           Medicare    NSAID or no exposure  Cancer                      Solid Cancer                                    17983         26122
           AS cohort entry to exposure      1923  7.361611
- 
- 
-                                                           queryPrevalentComorbidities.sas
-                                                                  --- AS project ---                                  14:50 Thursday, June 8, 2017  23
 
-                                                                                                                                 denomIndex
-          database    exposure              Disease Category            Disease                                    denomPatid           Exp
-          timeWindow                      numer   prevPct
-          ---------------------------------------------------------------------------------------------------------------------------------
           Medicare    NSAID or no exposure  Cardiac disease             Aortic Insufficiency/Aortic Regurgitation       17983         26122
           12 months                        2070  7.924355
 
@@ -2303,12 +2493,44 @@ NOTE: Table WORK.PREV created, with 624 rows and 9 columns.
 
           Medicare    NSAID or no exposure  Cardiac disease             Myocardial infarction                           17983         26122
           24 months                         649  2.484496
+ 
+ 
+                                                           queryPrevalentComorbidities.sas
+                                                                  --- AS project ---                                   14:27 Friday, July 21, 2017  26
 
+                                                                                                                                 denomIndex
+          database    exposure              Disease Category            Disease                                    denomPatid           Exp
+          timeWindow                      numer   prevPct
+          ---------------------------------------------------------------------------------------------------------------------------------
           Medicare    NSAID or no exposure  Cardiac disease             Myocardial infarction                           17983         26122
           36 months                         786  3.008958
 
           Medicare    NSAID or no exposure  Cardiac disease             Myocardial infarction                           17983         26122
           AS cohort entry to exposure       261  0.999158
+
+          Medicare    NSAID or no exposure  Infection                   Hospitalized infection                          17983         26122
+          12 months                       16847  64.49353
+
+          Medicare    NSAID or no exposure  Infection                   Hospitalized infection                          17983         26122
+          24 months                       19753  75.61825
+
+          Medicare    NSAID or no exposure  Infection                   Hospitalized infection                          17983         26122
+          36 months                       20759  79.46941
+
+          Medicare    NSAID or no exposure  Infection                   Hospitalized infection                          17983         26122
+          AS cohort entry to exposure      9767  37.38994
+
+          Medicare    NSAID or no exposure  Infection                   Opportunistic infection                         17983         26122
+          12 months                         784  3.001302
+
+          Medicare    NSAID or no exposure  Infection                   Opportunistic infection                         17983         26122
+          24 months                        1174  4.494296
+
+          Medicare    NSAID or no exposure  Infection                   Opportunistic infection                         17983         26122
+          36 months                        1443  5.524079
+
+          Medicare    NSAID or no exposure  Infection                   Opportunistic infection                         17983         26122
+          AS cohort entry to exposure       578  2.212694
 
           Medicare    NSAID or no exposure  Inflammatory bowel disease  Crohn’s Disease                                 17983         26122
           12 months                        1145  4.383278
@@ -2339,21 +2561,21 @@ NOTE: Table WORK.PREV created, with 624 rows and 9 columns.
 
           Medicare    NSAID or no exposure  Kidney disease              Amyloidosis                                     17983         26122
           24 months                          33   0.12633
- 
- 
-                                                           queryPrevalentComorbidities.sas
-                                                                  --- AS project ---                                  14:50 Thursday, June 8, 2017  24
 
-                                                                                                                                 denomIndex
-          database    exposure              Disease Category            Disease                                    denomPatid           Exp
-          timeWindow                      numer   prevPct
-          ---------------------------------------------------------------------------------------------------------------------------------
           Medicare    NSAID or no exposure  Kidney disease              Amyloidosis                                     17983         26122
           36 months                          38  0.145471
 
           Medicare    NSAID or no exposure  Kidney disease              Amyloidosis                                     17983         26122
           AS cohort entry to exposure        21  0.080392
+ 
+ 
+                                                           queryPrevalentComorbidities.sas
+                                                                  --- AS project ---                                   14:27 Friday, July 21, 2017  27
 
+                                                                                                                                 denomIndex
+          database    exposure              Disease Category            Disease                                    denomPatid           Exp
+          timeWindow                      numer   prevPct
+          ---------------------------------------------------------------------------------------------------------------------------------
           Medicare    NSAID or no exposure  Kidney disease              IgA nephropathy                                 17983         26122
           12 months                          83   0.31774
 
@@ -2413,21 +2635,21 @@ NOTE: Table WORK.PREV created, with 624 rows and 9 columns.
 
           Medicare    NSAID or no exposure  Lung disease                Restrictive lung disease                        17983         26122
           AS cohort entry to exposure      1775  6.795039
- 
- 
-                                                           queryPrevalentComorbidities.sas
-                                                                  --- AS project ---                                  14:50 Thursday, June 8, 2017  25
 
-                                                                                                                                 denomIndex
-          database    exposure              Disease Category            Disease                                    denomPatid           Exp
-          timeWindow                      numer   prevPct
-          ---------------------------------------------------------------------------------------------------------------------------------
           Medicare    NSAID or no exposure  Neurological Disease        Cauda Equina syndrome                           17983         26122
           12 months                          56  0.214379
 
           Medicare    NSAID or no exposure  Neurological Disease        Cauda Equina syndrome                           17983         26122
           24 months                          69  0.264145
+ 
+ 
+                                                           queryPrevalentComorbidities.sas
+                                                                  --- AS project ---                                   14:27 Friday, July 21, 2017  28
 
+                                                                                                                                 denomIndex
+          database    exposure              Disease Category            Disease                                    denomPatid           Exp
+          timeWindow                      numer   prevPct
+          ---------------------------------------------------------------------------------------------------------------------------------
           Medicare    NSAID or no exposure  Neurological Disease        Cauda Equina syndrome                           17983         26122
           36 months                          72   0.27563
 
@@ -2487,21 +2709,21 @@ NOTE: Table WORK.PREV created, with 624 rows and 9 columns.
 
           Medicare    TNF                   Cancer                      Hematologic Cancer                               4866          5929
           24 months                          87  1.467364
- 
- 
-                                                           queryPrevalentComorbidities.sas
-                                                                  --- AS project ---                                  14:50 Thursday, June 8, 2017  26
 
-                                                                                                                                 denomIndex
-          database    exposure              Disease Category            Disease                                    denomPatid           Exp
-          timeWindow                      numer   prevPct
-          ---------------------------------------------------------------------------------------------------------------------------------
           Medicare    TNF                   Cancer                      Hematologic Cancer                               4866          5929
           36 months                         111  1.872154
 
           Medicare    TNF                   Cancer                      Hematologic Cancer                               4866          5929
           AS cohort entry to exposure        70  1.180638
+ 
+ 
+                                                           queryPrevalentComorbidities.sas
+                                                                  --- AS project ---                                   14:27 Friday, July 21, 2017  29
 
+                                                                                                                                 denomIndex
+          database    exposure              Disease Category            Disease                                    denomPatid           Exp
+          timeWindow                      numer   prevPct
+          ---------------------------------------------------------------------------------------------------------------------------------
           Medicare    TNF                   Cancer                      Non Melanoma Skin Cancer                         4866          5929
           12 months                         122  2.057683
 
@@ -2561,15 +2783,39 @@ NOTE: Table WORK.PREV created, with 624 rows and 9 columns.
 
           Medicare    TNF                   Cardiac disease             Myocardial infarction                            4866          5929
           AS cohort entry to exposure        58  0.978243
+
+          Medicare    TNF                   Infection                   Hospitalized infection                           4866          5929
+          12 months                        3595  60.63417
+
+          Medicare    TNF                   Infection                   Hospitalized infection                           4866          5929
+          24 months                        4318  72.82847
  
  
                                                            queryPrevalentComorbidities.sas
-                                                                  --- AS project ---                                  14:50 Thursday, June 8, 2017  27
+                                                                  --- AS project ---                                   14:27 Friday, July 21, 2017  30
 
                                                                                                                                  denomIndex
           database    exposure              Disease Category            Disease                                    denomPatid           Exp
           timeWindow                      numer   prevPct
           ---------------------------------------------------------------------------------------------------------------------------------
+          Medicare    TNF                   Infection                   Hospitalized infection                           4866          5929
+          36 months                        4589  77.39922
+
+          Medicare    TNF                   Infection                   Hospitalized infection                           4866          5929
+          AS cohort entry to exposure      3089  52.09985
+
+          Medicare    TNF                   Infection                   Opportunistic infection                          4866          5929
+          12 months                         252  4.250295
+
+          Medicare    TNF                   Infection                   Opportunistic infection                          4866          5929
+          24 months                         355  5.987519
+
+          Medicare    TNF                   Infection                   Opportunistic infection                          4866          5929
+          36 months                         418  7.050093
+
+          Medicare    TNF                   Infection                   Opportunistic infection                          4866          5929
+          AS cohort entry to exposure       295  4.975544
+
           Medicare    TNF                   Inflammatory bowel disease  Crohn’s Disease                                  4866          5929
           12 months                         527  8.888514
 
@@ -2617,7 +2863,15 @@ NOTE: Table WORK.PREV created, with 624 rows and 9 columns.
 
           Medicare    TNF                   Kidney disease              IgA nephropathy                                  4866          5929
           AS cohort entry to exposure        23  0.387924
+ 
+ 
+                                                           queryPrevalentComorbidities.sas
+                                                                  --- AS project ---                                   14:27 Friday, July 21, 2017  31
 
+                                                                                                                                 denomIndex
+          database    exposure              Disease Category            Disease                                    denomPatid           Exp
+          timeWindow                      numer   prevPct
+          ---------------------------------------------------------------------------------------------------------------------------------
           Medicare    TNF                   Kidney disease              Nephrotic syndrome                               4866          5929
           12 months                          14  0.236128
 
@@ -2635,15 +2889,7 @@ NOTE: Table WORK.PREV created, with 624 rows and 9 columns.
 
           Medicare    TNF                   Lung disease                Apical Pulmonary fibrosis                        4866          5929
           24 months                           0         0
- 
- 
-                                                           queryPrevalentComorbidities.sas
-                                                                  --- AS project ---                                  14:50 Thursday, June 8, 2017  28
 
-                                                                                                                                 denomIndex
-          database    exposure              Disease Category            Disease                                    denomPatid           Exp
-          timeWindow                      numer   prevPct
-          ---------------------------------------------------------------------------------------------------------------------------------
           Medicare    TNF                   Lung disease                Apical Pulmonary fibrosis                        4866          5929
           36 months                           0         0
 
@@ -2691,7 +2937,15 @@ NOTE: Table WORK.PREV created, with 624 rows and 9 columns.
 
           Medicare    TNF                   Neurological Disease        Spinal Cord compression                          4866          5929
           24 months                          54  0.910778
+ 
+ 
+                                                           queryPrevalentComorbidities.sas
+                                                                  --- AS project ---                                   14:27 Friday, July 21, 2017  32
 
+                                                                                                                                 denomIndex
+          database    exposure              Disease Category            Disease                                    denomPatid           Exp
+          timeWindow                      numer   prevPct
+          ---------------------------------------------------------------------------------------------------------------------------------
           Medicare    TNF                   Neurological Disease        Spinal Cord compression                          4866          5929
           36 months                          70  1.180638
 
@@ -2709,15 +2963,7 @@ NOTE: Table WORK.PREV created, with 624 rows and 9 columns.
 
           Medicare    TNF                   PsO/PsA                     Psoriasis                                        4866          5929
           AS cohort entry to exposure       421  7.100692
- 
- 
-                                                           queryPrevalentComorbidities.sas
-                                                                  --- AS project ---                                  14:50 Thursday, June 8, 2017  29
 
-                                                                                                                                 denomIndex
-          database    exposure              Disease Category            Disease                                    denomPatid           Exp
-          timeWindow                      numer   prevPct
-          ---------------------------------------------------------------------------------------------------------------------------------
           Medicare    TNF                   PsO/PsA                     Psoriatic arthritis                              4866          5929
           12 months                         694  11.70518
 
@@ -2767,150 +3013,195 @@ NOTE: Table WORK.PREV created, with 624 rows and 9 columns.
  
  
  
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
                                                            queryPrevalentComorbidities.sas
-368        
-369          drop table UCB.tempDxMPCD;
-NOTE: Table UCB.TEMPDXMPCD has been dropped.
-370          drop table UCB.tempDxUCB;
-NOTE: Table UCB.TEMPDXUCB has been dropped.
-371          drop table UCB.tempDxSABR;
-NOTE: Table UCB.TEMPDXSABR has been dropped.
-372          drop table UCB.tempPxMPCD;
-NOTE: Table UCB.TEMPPXMPCD has been dropped.
-373          drop table UCB.tempPxUCB;
-NOTE: Table UCB.TEMPPXUCB has been dropped.
-374          drop table UCB.tempPxSABR;
-NOTE: Table UCB.TEMPPXSABR has been dropped.
-375        
-376        quit;
-NOTE: The PROCEDURE SQL printed pages 1-29.
+375        quit;
+NOTE: The PROCEDURE SQL printed pages 1-32.
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           37.83 seconds
-      cpu time            39.65 seconds
+      real time           52.55 seconds
+      cpu time            1:12.85
       
 
+376        
 377        
-378        
-379        proc export
-10                                                                  The SAS System                                        14:50 Thursday, June 8, 2017
+378        /*
+379        FRACTURES
+380        
+381        See "ALGORITHMS TO ENHANCE SPECIFICITY OF FRACTURE IDENTIFICATION_ 100316.docx"
+382         */
+383        proc sql;
+384          create table Work.fractureDiagnosis as
+385            select distinct
+386                   C.database, C.exposure, C.patid, C.ASCohortDate, C.indexGNN, C.indexDate, C.indexID, C.age, C.sex,
+10                                                                  The SAS System                                         14:27 Friday, July 21, 2017
 
-380          data = Work.prev
-381          outfile = "data\processed\&cmt..csv"
-382          dbms = csv
-383          replace;
-384          delimiter = ",";
-385        run;
+387                   C.enc_type, C.begin_date,
+388                   "Osteoporotic fracture" as outcomeCategory,
+389                   case
+390                     when substr(code, 1, 3) in ("805", "806") | code = "73313" then "Clinical vertebral fracture"
+391                     else                                                            "Non-vertebral osteoporotic fracture"
+392                     end as disease,
+393                   case
+394                     when substr(code, 1, 3) in ("805", "806") | code = "73313" then "Spine, Incident"
+395                     when substr(code, 1, 3) in ("808"       )                  then "Pelvis"
+396                     when substr(code, 1, 3) in ("810"       )                  then "Clavicle"
+397                     when substr(code, 1, 3) in ("811"       )                  then "Scapula"
+398                     when substr(code, 1, 3) in ("812"       ) | code = "73311" then "Humerus"
+399                     when substr(code, 1, 3) in ("813"       ) | code = "73312" then "Radius_ulna"
+400                     when substr(code, 1, 3) in ("814"       )                  then "Carpal"
+401                     when substr(code, 1, 3) in ("820"       ) | code = "73314" then "Hip"
+402                     when substr(code, 1, 3) in ("821"       ) | code = "73315" then "Other femur"
+403                     when substr(code, 1, 3) in ("822"       )                  then "Patella"
+404                     when substr(code, 1, 3) in ("823"       ) | code = "73316" then "Tibia/fibula"
+405                     when substr(code, 1, 3) in ("824"       )                  then "Ankle"
+406                     else ""
+407                     end as fractureSite,
+408                   case
+409                     when substr(code, 1, 4) in ("8050", "8052", "8054", "8058") | code = "73313" then 1
+410                     when substr(code, 1, 4) in ("8080", "8082", "8084", "8088")                  then 1
+411                     when substr(code, 1, 4) in ("8100")                                          then 1
+412                     when substr(code, 1, 4) in ("8120", "8122", "8124"        ) | code = "73311" then 1
+413                     when substr(code, 1, 4) in ("8200", "8202",         "8208") | code = "73314" then 1
+414                     when substr(code, 1, 4) in ("8210", "8212"                ) | code = "73315" then 1
+415                     when substr(code, 1, 4) in ("8230", "8232",         "8238") | code = "73316" then 1
+416                     else 0
+417                     end as indFractureClosed
+418            from (select A.* from UCB.tempDxMPCD A union corr
+419                  select A.* from UCB.tempDxUCB  A union corr
+420                  select A.* from UCB.tempDxSABR A ) C
+421            where ^missing(calculated fractureSite);
+NOTE: Table WORK.FRACTUREDIAGNOSIS created, with 216674 rows and 15 columns.
 
-386         /**********************************************************************
-387         *   PRODUCT:   SAS
-388         *   VERSION:   9.4
-389         *   CREATOR:   External File Interface
-390         *   DATE:      08JUN17
-391         *   DESC:      Generated SAS Datastep Code
-392         *   TEMPLATE SOURCE:  (None Specified.)
-393         ***********************************************************************/
-394            data _null_;
-395            %let _EFIERR_ = 0; /* set the ERROR detection macro variable */
-396            %let _EFIREC_ = 0;     /* clear export record count macro variable */
-397            file 'data\processed\queryPrevalentComorbidities.csv' delimiter=',' DSD DROPOVER lrecl=32767;
-398            if _n_ = 1 then        /* write column names or labels */
-399             do;
-400               put
-401                  "database"
-402               ','
-403                  "exposure"
-404               ','
-405                  "outcomeCategory"
-406               ','
-407                  "Disease"
-408               ','
-409                  "denomPatid"
-410               ','
-411                  "denomIndexExp"
-412               ','
-413                  "timeWindow"
-414               ','
-415                  "numer"
-416               ','
-417                  "prevPct"
-418               ;
-419             end;
-420           set  WORK.PREV   end=EFIEOD;
-421               format database $10. ;
-422               format exposure $20. ;
-423               format outcomeCategory $26. ;
-424               format Disease $41. ;
-425               format denomPatid best12. ;
-426               format denomIndexExp best12. ;
-427               format timeWindow $27. ;
-428               format numer best12. ;
-429               format prevPct best12. ;
-430             do;
-431               EFIOUT + 1;
-432               put database $ @;
-433               put exposure $ @;
-434               put outcomeCategory $ @;
-435               put Disease $ @;
-436               put denomPatid @;
-437               put denomIndexExp @;
-438               put timeWindow $ @;
-439               put numer @;
-440               put prevPct ;
-441               ;
-442             end;
-443            if _ERROR_ then call symputx('_EFIERR_',1);  /* set ERROR detection macro variable */
-444            if EFIEOD then call symputx('_EFIREC_',EFIOUT);
-445            run;
+422        quit;
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           3:32.23
+      cpu time            5:47.69
+      
+
+423        
+424        
+425        proc sql;
+426          drop table UCB.tempDxMPCD;
+NOTE: Table UCB.TEMPDXMPCD has been dropped.
+427          drop table UCB.tempDxUCB;
+NOTE: Table UCB.TEMPDXUCB has been dropped.
+428          drop table UCB.tempDxSABR;
+NOTE: Table UCB.TEMPDXSABR has been dropped.
+429          drop table UCB.tempPxMPCD;
+NOTE: Table UCB.TEMPPXMPCD has been dropped.
+430          drop table UCB.tempPxUCB;
+NOTE: Table UCB.TEMPPXUCB has been dropped.
+431          drop table UCB.tempPxSABR;
+NOTE: Table UCB.TEMPPXSABR has been dropped.
+432        quit;
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           2.73 seconds
+      cpu time            2.73 seconds
+      
+
+433        
+434        
+435        proc export
+436          data = Work.prev
+437          outfile = "data\processed\&cmt..csv"
+438          dbms = csv
+439          replace;
+440          delimiter = ",";
+11                                                                  The SAS System                                         14:27 Friday, July 21, 2017
+
+441        run;
+
+442         /**********************************************************************
+443         *   PRODUCT:   SAS
+444         *   VERSION:   9.4
+445         *   CREATOR:   External File Interface
+446         *   DATE:      21JUL17
+447         *   DESC:      Generated SAS Datastep Code
+448         *   TEMPLATE SOURCE:  (None Specified.)
+449         ***********************************************************************/
+450            data _null_;
+451            %let _EFIERR_ = 0; /* set the ERROR detection macro variable */
+452            %let _EFIREC_ = 0;     /* clear export record count macro variable */
+453            file 'data\processed\queryPrevalentComorbidities.csv' delimiter=',' DSD DROPOVER lrecl=32767;
+454            if _n_ = 1 then        /* write column names or labels */
+455             do;
+456               put
+457                  "database"
+458               ','
+459                  "exposure"
+460               ','
+461                  "outcomeCategory"
+462               ','
+463                  "Disease"
+464               ','
+465                  "denomPatid"
+466               ','
+467                  "denomIndexExp"
+468               ','
+469                  "timeWindow"
+470               ','
+471                  "numer"
+472               ','
+473                  "prevPct"
+474               ;
+475             end;
+476           set  WORK.PREV   end=EFIEOD;
+477               format database $10. ;
+478               format exposure $20. ;
+479               format outcomeCategory $26. ;
+480               format Disease $41. ;
+481               format denomPatid best12. ;
+482               format denomIndexExp best12. ;
+483               format timeWindow $27. ;
+484               format numer best12. ;
+485               format prevPct best12. ;
+486             do;
+487               EFIOUT + 1;
+488               put database $ @;
+489               put exposure $ @;
+490               put outcomeCategory $ @;
+491               put Disease $ @;
+492               put denomPatid @;
+493               put denomIndexExp @;
+494               put timeWindow $ @;
+495               put numer @;
+496               put prevPct ;
+497               ;
+498             end;
+499            if _ERROR_ then call symputx('_EFIERR_',1);  /* set ERROR detection macro variable */
+500            if EFIEOD then call symputx('_EFIREC_',EFIOUT);
+501            run;
 
 NOTE: The file 'data\processed\queryPrevalentComorbidities.csv' is:
       Filename=U:\studies\AS\pgms\bchan\data\processed\queryPrevalentComorbidities.csv,
       RECFM=V,LRECL=32767,File Size (bytes)=0,
-      Last Modified=08Jun2017:18:28:43,
-11                                                                  The SAS System                                        14:50 Thursday, June 8, 2017
+      Last Modified=21Jul2017:18:16:51,
+      Create Time=21Jul2017:18:16:51
 
-      Create Time=08Jun2017:18:28:43
-
-NOTE: 625 records were written to the file 'data\processed\queryPrevalentComorbidities.csv'.
+NOTE: 697 records were written to the file 'data\processed\queryPrevalentComorbidities.csv'.
       The minimum record length was 59.
       The maximum record length was 145.
-NOTE: There were 624 observations read from the data set WORK.PREV.
+12                                                                  The SAS System                                         14:27 Friday, July 21, 2017
+
+NOTE: There were 696 observations read from the data set WORK.PREV.
 NOTE: DATA statement used (Total process time):
       real time           0.01 seconds
       cpu time            0.00 seconds
       
 
-624 records created in data\processed\queryPrevalentComorbidities.csv from WORK.PREV.
+696 records created in data\processed\queryPrevalentComorbidities.csv from WORK.PREV.
   
   
 NOTE: "data\processed\queryPrevalentComorbidities.csv" file was successfully created.
 NOTE: PROCEDURE EXPORT used (Total process time):
-      real time           0.48 seconds
-      cpu time            0.04 seconds
+      real time           0.57 seconds
+      cpu time            0.06 seconds
       
 
-446        
-447        
-448        ods html close;
+502        
+503        
+504        ods html close;
 NOTE: SAS Institute Inc., SAS Campus Drive, Cary, NC USA 27513-2414
 NOTE: The SAS System used:
-      real time           3:38:25.57
-      cpu time            2:53:36.98
+      real time           3:49:10.47
+      cpu time            3:45:52.00
       
