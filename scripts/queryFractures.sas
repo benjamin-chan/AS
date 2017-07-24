@@ -72,7 +72,72 @@ proc sql;
 quit;
 
 
+/*Assign "Broad" fracture site (fx_site) for all ICD9 diagnoses, outputting separately, so some records are cloned, then combining into one file */
+/*No longer using matched trauma files here*/
 
+%macro comballfxdgns;
+    data fx_dgns;
+        set UCB.tempFracDxMPCD (where = (diagCodeType = "DX fx claim"))
+            UCB.tempFracDxUCB (where = (diagCodeType = "DX fx claim"))
+            UCB.tempFracDxSABR (where = (diagCodeType = "DX fx claim"));
+            length fx_site $30 ;
+            fx_site = '';
+            if strip(DX) in: ('800' '801' '802' '803' '804') then           do; fx_site='(800-804) skull/face'; output; end;
+            if strip(DX) in: ('805', '806') or strip(DX)='73313' then       do; fx_site='(805, 806, 73313) spine'; output; end;
+            if strip(DX) in: ('807') then                                           do; fx_site='(807) rib/sternum/trachea'; output; end;
+            if strip(DX) in: ('808') then                                           do; fx_site='(808) pelvis'; output; end;
+            if strip(DX) in: ('809') then                                           do; fx_site='(809) trunk bones'; output; end;
+            if strip(DX) in: ('810') then                                           do; fx_site='(810) clavicle'; output; end;
+            if strip(DX) in: ('811') then                                           do; fx_site='(811) scapula'; output; end;
+            if strip(DX) in: ('812') or strip(DX)='73311' then              do; fx_site='(812, 73311) humerus'; output; end;
+            if strip(DX) in: ('813') or strip(DX)='73312' then              do; fx_site='(813, 73312) radius_ulna'; output; end;
+            if strip(DX) in: ('814') then                                           do; fx_site='(814) carpal'; output; end;
+            if strip(DX) in: ('815' '816' '817') then                           do; fx_site='(815-817) hand/fingers'; output; end;
+            if strip(DX) in: ('818' '819') then                                     do; fx_site='(818-819) arms mult'; output; end;
+            if strip(DX) in: ('820') or strip(DX) = '73314' then                do; fx_site='(820, 73314) hip'; output; end;
+            if strip(DX) in: ('821') or strip(DX)='73315' then              do; fx_site='(821, 73315) femur'; output; end;
+            if strip(DX) in: ('822') then                                           do; fx_site='(822) patella'; output; end;
+            if strip(DX) in: ('823') or strip(DX)='73316' then              do; fx_site='(823, 73316) tib_fib'; output; end;
+            if strip(DX) in: ('824') then                                           do; fx_site='(824) ankle'; output; end;
+            if strip(DX) in: ('825') then                                           do; fx_site='(825) tarsal_metatarsal'; output; end;
+            if strip(DX) in: ('826') then                                           do; fx_site='(826) foot_phalanges'; output; end;
+            if strip(DX) in: ('827') then                                           do; fx_site='(827) lower_limb'; output; end;
+            if strip(DX) in: ('828') then                                           do; fx_site='(828) legs+arm/rib'; output; end;
+            if strip(DX) in: ('829') then                                           do; fx_site='(829) fx_nos'; output; end;
+            if strip(DX) in ('73310' '73319' '7331') then                 do; fx_site='(7331) pathologic nos/nec'; output; end;
+    data fx_excare;
+        set UCB.tempFracDxMPCD (where = (diagCodeType = "DX extend care claim"))
+            UCB.tempFracDxUCB (where = (diagCodeType = "DX extend care claim"))
+            UCB.tempFracDxSABR (where = (diagCodeType = "DX extend care claim"));
+            length fx_site $30 ;
+            fx_site = '';
+            /*Expanded Diagnosis Codes - Fracture Aftercare Codes*/
+            if strip(DX) in ('V5410' 'V5420') then                          do; fx_site='(812, 73311) humerus'; output; 
+                                                                                             fx_site='(813, 73312) radius_ulna'; output; end;
+            if strip(DX) in ('V5411' 'V5421') then                          do; fx_site='(812, 73311) humerus'; output; end;
+            if strip(DX) in ('V5412' 'V5422') then                          do; fx_site='(813, 73312) radius_ulna'; output; 
+                                                                                             fx_site='(814) carpal'; output; end;
+            if strip(DX) in ('V5413' 'V5423') then                          do; fx_site='(820, 73314) hip'; output; end;
+            if strip(DX) in ('V5414' 'V5424') then                          do; fx_site='(820, 73314) hip'; output; 
+                                                                                             fx_site='(821, 73315) femur'; output;
+                                                                                             fx_site='(822) patella'; output;
+                                                                                             fx_site='(824) ankle'; output; 
+                                                                                             fx_site='(823, 73316) tib_fib'; output; end;
+            if strip(DX) in ('V5415' 'V5425') then                          do; fx_site='(820, 73314) hip'; output; 
+                                                                                             fx_site='(821, 73315) femur'; output;
+                                                                                             fx_site='(822) patella'; output; end;
+            if strip(DX) in ('V5416' 'V5426') then                          do; fx_site='(824) ankle'; output; 
+                                                                                             fx_site='(822) patella'; output;
+                                                                                             fx_site='(823, 73316) tib_fib'; output; end;
+            if strip(DX) in ('V5417' 'V5427') then                          do; fx_site='(805, 806, 73313) spine'; output; end;
+            if strip(DX) in: ('V542') then                                       do; fx_site='(7331) pathologic nos/nec'; output; end;
+            if strip(DX) in: ('V541') then                                       do; fx_site='(829) fx_nos'; output; end;
+    run;
+
+    /* proc sort data=fx_dgns; by patid BEGIN_DATE fx_site; run;
+    proc sort data=fx_excare; by patid BEGIN_DATE fx_site; run; */
+%mend;
+%comballfxdgns;
 
 proc sql;
   drop table UCB.tempFracDxMPCD;
