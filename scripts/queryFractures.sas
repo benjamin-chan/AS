@@ -234,6 +234,23 @@ data fx_dgns_2;
 
 run;
 
+/*###########################################################################################################*/
+/***************************************************Intermediate Fracture Diagnosis File**********************/
+/*Combine CQ diagnosis files*******************************************************/
+data fx_dgns_3;
+    set fx_dgns_2
+/*    fx_excare_*/
+        ;
+run;
+
+proc freq data=fx_dgns_3;
+    tables fx_site site;
+run;
+
+proc sort data=fx_dgns_3;
+    by patid ENCOUNTERID fx_site site;
+run;
+
 
 proc sql;
   drop table UCB.tempFracDxMPCD;
