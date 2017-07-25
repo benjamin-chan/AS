@@ -34,10 +34,10 @@ Adapted from Lang's code in "001_fx_data.sas"
 proc sql;
 
   %let select1 = select A.*, 
-                        B.enc_type, B.admit_date, B.begin_date, B.discharge_date, B.end_date, B.dx_type, B.dx, B.pdx, "ICD9-DX" as codeType, B.dx as code,
+                        B.encounterID, B.enc_type, B.admit_date, B.begin_date, B.discharge_date, B.end_date, B.dx_type, B.dx, B.pdx, "ICD9-DX" as codeType, B.dx as code,
                         B.diagCodeType;
   %let on1 = on (A.patid = B.patid);
-  %let select2 = select patid, enc_type, admit_date, begin_date, discharge_date, end_date, dx_type, dx, pdx,
+  %let select2 = select patid, encounterID, enc_type, admit_date, begin_date, discharge_date, end_date, dx_type, dx, pdx,
                         case
                           when '800' <= substr(dx, 1, 3) <= '829' or substr(dx, 1, 4) = '7331' then "DX fx claim"
                           when substr(dx, 1, 4) in ('V541' 'V542') then "DX extend care claim"
