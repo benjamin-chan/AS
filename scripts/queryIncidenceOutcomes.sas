@@ -131,8 +131,8 @@ proc sql;
   
   %let select1 = select A.*, B.outcomeCategory, B.disease;
   %let join1 = inner join Work.defOutcomes B on (A.codeType = B.codeType & A.code = B.code);
-  %let where1a = where B.disease ^= "Myocardial infarction";
-  %let where1b = | (B.disease = "Myocardial infarction" & A.enc_type = "IP");
+  %let where1a = where B.disease ^in ("Myocardial infarction", "Hospitalized infection");
+  %let where1b = | (B.disease in ("Myocardial infarction", "Hospitalized infection") & A.enc_type = "IP");
   %let select2 = select database, exposure, patid, exposureID, exposureStart, exposureEnd, enc_type, "Lung disease" as outcomeCategory, "Interstitial lung disease" as disease, outcome_start_date as begin_date;
   create table Work.incidentDisease as
     select C.database, C.exposureID, C.patid, C.exposure, C.exposureStart, C.exposureEnd,
