@@ -1,6 +1,6 @@
 ---
 title: "Comorbidities and Disease Manifestations in Ankylosing Spondylitis (BAD AS)"
-date: "2017-06-13 10:46:29"
+date: "2017-07-25 14:53:24"
 author: Benjamin Chan (chanb@ohsu.edu)
 output:
   html_document:
@@ -135,14 +135,14 @@ See `queryPrevalentComorbidities.sas`.
 |    |database   |exposure             | denomPatid| denomIndexExp|
 |:---|:----------|:--------------------|----------:|-------------:|
 |1   |MPCD       |DMARD                |        421|           481|
-|45  |MPCD       |NSAID or no exposure |       2083|          2593|
-|117 |MPCD       |TNF                  |       1107|          1279|
-|173 |Marketscan |DMARD                |       1799|          2045|
-|245 |Marketscan |NSAID or no exposure |       8025|         10589|
-|321 |Marketscan |TNF                  |       4797|          5779|
-|397 |Medicare   |DMARD                |       4231|          5193|
-|473 |Medicare   |NSAID or no exposure |      17983|         26122|
-|549 |Medicare   |TNF                  |       4866|          5929|
+|53  |MPCD       |NSAID or no exposure |       2083|          2593|
+|133 |MPCD       |TNF                  |       1107|          1279|
+|197 |Marketscan |DMARD                |       1799|          2045|
+|277 |Marketscan |NSAID or no exposure |       8025|         10589|
+|361 |Marketscan |TNF                  |       4797|          5779|
+|445 |Medicare   |DMARD                |       4231|          5193|
+|529 |Medicare   |NSAID or no exposure |      17983|         26122|
+|613 |Medicare   |TNF                  |       4866|          5929|
 
 Table of **prevalence %**
 
@@ -155,6 +155,8 @@ Table of **prevalence %**
 |Cardiac disease            |Aortic Insufficiency/Aortic Regurgitation |AS cohort entry to exposure |      1.4|        0.4|                       0.3|            1.0|              0.9|                             1.0|          4.8|            5.8|                           4.4|
 |Cardiac disease            |Conduction Block                          |AS cohort entry to exposure |      0.2|         NA|                       0.2|            0.9|              1.2|                             1.0|          3.9|            4.6|                           4.2|
 |Cardiac disease            |Myocardial infarction                     |AS cohort entry to exposure |      0.2|         NA|                       0.0|            0.3|              0.2|                             0.4|          1.0|            1.0|                           1.0|
+|Infection                  |Hospitalized infection                    |AS cohort entry to exposure |     22.7|       22.2|                      13.7|           32.8|             28.6|                            20.6|         52.1|           53.3|                          37.4|
+|Infection                  |Opportunistic infection                   |AS cohort entry to exposure |      0.9|        0.8|                       0.3|            2.1|              1.5|                             0.5|          5.0|            4.3|                           2.2|
 |Inflammatory bowel disease |Crohn’s Disease                           |AS cohort entry to exposure |      5.2|        2.9|                       1.4|            5.0|              3.6|                             1.7|          8.4|            6.8|                           2.9|
 |Inflammatory bowel disease |Ulcerative Colitis                        |AS cohort entry to exposure |      2.1|        1.5|                       1.0|            3.4|              1.8|                             1.0|          5.2|            4.7|                           1.8|
 |Kidney disease             |Amyloidosis                               |AS cohort entry to exposure |       NA|         NA|                       0.0|            0.0|              0.0|                             0.0|          0.1|            0.1|                           0.1|
@@ -192,14 +194,14 @@ See `queryIncidenceOutcomes.sas`.
 |    |database   |exposure             |     n|
 |:---|:----------|:--------------------|-----:|
 |1   |MPCD       |DMARD                |   423|
-|20  |MPCD       |NSAID or no exposure |  2093|
-|39  |MPCD       |TNF                  |  1108|
-|58  |Marketscan |DMARD                |  1813|
-|77  |Marketscan |NSAID or no exposure |  8122|
-|96  |Marketscan |TNF                  |  4824|
-|115 |Medicare   |DMARD                |  4304|
-|134 |Medicare   |NSAID or no exposure | 18431|
-|153 |Medicare   |TNF                  |  4937|
+|22  |MPCD       |NSAID or no exposure |  2093|
+|43  |MPCD       |TNF                  |  1108|
+|64  |Marketscan |DMARD                |  1813|
+|85  |Marketscan |NSAID or no exposure |  8122|
+|106 |Marketscan |TNF                  |  4824|
+|127 |Medicare   |DMARD                |  4304|
+|148 |Medicare   |NSAID or no exposure | 18431|
+|169 |Medicare   |TNF                  |  4937|
 
 Table of **incidence per 100 person-years**
 
@@ -212,6 +214,8 @@ Table of **incidence per 100 person-years**
 |Cardiac disease            |Aortic Insufficiency/Aortic Regurgitation |      1.3|        0.5|                       1.9|            1.2|              1.5|                             2.1|          3.2|            4.7|                           6.0|
 |Cardiac disease            |Conduction Block                          |      0.3|        0.0|                       0.9|            1.1|              1.4|                             2.4|          2.9|            4.2|                           5.9|
 |Cardiac disease            |Myocardial infarction                     |      0.3|        0.0|                       0.6|            0.2|              0.3|                             0.6|          0.7|            1.2|                           1.5|
+|Infection                  |Hospitalized infection                    |     42.7|       44.4|                      46.3|           68.0|             69.5|                            65.6|         77.5|           99.7|                          96.6|
+|Infection                  |Opportunistic infection                   |      0.9|        1.4|                       0.6|            1.2|              2.0|                             1.2|          2.4|            3.0|                           2.5|
 |Inflammatory bowel disease |Crohn’s Disease                           |      4.7|        3.6|                       3.0|            4.8|              4.1|                             2.6|          3.9|            3.7|                           2.5|
 |Inflammatory bowel disease |Ulcerative Colitis                        |      2.5|        0.9|                       1.6|            3.1|              3.2|                             2.1|          2.4|            2.6|                           1.8|
 |Kidney disease             |Amyloidosis                               |      0.0|        0.0|                       0.1|            0.0|              0.0|                             0.0|          0.1|            0.0|                           0.1|
@@ -387,6 +391,8 @@ Collects code chunks from `summarizePrevalence.Rmd` and `summarizeIncidence.Rmd`
 |Cardiac disease            |Aortic Insufficiency/Aortic Regurgitation |12-month (6-month baseline to 6-month follow-up) |      1.8|        1.0|                       1.9|            1.4|              1.9|                             2.3|          4.5|            6.2|                           7.9|
 |Cardiac disease            |Conduction Block                          |12-month (6-month baseline to 6-month follow-up) |      0.2|        0.0|                       1.0|            1.2|              1.8|                             2.3|          3.7|            4.9|                           7.5|
 |Cardiac disease            |Myocardial infarction                     |12-month (6-month baseline to 6-month follow-up) |      0.3|        0.0|                       0.5|            0.2|              0.1|                             0.7|          0.5|            0.9|                           1.7|
+|Infection                  |Hospitalized infection                    |12-month (6-month baseline to 6-month follow-up) |     36.2|       37.8|                      38.3|           50.8|             53.8|                            48.6|         60.6|           66.3|                          64.5|
+|Infection                  |Opportunistic infection                   |12-month (6-month baseline to 6-month follow-up) |      1.4|        1.2|                       0.9|            2.4|              2.5|                             1.4|          4.3|            4.1|                           3.0|
 |Inflammatory bowel disease |Crohn’s Disease                           |12-month (6-month baseline to 6-month follow-up) |      5.9|        4.0|                       3.4|            6.1|              4.1|                             3.1|          8.9|            7.0|                           4.4|
 |Inflammatory bowel disease |Ulcerative Colitis                        |12-month (6-month baseline to 6-month follow-up) |      3.1|        2.5|                       1.9|            4.3|              3.3|                             2.5|          4.8|            4.6|                           2.8|
 |Kidney disease             |Amyloidosis                               |12-month (6-month baseline to 6-month follow-up) |      0.0|        0.0|                       0.0|            0.0|              0.0|                             0.0|          0.1|            0.1|                           0.1|
