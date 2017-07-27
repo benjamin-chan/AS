@@ -1,0 +1,20 @@
+bindCompare <- function (db, exp) {
+  bind_rows(compareIncidenceRates(db, exp, "Cardiac disease", "Aortic Insufficiency/Aortic Regurgitation"),
+            compareIncidenceRates(db, exp, "Cardiac disease", "Conduction Block"),
+            compareIncidenceRates(db, exp, "Cardiac disease", "Myocardial infarction"),
+            compareIncidenceRates(db, exp, "Infection", "Hospitalized infection"),
+            compareIncidenceRates(db, exp, "Infection", "Opportunistic infection"),
+            compareIncidenceRates(db, exp, "Inflammatory bowel disease", "Crohn.s Disease"),
+            compareIncidenceRates(db, exp, "Inflammatory bowel disease", "Ulcerative Colitis"),
+            compareIncidenceRates(db, exp, "Kidney disease", "Amyloidosis"),
+            compareIncidenceRates(db, exp, "Kidney disease", "IgA nephropathy"),
+            compareIncidenceRates(db, exp, "Kidney disease", "Nephrotic syndrome"),
+            compareIncidenceRates(db, exp, "Lung disease", "Apical Pulmonary fibrosis"),
+            compareIncidenceRates(db, exp, "Lung disease", "Interstitial lung disease"),
+            compareIncidenceRates(db, exp, "Lung disease", "Restrictive lung disease"),
+            compareIncidenceRates(db, exp, "Neurological Disease", "Cauda Equina syndrome"),
+            compareIncidenceRates(db, exp, "Neurological Disease", "Spinal Cord compression"),
+            compareIncidenceRates(db, exp, "PsO/PsA", "Psoriasis"),
+            compareIncidenceRates(db, exp, "PsO/PsA", "Psoriatic arthritis"),
+            compareIncidenceRates(db, exp, "Uveitis", "Uveitis"))
+}
