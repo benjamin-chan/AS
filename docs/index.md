@@ -1,6 +1,6 @@
 ---
 title: "Comorbidities and Disease Manifestations in Ankylosing Spondylitis (BAD AS)"
-date: "2017-07-27 11:07:18"
+date: "2017-07-27 11:31:16"
 author: Benjamin Chan (chanb@ohsu.edu)
 output:
   html_document:
@@ -150,29 +150,29 @@ See `queryPrevalentComorbidities.sas`.
 Table of **prevalence %**
 
 
-|outcomeCategory            |disease                                   |timeWindow                  | MPCD TNF| MPCD DMARD| MPCD NSAID or no exposure| Marketscan TNF| Marketscan DMARD| Marketscan NSAID or no exposure| Medicare TNF| Medicare DMARD| Medicare NSAID or no exposure|
-|:--------------------------|:-----------------------------------------|:---------------------------|--------:|----------:|-------------------------:|--------------:|----------------:|-------------------------------:|------------:|--------------:|-----------------------------:|
-|Cancer                     |Hematologic Cancer                        |AS cohort entry to exposure |      0.4|        0.2|                       0.1|            0.1|              0.7|                             0.5|          1.2|            2.2|                           1.4|
-|Cancer                     |Non Melanoma Skin Cancer                  |AS cohort entry to exposure |       NA|         NA|                        NA|            1.1|              1.1|                             0.9|          1.8|            1.9|                           1.5|
-|Cancer                     |Solid Cancer                              |AS cohort entry to exposure |      1.6|        1.2|                       1.7|            1.9|              3.7|                             2.5|          6.9|            8.7|                           7.4|
-|Cardiac disease            |Aortic Insufficiency/Aortic Regurgitation |AS cohort entry to exposure |      1.4|        0.4|                       0.3|            1.0|              0.9|                             1.0|          4.8|            5.8|                           4.4|
-|Cardiac disease            |Conduction Block                          |AS cohort entry to exposure |      0.2|         NA|                       0.2|            0.9|              1.2|                             1.0|          3.9|            4.6|                           4.2|
-|Cardiac disease            |Myocardial infarction                     |AS cohort entry to exposure |      0.2|         NA|                       0.0|            0.3|              0.2|                             0.4|          1.0|            1.0|                           1.0|
-|Infection                  |Hospitalized infection                    |AS cohort entry to exposure |      1.1|        1.5|                       2.9|            3.4|              4.3|                             4.5|         11.4|           15.9|                          13.4|
-|Infection                  |Opportunistic infection                   |AS cohort entry to exposure |      0.9|        0.8|                       0.3|            2.1|              1.5|                             0.5|          5.0|            4.3|                           2.2|
-|Inflammatory bowel disease |Crohn’s Disease                           |AS cohort entry to exposure |      5.2|        2.9|                       1.4|            5.0|              3.6|                             1.7|          8.4|            6.8|                           2.9|
-|Inflammatory bowel disease |Ulcerative Colitis                        |AS cohort entry to exposure |      2.1|        1.5|                       1.0|            3.4|              1.8|                             1.0|          5.2|            4.7|                           1.8|
-|Kidney disease             |Amyloidosis                               |AS cohort entry to exposure |       NA|         NA|                       0.0|            0.0|              0.0|                             0.0|          0.1|            0.1|                           0.1|
-|Kidney disease             |IgA nephropathy                           |AS cohort entry to exposure |      0.1|        0.2|                       0.1|            0.1|              0.1|                             0.0|          0.4|            0.4|                           0.3|
-|Kidney disease             |Nephrotic syndrome                        |AS cohort entry to exposure |      0.0|        0.0|                       0.0|            0.1|              0.0|                             0.0|          0.1|            0.2|                           0.1|
-|Lung disease               |Apical Pulmonary fibrosis                 |AS cohort entry to exposure |       NA|         NA|                       0.0|            0.0|               NA|                             0.0|          0.0|            0.1|                           0.0|
-|Lung disease               |Interstitial lung disease                 |AS cohort entry to exposure |       NA|         NA|                       0.0|            0.1|              0.1|                             0.1|          0.2|            0.3|                           0.1|
-|Lung disease               |Restrictive lung disease                  |AS cohort entry to exposure |      0.8|        0.4|                       0.8|            2.1|              2.4|                             1.4|          9.0|           11.5|                           6.8|
-|Neurological Disease       |Cauda Equina syndrome                     |AS cohort entry to exposure |       NA|         NA|                       0.1|            0.0|              0.1|                             0.0|          0.1|            0.2|                           0.1|
-|Neurological Disease       |Spinal Cord compression                   |AS cohort entry to exposure |      0.0|         NA|                       0.2|            0.1|              0.2|                             0.3|          1.0|            1.1|                           0.8|
-|PsO/PsA                    |Psoriasis                                 |AS cohort entry to exposure |      2.9|        1.2|                       1.0|            3.4|              2.6|                             1.1|          7.1|            5.3|                           2.4|
-|PsO/PsA                    |Psoriatic arthritis                       |AS cohort entry to exposure |      5.5|        4.4|                       1.1|            6.9|              4.8|                             1.7|         11.8|            8.5|                           3.0|
-|Uveitis                    |Uveitis                                   |AS cohort entry to exposure |      7.0|        5.8|                       3.2|            8.7|              6.3|                             4.5|          9.8|            6.9|                           3.9|
+|outcomeCategory            |disease                                   |timeWindow | MPCD TNF| MPCD DMARD| MPCD NSAID or no exposure| Marketscan TNF| Marketscan DMARD| Marketscan NSAID or no exposure| Medicare TNF| Medicare DMARD| Medicare NSAID or no exposure|
+|:--------------------------|:-----------------------------------------|:----------|--------:|----------:|-------------------------:|--------------:|----------------:|-------------------------------:|------------:|--------------:|-----------------------------:|
+|Cancer                     |Hematologic Cancer                        |12 months  |      0.3|        0.2|                       0.5|            0.3|              1.0|                             0.8|          1.0|            2.1|                           2.3|
+|Cancer                     |Non Melanoma Skin Cancer                  |12 months  |       NA|         NA|                        NA|            1.4|              1.7|                             1.8|          2.1|            2.3|                           3.7|
+|Cancer                     |Solid Cancer                              |12 months  |      2.7|        1.5|                       4.4|            2.5|              5.2|                             5.3|          7.5|           10.1|                          13.5|
+|Cardiac disease            |Aortic Insufficiency/Aortic Regurgitation |12 months  |      1.8|        1.0|                       1.9|            1.4|              1.9|                             2.3|          4.5|            6.2|                           7.9|
+|Cardiac disease            |Conduction Block                          |12 months  |      0.2|         NA|                       1.0|            1.2|              1.8|                             2.3|          3.7|            4.9|                           7.5|
+|Cardiac disease            |Myocardial infarction                     |12 months  |      0.3|         NA|                       0.5|            0.2|              0.1|                             0.7|          0.5|            0.9|                           1.7|
+|Infection                  |Hospitalized infection                    |12 months  |      1.0|        1.2|                       5.6|            3.5|              4.8|                             7.2|          9.1|           13.8|                          19.0|
+|Infection                  |Opportunistic infection                   |12 months  |      1.4|        1.2|                       0.9|            2.4|              2.5|                             1.4|          4.3|            4.1|                           3.0|
+|Inflammatory bowel disease |Crohn’s Disease                           |12 months  |      5.9|        4.0|                       3.4|            6.1|              4.1|                             3.1|          8.9|            7.0|                           4.4|
+|Inflammatory bowel disease |Ulcerative Colitis                        |12 months  |      3.1|        2.5|                       1.9|            4.3|              3.3|                             2.5|          4.8|            4.6|                           2.8|
+|Kidney disease             |Amyloidosis                               |12 months  |       NA|         NA|                       0.0|            0.0|              0.0|                             0.0|          0.1|            0.1|                           0.1|
+|Kidney disease             |IgA nephropathy                           |12 months  |      0.3|        0.2|                       0.1|            0.2|              0.1|                             0.1|          0.3|            0.3|                           0.3|
+|Kidney disease             |Nephrotic syndrome                        |12 months  |      0.2|        0.2|                       0.0|            0.1|              0.0|                             0.0|          0.2|            0.3|                           0.2|
+|Lung disease               |Apical Pulmonary fibrosis                 |12 months  |       NA|         NA|                       0.0|            0.0|               NA|                             0.0|          0.0|            0.1|                           0.0|
+|Lung disease               |Interstitial lung disease                 |12 months  |       NA|         NA|                       0.1|            0.1|              0.1|                             0.1|          0.1|            0.4|                           0.1|
+|Lung disease               |Restrictive lung disease                  |12 months  |      0.7|        0.4|                       1.7|            2.3|              3.1|                             3.6|          7.3|           10.5|                          10.7|
+|Neurological Disease       |Cauda Equina syndrome                     |12 months  |       NA|         NA|                       0.2|            0.0|              0.1|                             0.1|          0.1|            0.0|                           0.2|
+|Neurological Disease       |Spinal Cord compression                   |12 months  |      0.2|         NA|                       0.3|            0.3|              0.5|                             0.6|          0.6|            0.8|                           1.5|
+|PsO/PsA                    |Psoriasis                                 |12 months  |      4.3|        1.5|                       1.9|            4.8|              3.8|                             2.2|          7.5|            5.3|                           3.4|
+|PsO/PsA                    |Psoriatic arthritis                       |12 months  |      6.5|        5.4|                       2.4|            8.1|              7.3|                             2.9|         11.7|            9.2|                           3.5|
+|Uveitis                    |Uveitis                                   |12 months  |      8.4|        7.3|                       6.2|           10.3|              9.0|                             9.8|          9.5|            6.5|                           5.0|
 # Summarize incidence
 
 ```
@@ -232,15 +232,6 @@ Table of **incidence per 100 person-years**
 |PsO/PsA                    |Psoriasis                                 |      3.5|        1.0|                       1.6|            3.8|              3.3|                             1.8|          3.8|            3.4|                           2.1|
 |PsO/PsA                    |Psoriatic arthritis                       |      5.3|        5.1|                       1.8|            6.1|              7.1|                             2.2|          5.4|            4.6|                           1.9|
 |Uveitis                    |Uveitis                                   |      5.0|        6.5|                       4.9|            7.6|              8.6|                             8.0|          5.0|            3.8|                           3.0|
-
-```
-## Warning in file(file, ifelse(append, "a", "w")): cannot open file '../data/
-## processed/incidence.csv': Permission denied
-```
-
-```
-## Error in file(file, ifelse(append, "a", "w")): cannot open the connection
-```
 
 ## **TNF** versus **NSAID or no exposure**
 
