@@ -49,6 +49,9 @@ If you have question, please let me know.
  */
 
 
+%include "lib\provTypeCategory.sas";  /* Call script to query only physician diagnosed ICD-9 codes */
+
+
 proc sql;
 
   %let select1 = select A.*, B.enc_type, B.admit_date, B.begin_date, B.discharge_date, B.end_date, B.dx_type, B.dx, B.pdx, "ICD9-DX" as codeType, B.dx as code;
