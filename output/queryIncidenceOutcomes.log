@@ -1,12 +1,5 @@
-1                                                          The SAS System                             15:26 Wednesday, July 26, 2017
+1                                                          The SAS System                              22:37 Tuesday, August 1, 2017
 
-NOTE: Unable to open SASUSER.REGSTRY. WORK.REGSTRY will be opened instead.
-NOTE: All registry changes will be lost at the end of the session.
-
-WARNING: Unable to copy SASUSER registry to WORK registry. Because of this, you will not see registry customizations during this 
-         session.
-NOTE: Unable to open SASUSER.PROFILE. WORK.PROFILE will be opened instead.
-NOTE: All profile changes will be lost at the end of the session.
 NOTE: Copyright (c) 2002-2012 by SAS Institute Inc., Cary, NC, USA. 
 NOTE: SAS (r) Proprietary Software 9.4 (TS1M1) 
       Licensed to UNIVERSITY OF ALABAMA AT BIRMINGHAM - SFA - T&R, Site 70058223.
@@ -35,8 +28,8 @@ Please remember not to copy any data files that contain PHI (protected health id
 
 
 NOTE: SAS initialization used:
-      real time           0.71 seconds
-      cpu time            0.10 seconds
+      real time           0.78 seconds
+      cpu time            0.17 seconds
       
 1          *  University of Alabama at Birmingham                               *
 2          *  AS project                                            *
@@ -72,8 +65,6 @@ NOTE: Libref DT was successfully assigned as follows:
 91         title1 '--- AS project ---';
 92         **********************************************************************;
 93         options macrogen mlogic mprint symbolgen;
-2                                                                   The SAS System                                      15:26 Wednesday, July 26, 2017
-
 94         options nomacrogen nomlogic nomprint nosymbolgen;
 95         
 96         
@@ -81,6 +72,8 @@ NOTE: Libref DT was successfully assigned as follows:
 98           body = "output\&cmt..html"
 99           style = Statistical;
 NOTE: Writing HTML Body file: output\queryIncidenceOutcomes.html
+2                                                                   The SAS System                                       22:37 Tuesday, August 1, 2017
+
 100        
 101        
 102        /*
@@ -110,206 +103,410 @@ NOTE: Writing HTML Body file: output\queryIncidenceOutcomes.html
 126         */
 127        
 128        
-129        proc sql;
-130        
-131          %let select1 = select A.*, B.enc_type, B.admit_date, B.begin_date, B.discharge_date, B.end_date, B.dx_type, B.dx, B.pdx, "ICD9-DX" as
-131      ! codeType, B.dx as code;
-132          %let on1 = on (A.patid = B.patid & A.exposureStart <= B.begin_date <= A.exposureEnd);
-133          %let select2 = select patid, enc_type, admit_date, begin_date, discharge_date, end_date, dx_type, dx, pdx;
-134          %let where2 = where dx_type = "09";
-135          %let selectfrom3 = select * from DT.exposureTimeline;
-136          create table UCB.tempDxMPCD as
-137            &select1 from (&selectfrom3 where database = "MPCD") A inner join (&select2 from MPSTD.DX_07_10 &where2) B &on1;
-NOTE: Table UCB.TEMPDXMPCD created, with 188775 rows and 19 columns.
+129        %include "lib\provTypeCategory.sas";  /* Call script to query only physician diagnosed ICD-9 codes */
 
-138          create table UCB.tempDxUCB as
-139            &select1 from (&selectfrom3 where database = "Marketscan") A inner join (&select2 from UCBSTD.DX_2010 &where2) B &on1 union corr
-140            &select1 from (&selectfrom3 where database = "Marketscan") A inner join (&select2 from UCBSTD.DX_2011 &where2) B &on1 union corr
-141            &select1 from (&selectfrom3 where database = "Marketscan") A inner join (&select2 from UCBSTD.DX_2012 &where2) B &on1 union corr
-142            &select1 from (&selectfrom3 where database = "Marketscan") A inner join (&select2 from UCBSTD.DX_2013 &where2) B &on1 union corr
-143            &select1 from (&selectfrom3 where database = "Marketscan") A inner join (&select2 from UCBSTD.DX_2014 &where2) B &on1 ;
-NOTE: Table UCB.TEMPDXUCB created, with 1190215 rows and 19 columns.
+NOTE: The infile F is:
+      Filename=U:\studies\AS\pgms\bchan\data\raw\PublicUseData\TaxonomyCrosswalk.txt,
+      RECFM=V,LRECL=32767,File Size (bytes)=57466,
+      Last Modified=28Jul2017:15:19:11,
+      Create Time=28Jul2017:15:29:23
 
-144          create table UCB.tempDxSABR as
-145            &select1 from (&selectfrom3 where database = "Medicare") A inner join (&select2 from STD_SABR.STD_DX_2006    &where2) B &on1 union corr
-146            &select1 from (&selectfrom3 where database = "Medicare") A inner join (&select2 from STD_SABR.STD_DX_2007    &where2) B &on1 union corr
-147            &select1 from (&selectfrom3 where database = "Medicare") A inner join (&select2 from STD_SABR.STD_DX_2008_V2 &where2) B &on1 union corr
-148            &select1 from (&selectfrom3 where database = "Medicare") A inner join (&select2 from STD_SABR.STD_DX_2009    &where2) B &on1 union corr
-149            &select1 from (&selectfrom3 where database = "Medicare") A inner join (&select2 from STD_SABR.STD_DX_2010    &where2) B &on1 union corr
-150            &select1 from (&selectfrom3 where database = "Medicare") A inner join (&select2 from STD_SABR.STD_DX_2011    &where2) B &on1 union corr
-151            &select1 from (&selectfrom3 where database = "Medicare") A inner join (&select2 from STD_SABR.STD_DX_2012    &where2) B &on1 union corr
-152            &select1 from (&selectfrom3 where database = "Medicare") A inner join (&select2 from STD_SABR.STD_DX_2013    &where2) B &on1 union corr
-153            &select1 from (&selectfrom3 where database = "Medicare") A inner join (&select2 from STD_SABR.STD_DX_2014    &where2) B &on1 ;
-NOTE: Table UCB.TEMPDXSABR created, with 12136747 rows and 19 columns.
+NOTE: 496 records were read from the infile F.
+      The minimum record length was 31.
+      The maximum record length was 187.
+NOTE: The data set WORK.TAXONOMYCROSSWALK has 496 observations and 5 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.06 seconds
+      cpu time            0.00 seconds
+      
 
-154        
-155          %let select1 = select A.*, B.admit_date, B.begin_date, B.discharge_date, B.end_date, B.px_date, B.px_type, B.px, case when B.px_type =
-155      ! "09" then "ICD9-PX" when B.px_type = "C1" then "CPT" when B.px_type = "H1" then "HCPCS" else "" end as codeType, B.px as code;
-156          %let on1 = on (A.patid = B.patid & A.exposureStart <= B.begin_date <= A.exposureEnd);
-3                                                                   The SAS System                                      15:26 Wednesday, July 26, 2017
 
-157          %let select2 = select patid, admit_date, begin_date, discharge_date, end_date, px_date, px_type, px;
-158          %let selectfrom3 = select * from DT.exposureTimeline;
-159          create table UCB.tempPxMPCD as
-160            &select1 from (&selectfrom3 where database = "MPCD") A inner join (&select2 from MPSTD.PX_07_10) B &on1;
+NOTE: There were 496 observations read from the data set WORK.TAXONOMYCROSSWALK.
+NOTE: 382 observations with duplicate key values were deleted.
+NOTE: The data set WORK.LOOKUPPROVTYPEPHYSICIAN has 114 observations and 3 variables.
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.00 seconds
+      
+
+164        
+165        
+166        proc sql;
+167        
+168          %let select1 = select A.*, B.enc_type, B.admit_date, B.begin_date, B.discharge_date, B.end_date, B.dx_type, B.dx, B.pdx, "ICD9-DX" as
+168      ! codeType, B.dx as code, B.provTypeCategory;
+169          %let on1 = on (A.patid = B.patid & A.exposureStart <= B.begin_date <= A.exposureEnd);
+170          %let select2 = select A.patid, A.enc_type, A.admit_date, A.begin_date, A.discharge_date, A.end_date, A.dx_type, A.dx, A.pdx, A.prov_type,
+170      !  &provTypeCategory;
+171          %let join2 = inner join Work.lookupProvTypePhysician B on (A.prov_type = B.prov_type_code);
+172          %let where2 = where dx_type = "09" & B.indPhysician = 1;
+173          %let selectfrom3 = select * from DT.exposureTimeline;
+174        
+175          create table UCB.tempLookupMPCD as &selectfrom3 where database = "MPCD";
+NOTE: Table UCB.TEMPLOOKUPMPCD created, with 3624 rows and 9 columns.
+
+176          create table UCB.temp0710 as &select2 from MPSTD.DX_07_10 A &join2 &where2;
+3                                                                   The SAS System                                       22:37 Tuesday, August 1, 2017
+
+NOTE: Table UCB.TEMP0710 created, with 128860163 rows and 11 columns.
+
+177          create table UCB.tempDxMPCD as
+178            &select1 from UCB.tempLookupMPCD A inner join UCB.temp0710 B &on1;
+NOTE: Table UCB.TEMPDXMPCD created, with 134354 rows and 20 columns.
+
+179          drop table UCB.temp0710;
+NOTE: Table UCB.TEMP0710 has been dropped.
+180        
+181          create table UCB.tempLookupMarketscan as &selectfrom3 where database = "Marketscan";
+NOTE: Table UCB.TEMPLOOKUPMARKETSCAN created, with 14759 rows and 9 columns.
+
+182          create table UCB.temp10 as &select2 from UCBSTD.DX_2010 A &join2 &where2;
+NOTE: Parallel WHERE evaluation suppressed due to sort order on table.
+NOTE: Table UCB.TEMP10 created, with 112891721 rows and 11 columns.
+
+183          create table UCB.temp11 as &select2 from UCBSTD.DX_2011 A &join2 &where2;
+NOTE: Parallel WHERE evaluation suppressed due to sort order on table.
+NOTE: Table UCB.TEMP11 created, with 138953201 rows and 11 columns.
+
+184          create table UCB.temp12 as &select2 from UCBSTD.DX_2012 A &join2 &where2;
+NOTE: Parallel WHERE evaluation suppressed due to sort order on table.
+NOTE: Table UCB.TEMP12 created, with 166260560 rows and 11 columns.
+
+185          create table UCB.temp13 as &select2 from UCBSTD.DX_2013 A &join2 &where2;
+NOTE: Parallel WHERE evaluation suppressed due to sort order on table.
+NOTE: Table UCB.TEMP13 created, with 160320601 rows and 11 columns.
+
+186          create table UCB.temp14 as &select2 from UCBSTD.DX_2014 A &join2 &where2;
+NOTE: Parallel WHERE evaluation suppressed due to sort order on table.
+NOTE: Table UCB.TEMP14 created, with 182163620 rows and 11 columns.
+
+187          create table UCB.tempDxUCB as
+188            &select1 from UCB.tempLookupMarketscan A inner join UCB.temp10 B &on1 union corr
+189            &select1 from UCB.tempLookupMarketscan A inner join UCB.temp11 B &on1 union corr
+190            &select1 from UCB.tempLookupMarketscan A inner join UCB.temp12 B &on1 union corr
+191            &select1 from UCB.tempLookupMarketscan A inner join UCB.temp13 B &on1 union corr
+192            &select1 from UCB.tempLookupMarketscan A inner join UCB.temp14 B &on1 ;
+NOTE: Table UCB.TEMPDXUCB created, with 259640 rows and 20 columns.
+
+193          drop table UCB.temp10;
+NOTE: Table UCB.TEMP10 has been dropped.
+194          drop table UCB.temp11;
+NOTE: Table UCB.TEMP11 has been dropped.
+195          drop table UCB.temp12;
+NOTE: Table UCB.TEMP12 has been dropped.
+196          drop table UCB.temp13;
+NOTE: Table UCB.TEMP13 has been dropped.
+197          drop table UCB.temp14;
+NOTE: Table UCB.TEMP14 has been dropped.
+198        
+199          create table UCB.tempLookupMedicare as &selectfrom3 where database = "Medicare";
+NOTE: Table UCB.TEMPLOOKUPMEDICARE created, with 27672 rows and 9 columns.
+
+200          create table UCB.temp06 as &select2 from STD_SABR.STD_DX_2006    A &join2 &where2;
+NOTE: Table UCB.TEMP06 created, with 118563260 rows and 11 columns.
+
+201          create table UCB.temp07 as &select2 from STD_SABR.STD_DX_2007    A &join2 &where2;
+NOTE: Table UCB.TEMP07 created, with 130846142 rows and 11 columns.
+
+202          create table UCB.temp08 as &select2 from STD_SABR.STD_DX_2008_V2 A &join2 &where2;
+NOTE: Table UCB.TEMP08 created, with 139501255 rows and 11 columns.
+
+203          create table UCB.temp09 as &select2 from STD_SABR.STD_DX_2009    A &join2 &where2;
+NOTE: Table UCB.TEMP09 created, with 142994605 rows and 11 columns.
+
+204          create table UCB.temp10 as &select2 from STD_SABR.STD_DX_2010    A &join2 &where2;
+NOTE: Table UCB.TEMP10 created, with 172175461 rows and 11 columns.
+
+205          create table UCB.temp11 as &select2 from STD_SABR.STD_DX_2011    A &join2 &where2;
+NOTE: Table UCB.TEMP11 created, with 235419413 rows and 11 columns.
+
+4                                                                   The SAS System                                       22:37 Tuesday, August 1, 2017
+
+206          create table UCB.temp12 as &select2 from STD_SABR.STD_DX_2012    A &join2 &where2;
+NOTE: Table UCB.TEMP12 created, with 222190721 rows and 11 columns.
+
+207          create table UCB.temp13 as &select2 from STD_SABR.STD_DX_2013    A &join2 &where2;
+NOTE: Table UCB.TEMP13 created, with 410832261 rows and 11 columns.
+
+208          create table UCB.temp14 as &select2 from STD_SABR.STD_DX_2014    A &join2 &where2;
+NOTE: Table UCB.TEMP14 created, with 484305406 rows and 11 columns.
+
+209          create table UCB.tempDxSABR as
+210            &select1 from UCB.tempLookupMedicare A inner join UCB.temp06 B &on1 union corr
+211            &select1 from UCB.tempLookupMedicare A inner join UCB.temp07 B &on1 union corr
+212            &select1 from UCB.tempLookupMedicare A inner join UCB.temp08 B &on1 union corr
+213            &select1 from UCB.tempLookupMedicare A inner join UCB.temp09 B &on1 union corr
+214            &select1 from UCB.tempLookupMedicare A inner join UCB.temp10 B &on1 union corr
+215            &select1 from UCB.tempLookupMedicare A inner join UCB.temp11 B &on1 union corr
+216            &select1 from UCB.tempLookupMedicare A inner join UCB.temp12 B &on1 union corr
+217            &select1 from UCB.tempLookupMedicare A inner join UCB.temp13 B &on1 union corr
+218            &select1 from UCB.tempLookupMedicare A inner join UCB.temp14 B &on1 ;
+NOTE: Table UCB.TEMPDXSABR created, with 6933129 rows and 20 columns.
+
+219          drop table UCB.temp06;
+NOTE: Table UCB.TEMP06 has been dropped.
+220          drop table UCB.temp07;
+NOTE: Table UCB.TEMP07 has been dropped.
+221          drop table UCB.temp08;
+NOTE: Table UCB.TEMP08 has been dropped.
+222          drop table UCB.temp09;
+NOTE: Table UCB.TEMP09 has been dropped.
+223          drop table UCB.temp10;
+NOTE: Table UCB.TEMP10 has been dropped.
+224          drop table UCB.temp11;
+NOTE: Table UCB.TEMP11 has been dropped.
+225          drop table UCB.temp12;
+NOTE: Table UCB.TEMP12 has been dropped.
+226          drop table UCB.temp13;
+NOTE: Table UCB.TEMP13 has been dropped.
+227          drop table UCB.temp14;
+NOTE: Table UCB.TEMP14 has been dropped.
+228        
+229          %let select1 = select A.*, B.admit_date, B.begin_date, B.discharge_date, B.end_date, B.px_date, B.px_type, B.px, case when B.px_type =
+229      ! "09" then "ICD9-PX" when B.px_type = "C1" then "CPT" when B.px_type = "H1" then "HCPCS" else "" end as codeType, B.px as code;
+230          %let on1 = on (A.patid = B.patid & A.exposureStart <= B.begin_date <= A.exposureEnd);
+231          %let select2 = select patid, admit_date, begin_date, discharge_date, end_date, px_date, px_type, px;
+232          %let selectfrom3 = select * from DT.exposureTimeline;
+233        
+234          create table UCB.temp0710 as &select2 from MPSTD.PX_07_10;
+NOTE: Table UCB.TEMP0710 created, with 346484578 rows and 8 columns.
+
+235          create table UCB.tempPxMPCD as
+236            &select1 from UCB.tempLookupMPCD A inner join UCB.temp0710 B &on1;
 NOTE: Table UCB.TEMPPXMPCD created, with 290338 rows and 18 columns.
 
-161          create table UCB.tempPxUCB as
-162            &select1 from (&selectfrom3 where database = "Marketscan") A inner join (&select2 from UCBSTD.PX_2010) B &on1 union corr
-163            &select1 from (&selectfrom3 where database = "Marketscan") A inner join (&select2 from UCBSTD.PX_2011) B &on1 union corr
-164            &select1 from (&selectfrom3 where database = "Marketscan") A inner join (&select2 from UCBSTD.PX_2012) B &on1 union corr
-165            &select1 from (&selectfrom3 where database = "Marketscan") A inner join (&select2 from UCBSTD.PX_2013) B &on1 union corr
-166            &select1 from (&selectfrom3 where database = "Marketscan") A inner join (&select2 from UCBSTD.PX_2014) B &on1 ;
+237          drop table UCB.temp0710;
+NOTE: Table UCB.TEMP0710 has been dropped.
+238        
+239          create table UCB.temp10 as &select2 from UCBSTD.PX_2010;
+NOTE: Table UCB.TEMP10 created, with 391592729 rows and 8 columns.
+
+240          create table UCB.temp11 as &select2 from UCBSTD.PX_2011;
+NOTE: Table UCB.TEMP11 created, with 491685366 rows and 8 columns.
+
+241          create table UCB.temp12 as &select2 from UCBSTD.PX_2012;
+NOTE: Table UCB.TEMP12 created, with 578756109 rows and 8 columns.
+
+242          create table UCB.temp13 as &select2 from UCBSTD.PX_2013;
+NOTE: Table UCB.TEMP13 created, with 524982991 rows and 8 columns.
+
+243          create table UCB.temp14 as &select2 from UCBSTD.PX_2014;
+NOTE: Table UCB.TEMP14 created, with 562542993 rows and 8 columns.
+
+244          create table UCB.tempPxUCB as
+5                                                                   The SAS System                                       22:37 Tuesday, August 1, 2017
+
+245            &select1 from UCB.tempLookupMarketscan A inner join UCB.temp10 B &on1 union corr
+246            &select1 from UCB.tempLookupMarketscan A inner join UCB.temp11 B &on1 union corr
+247            &select1 from UCB.tempLookupMarketscan A inner join UCB.temp12 B &on1 union corr
+248            &select1 from UCB.tempLookupMarketscan A inner join UCB.temp13 B &on1 union corr
+249            &select1 from UCB.tempLookupMarketscan A inner join UCB.temp14 B &on1 ;
 NOTE: Table UCB.TEMPPXUCB created, with 1232826 rows and 18 columns.
 
-167          create table UCB.tempPxSABR as
-168            &select1 from (&selectfrom3 where database = "Medicare") A inner join (&select2 from STD_SABR.STD_PX_2006) B &on1 union corr
-169            &select1 from (&selectfrom3 where database = "Medicare") A inner join (&select2 from STD_SABR.STD_PX_2007) B &on1 union corr
-170            &select1 from (&selectfrom3 where database = "Medicare") A inner join (&select2 from STD_SABR.STD_PX_2008) B &on1 union corr
-171            &select1 from (&selectfrom3 where database = "Medicare") A inner join (&select2 from STD_SABR.STD_PX_2009) B &on1 union corr
-172            &select1 from (&selectfrom3 where database = "Medicare") A inner join (&select2 from STD_SABR.STD_PX_2010) B &on1 union corr
-173            &select1 from (&selectfrom3 where database = "Medicare") A inner join (&select2 from STD_SABR.STD_PX_2011) B &on1 union corr
-174            &select1 from (&selectfrom3 where database = "Medicare") A inner join (&select2 from STD_SABR.STD_PX_2012) B &on1 union corr
-175            &select1 from (&selectfrom3 where database = "Medicare") A inner join (&select2 from STD_SABR.STD_PX_2013) B &on1 union corr
-176            &select1 from (&selectfrom3 where database = "Medicare") A inner join (&select2 from STD_SABR.STD_PX_2014) B &on1 ;
+250          drop table UCB.temp10;
+NOTE: Table UCB.TEMP10 has been dropped.
+251          drop table UCB.temp11;
+NOTE: Table UCB.TEMP11 has been dropped.
+252          drop table UCB.temp12;
+NOTE: Table UCB.TEMP12 has been dropped.
+253          drop table UCB.temp13;
+NOTE: Table UCB.TEMP13 has been dropped.
+254          drop table UCB.temp14;
+NOTE: Table UCB.TEMP14 has been dropped.
+255        
+256          create table UCB.temp06 as &select2 from STD_SABR.STD_PX_2006;
+NOTE: Table UCB.TEMP06 created, with 168021311 rows and 8 columns.
+
+257          create table UCB.temp07 as &select2 from STD_SABR.STD_PX_2007;
+NOTE: Table UCB.TEMP07 created, with 184413125 rows and 8 columns.
+
+258          create table UCB.temp08 as &select2 from STD_SABR.STD_PX_2008;
+NOTE: Table UCB.TEMP08 created, with 195342614 rows and 8 columns.
+
+259          create table UCB.temp09 as &select2 from STD_SABR.STD_PX_2009;
+NOTE: Table UCB.TEMP09 created, with 201608393 rows and 8 columns.
+
+260          create table UCB.temp10 as &select2 from STD_SABR.STD_PX_2010;
+NOTE: Table UCB.TEMP10 created, with 224496201 rows and 8 columns.
+
+261          create table UCB.temp11 as &select2 from STD_SABR.STD_PX_2011;
+NOTE: Table UCB.TEMP11 created, with 246477259 rows and 8 columns.
+
+262          create table UCB.temp12 as &select2 from STD_SABR.STD_PX_2012;
+NOTE: Table UCB.TEMP12 created, with 310647729 rows and 8 columns.
+
+263          create table UCB.temp13 as &select2 from STD_SABR.STD_PX_2013;
+NOTE: Table UCB.TEMP13 created, with 447988736 rows and 8 columns.
+
+264          create table UCB.temp14 as &select2 from STD_SABR.STD_PX_2014;
+NOTE: Table UCB.TEMP14 created, with 535737236 rows and 8 columns.
+
+265          create table UCB.tempPxSABR as
+266            &select1 from UCB.tempLookupMedicare A inner join UCB.temp06 B &on1 union corr
+267            &select1 from UCB.tempLookupMedicare A inner join UCB.temp07 B &on1 union corr
+268            &select1 from UCB.tempLookupMedicare A inner join UCB.temp08 B &on1 union corr
+269            &select1 from UCB.tempLookupMedicare A inner join UCB.temp09 B &on1 union corr
+270            &select1 from UCB.tempLookupMedicare A inner join UCB.temp10 B &on1 union corr
+271            &select1 from UCB.tempLookupMedicare A inner join UCB.temp11 B &on1 union corr
+272            &select1 from UCB.tempLookupMedicare A inner join UCB.temp12 B &on1 union corr
+273            &select1 from UCB.tempLookupMedicare A inner join UCB.temp13 B &on1 union corr
+274            &select1 from UCB.tempLookupMedicare A inner join UCB.temp14 B &on1 ;
 NOTE: Table UCB.TEMPPXSABR created, with 6367119 rows and 18 columns.
 
-177        
-178        quit;
+275          drop table UCB.temp06;
+NOTE: Table UCB.TEMP06 has been dropped.
+276          drop table UCB.temp07;
+NOTE: Table UCB.TEMP07 has been dropped.
+277          drop table UCB.temp08;
+NOTE: Table UCB.TEMP08 has been dropped.
+278          drop table UCB.temp09;
+NOTE: Table UCB.TEMP09 has been dropped.
+279          drop table UCB.temp10;
+NOTE: Table UCB.TEMP10 has been dropped.
+280          drop table UCB.temp11;
+NOTE: Table UCB.TEMP11 has been dropped.
+281          drop table UCB.temp12;
+NOTE: Table UCB.TEMP12 has been dropped.
+282          drop table UCB.temp13;
+6                                                                   The SAS System                                       22:37 Tuesday, August 1, 2017
+
+NOTE: Table UCB.TEMP13 has been dropped.
+283          drop table UCB.temp14;
+NOTE: Table UCB.TEMP14 has been dropped.
+284        
+285        quit;
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           3:15:02.44
-      cpu time            2:36:44.77
+      real time           5:58:51.21
+      cpu time            4:16:57.15
       
 
-179        
-180        
-181        /*
-182        Call interstitial lung disease macro
-183         */
-184        %include "lib\IPP_2IPSOPplusPX_ILD.sas" / source2;
+286        
+287        
+288        /*
+289        Call interstitial lung disease macro
+290         */
+291        %include "lib\IPP_2IPSOPplusPX_ILD.sas" / source2;
 NOTE: %INCLUDE (level 1) file lib\IPP_2IPSOPplusPX_ILD.sas is file U:\studies\AS\pgms\bchan\lib\IPP_2IPSOPplusPX_ILD.sas.
-185       +/*
-186       +Interstitial lung disease;
-187       +1)  One or more diagnosis codes for ILD from primary discharge
-188       +Or
-189       +2)  (Two or more diagnosis codes for ILD from secondary discharge or physician EMM ) plus one or more diagnosis tests within 90 days prior
-189      !+to (inclusive) one of the diagnosis code for ILD
-190       +*/
-191       +%macro IPP_2IPSOPplusPX_ILD(outdata=,ids=,Dxs=, Pxs=);
-192       +*DXs=diagnosis code in followup, Pxs=CPT code in follow up;
-193       +*do not name outData as IPPILD dxIPSILD dxOPILD dxIPSOPILD pxILD dxpxIPSOPILD IPSOPILD;
-194       +
-195       +data IPPILD dxIPSILD dxOPILD;
-196       +set &dxs();
-197       +length dx1_date 4;
-198       +format dx1_date mmddyy10.;
-199       +dx1_date=min(ADMIT_DATE,  BEGIN_DATE);
-200       +
-201       +if dx in :('515','51630','51631','51632','51633','51634','51635','51636','51637',
-202       +           '5164','5165','5166','5168','5169','71481');
-203       +
-204       +if enc_type='IP' and pdx='P'
-205       +    then output IPPILD;
-206       +if enc_type='IP' and pdx ne 'P'
-207       +    then output dxIPSILD;
-208       +if enc_type not in ('IP','IF', 'OT', " ")
-209       +    then output dxOPILD;
-210       +run;
-211       +
-212       +data dxIPSOPILD; *ILD from secondary discharge or physician EMM;
-213       +set dxIPSILD dxOPILD;
-214       +run;
-215       +
-4                                                                   The SAS System                                      15:26 Wednesday, July 26, 2017
+292       +/*
+293       +Interstitial lung disease;
+294       +1)  One or more diagnosis codes for ILD from primary discharge
+295       +Or
+296       +2)  (Two or more diagnosis codes for ILD from secondary discharge or physician EMM ) plus one or more diagnosis tests within 90 days prior
+296      !+to (inclusive) one of the diagnosis code for ILD
+297       +*/
+298       +%macro IPP_2IPSOPplusPX_ILD(outdata=,ids=,Dxs=, Pxs=);
+299       +*DXs=diagnosis code in followup, Pxs=CPT code in follow up;
+300       +*do not name outData as IPPILD dxIPSILD dxOPILD dxIPSOPILD pxILD dxpxIPSOPILD IPSOPILD;
+301       +
+302       +data IPPILD dxIPSILD dxOPILD;
+303       +set &dxs();
+304       +length dx1_date 4;
+305       +format dx1_date mmddyy10.;
+306       +dx1_date=min(ADMIT_DATE,  BEGIN_DATE);
+307       +
+308       +if dx in :('515','51630','51631','51632','51633','51634','51635','51636','51637',
+309       +           '5164','5165','5166','5168','5169','71481');
+310       +
+311       +if enc_type='IP' and pdx='P'
+312       +    then output IPPILD;
+313       +if enc_type='IP' and pdx ne 'P'
+314       +    then output dxIPSILD;
+315       +if enc_type not in ('IP','IF', 'OT', " ")
+316       +    then output dxOPILD;
+317       +run;
+318       +
+319       +data dxIPSOPILD; *ILD from secondary discharge or physician EMM;
+320       +set dxIPSILD dxOPILD;
+321       +run;
+322       +
+323       +data pxILD; *diagnosis tests;
+324       +set &pxs();
+325       +if (px_type='09' and px in ('8741','8742')) or
+326       +   (px_type='C1' and px in ('71250','71260','71270','71275','31625','31628',
+327       +                             '31629','31632','31633','32095','32096','32097',
+328       +                             '32098','32400','32405','32604','32606','32607',
+329       +                             '32608','32609'));
+330       +run;
+331       +proc sort data=pxILD nodupkey; by &IDS px_date;run; * drop duplicate PX date and keep only one;
+332       +
+333       +proc sql;
+334       +/*one or more diagnosis tests within 90 days prior to (inclusive) one of the diagnosis code for ILD*/
+335       +create table dxpxIPSOPILD as
+336       +select a.* , b.px_date
+337       +from dxIPSOPILD as a
+338       +    ,
+339       +     pxILD as b
+340       +where a.&IDS=b.&IDS and
+341       +      min(b.ADMIT_DATE, b.BEGIN_DATE)-90<=b.px_date<=min(b.ADMIT_DATE, b.BEGIN_DATE);
+342       +
+343       +/* sencond DX code */
+344       +create table IPSOPILD as
+345       +select a.*, min(b.ADMIT_DATE, b.BEGIN_DATE) as DX2_date length=4 format mmddyy10.
+7                                                                   The SAS System                                       22:37 Tuesday, August 1, 2017
 
-216       +data pxILD; *diagnosis tests;
-217       +set &pxs();
-218       +if (px_type='09' and px in ('8741','8742')) or
-219       +   (px_type='C1' and px in ('71250','71260','71270','71275','31625','31628',
-220       +                             '31629','31632','31633','32095','32096','32097',
-221       +                             '32098','32400','32405','32604','32606','32607',
-222       +                             '32608','32609'));
-223       +run;
-224       +proc sort data=pxILD nodupkey; by &IDS px_date;run; * drop duplicate PX date and keep only one;
-225       +
-226       +proc sql;
-227       +/*one or more diagnosis tests within 90 days prior to (inclusive) one of the diagnosis code for ILD*/
-228       +create table dxpxIPSOPILD as
-229       +select a.* , b.px_date
-230       +from dxIPSOPILD as a
-231       +    ,
-232       +     pxILD as b
-233       +where a.&IDS=b.&IDS and
-234       +      min(b.ADMIT_DATE, b.BEGIN_DATE)-90<=b.px_date<=min(b.ADMIT_DATE, b.BEGIN_DATE);
-235       +
-236       +/* sencond DX code */
-237       +create table IPSOPILD as
-238       +select a.*, min(b.ADMIT_DATE, b.BEGIN_DATE) as DX2_date length=4 format mmddyy10.
-239       +from dxpxIPSOPILD as a
-240       +    ,
-241       +     dxIPSOPILD(drop=dx1_date) as b
-242       +where a.patid=b.patid and
-243       +      (a.ADMIT_DATE ne b.ADMIT_DATE and a.BEGIN_DATE ne b.BEGIN_DATE)
-244       +order by &IDS,ADMIT_DATE, BEGIN_DATE;
-245       +quit;
-246       +
-247       +
-248       +data &outData;
-249       +set IPPILD IPSOPILD;
-250       +length outcome $20 outcome_date outcome_start_date 4;
-251       +format outcome_date outcome_start_date mmddyy10.;
-252       +outcome="ILD";
-253       +outcome_date=max(dx1_date, dx2_date, px_date);
-254       +outcome_start_date=min(dx1_date, dx2_date, px_date);
-255       +drop ADMIT_DATE BEGIN_DATE DISCHARGE_DATE END_DATE;
-256       +run;
-257       +
-258       +proc sort data=&outData;
-259       +by &IDS outcome_date descending outcome_start_date descending Enc_type;
-260       +run;
-261       +
-262       +data &outData;
-263       +set &outData;
-264       +by &IDS outcome_date descending outcome_start_date;
-265       +if first.outcome_date;
-266       +run;
-267       +
-268       +proc datasets nolist;
-269       +delete IPPILD dxIPSILD dxOPILD dxIPSOPILD pxILD dxpxIPSOPILD IPSOPILD;
-270       +quit;run;
-271       +%mend IPP_2IPSOPplusPX_ILD;
+346       +from dxpxIPSOPILD as a
+347       +    ,
+348       +     dxIPSOPILD(drop=dx1_date) as b
+349       +where a.patid=b.patid and
+350       +      (a.ADMIT_DATE ne b.ADMIT_DATE and a.BEGIN_DATE ne b.BEGIN_DATE)
+351       +order by &IDS,ADMIT_DATE, BEGIN_DATE;
+352       +quit;
+353       +
+354       +
+355       +data &outData;
+356       +set IPPILD IPSOPILD;
+357       +length outcome $20 outcome_date outcome_start_date 4;
+358       +format outcome_date outcome_start_date mmddyy10.;
+359       +outcome="ILD";
+360       +outcome_date=max(dx1_date, dx2_date, px_date);
+361       +outcome_start_date=min(dx1_date, dx2_date, px_date);
+362       +drop ADMIT_DATE BEGIN_DATE DISCHARGE_DATE END_DATE;
+363       +run;
+364       +
+365       +proc sort data=&outData;
+366       +by &IDS outcome_date descending outcome_start_date descending Enc_type;
+367       +run;
+368       +
+369       +data &outData;
+370       +set &outData;
+371       +by &IDS outcome_date descending outcome_start_date;
+372       +if first.outcome_date;
+373       +run;
+374       +
+375       +proc datasets nolist;
+376       +delete IPPILD dxIPSILD dxOPILD dxIPSOPILD pxILD dxpxIPSOPILD IPSOPILD;
+377       +quit;run;
+378       +%mend IPP_2IPSOPplusPX_ILD;
 NOTE: %INCLUDE (level 1) ending.
-272        %IPP_2IPSOPplusPX_ILD(outdata = Work.outcome_ILD_MPCD,
-273                              IDS = exposureID,
-274                              Dxs = UCB.tempDxMPCD,
-275                              Pxs = UCB.tempPxMPCD);
+379        %IPP_2IPSOPplusPX_ILD(outdata = Work.outcome_ILD_MPCD,
+380                              IDS = exposureID,
+381                              Dxs = UCB.tempDxMPCD,
+382                              Pxs = UCB.tempPxMPCD);
 
-NOTE: There were 188775 observations read from the data set UCB.TEMPDXMPCD.
-NOTE: The data set WORK.IPPILD has 4 observations and 20 variables.
-NOTE: The data set WORK.DXIPSILD has 26 observations and 20 variables.
-NOTE: The data set WORK.DXOPILD has 86 observations and 20 variables.
+NOTE: There were 134354 observations read from the data set UCB.TEMPDXMPCD.
+NOTE: The data set WORK.IPPILD has 0 observations and 21 variables.
+NOTE: The data set WORK.DXIPSILD has 0 observations and 21 variables.
+NOTE: The data set WORK.DXOPILD has 80 observations and 21 variables.
 NOTE: DATA statement used (Total process time):
-      real time           1.21 seconds
-      cpu time            0.04 seconds
+      real time           0.79 seconds
+      cpu time            0.06 seconds
       
 
 
-5                                                                   The SAS System                                      15:26 Wednesday, July 26, 2017
-
-NOTE: There were 26 observations read from the data set WORK.DXIPSILD.
-NOTE: There were 86 observations read from the data set WORK.DXOPILD.
-NOTE: The data set WORK.DXIPSOPILD has 112 observations and 20 variables.
+NOTE: There were 0 observations read from the data set WORK.DXIPSILD.
+NOTE: There were 80 observations read from the data set WORK.DXOPILD.
+NOTE: The data set WORK.DXIPSOPILD has 80 observations and 21 variables.
 NOTE: DATA statement used (Total process time):
-      real time           0.04 seconds
-      cpu time            0.00 seconds
+      real time           0.01 seconds
+      cpu time            0.01 seconds
       
 
 
 NOTE: There were 290338 observations read from the data set UCB.TEMPPXMPCD.
 NOTE: The data set WORK.PXILD has 523 observations and 18 variables.
 NOTE: DATA statement used (Total process time):
-      real time           1.29 seconds
-      cpu time            0.06 seconds
+      real time           1.21 seconds
+      cpu time            0.04 seconds
       
 
 
@@ -317,41 +514,43 @@ NOTE: There were 523 observations read from the data set WORK.PXILD.
 NOTE: 88 observations with duplicate key values were deleted.
 NOTE: The data set WORK.PXILD has 435 observations and 18 variables.
 NOTE: PROCEDURE SORT used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+8                                                                   The SAS System                                       22:37 Tuesday, August 1, 2017
+
+      
+
+NOTE: Table WORK.DXPXIPSOPILD created, with 155 rows and 22 columns.
+
+NOTE: Table WORK.IPSOPILD created, with 0 rows and 23 columns.
+
+NOTE: PROCEDURE SQL used (Total process time):
       real time           0.06 seconds
       cpu time            0.01 seconds
       
 
-NOTE: Table WORK.DXPXIPSOPILD created, with 217 rows and 21 columns.
 
-NOTE: Table WORK.IPSOPILD created, with 128 rows and 22 columns.
-
-NOTE: PROCEDURE SQL used (Total process time):
-      real time           0.12 seconds
-      cpu time            0.03 seconds
-      
-
-
-NOTE: There were 4 observations read from the data set WORK.IPPILD.
-NOTE: There were 128 observations read from the data set WORK.IPSOPILD.
-NOTE: The data set WORK.OUTCOME_ILD_MPCD has 132 observations and 21 variables.
+NOTE: There were 0 observations read from the data set WORK.IPPILD.
+NOTE: There were 0 observations read from the data set WORK.IPSOPILD.
+NOTE: The data set WORK.OUTCOME_ILD_MPCD has 0 observations and 22 variables.
 NOTE: DATA statement used (Total process time):
-      real time           0.06 seconds
+      real time           0.00 seconds
       cpu time            0.00 seconds
       
 
 
-NOTE: There were 132 observations read from the data set WORK.OUTCOME_ILD_MPCD.
-NOTE: The data set WORK.OUTCOME_ILD_MPCD has 132 observations and 21 variables.
+NOTE: Input data set is empty.
+NOTE: The data set WORK.OUTCOME_ILD_MPCD has 0 observations and 22 variables.
 NOTE: PROCEDURE SORT used (Total process time):
-      real time           0.04 seconds
+      real time           0.01 seconds
       cpu time            0.00 seconds
       
 
 
-NOTE: There were 132 observations read from the data set WORK.OUTCOME_ILD_MPCD.
-NOTE: The data set WORK.OUTCOME_ILD_MPCD has 4 observations and 21 variables.
+NOTE: There were 0 observations read from the data set WORK.OUTCOME_ILD_MPCD.
+NOTE: The data set WORK.OUTCOME_ILD_MPCD has 0 observations and 22 variables.
 NOTE: DATA statement used (Total process time):
-      real time           0.06 seconds
+      real time           0.00 seconds
       cpu time            0.00 seconds
       
 
@@ -364,41 +563,41 @@ NOTE: Deleting WORK.PXILD (memtype=DATA).
 NOTE: Deleting WORK.DXPXIPSOPILD (memtype=DATA).
 NOTE: Deleting WORK.IPSOPILD (memtype=DATA).
 NOTE: PROCEDURE DATASETS used (Total process time):
-      real time           0.09 seconds
-      cpu time            0.04 seconds
+      real time           0.14 seconds
+      cpu time            0.03 seconds
       
 
-6                                                                   The SAS System                                      15:26 Wednesday, July 26, 2017
+383        %IPP_2IPSOPplusPX_ILD(outdata = Work.outcome_ILD_UCB,
+384                              IDS = exposureID,
+385                              Dxs = UCB.tempDxUCB,
+386                              Pxs = UCB.tempPxUCB);
 
-276        %IPP_2IPSOPplusPX_ILD(outdata = Work.outcome_ILD_UCB,
-277                              IDS = exposureID,
-278                              Dxs = UCB.tempDxUCB,
-279                              Pxs = UCB.tempPxUCB);
-
-NOTE: There were 1190215 observations read from the data set UCB.TEMPDXUCB.
-NOTE: The data set WORK.IPPILD has 4 observations and 20 variables.
-NOTE: The data set WORK.DXIPSILD has 98 observations and 20 variables.
-NOTE: The data set WORK.DXOPILD has 178 observations and 20 variables.
+NOTE: There were 259640 observations read from the data set UCB.TEMPDXUCB.
+NOTE: The data set WORK.IPPILD has 4 observations and 21 variables.
+NOTE: The data set WORK.DXIPSILD has 60 observations and 21 variables.
+NOTE: The data set WORK.DXOPILD has 28 observations and 21 variables.
 NOTE: DATA statement used (Total process time):
-      real time           4.74 seconds
-      cpu time            0.60 seconds
+      real time           1.07 seconds
+      cpu time            0.18 seconds
       
 
 
-NOTE: There were 98 observations read from the data set WORK.DXIPSILD.
-NOTE: There were 178 observations read from the data set WORK.DXOPILD.
-NOTE: The data set WORK.DXIPSOPILD has 276 observations and 20 variables.
+NOTE: There were 60 observations read from the data set WORK.DXIPSILD.
+NOTE: There were 28 observations read from the data set WORK.DXOPILD.
+NOTE: The data set WORK.DXIPSOPILD has 88 observations and 21 variables.
 NOTE: DATA statement used (Total process time):
       real time           0.04 seconds
       cpu time            0.00 seconds
       
 
+9                                                                   The SAS System                                       22:37 Tuesday, August 1, 2017
+
 
 NOTE: There were 1232826 observations read from the data set UCB.TEMPPXUCB.
 NOTE: The data set WORK.PXILD has 2128 observations and 18 variables.
 NOTE: DATA statement used (Total process time):
-      real time           5.31 seconds
-      cpu time            0.31 seconds
+      real time           2.83 seconds
+      cpu time            0.32 seconds
       
 
 
@@ -406,44 +605,42 @@ NOTE: There were 2128 observations read from the data set WORK.PXILD.
 NOTE: 300 observations with duplicate key values were deleted.
 NOTE: The data set WORK.PXILD has 1828 observations and 18 variables.
 NOTE: PROCEDURE SORT used (Total process time):
-      real time           0.06 seconds
-      cpu time            0.03 seconds
+      real time           0.01 seconds
+      cpu time            0.01 seconds
       
 
-NOTE: Table WORK.DXPXIPSOPILD created, with 555 rows and 21 columns.
+NOTE: Table WORK.DXPXIPSOPILD created, with 146 rows and 22 columns.
 
-NOTE: Table WORK.IPSOPILD created, with 1166 rows and 22 columns.
+NOTE: Table WORK.IPSOPILD created, with 158 rows and 23 columns.
 
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           0.09 seconds
-      cpu time            0.01 seconds
+      real time           0.04 seconds
+      cpu time            0.03 seconds
       
 
 
 NOTE: There were 4 observations read from the data set WORK.IPPILD.
-NOTE: There were 1166 observations read from the data set WORK.IPSOPILD.
-NOTE: The data set WORK.OUTCOME_ILD_UCB has 1170 observations and 21 variables.
+NOTE: There were 158 observations read from the data set WORK.IPSOPILD.
+NOTE: The data set WORK.OUTCOME_ILD_UCB has 162 observations and 22 variables.
 NOTE: DATA statement used (Total process time):
-      real time           0.03 seconds
+      real time           0.00 seconds
       cpu time            0.00 seconds
       
 
 
-NOTE: There were 1170 observations read from the data set WORK.OUTCOME_ILD_UCB.
-NOTE: The data set WORK.OUTCOME_ILD_UCB has 1170 observations and 21 variables.
+NOTE: There were 162 observations read from the data set WORK.OUTCOME_ILD_UCB.
+NOTE: The data set WORK.OUTCOME_ILD_UCB has 162 observations and 22 variables.
 NOTE: PROCEDURE SORT used (Total process time):
       real time           0.03 seconds
       cpu time            0.01 seconds
       
 
 
-NOTE: There were 1170 observations read from the data set WORK.OUTCOME_ILD_UCB.
-NOTE: The data set WORK.OUTCOME_ILD_UCB has 70 observations and 21 variables.
+NOTE: There were 162 observations read from the data set WORK.OUTCOME_ILD_UCB.
+NOTE: The data set WORK.OUTCOME_ILD_UCB has 14 observations and 22 variables.
 NOTE: DATA statement used (Total process time):
-      real time           0.06 seconds
-      cpu time            0.01 seconds
-7                                                                   The SAS System                                      15:26 Wednesday, July 26, 2017
-
+      real time           0.00 seconds
+      cpu time            0.00 seconds
       
 
 
@@ -455,30 +652,32 @@ NOTE: Deleting WORK.PXILD (memtype=DATA).
 NOTE: Deleting WORK.DXPXIPSOPILD (memtype=DATA).
 NOTE: Deleting WORK.IPSOPILD (memtype=DATA).
 NOTE: PROCEDURE DATASETS used (Total process time):
-      real time           0.00 seconds
-      cpu time            0.00 seconds
+      real time           0.01 seconds
+      cpu time            0.01 seconds
       
 
-280        %IPP_2IPSOPplusPX_ILD(outdata = Work.outcome_ILD_SABR,
-281                              IDS = exposureID,
-282                              Dxs = UCB.tempDxSABR,
-283                              Pxs = UCB.tempPxSABR);
+387        %IPP_2IPSOPplusPX_ILD(outdata = Work.outcome_ILD_SABR,
+388                              IDS = exposureID,
+389                              Dxs = UCB.tempDxSABR,
+390                              Pxs = UCB.tempPxSABR);
 
-NOTE: There were 12136747 observations read from the data set UCB.TEMPDXSABR.
-NOTE: The data set WORK.IPPILD has 78 observations and 20 variables.
-NOTE: The data set WORK.DXIPSILD has 1041 observations and 20 variables.
-NOTE: The data set WORK.DXOPILD has 3620 observations and 20 variables.
+NOTE: There were 6933129 observations read from the data set UCB.TEMPDXSABR.
+NOTE: The data set WORK.IPPILD has 53 observations and 21 variables.
+NOTE: The data set WORK.DXIPSILD has 797 observations and 21 variables.
+10                                                                  The SAS System                                       22:37 Tuesday, August 1, 2017
+
+NOTE: The data set WORK.DXOPILD has 2680 observations and 21 variables.
 NOTE: DATA statement used (Total process time):
-      real time           58.89 seconds
-      cpu time            4.53 seconds
+      real time           21.29 seconds
+      cpu time            2.97 seconds
       
 
 
-NOTE: There were 1041 observations read from the data set WORK.DXIPSILD.
-NOTE: There were 3620 observations read from the data set WORK.DXOPILD.
-NOTE: The data set WORK.DXIPSOPILD has 4661 observations and 20 variables.
+NOTE: There were 797 observations read from the data set WORK.DXIPSILD.
+NOTE: There were 2680 observations read from the data set WORK.DXOPILD.
+NOTE: The data set WORK.DXIPSOPILD has 3477 observations and 21 variables.
 NOTE: DATA statement used (Total process time):
-      real time           0.06 seconds
+      real time           0.01 seconds
       cpu time            0.01 seconds
       
 
@@ -486,8 +685,8 @@ NOTE: DATA statement used (Total process time):
 NOTE: There were 6367119 observations read from the data set UCB.TEMPPXSABR.
 NOTE: The data set WORK.PXILD has 240 observations and 18 variables.
 NOTE: DATA statement used (Total process time):
-      real time           1.96 seconds
-      cpu time            1.90 seconds
+      real time           1.89 seconds
+      cpu time            1.87 seconds
       
 
 
@@ -495,44 +694,42 @@ NOTE: There were 240 observations read from the data set WORK.PXILD.
 NOTE: 0 observations with duplicate key values were deleted.
 NOTE: The data set WORK.PXILD has 240 observations and 18 variables.
 NOTE: PROCEDURE SORT used (Total process time):
-      real time           0.03 seconds
+      real time           0.00 seconds
       cpu time            0.00 seconds
       
 
-NOTE: Table WORK.DXPXIPSOPILD created, with 67 rows and 21 columns.
+NOTE: Table WORK.DXPXIPSOPILD created, with 61 rows and 22 columns.
 
-NOTE: Table WORK.IPSOPILD created, with 71 rows and 22 columns.
+NOTE: Table WORK.IPSOPILD created, with 49 rows and 23 columns.
 
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           0.07 seconds
+      real time           0.03 seconds
       cpu time            0.03 seconds
       
 
 
-NOTE: There were 78 observations read from the data set WORK.IPPILD.
-NOTE: There were 71 observations read from the data set WORK.IPSOPILD.
-NOTE: The data set WORK.OUTCOME_ILD_SABR has 149 observations and 21 variables.
+NOTE: There were 53 observations read from the data set WORK.IPPILD.
+NOTE: There were 49 observations read from the data set WORK.IPSOPILD.
+NOTE: The data set WORK.OUTCOME_ILD_SABR has 102 observations and 22 variables.
 NOTE: DATA statement used (Total process time):
-      real time           0.03 seconds
-      cpu time            0.00 seconds
-      
-8                                                                   The SAS System                                      15:26 Wednesday, July 26, 2017
-
-
-
-NOTE: There were 149 observations read from the data set WORK.OUTCOME_ILD_SABR.
-NOTE: The data set WORK.OUTCOME_ILD_SABR has 149 observations and 21 variables.
-NOTE: PROCEDURE SORT used (Total process time):
-      real time           0.03 seconds
-      cpu time            0.00 seconds
-      
-
-
-NOTE: There were 149 observations read from the data set WORK.OUTCOME_ILD_SABR.
-NOTE: The data set WORK.OUTCOME_ILD_SABR has 89 observations and 21 variables.
-NOTE: DATA statement used (Total process time):
-      real time           0.06 seconds
+      real time           0.01 seconds
       cpu time            0.01 seconds
+      
+
+
+NOTE: There were 102 observations read from the data set WORK.OUTCOME_ILD_SABR.
+NOTE: The data set WORK.OUTCOME_ILD_SABR has 102 observations and 22 variables.
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+
+NOTE: There were 102 observations read from the data set WORK.OUTCOME_ILD_SABR.
+NOTE: The data set WORK.OUTCOME_ILD_SABR has 63 observations and 22 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
       
 
 
@@ -541,130 +738,132 @@ NOTE: Deleting WORK.DXIPSILD (memtype=DATA).
 NOTE: Deleting WORK.DXOPILD (memtype=DATA).
 NOTE: Deleting WORK.DXIPSOPILD (memtype=DATA).
 NOTE: Deleting WORK.PXILD (memtype=DATA).
+11                                                                  The SAS System                                       22:37 Tuesday, August 1, 2017
+
 NOTE: Deleting WORK.DXPXIPSOPILD (memtype=DATA).
 NOTE: Deleting WORK.IPSOPILD (memtype=DATA).
 NOTE: PROCEDURE DATASETS used (Total process time):
-      real time           0.00 seconds
-      cpu time            0.00 seconds
+      real time           0.01 seconds
+      cpu time            0.01 seconds
       
 
-284        
-285        
-286        proc sql;
-287        
-288          create table Work.defOutcomes as
-289            select *
-290            from DT.defOutcomes
-291            where disease ^in ("Interstitial lung disease");
+391        
+392        
+393        proc sql;
+394        
+395          create table Work.defOutcomes as
+396            select *
+397            from DT.defOutcomes
+398            where disease ^in ("Interstitial lung disease");
 NOTE: Table WORK.DEFOUTCOMES created, with 2664 rows and 6 columns.
 
-292          create table Work.lookupDisease as
-293            select distinct outcomeCategory, disease
-294            from DT.defOutcomes;
+399          create table Work.lookupDisease as
+400            select distinct outcomeCategory, disease
+401            from DT.defOutcomes;
 NOTE: Table WORK.LOOKUPDISEASE created, with 21 rows and 2 columns.
 
-295        
-296          %let select1 = select A.*, B.outcomeCategory, B.disease;
-297          %let join1 = inner join Work.defOutcomes B on (A.codeType = B.codeType & A.code = B.code);
-298          %let where1a = where B.disease ^in ("Myocardial infarction", "Hospitalized infection");
-299          %let where1b = | (B.disease in ("Myocardial infarction", "Hospitalized infection") & A.enc_type = "IP");
-300          %let select2 = select database, exposure, patid, exposureID, exposureStart, exposureEnd, enc_type, "Lung disease" as outcomeCategory,
-300      ! "Interstitial lung disease" as disease, outcome_start_date as begin_date;
-301          create table Work.incidentDisease as
-302            select C.database, C.exposureID, C.patid, C.exposure, C.exposureStart, C.exposureEnd,
-303                   C.outcomeCategory,
-304                   C.disease,
-305                   C.begin_date
-306            from (&select1 from UCB.tempDxMPCD A &join1 &where1a &where1b union corr
-307                  &select1 from UCB.tempDxUCB  A &join1 &where1a &where1b union corr
-308                  &select1 from UCB.tempDxSABR A &join1 &where1a &where1b union corr
-309                  &select1 from UCB.tempPxMPCD A &join1 &where1a union corr
-310                  &select1 from UCB.tempPxUCB  A &join1 &where1a union corr
-311                  &select1 from UCB.tempPxSABR A &join1 &where1a union corr
-312                  &select2 from Work.outcome_ILD_MPCD union corr
-313                  &select2 from Work.outcome_ILD_UCB  union corr
-314                  &select2 from Work.outcome_ILD_SABR ) C
-315            order by C.database, C.exposureID, C.outcomeCategory, C.disease, C.begin_date;
+402        
+403          %let select1 = select A.*, B.outcomeCategory, B.disease;
+404          %let join1 = inner join Work.defOutcomes B on (A.codeType = B.codeType & A.code = B.code);
+405          %let where1a = where B.disease ^in ("Myocardial infarction", "Hospitalized infection");
+406          %let where1b = | (B.disease in ("Myocardial infarction", "Hospitalized infection") & A.enc_type = "IP");
+407          %let select2 = select database, exposure, patid, exposureID, exposureStart, exposureEnd, enc_type, "Lung disease" as outcomeCategory,
+407      ! "Interstitial lung disease" as disease, outcome_start_date as begin_date;
+408          create table Work.incidentDisease as
+409            select C.database, C.exposureID, C.patid, C.exposure, C.exposureStart, C.exposureEnd,
+410                   C.outcomeCategory,
+411                   C.disease,
+412                   C.begin_date
+413            from (&select1 from UCB.tempDxMPCD A &join1 &where1a &where1b union corr
+414                  &select1 from UCB.tempDxUCB  A &join1 &where1a &where1b union corr
+415                  &select1 from UCB.tempDxSABR A &join1 &where1a &where1b union corr
+416                  &select1 from UCB.tempPxMPCD A &join1 &where1a union corr
+417                  &select1 from UCB.tempPxUCB  A &join1 &where1a union corr
+418                  &select1 from UCB.tempPxSABR A &join1 &where1a union corr
+419                  &select2 from Work.outcome_ILD_MPCD union corr
+420                  &select2 from Work.outcome_ILD_UCB  union corr
+421                  &select2 from Work.outcome_ILD_SABR ) C
+422            order by C.database, C.exposureID, C.outcomeCategory, C.disease, C.begin_date;
 NOTE: Parallel WHERE evaluation suppressed due to sort order on table.
 NOTE: Parallel WHERE evaluation suppressed due to sort order on table.
 NOTE: Parallel WHERE evaluation suppressed due to sort order on table.
 NOTE: Parallel WHERE evaluation suppressed due to sort order on table.
-NOTE: Table WORK.INCIDENTDISEASE created, with 242635 rows and 9 columns.
-9                                                                   The SAS System                                      15:26 Wednesday, July 26, 2017
+NOTE: Table WORK.INCIDENTDISEASE created, with 163626 rows and 9 columns.
 
-
-316        quit;
+423        quit;
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           9.77 seconds
-      cpu time            11.17 seconds
+      real time           6.42 seconds
+      cpu time            8.95 seconds
       
 
-317        
-318        /*
-319        Take first occurrence of outcome
-320         */
-321        proc sort data = Work.incidentDisease nodupkey;
-322          by database exposureID outcomeCategory disease;
-323        run;
+424        
+425        /*
+426        Take first occurrence of outcome
+427         */
+428        proc sort data = Work.incidentDisease nodupkey;
+429          by database exposureID outcomeCategory disease;
+430        run;
 
-NOTE: There were 242635 observations read from the data set WORK.INCIDENTDISEASE.
-NOTE: 199187 observations with duplicate key values were deleted.
-NOTE: The data set WORK.INCIDENTDISEASE has 43448 observations and 9 variables.
+NOTE: There were 163626 observations read from the data set WORK.INCIDENTDISEASE.
+NOTE: 132390 observations with duplicate key values were deleted.
+NOTE: The data set WORK.INCIDENTDISEASE has 31236 observations and 9 variables.
 NOTE: PROCEDURE SORT used (Total process time):
-      real time           0.23 seconds
-      cpu time            0.28 seconds
+      real time           0.10 seconds
+      cpu time            0.20 seconds
       
 
-324        
-325        /*
-326        Join incident disease outcomes to exposure timelines
-327        Summarize
-328         */
-329        proc sql;
-330          create table DT.incidentDiseaseTimelines as
-331            select A.*,
-332                   B.begin_date format = mmddyy10. as outcomeDate,
-333                   missing(B.begin_date) as censor,
-334                   case
-335                     when missing(B.begin_date) then daysExposed
-336                     when ^missing(B.begin_date) then B.begin_date - A.exposureStart + 1
-337                     else .
-338                     end as daysToOutcome
-339            from (select A.*, B.*
-340                  from DT.exposureTimeline A,
-341                       Work.lookupDisease B) A left join
-342                 Work.incidentDisease B on (A.exposureID = B.exposureID &
-343                                            A.outcomeCategory = B.outcomeCategory &
-344                                            A.disease = B.disease);
+12                                                                  The SAS System                                       22:37 Tuesday, August 1, 2017
+
+431        
+432        /*
+433        Join incident disease outcomes to exposure timelines
+434        Summarize
+435         */
+436        proc sql;
+437          create table DT.incidentDiseaseTimelines as
+438            select A.*,
+439                   B.begin_date format = mmddyy10. as outcomeDate,
+440                   missing(B.begin_date) as censor,
+441                   case
+442                     when missing(B.begin_date) then daysExposed
+443                     when ^missing(B.begin_date) then B.begin_date - A.exposureStart + 1
+444                     else .
+445                     end as daysToOutcome
+446            from (select A.*, B.*
+447                  from DT.exposureTimeline A,
+448                       Work.lookupDisease B) A left join
+449                 Work.incidentDisease B on (A.exposureID = B.exposureID &
+450                                            A.outcomeCategory = B.outcomeCategory &
+451                                            A.disease = B.disease);
 NOTE: The execution of this query involves performing one or more Cartesian product joins that can not be optimized.
 NOTE: Table DT.INCIDENTDISEASETIMELINES created, with 967155 rows and 14 columns.
 
-345          create table Work.incidence as
-346            select database, exposure, outcomeCategory, disease,
-347                 count(distinct exposureID) as n,
-348                   sum(censor = 0) as incidence,
-349                   sum(daysToOutcome) / 365.25 as personYears,
-350                   sum(censor = 0) / (sum(daysToOutcome) / 365.25) * 1000 as incidencePer1000PY
-351            from DT.incidentDiseaseTimelines
-352            group by database, exposure, outcomeCategory, disease;
+452          create table Work.incidence as
+453            select database, exposure, outcomeCategory, disease,
+454                 count(distinct exposureID) as n,
+455                   sum(censor = 0) as incidence,
+456                   sum(daysToOutcome) / 365.25 as personYears,
+457                   sum(censor = 0) / (sum(daysToOutcome) / 365.25) * 1000 as incidencePer1000PY
+458            from DT.incidentDiseaseTimelines
+459            group by database, exposure, outcomeCategory, disease;
 NOTE: Table WORK.INCIDENCE created, with 189 rows and 8 columns.
 
-353          select * from Work.incidence;
-                                                                  --- AS project ---                                15:26 Wednesday, July 26, 2017   1
+460          select * from Work.incidence;
+                                                                  --- AS project ---                                 22:37 Tuesday, August 1, 2017   1
 
                                                                                                                                   person    incidence
 database    exposure              Disease Category            Disease                                           n  incidence       Years    Per1000PY
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 MPCD        DMARD                 Cancer                      Hematologic Cancer                              423          1    426.0151     2.347335
 MPCD        DMARD                 Cancer                      Non Melanoma Skin Cancer                        423          0     427.165            0
-MPCD        DMARD                 Cancer                      Solid Cancer                                    423          8    419.1869     19.08457
+MPCD        DMARD                 Cancer                      Solid Cancer                                    423          8    419.2389      19.0822
 MPCD        DMARD                 Cardiac disease             Aortic Insufficiency/Aortic Regurgitation       423          2    426.0534     4.694247
 MPCD        DMARD                 Cardiac disease             Conduction Block                                423          0     427.165            0
 MPCD        DMARD                 Cardiac disease             Myocardial infarction                           423          0     427.165            0
-MPCD        DMARD                 Infection                   Hospitalized infection                          423          4    424.3422     9.426354
-MPCD        DMARD                 Infection                   Opportunistic infection                         423          6    421.5168     14.23431
-MPCD        DMARD                 Inflammatory bowel disease  Crohn’s Disease                                 423         15    415.1348     36.13284
-MPCD        DMARD                 Inflammatory bowel disease  Ulcerative Colitis                              423          4    423.0801     9.454475
+MPCD        DMARD                 Infection                   Hospitalized infection                          423          0     427.165            0
+MPCD        DMARD                 Infection                   Opportunistic infection                         423          5    421.6372     11.85854
+MPCD        DMARD                 Inflammatory bowel disease  Crohn’s Disease                                 423         13    416.3176     31.22616
+MPCD        DMARD                 Inflammatory bowel disease  Ulcerative Colitis                              423          3    424.7748     7.062566
 MPCD        DMARD                 Kidney disease              Amyloidosis                                     423          0     427.165            0
 MPCD        DMARD                 Kidney disease              IgA nephropathy                                 423          0     427.165            0
 MPCD        DMARD                 Kidney disease              Nephrotic syndrome                              423          0     427.165            0
@@ -674,190 +873,190 @@ MPCD        DMARD                 Lung disease                Restrictive lung d
 MPCD        DMARD                 Neurological Disease        Cauda Equina syndrome                           423          0     427.165            0
 MPCD        DMARD                 Neurological Disease        Spinal Cord compression                         423          0     427.165            0
 MPCD        DMARD                 PsO/PsA                     Psoriasis                                       423          4    419.9261     9.525486
-MPCD        DMARD                 PsO/PsA                     Psoriatic arthritis                             423         21    408.9829     51.34689
-MPCD        DMARD                 Uveitis                     Uveitis                                         423         26    396.9829     65.49401
-MPCD        NSAID or no exposure  Cancer                      Hematologic Cancer                             2093         17    2635.436     6.450546
+MPCD        DMARD                 PsO/PsA                     Psoriatic arthritis                             423         21    409.0623     51.33693
+MPCD        DMARD                 Uveitis                     Uveitis                                         423         21    402.4203     52.18425
+MPCD        NSAID or no exposure  Cancer                      Hematologic Cancer                             2093         10    2643.526     3.782826
 MPCD        NSAID or no exposure  Cancer                      Non Melanoma Skin Cancer                       2093          0    2653.303            0
-MPCD        NSAID or no exposure  Cancer                      Solid Cancer                                   2093        118    2507.121     47.06593
-MPCD        NSAID or no exposure  Cardiac disease             Aortic Insufficiency/Aortic Regurgitation      2093         50    2577.476     19.39882
-MPCD        NSAID or no exposure  Cardiac disease             Conduction Block                               2093         24    2625.142     9.142364
-MPCD        NSAID or no exposure  Cardiac disease             Myocardial infarction                          2093         16     2639.28      6.06226
-MPCD        NSAID or no exposure  Infection                   Hospitalized infection                         2093        157    2462.549     63.75508
-MPCD        NSAID or no exposure  Infection                   Opportunistic infection                        2093         16    2633.246     6.076152
-MPCD        NSAID or no exposure  Inflammatory bowel disease  Crohn’s Disease                                2093         76    2571.255     29.55755
-MPCD        NSAID or no exposure  Inflammatory bowel disease  Ulcerative Colitis                             2093         42    2590.579     16.21259
-MPCD        NSAID or no exposure  Kidney disease              Amyloidosis                                    2093          3    2652.101     1.131179
+MPCD        NSAID or no exposure  Cancer                      Solid Cancer                                   2093         94    2540.309     37.00337
+MPCD        NSAID or no exposure  Cardiac disease             Aortic Insufficiency/Aortic Regurgitation      2093         41    2590.133      15.8293
+MPCD        NSAID or no exposure  Cardiac disease             Conduction Block                               2093         15    2633.465     5.695918
+MPCD        NSAID or no exposure  Cardiac disease             Myocardial infarction                          2093          0    2653.303            0
+MPCD        NSAID or no exposure  Infection                   Hospitalized infection                         2093          6    2644.208      2.26911
+MPCD        NSAID or no exposure  Infection                   Opportunistic infection                        2093         12    2636.704     4.551137
+MPCD        NSAID or no exposure  Inflammatory bowel disease  Crohn’s Disease                                2093         66    2580.252      25.5789
+MPCD        NSAID or no exposure  Inflammatory bowel disease  Ulcerative Colitis                             2093         33    2603.165     12.67688
+MPCD        NSAID or no exposure  Kidney disease              Amyloidosis                                    2093          1    2652.865     0.376951
 MPCD        NSAID or no exposure  Kidney disease              IgA nephropathy                                2093          3    2648.517     1.132709
 MPCD        NSAID or no exposure  Kidney disease              Nephrotic syndrome                             2093          0    2653.303            0
-MPCD        NSAID or no exposure  Lung disease                Apical Pulmonary fibrosis                      2093          1    2652.583     0.376991
-MPCD        NSAID or no exposure  Lung disease                Interstitial lung disease                      2093          3    2652.476     1.131019
-MPCD        NSAID or no exposure  Lung disease                Restrictive lung disease                       2093         52    2597.172     20.02178
-MPCD        NSAID or no exposure  Neurological Disease        Cauda Equina syndrome                          2093          4    2648.652     1.510202
+MPCD        NSAID or no exposure  Lung disease                Apical Pulmonary fibrosis                      2093          0    2653.303            0
+MPCD        NSAID or no exposure  Lung disease                Interstitial lung disease                      2093          0    2653.303            0
+MPCD        NSAID or no exposure  Lung disease                Restrictive lung disease                       2093         40    2614.138     15.30141
+MPCD        NSAID or no exposure  Neurological Disease        Cauda Equina syndrome                          2093          2    2651.362     0.754329
 MPCD        NSAID or no exposure  Neurological Disease        Spinal Cord compression                        2093          8    2646.459     3.022908
-MPCD        NSAID or no exposure  PsO/PsA                     Psoriasis                                      2093         42    2595.444      16.1822
-MPCD        NSAID or no exposure  PsO/PsA                     Psoriatic arthritis                            2093         48    2605.996     18.41906
-MPCD        NSAID or no exposure  Uveitis                     Uveitis                                        2093        122    2510.795     48.59018
-MPCD        TNF                   Cancer                      Hematologic Cancer                             1108          4    1498.563     2.669224
+MPCD        NSAID or no exposure  PsO/PsA                     Psoriasis                                      2093         40      2598.7     15.39231
+MPCD        NSAID or no exposure  PsO/PsA                     Psoriatic arthritis                            2093         43     2612.06      16.4621
+MPCD        NSAID or no exposure  Uveitis                     Uveitis                                        2093         98    2531.781     38.70793
+MPCD        TNF                   Cancer                      Hematologic Cancer                             1108          3    1501.218     1.998377
 MPCD        TNF                   Cancer                      Non Melanoma Skin Cancer                       1108          0    1505.498            0
-MPCD        TNF                   Cancer                      Solid Cancer                                   1108         33    1469.259      22.4603
-MPCD        TNF                   Cardiac disease             Aortic Insufficiency/Aortic Regurgitation      1108         20    1488.802     13.43362
+MPCD        TNF                   Cancer                      Solid Cancer                                   1108         26    1475.765     17.61799
+MPCD        TNF                   Cardiac disease             Aortic Insufficiency/Aortic Regurgitation      1108         19    1489.517     12.75581
 MPCD        TNF                   Cardiac disease             Conduction Block                               1108          5    1499.365     3.334745
-MPCD        TNF                   Cardiac disease             Myocardial infarction                          1108          5    1501.076     3.330944
-MPCD        TNF                   Infection                   Hospitalized infection                         1108         16    1494.292     10.70741
-MPCD        TNF                   Infection                   Opportunistic infection                        1108         14    1493.311     9.375138
-MPCD        TNF                   Inflammatory bowel disease  Crohn’s Disease                                1108         67    1427.929     46.92111
-MPCD        TNF                   Inflammatory bowel disease  Ulcerative Colitis                             1108         37    1459.201     25.35635
+MPCD        TNF                   Cardiac disease             Myocardial infarction                          1108          0    1505.498            0
+MPCD        TNF                   Infection                   Hospitalized infection                         1108          1    1505.426     0.664264
+MPCD        TNF                   Infection                   Opportunistic infection                        1108         13    1493.629     8.703634
+MPCD        TNF                   Inflammatory bowel disease  Crohn’s Disease                                1108         66    1429.752     46.16184
+MPCD        TNF                   Inflammatory bowel disease  Ulcerative Colitis                             1108         36    1461.092      24.6391
 MPCD        TNF                   Kidney disease              Amyloidosis                                    1108          0    1505.498            0
 MPCD        TNF                   Kidney disease              IgA nephropathy                                1108          3    1502.891     1.996153
-MPCD        TNF                   Kidney disease              Nephrotic syndrome                             1108          2    1502.535     1.331084
+MPCD        TNF                   Kidney disease              Nephrotic syndrome                             1108          0    1505.498            0
 MPCD        TNF                   Lung disease                Apical Pulmonary fibrosis                      1108          0    1505.498            0
 MPCD        TNF                   Lung disease                Interstitial lung disease                      1108          0    1505.498            0
 MPCD        TNF                   Lung disease                Restrictive lung disease                       1108         14    1486.809     9.416139
 MPCD        TNF                   Neurological Disease        Cauda Equina syndrome                          1108          0    1505.498            0
 MPCD        TNF                   Neurological Disease        Spinal Cord compression                        1108          1    1504.769     0.664554
-MPCD        TNF                   PsO/PsA                     Psoriasis                                      1108         51    1455.151      35.0479
-MPCD        TNF                   PsO/PsA                     Psoriatic arthritis                            1108         75     1421.81     52.74967
-MPCD        TNF                   Uveitis                     Uveitis                                        1108         70     1413.96     49.50634
-Marketscan  DMARD                 Cancer                      Hematologic Cancer                             1813         17    1784.036     9.528958
-Marketscan  DMARD                 Cancer                      Non Melanoma Skin Cancer                       1813         46     1757.99     26.16624
-Marketscan  DMARD                 Cancer                      Solid Cancer                                   1813         93    1709.205     54.41127
-Marketscan  DMARD                 Cardiac disease             Aortic Insufficiency/Aortic Regurgitation      1813         27     1776.63     15.19731
+MPCD        TNF                   PsO/PsA                     Psoriasis                                      1108         49    1456.361     33.64549
+MPCD        TNF                   PsO/PsA                     Psoriatic arthritis                            1108         73     1422.19     51.32928
+MPCD        TNF                   Uveitis                     Uveitis                                        1108         62    1422.713     43.57871
+Marketscan  DMARD                 Cancer                      Hematologic Cancer                             1813          8    1792.775     4.462356
+Marketscan  DMARD                 Cancer                      Non Melanoma Skin Cancer                       1813          6    1795.573     3.341552
+Marketscan  DMARD                 Cancer                      Solid Cancer                                   1813         47     1747.25     26.89942
+Marketscan  DMARD                 Cardiac disease             Aortic Insufficiency/Aortic Regurgitation      1813          9    1793.216     5.018917
  
                                                               queryIncidenceOutcomes.sas
-                                                                  --- AS project ---                                15:26 Wednesday, July 26, 2017   2
+                                                                  --- AS project ---                                 22:37 Tuesday, August 1, 2017   2
 
                                                                                                                                   person    incidence
 database    exposure              Disease Category            Disease                                           n  incidence       Years    Per1000PY
 -----------------------------------------------------------------------------------------------------------------------------------------------------
-Marketscan  DMARD                 Cardiac disease             Conduction Block                               1813         24    1777.005     13.50587
-Marketscan  DMARD                 Cardiac disease             Myocardial infarction                          1813          5    1797.081     2.782289
-Marketscan  DMARD                 Infection                   Hospitalized infection                         1813         73    1732.608     42.13302
-Marketscan  DMARD                 Infection                   Opportunistic infection                        1813         36     1774.93      20.2825
-Marketscan  DMARD                 Inflammatory bowel disease  Crohn’s Disease                                1813         71    1719.682     41.28669
-Marketscan  DMARD                 Inflammatory bowel disease  Ulcerative Colitis                             1813         55     1740.55      31.5992
+Marketscan  DMARD                 Cardiac disease             Conduction Block                               1813          9    1789.495     5.029352
+Marketscan  DMARD                 Cardiac disease             Myocardial infarction                          1813          3    1797.922     1.668593
+Marketscan  DMARD                 Infection                   Hospitalized infection                         1813         58    1748.545     33.17044
+Marketscan  DMARD                 Infection                   Opportunistic infection                        1813         12    1792.394     6.694956
+Marketscan  DMARD                 Inflammatory bowel disease  Crohn’s Disease                                1813         42    1748.912     24.01493
+Marketscan  DMARD                 Inflammatory bowel disease  Ulcerative Colitis                             1813         25     1779.94     14.04542
 Marketscan  DMARD                 Kidney disease              Amyloidosis                                    1813          0    1799.995            0
-Marketscan  DMARD                 Kidney disease              IgA nephropathy                                1813          2    1796.205     1.113458
-Marketscan  DMARD                 Kidney disease              Nephrotic syndrome                             1813          2    1797.708     1.112527
+Marketscan  DMARD                 Kidney disease              IgA nephropathy                                1813          1    1796.416     0.556664
+Marketscan  DMARD                 Kidney disease              Nephrotic syndrome                             1813          1    1799.231     0.555793
 Marketscan  DMARD                 Lung disease                Apical Pulmonary fibrosis                      1813          0    1799.995            0
-Marketscan  DMARD                 Lung disease                Interstitial lung disease                      1813          2    1797.854     1.112438
-Marketscan  DMARD                 Lung disease                Restrictive lung disease                       1813         42    1748.471     24.02099
+Marketscan  DMARD                 Lung disease                Interstitial lung disease                      1813          1    1798.806     0.555924
+Marketscan  DMARD                 Lung disease                Restrictive lung disease                       1813         11    1784.684     6.163555
 Marketscan  DMARD                 Neurological Disease        Cauda Equina syndrome                          1813          1    1799.751     0.555632
-Marketscan  DMARD                 Neurological Disease        Spinal Cord compression                        1813          7    1792.742     3.904633
-Marketscan  DMARD                 PsO/PsA                     Psoriasis                                      1813         59    1765.599     33.41642
-Marketscan  DMARD                 PsO/PsA                     Psoriatic arthritis                            1813        121    1696.611     71.31867
-Marketscan  DMARD                 Uveitis                     Uveitis                                        1813        143    1668.693     85.69583
-Marketscan  NSAID or no exposure  Cancer                      Hematologic Cancer                             8122         76    9170.431     8.287506
-Marketscan  NSAID or no exposure  Cancer                      Non Melanoma Skin Cancer                       8122        172     9072.75     18.95787
-Marketscan  NSAID or no exposure  Cancer                      Solid Cancer                                   8122        447    8709.782      51.3216
-Marketscan  NSAID or no exposure  Cardiac disease             Aortic Insufficiency/Aortic Regurgitation      8122        187    9030.828     20.70685
-Marketscan  NSAID or no exposure  Cardiac disease             Conduction Block                               8122        220    9013.459     24.40794
-Marketscan  NSAID or no exposure  Cardiac disease             Myocardial infarction                          8122         59    9201.221     6.412192
-Marketscan  NSAID or no exposure  Infection                   Hospitalized infection                         8122        579    8629.292     67.09704
-Marketscan  NSAID or no exposure  Infection                   Opportunistic infection                        8122        106    9165.448     11.56517
-Marketscan  NSAID or no exposure  Inflammatory bowel disease  Crohn’s Disease                                8122        238    9014.858     26.40086
-Marketscan  NSAID or no exposure  Inflammatory bowel disease  Ulcerative Colitis                             8122        187    9063.324     20.63261
+Marketscan  DMARD                 Neurological Disease        Spinal Cord compression                        1813          3    1797.399     1.669078
+Marketscan  DMARD                 PsO/PsA                     Psoriasis                                      1813         11    1795.663      6.12587
+Marketscan  DMARD                 PsO/PsA                     Psoriatic arthritis                            1813         34    1774.858     19.15646
+Marketscan  DMARD                 Uveitis                     Uveitis                                        1813         21    1784.723     11.76653
+Marketscan  NSAID or no exposure  Cancer                      Hematologic Cancer                             8122         44    9207.058     4.778942
+Marketscan  NSAID or no exposure  Cancer                      Non Melanoma Skin Cancer                       8122         23    9237.117     2.489954
+Marketscan  NSAID or no exposure  Cancer                      Solid Cancer                                   8122        246    8975.075     27.40924
+Marketscan  NSAID or no exposure  Cardiac disease             Aortic Insufficiency/Aortic Regurgitation      8122         74    9173.878     8.066381
+Marketscan  NSAID or no exposure  Cardiac disease             Conduction Block                               8122         85    9170.921     9.268425
+Marketscan  NSAID or no exposure  Cardiac disease             Myocardial infarction                          8122         52    9208.931     5.646692
+Marketscan  NSAID or no exposure  Infection                   Hospitalized infection                         8122        473    8738.571     54.12784
+Marketscan  NSAID or no exposure  Infection                   Opportunistic infection                        8122         31      9237.9     3.355741
+Marketscan  NSAID or no exposure  Inflammatory bowel disease  Crohn’s Disease                                8122        128    9115.847     14.04148
+Marketscan  NSAID or no exposure  Inflammatory bowel disease  Ulcerative Colitis                             8122         78    9179.466     8.497226
 Marketscan  NSAID or no exposure  Kidney disease              Amyloidosis                                    8122          0     9260.29            0
-Marketscan  NSAID or no exposure  Kidney disease              IgA nephropathy                                8122          9    9254.519     0.972498
-Marketscan  NSAID or no exposure  Kidney disease              Nephrotic syndrome                             8122          5    9255.055     0.540245
-Marketscan  NSAID or no exposure  Lung disease                Apical Pulmonary fibrosis                      8122          1    9259.513     0.107997
-Marketscan  NSAID or no exposure  Lung disease                Interstitial lung disease                      8122          8    9251.713     0.864705
-Marketscan  NSAID or no exposure  Lung disease                Restrictive lung disease                       8122        291    8965.982     32.45601
-Marketscan  NSAID or no exposure  Neurological Disease        Cauda Equina syndrome                          8122          6    9256.318     0.648206
-Marketscan  NSAID or no exposure  Neurological Disease        Spinal Cord compression                        8122         46    9219.365     4.989498
-Marketscan  NSAID or no exposure  PsO/PsA                     Psoriasis                                      8122        165     9101.93     18.12802
-Marketscan  NSAID or no exposure  PsO/PsA                     Psoriatic arthritis                            8122        199     9085.58     21.90284
-Marketscan  NSAID or no exposure  Uveitis                     Uveitis                                        8122        685    8526.585     80.33697
-Marketscan  TNF                   Cancer                      Hematologic Cancer                             4824         18    6713.396     2.681206
-Marketscan  TNF                   Cancer                      Non Melanoma Skin Cancer                       4824        104    6624.099     15.70025
-Marketscan  TNF                   Cancer                      Solid Cancer                                   4824        150    6542.026     22.92868
-Marketscan  TNF                   Cardiac disease             Aortic Insufficiency/Aortic Regurgitation      4824         79    6629.147     11.91707
-Marketscan  TNF                   Cardiac disease             Conduction Block                               4824         76    6645.799      11.4358
+Marketscan  NSAID or no exposure  Kidney disease              IgA nephropathy                                8122          2    9259.507     0.215994
+Marketscan  NSAID or no exposure  Kidney disease              Nephrotic syndrome                             8122          4    9255.589     0.432171
+Marketscan  NSAID or no exposure  Lung disease                Apical Pulmonary fibrosis                      8122          0     9260.29            0
+Marketscan  NSAID or no exposure  Lung disease                Interstitial lung disease                      8122          5    9257.309     0.540114
+Marketscan  NSAID or no exposure  Lung disease                Restrictive lung disease                       8122         81    9174.316     8.828996
+Marketscan  NSAID or no exposure  Neurological Disease        Cauda Equina syndrome                          8122          2     9258.39      0.21602
+Marketscan  NSAID or no exposure  Neurological Disease        Spinal Cord compression                        8122         11    9253.837     1.188696
+Marketscan  NSAID or no exposure  PsO/PsA                     Psoriasis                                      8122         35    9229.881     3.792032
+Marketscan  NSAID or no exposure  PsO/PsA                     Psoriatic arthritis                            8122         47    9215.904     5.099879
+Marketscan  NSAID or no exposure  Uveitis                     Uveitis                                        8122         69    9194.779     7.504259
+Marketscan  TNF                   Cancer                      Hematologic Cancer                             4824         14     6715.97     2.084583
+Marketscan  TNF                   Cancer                      Non Melanoma Skin Cancer                       4824         17     6713.07     2.532373
+Marketscan  TNF                   Cancer                      Solid Cancer                                   4824         59    6660.643     8.858003
+Marketscan  TNF                   Cardiac disease             Aortic Insufficiency/Aortic Regurgitation      4824         39    6685.339     5.833661
+Marketscan  TNF                   Cardiac disease             Conduction Block                               4824         33    6684.515     4.936783
 Marketscan  TNF                   Cardiac disease             Myocardial infarction                          4824         14    6723.242     2.082329
-Marketscan  TNF                   Infection                   Hospitalized infection                         4824        202    6528.356     30.94194
-Marketscan  TNF                   Infection                   Opportunistic infection                        4824         78    6641.383     11.74454
-Marketscan  TNF                   Inflammatory bowel disease  Crohn’s Disease                                4824        304    6379.819     47.65025
-Marketscan  TNF                   Inflammatory bowel disease  Ulcerative Colitis                             4824        199    6511.233     30.56257
-Marketscan  TNF                   Kidney disease              Amyloidosis                                    4824          2    6730.319     0.297163
-Marketscan  TNF                   Kidney disease              IgA nephropathy                                4824          9      6726.1     1.338071
-Marketscan  TNF                   Kidney disease              Nephrotic syndrome                             4824          4    6725.845     0.594721
+Marketscan  TNF                   Infection                   Hospitalized infection                         4824        172    6560.214     26.21866
+Marketscan  TNF                   Infection                   Opportunistic infection                        4824         21     6710.16     3.129583
+Marketscan  TNF                   Inflammatory bowel disease  Crohn’s Disease                                4824        181    6529.643     27.71974
+Marketscan  TNF                   Inflammatory bowel disease  Ulcerative Colitis                             4824        100    6619.611     15.10663
+Marketscan  TNF                   Kidney disease              Amyloidosis                                    4824          1    6730.754     0.148572
+Marketscan  TNF                   Kidney disease              IgA nephropathy                                4824          3    6728.654     0.445854
+Marketscan  TNF                   Kidney disease              Nephrotic syndrome                             4824          0    6731.274            0
 Marketscan  TNF                   Lung disease                Apical Pulmonary fibrosis                      4824          0    6731.274            0
-Marketscan  TNF                   Lung disease                Interstitial lung disease                      4824          5    6726.817     0.743294
-Marketscan  TNF                   Lung disease                Restrictive lung disease                       4824        125    6589.676     18.96907
-Marketscan  TNF                   Neurological Disease        Cauda Equina syndrome                          4824          2    6727.384     0.297292
-Marketscan  TNF                   Neurological Disease        Spinal Cord compression                        4824         17    6721.848     2.529066
-Marketscan  TNF                   PsO/PsA                     Psoriasis                                      4824        244    6452.019     37.81762
-Marketscan  TNF                   PsO/PsA                     Psoriatic arthritis                            4824        381    6242.872      61.0296
-Marketscan  TNF                   Uveitis                     Uveitis                                        4824        465    6137.645     75.76195
-Medicare    DMARD                 Cancer                      Hematologic Cancer                             4304        122    8852.241     13.78182
-Medicare    DMARD                 Cancer                      Non Melanoma Skin Cancer                       4304        234    8733.791     26.79249
-Medicare    DMARD                 Cancer                      Solid Cancer                                   4304        577    7962.601     72.46376
-Medicare    DMARD                 Cardiac disease             Aortic Insufficiency/Aortic Regurgitation      4304        389    8330.412     46.69637
-Medicare    DMARD                 Cardiac disease             Conduction Block                               4304        357    8469.238     42.15256
-Medicare    DMARD                 Cardiac disease             Myocardial infarction                          4304        108     8922.53     12.10419
-Medicare    DMARD                 Infection                   Hospitalized infection                         4304        887    7554.987     117.4059
-Medicare    DMARD                 Infection                   Opportunistic infection                        4304        259    8685.536     29.81969
+Marketscan  TNF                   Lung disease                Interstitial lung disease                      4824          3    6729.175      0.44582
+Marketscan  TNF                   Lung disease                Restrictive lung disease                       4824         37    6683.995     5.535612
+Marketscan  TNF                   Neurological Disease        Cauda Equina syndrome                          4824          1    6730.294     0.148582
+Marketscan  TNF                   Neurological Disease        Spinal Cord compression                        4824          4    6727.274     0.594594
+Marketscan  TNF                   PsO/PsA                     Psoriasis                                      4824         54    6671.099     8.094618
+Marketscan  TNF                   PsO/PsA                     Psoriatic arthritis                            4824        112    6607.168     16.95129
+Marketscan  TNF                   Uveitis                     Uveitis                                        4824         58    6662.683     8.705202
+Medicare    DMARD                 Cancer                      Hematologic Cancer                             4304        116    8862.617     13.08868
+Medicare    DMARD                 Cancer                      Non Melanoma Skin Cancer                       4304        112    8918.297     12.55845
+Medicare    DMARD                 Cancer                      Solid Cancer                                   4304        522    8064.723     64.72634
+Medicare    DMARD                 Cardiac disease             Aortic Insufficiency/Aortic Regurgitation      4304        217    8643.693     25.10501
+Medicare    DMARD                 Cardiac disease             Conduction Block                               4304        224    8696.706     25.75688
+Medicare    DMARD                 Cardiac disease             Myocardial infarction                          4304         62    8981.437     6.903127
+Medicare    DMARD                 Infection                   Hospitalized infection                         4304        725    7845.054     92.41491
+Medicare    DMARD                 Infection                   Opportunistic infection                        4304        182    8798.324     20.68576
  
                                                               queryIncidenceOutcomes.sas
-                                                                  --- AS project ---                                15:26 Wednesday, July 26, 2017   3
+                                                                  --- AS project ---                                 22:37 Tuesday, August 1, 2017   3
 
                                                                                                                                   person    incidence
 database    exposure              Disease Category            Disease                                           n  incidence       Years    Per1000PY
 -----------------------------------------------------------------------------------------------------------------------------------------------------
-Medicare    DMARD                 Inflammatory bowel disease  Crohn’s Disease                                4304        316    8427.157     37.49782
-Medicare    DMARD                 Inflammatory bowel disease  Ulcerative Colitis                             4304        224    8627.288     25.96413
-Medicare    DMARD                 Kidney disease              Amyloidosis                                    4304          3    9057.246     0.331227
-Medicare    DMARD                 Kidney disease              IgA nephropathy                                4304         16    9034.018     1.771084
-Medicare    DMARD                 Kidney disease              Nephrotic syndrome                             4304         12    9045.218     1.326668
-Medicare    DMARD                 Lung disease                Apical Pulmonary fibrosis                      4304          4    9058.793      0.44156
-Medicare    DMARD                 Lung disease                Interstitial lung disease                      4304         20    9040.898      2.21217
-Medicare    DMARD                 Lung disease                Restrictive lung disease                       4304        611    7960.517      76.7538
+Medicare    DMARD                 Inflammatory bowel disease  Crohn’s Disease                                4304        292    8480.178     34.43324
+Medicare    DMARD                 Inflammatory bowel disease  Ulcerative Colitis                             4304        191    8687.359     21.98597
+Medicare    DMARD                 Kidney disease              Amyloidosis                                    4304          1    9063.617     0.110331
+Medicare    DMARD                 Kidney disease              IgA nephropathy                                4304          9    9045.514     0.994968
+Medicare    DMARD                 Kidney disease              Nephrotic syndrome                             4304          7    9057.306     0.772857
+Medicare    DMARD                 Lung disease                Apical Pulmonary fibrosis                      4304          3    9058.806     0.331169
+Medicare    DMARD                 Lung disease                Interstitial lung disease                      4304         17    9045.465     1.879395
+Medicare    DMARD                 Lung disease                Restrictive lung disease                       4304        558    8071.395     69.13303
 Medicare    DMARD                 Neurological Disease        Cauda Equina syndrome                          4304          5    9057.399     0.552035
-Medicare    DMARD                 Neurological Disease        Spinal Cord compression                        4304         46    8976.274     5.124621
-Medicare    DMARD                 PsO/PsA                     Psoriasis                                      4304        290     8507.19     34.08881
-Medicare    DMARD                 PsO/PsA                     Psoriatic arthritis                            4304        384    8311.874     46.19897
-Medicare    DMARD                 Uveitis                     Uveitis                                        4304        318    8425.834     37.74107
-Medicare    NSAID or no exposure  Cancer                      Hematologic Cancer                            18431        576     38319.2     15.03163
-Medicare    NSAID or no exposure  Cancer                      Non Melanoma Skin Cancer                      18431       1316    37596.64     35.00312
-Medicare    NSAID or no exposure  Cancer                      Solid Cancer                                  18431       3074    33391.43     92.05955
-Medicare    NSAID or no exposure  Cardiac disease             Aortic Insufficiency/Aortic Regurgitation     18431       2105    35377.16     59.50167
-Medicare    NSAID or no exposure  Cardiac disease             Conduction Block                              18431       2113    35611.89     59.33411
-Medicare    NSAID or no exposure  Cardiac disease             Myocardial infarction                         18431        596    38530.92      15.4681
-Medicare    NSAID or no exposure  Infection                   Hospitalized infection                        18431       4955    31136.82     159.1363
-Medicare    NSAID or no exposure  Infection                   Opportunistic infection                       18431        959     37742.4     25.40909
-Medicare    NSAID or no exposure  Inflammatory bowel disease  Crohn’s Disease                               18431        934    37357.13     25.00192
-Medicare    NSAID or no exposure  Inflammatory bowel disease  Ulcerative Colitis                            18431        673    37949.14     17.73426
-Medicare    NSAID or no exposure  Kidney disease              Amyloidosis                                   18431         24    39268.53     0.611176
-Medicare    NSAID or no exposure  Kidney disease              IgA nephropathy                               18431        111    39137.88     2.836127
-Medicare    NSAID or no exposure  Kidney disease              Nephrotic syndrome                            18431         51    39228.21     1.300085
-Medicare    NSAID or no exposure  Lung disease                Apical Pulmonary fibrosis                     18431          9    39303.97     0.228985
-Medicare    NSAID or no exposure  Lung disease                Interstitial lung disease                     18431         42    39244.85     1.070204
-Medicare    NSAID or no exposure  Lung disease                Restrictive lung disease                      18431       2932    33695.06     87.01573
-Medicare    NSAID or no exposure  Neurological Disease        Cauda Equina syndrome                         18431         47     39223.1     1.198273
-Medicare    NSAID or no exposure  Neurological Disease        Spinal Cord compression                       18431        308    38789.31     7.940331
-Medicare    NSAID or no exposure  PsO/PsA                     Psoriasis                                     18431        782    37755.13     20.71242
-Medicare    NSAID or no exposure  PsO/PsA                     Psoriatic arthritis                           18431        714    38001.36      18.7888
-Medicare    NSAID or no exposure  Uveitis                     Uveitis                                       18431       1092    36843.35       29.639
-Medicare    TNF                   Cancer                      Hematologic Cancer                             4937         92     13440.3     6.845085
-Medicare    TNF                   Cancer                      Non Melanoma Skin Cancer                       4937        287    13217.33     21.71392
-Medicare    TNF                   Cancer                      Solid Cancer                                   4937        574     12252.3     46.84836
-Medicare    TNF                   Cardiac disease             Aortic Insufficiency/Aortic Regurgitation      4937        411    12736.11     32.27044
-Medicare    TNF                   Cardiac disease             Conduction Block                               4937        380    12926.66     29.39661
-Medicare    TNF                   Cardiac disease             Myocardial infarction                          4937         93    13461.63     6.908522
-Medicare    TNF                   Infection                   Hospitalized infection                         4937       1021    11638.36     87.72716
-Medicare    TNF                   Infection                   Opportunistic infection                        4937        306    13020.16     23.50202
-Medicare    TNF                   Inflammatory bowel disease  Crohn’s Disease                                4937        480    12328.79     38.93327
-Medicare    TNF                   Inflammatory bowel disease  Ulcerative Colitis                             4937        312    12796.15     24.38233
-Medicare    TNF                   Kidney disease              Amyloidosis                                    4937          9    13591.51     0.662178
-Medicare    TNF                   Kidney disease              IgA nephropathy                                4937         35    13535.85     2.585725
-Medicare    TNF                   Kidney disease              Nephrotic syndrome                             4937         26    13570.16     1.915969
+Medicare    DMARD                 Neurological Disease        Spinal Cord compression                        4304         40    8990.902     4.448942
+Medicare    DMARD                 PsO/PsA                     Psoriasis                                      4304        171     8750.27     19.54225
+Medicare    DMARD                 PsO/PsA                     Psoriatic arthritis                            4304        357    8367.548     42.66483
+Medicare    DMARD                 Uveitis                     Uveitis                                        4304        269    8555.515     31.44171
+Medicare    NSAID or no exposure  Cancer                      Hematologic Cancer                            18431        509    38448.15     13.23861
+Medicare    NSAID or no exposure  Cancer                      Non Melanoma Skin Cancer                      18431        609    38547.95      15.7985
+Medicare    NSAID or no exposure  Cancer                      Solid Cancer                                  18431       2715    34018.78     79.80885
+Medicare    NSAID or no exposure  Cardiac disease             Aortic Insufficiency/Aortic Regurgitation     18431       1252    37066.28     33.77733
+Medicare    NSAID or no exposure  Cardiac disease             Conduction Block                              18431       1387    36982.72       37.504
+Medicare    NSAID or no exposure  Cardiac disease             Myocardial infarction                         18431        359    38895.82     9.229782
+Medicare    NSAID or no exposure  Infection                   Hospitalized infection                        18431       4146    32736.04     126.6494
+Medicare    NSAID or no exposure  Infection                   Opportunistic infection                       18431        655    38323.41     17.09138
+Medicare    NSAID or no exposure  Inflammatory bowel disease  Crohn’s Disease                               18431        846    37519.19     22.54846
+Medicare    NSAID or no exposure  Inflammatory bowel disease  Ulcerative Colitis                            18431        570    38144.42     14.94321
+Medicare    NSAID or no exposure  Kidney disease              Amyloidosis                                   18431         22    39270.18     0.560221
+Medicare    NSAID or no exposure  Kidney disease              IgA nephropathy                               18431         83    39187.08     2.118045
+Medicare    NSAID or no exposure  Kidney disease              Nephrotic syndrome                            18431         41    39236.04     1.044958
+Medicare    NSAID or no exposure  Lung disease                Apical Pulmonary fibrosis                     18431          7    39308.09      0.17808
+Medicare    NSAID or no exposure  Lung disease                Interstitial lung disease                     18431         24    39283.45     0.610944
+Medicare    NSAID or no exposure  Lung disease                Restrictive lung disease                      18431       2659    34229.22     77.68216
+Medicare    NSAID or no exposure  Neurological Disease        Cauda Equina syndrome                         18431         43     39230.6     1.096083
+Medicare    NSAID or no exposure  Neurological Disease        Spinal Cord compression                       18431        258    38871.01     6.637336
+Medicare    NSAID or no exposure  PsO/PsA                     Psoriasis                                     18431        431    38522.84     11.18817
+Medicare    NSAID or no exposure  PsO/PsA                     Psoriatic arthritis                           18431        643    38138.19     16.85974
+Medicare    NSAID or no exposure  Uveitis                     Uveitis                                       18431        914    37265.85     24.52647
+Medicare    TNF                   Cancer                      Hematologic Cancer                             4937         78    13478.13     5.787153
+Medicare    TNF                   Cancer                      Non Melanoma Skin Cancer                       4937        129    13456.19     9.586665
+Medicare    TNF                   Cancer                      Solid Cancer                                   4937        503    12441.55     40.42905
+Medicare    TNF                   Cardiac disease             Aortic Insufficiency/Aortic Regurgitation      4937        248    13087.43     18.94948
+Medicare    TNF                   Cardiac disease             Conduction Block                               4937        260    13148.52     19.77409
+Medicare    TNF                   Cardiac disease             Myocardial infarction                          4937         52    13553.18     3.836737
+Medicare    TNF                   Infection                   Hospitalized infection                         4937        852    12014.07     70.91687
+Medicare    TNF                   Infection                   Opportunistic infection                        4937        239    13161.34     18.15924
+Medicare    TNF                   Inflammatory bowel disease  Crohn’s Disease                                4937        447    12410.67     36.01739
+Medicare    TNF                   Inflammatory bowel disease  Ulcerative Colitis                             4937        285    12877.25     22.13205
+Medicare    TNF                   Kidney disease              Amyloidosis                                    4937          8    13594.72     0.588464
+Medicare    TNF                   Kidney disease              IgA nephropathy                                4937         29    13556.36     2.139218
+Medicare    TNF                   Kidney disease              Nephrotic syndrome                             4937         21    13578.52     1.546561
 Medicare    TNF                   Lung disease                Apical Pulmonary fibrosis                      4937          0    13615.52            0
-Medicare    TNF                   Lung disease                Interstitial lung disease                      4937         11    13593.42     0.809215
-Medicare    TNF                   Lung disease                Restrictive lung disease                       4937        713    12131.43     58.77294
-Medicare    TNF                   Neurological Disease        Cauda Equina syndrome                          4937         13    13584.81     0.956951
-Medicare    TNF                   Neurological Disease        Spinal Cord compression                        4937         58    13498.47     4.296783
-Medicare    TNF                   PsO/PsA                     Psoriasis                                      4937        473    12501.59      37.8352
-Medicare    TNF                   PsO/PsA                     Psoriatic arthritis                            4937        652     12010.8      54.2845
-Medicare    TNF                   Uveitis                     Uveitis                                        4937        607    12041.37     50.40953
+Medicare    TNF                   Lung disease                Interstitial lung disease                      4937          8    13597.45     0.588346
+Medicare    TNF                   Lung disease                Restrictive lung disease                       4937        648    12245.46     52.91757
+Medicare    TNF                   Neurological Disease        Cauda Equina syndrome                          4937         12    13587.12      0.88319
+Medicare    TNF                   Neurological Disease        Spinal Cord compression                        4937         53    13509.39     3.923196
+Medicare    TNF                   PsO/PsA                     Psoriasis                                      4937        320    12888.99     24.82738
+Medicare    TNF                   PsO/PsA                     Psoriatic arthritis                            4937        609    12117.43     50.25819
+Medicare    TNF                   Uveitis                     Uveitis                                        4937        505    12285.46      41.1055
  
  
  
@@ -872,111 +1071,109 @@ Medicare    TNF                   Uveitis                     Uveitis           
  
  
                                                               queryIncidenceOutcomes.sas
-354        
-355          drop table UCB.tempDxMPCD;
+461        
+462          drop table UCB.tempDxMPCD;
 NOTE: Table UCB.TEMPDXMPCD has been dropped.
-356          drop table UCB.tempDxUCB;
+463          drop table UCB.tempDxUCB;
 NOTE: Table UCB.TEMPDXUCB has been dropped.
-357          drop table UCB.tempDxSABR;
+464          drop table UCB.tempDxSABR;
 NOTE: Table UCB.TEMPDXSABR has been dropped.
-358          drop table UCB.tempPxMPCD;
+465          drop table UCB.tempPxMPCD;
 NOTE: Table UCB.TEMPPXMPCD has been dropped.
-359          drop table UCB.tempPxUCB;
+466          drop table UCB.tempPxUCB;
 NOTE: Table UCB.TEMPPXUCB has been dropped.
-360          drop table UCB.tempPxSABR;
+467          drop table UCB.tempPxSABR;
 NOTE: Table UCB.TEMPPXSABR has been dropped.
-361        
-10                                                                  The SAS System                                      15:26 Wednesday, July 26, 2017
-
-362        quit;
+468        
+469        quit;
 NOTE: The PROCEDURE SQL printed pages 1-3.
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           4.65 seconds
-      cpu time            5.63 seconds
+      real time           4.74 seconds
+      cpu time            6.41 seconds
       
 
-363        
-364        
-365        proc export
-366          data = Work.incidence
-367          outfile = "data\processed\&cmt..csv"
-368          dbms = csv
-369          replace;
-370          delimiter = ",";
-371        run;
+470        
+471        
+472        proc export
+473          data = Work.incidence
+474          outfile = "data\processed\&cmt..csv"
+475          dbms = csv
+476          replace;
+477          delimiter = ",";
+478        run;
 
-372         /**********************************************************************
-373         *   PRODUCT:   SAS
-374         *   VERSION:   9.4
-375         *   CREATOR:   External File Interface
-376         *   DATE:      26JUL17
-377         *   DESC:      Generated SAS Datastep Code
-378         *   TEMPLATE SOURCE:  (None Specified.)
-379         ***********************************************************************/
-380            data _null_;
-381            %let _EFIERR_ = 0; /* set the ERROR detection macro variable */
-382            %let _EFIREC_ = 0;     /* clear export record count macro variable */
-383            file 'data\processed\queryIncidenceOutcomes.csv' delimiter=',' DSD DROPOVER lrecl=32767;
-384            if _n_ = 1 then        /* write column names or labels */
-385             do;
-386               put
-387                  "database"
-388               ','
-389                  "exposure"
-390               ','
-391                  "outcomeCategory"
-392               ','
-393                  "Disease"
-394               ','
-395                  "n"
-396               ','
-397                  "incidence"
-398               ','
-399                  "personYears"
-400               ','
-401                  "incidencePer1000PY"
-402               ;
-403             end;
-404           set  WORK.INCIDENCE   end=EFIEOD;
-405               format database $10. ;
-406               format exposure $20. ;
-407               format outcomeCategory $26. ;
-408               format Disease $41. ;
-409               format n best12. ;
-410               format incidence best12. ;
-411               format personYears best12. ;
-412               format incidencePer1000PY best12. ;
-413             do;
-414               EFIOUT + 1;
-415               put database $ @;
-416               put exposure $ @;
-417               put outcomeCategory $ @;
-418               put Disease $ @;
-419               put n @;
-420               put incidence @;
-421               put personYears @;
-422               put incidencePer1000PY ;
-423               ;
-424             end;
-425            if _ERROR_ then call symputx('_EFIERR_',1);  /* set ERROR detection macro variable */
-426            if EFIEOD then call symputx('_EFIREC_',EFIOUT);
-11                                                                  The SAS System                                      15:26 Wednesday, July 26, 2017
+479         /**********************************************************************
+480         *   PRODUCT:   SAS
+481         *   VERSION:   9.4
+482         *   CREATOR:   External File Interface
+483         *   DATE:      01AUG17
+484         *   DESC:      Generated SAS Datastep Code
+13                                                                  The SAS System                                       22:37 Tuesday, August 1, 2017
 
-427            run;
+485         *   TEMPLATE SOURCE:  (None Specified.)
+486         ***********************************************************************/
+487            data _null_;
+488            %let _EFIERR_ = 0; /* set the ERROR detection macro variable */
+489            %let _EFIREC_ = 0;     /* clear export record count macro variable */
+490            file 'data\processed\queryIncidenceOutcomes.csv' delimiter=',' DSD DROPOVER lrecl=32767;
+491            if _n_ = 1 then        /* write column names or labels */
+492             do;
+493               put
+494                  "database"
+495               ','
+496                  "exposure"
+497               ','
+498                  "outcomeCategory"
+499               ','
+500                  "Disease"
+501               ','
+502                  "n"
+503               ','
+504                  "incidence"
+505               ','
+506                  "personYears"
+507               ','
+508                  "incidencePer1000PY"
+509               ;
+510             end;
+511           set  WORK.INCIDENCE   end=EFIEOD;
+512               format database $10. ;
+513               format exposure $20. ;
+514               format outcomeCategory $26. ;
+515               format Disease $41. ;
+516               format n best12. ;
+517               format incidence best12. ;
+518               format personYears best12. ;
+519               format incidencePer1000PY best12. ;
+520             do;
+521               EFIOUT + 1;
+522               put database $ @;
+523               put exposure $ @;
+524               put outcomeCategory $ @;
+525               put Disease $ @;
+526               put n @;
+527               put incidence @;
+528               put personYears @;
+529               put incidencePer1000PY ;
+530               ;
+531             end;
+532            if _ERROR_ then call symputx('_EFIERR_',1);  /* set ERROR detection macro variable */
+533            if EFIEOD then call symputx('_EFIREC_',EFIOUT);
+534            run;
 
 NOTE: The file 'data\processed\queryIncidenceOutcomes.csv' is:
       Filename=U:\studies\AS\pgms\bchan\data\processed\queryIncidenceOutcomes.csv,
       RECFM=V,LRECL=32767,File Size (bytes)=0,
-      Last Modified=26Jul2017:18:42:50,
-      Create Time=26Jul2017:18:42:50
+      Last Modified=02Aug2017:04:37:22,
+      Create Time=02Aug2017:04:37:22
 
 NOTE: 190 records were written to the file 'data\processed\queryIncidenceOutcomes.csv'.
       The minimum record length was 57.
-      The maximum record length was 124.
+      The maximum record length was 123.
 NOTE: There were 189 observations read from the data set WORK.INCIDENCE.
 NOTE: DATA statement used (Total process time):
-      real time           0.01 seconds
-      cpu time            0.01 seconds
+      real time           0.03 seconds
+      cpu time            0.00 seconds
       
 
 189 records created in data\processed\queryIncidenceOutcomes.csv from WORK.INCIDENCE.
@@ -984,15 +1181,17 @@ NOTE: DATA statement used (Total process time):
   
 NOTE: "data\processed\queryIncidenceOutcomes.csv" file was successfully created.
 NOTE: PROCEDURE EXPORT used (Total process time):
-      real time           0.68 seconds
-      cpu time            0.04 seconds
+      real time           0.67 seconds
+14                                                                  The SAS System                                       22:37 Tuesday, August 1, 2017
+
+      cpu time            0.03 seconds
       
 
-428        
-429        
-430        ods html close;
+535        
+536        
+537        ods html close;
 NOTE: SAS Institute Inc., SAS Campus Drive, Cary, NC USA 27513-2414
 NOTE: The SAS System used:
-      real time           3:16:33.86
-      cpu time            2:37:09.94
+      real time           5:59:34.48
+      cpu time            4:17:18.99
       
