@@ -49,24 +49,60 @@ proc sql;
   %let join2 = inner join Work.lookupProvTypePhysician B on (A.prov_type = B.prov_type_code);
   %let where2 = where A.dx_type = "09" & B.indPhysician = 1;
   %let selectfrom3 = select * from DT.indexLookup;
+
+  create table UCB.tempLookupMPCD as &selectfrom3 where database = "MPCD";
+  create table UCB.temp0710 as &select2 from MPSTD.DX_07_10 A &join2 &where2;
   create table UCB.tempDxMPCD as
-    &select1 from (&selectfrom3 where database = "MPCD") A inner join (&select2 from MPSTD.DX_07_10 A &join2 &where2) B &on1;
+    &select1 from UCB.tempLookupMPCD A inner join UCB.temp0710 B &on1;
+  drop table UCB.temp0710;
+
+  create table UCB.tempLookupMarketscan as &selectfrom3 where database = "Marketscan";
+  create table UCB.temp10 as &select2 from UCBSTD.DX_2010 A &join2 &where2;
+  create table UCB.temp11 as &select2 from UCBSTD.DX_2011 A &join2 &where2;
+  create table UCB.temp12 as &select2 from UCBSTD.DX_2012 A &join2 &where2;
+  create table UCB.temp13 as &select2 from UCBSTD.DX_2013 A &join2 &where2;
+  create table UCB.temp14 as &select2 from UCBSTD.DX_2014 A &join2 &where2;
   create table UCB.tempDxUCB as
-    &select1 from (&selectfrom3 where database = "Marketscan") A inner join (&select2 from UCBSTD.DX_2010 A &join2 &where2) B &on1 union corr
-    &select1 from (&selectfrom3 where database = "Marketscan") A inner join (&select2 from UCBSTD.DX_2011 A &join2 &where2) B &on1 union corr
-    &select1 from (&selectfrom3 where database = "Marketscan") A inner join (&select2 from UCBSTD.DX_2012 A &join2 &where2) B &on1 union corr
-    &select1 from (&selectfrom3 where database = "Marketscan") A inner join (&select2 from UCBSTD.DX_2013 A &join2 &where2) B &on1 union corr
-    &select1 from (&selectfrom3 where database = "Marketscan") A inner join (&select2 from UCBSTD.DX_2014 A &join2 &where2) B &on1 ;
+    &select1 from UCB.tempLookupMarketscan A inner join UCB.temp10 B &on1 union corr
+    &select1 from UCB.tempLookupMarketscan A inner join UCB.temp11 B &on1 union corr
+    &select1 from UCB.tempLookupMarketscan A inner join UCB.temp12 B &on1 union corr
+    &select1 from UCB.tempLookupMarketscan A inner join UCB.temp13 B &on1 union corr
+    &select1 from UCB.tempLookupMarketscan A inner join UCB.temp14 B &on1 ;
+  drop table UCB.temp10;
+  drop table UCB.temp11;
+  drop table UCB.temp12;
+  drop table UCB.temp13;
+  drop table UCB.temp14;
+
+  create table UCB.tempLookupMedicare as &selectfrom3 where database = "Medicare";
+  create table UCB.temp06 as &select2 from STD_SABR.STD_DX_2006    A &join2 &where2;
+  create table UCB.temp07 as &select2 from STD_SABR.STD_DX_2007    A &join2 &where2;
+  create table UCB.temp08 as &select2 from STD_SABR.STD_DX_2008_V2 A &join2 &where2;
+  create table UCB.temp09 as &select2 from STD_SABR.STD_DX_2009    A &join2 &where2;
+  create table UCB.temp10 as &select2 from STD_SABR.STD_DX_2010    A &join2 &where2;
+  create table UCB.temp11 as &select2 from STD_SABR.STD_DX_2011    A &join2 &where2;
+  create table UCB.temp12 as &select2 from STD_SABR.STD_DX_2012    A &join2 &where2;
+  create table UCB.temp13 as &select2 from STD_SABR.STD_DX_2013    A &join2 &where2;
+  create table UCB.temp14 as &select2 from STD_SABR.STD_DX_2014    A &join2 &where2;
   create table UCB.tempDxSABR as
-    &select1 from (&selectfrom3 where database = "Medicare") A inner join (&select2 from STD_SABR.STD_DX_2006    A &join2 &where2) B &on1 union corr
-    &select1 from (&selectfrom3 where database = "Medicare") A inner join (&select2 from STD_SABR.STD_DX_2007    A &join2 &where2) B &on1 union corr
-    &select1 from (&selectfrom3 where database = "Medicare") A inner join (&select2 from STD_SABR.STD_DX_2008_V2 A &join2 &where2) B &on1 union corr
-    &select1 from (&selectfrom3 where database = "Medicare") A inner join (&select2 from STD_SABR.STD_DX_2009    A &join2 &where2) B &on1 union corr
-    &select1 from (&selectfrom3 where database = "Medicare") A inner join (&select2 from STD_SABR.STD_DX_2010    A &join2 &where2) B &on1 union corr
-    &select1 from (&selectfrom3 where database = "Medicare") A inner join (&select2 from STD_SABR.STD_DX_2011    A &join2 &where2) B &on1 union corr
-    &select1 from (&selectfrom3 where database = "Medicare") A inner join (&select2 from STD_SABR.STD_DX_2012    A &join2 &where2) B &on1 union corr
-    &select1 from (&selectfrom3 where database = "Medicare") A inner join (&select2 from STD_SABR.STD_DX_2013    A &join2 &where2) B &on1 union corr
-    &select1 from (&selectfrom3 where database = "Medicare") A inner join (&select2 from STD_SABR.STD_DX_2014    A &join2 &where2) B &on1 ;
+    &select1 from UCB.tempLookupMedicare A inner join UCB.temp06 B &on1 union corr
+    &select1 from UCB.tempLookupMedicare A inner join UCB.temp07 B &on1 union corr
+    &select1 from UCB.tempLookupMedicare A inner join UCB.temp08 B &on1 union corr
+    &select1 from UCB.tempLookupMedicare A inner join UCB.temp09 B &on1 union corr
+    &select1 from UCB.tempLookupMedicare A inner join UCB.temp10 B &on1 union corr
+    &select1 from UCB.tempLookupMedicare A inner join UCB.temp11 B &on1 union corr
+    &select1 from UCB.tempLookupMedicare A inner join UCB.temp12 B &on1 union corr
+    &select1 from UCB.tempLookupMedicare A inner join UCB.temp13 B &on1 union corr
+    &select1 from UCB.tempLookupMedicare A inner join UCB.temp14 B &on1 ;
+  drop table UCB.temp06;
+  drop table UCB.temp07;
+  drop table UCB.temp08;
+  drop table UCB.temp09;
+  drop table UCB.temp10;
+  drop table UCB.temp11;
+  drop table UCB.temp12;
+  drop table UCB.temp13;
+  drop table UCB.temp14;
 
   %let select1 = select A.*, 
                         B.admit_date, B.begin_date, B.discharge_date, B.end_date, B.px_date, B.px_type, B.px, 
@@ -80,24 +116,57 @@ proc sql;
   %let on1 = on (A.patid = B.patid);
   %let select2 = select patid, admit_date, begin_date, discharge_date, end_date, px_date, px_type, px;
   %let selectfrom3 = select * from DT.indexLookup;
+
+  create table UCB.temp0710 as &select2 from MPSTD.PX_07_10;
   create table UCB.tempPxMPCD as
-    &select1 from (&selectfrom3 where database = "MPCD") A inner join (&select2 from MPSTD.PX_07_10) B &on1;
+    &select1 from UCB.tempLookupMPCD A inner join UCB.temp0710 B &on1;
+  drop table UCB.temp0710;
+
+  create table UCB.temp10 as &select2 from UCBSTD.PX_2010;
+  create table UCB.temp11 as &select2 from UCBSTD.PX_2011;
+  create table UCB.temp12 as &select2 from UCBSTD.PX_2012;
+  create table UCB.temp13 as &select2 from UCBSTD.PX_2013;
+  create table UCB.temp14 as &select2 from UCBSTD.PX_2014;
   create table UCB.tempPxUCB as
-    &select1 from (&selectfrom3 where database = "Marketscan") A inner join (&select2 from UCBSTD.PX_2010) B &on1 union corr
-    &select1 from (&selectfrom3 where database = "Marketscan") A inner join (&select2 from UCBSTD.PX_2011) B &on1 union corr
-    &select1 from (&selectfrom3 where database = "Marketscan") A inner join (&select2 from UCBSTD.PX_2012) B &on1 union corr
-    &select1 from (&selectfrom3 where database = "Marketscan") A inner join (&select2 from UCBSTD.PX_2013) B &on1 union corr
-    &select1 from (&selectfrom3 where database = "Marketscan") A inner join (&select2 from UCBSTD.PX_2014) B &on1 ;
+    &select1 from UCB.tempLookupMarketscan A inner join UCB.temp10 B &on1 union corr
+    &select1 from UCB.tempLookupMarketscan A inner join UCB.temp11 B &on1 union corr
+    &select1 from UCB.tempLookupMarketscan A inner join UCB.temp12 B &on1 union corr
+    &select1 from UCB.tempLookupMarketscan A inner join UCB.temp13 B &on1 union corr
+    &select1 from UCB.tempLookupMarketscan A inner join UCB.temp14 B &on1 ;
+  drop table UCB.temp10;
+  drop table UCB.temp11;
+  drop table UCB.temp12;
+  drop table UCB.temp13;
+  drop table UCB.temp14;
+
+  create table UCB.temp06 as &select2 from STD_SABR.STD_PX_2006;
+  create table UCB.temp07 as &select2 from STD_SABR.STD_PX_2007;
+  create table UCB.temp08 as &select2 from STD_SABR.STD_PX_2008;
+  create table UCB.temp09 as &select2 from STD_SABR.STD_PX_2009;
+  create table UCB.temp10 as &select2 from STD_SABR.STD_PX_2010;
+  create table UCB.temp11 as &select2 from STD_SABR.STD_PX_2011;
+  create table UCB.temp12 as &select2 from STD_SABR.STD_PX_2012;
+  create table UCB.temp13 as &select2 from STD_SABR.STD_PX_2013;
+  create table UCB.temp14 as &select2 from STD_SABR.STD_PX_2014;
   create table UCB.tempPxSABR as
-    &select1 from (&selectfrom3 where database = "Medicare") A inner join (&select2 from STD_SABR.STD_PX_2006) B &on1 union corr
-    &select1 from (&selectfrom3 where database = "Medicare") A inner join (&select2 from STD_SABR.STD_PX_2007) B &on1 union corr
-    &select1 from (&selectfrom3 where database = "Medicare") A inner join (&select2 from STD_SABR.STD_PX_2008) B &on1 union corr
-    &select1 from (&selectfrom3 where database = "Medicare") A inner join (&select2 from STD_SABR.STD_PX_2009) B &on1 union corr
-    &select1 from (&selectfrom3 where database = "Medicare") A inner join (&select2 from STD_SABR.STD_PX_2010) B &on1 union corr
-    &select1 from (&selectfrom3 where database = "Medicare") A inner join (&select2 from STD_SABR.STD_PX_2011) B &on1 union corr
-    &select1 from (&selectfrom3 where database = "Medicare") A inner join (&select2 from STD_SABR.STD_PX_2012) B &on1 union corr
-    &select1 from (&selectfrom3 where database = "Medicare") A inner join (&select2 from STD_SABR.STD_PX_2013) B &on1 union corr
-    &select1 from (&selectfrom3 where database = "Medicare") A inner join (&select2 from STD_SABR.STD_PX_2014) B &on1 ;
+    &select1 from UCB.tempLookupMedicare A inner join UCB.temp06 B &on1 union corr
+    &select1 from UCB.tempLookupMedicare A inner join UCB.temp07 B &on1 union corr
+    &select1 from UCB.tempLookupMedicare A inner join UCB.temp08 B &on1 union corr
+    &select1 from UCB.tempLookupMedicare A inner join UCB.temp09 B &on1 union corr
+    &select1 from UCB.tempLookupMedicare A inner join UCB.temp10 B &on1 union corr
+    &select1 from UCB.tempLookupMedicare A inner join UCB.temp11 B &on1 union corr
+    &select1 from UCB.tempLookupMedicare A inner join UCB.temp12 B &on1 union corr
+    &select1 from UCB.tempLookupMedicare A inner join UCB.temp13 B &on1 union corr
+    &select1 from UCB.tempLookupMedicare A inner join UCB.temp14 B &on1 ;
+  drop table UCB.temp06;
+  drop table UCB.temp07;
+  drop table UCB.temp08;
+  drop table UCB.temp09;
+  drop table UCB.temp10;
+  drop table UCB.temp11;
+  drop table UCB.temp12;
+  drop table UCB.temp13;
+  drop table UCB.temp14;
 
 quit;
 
