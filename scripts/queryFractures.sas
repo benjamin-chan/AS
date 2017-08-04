@@ -295,9 +295,11 @@ run;
 /*******************************Select All Spine Imaging Codes from STD Procedure Files for CQ=4/5 algorithms*/
 
 %macro fx_prcd;
-    %do year=&firstyear %to &lastyear;
-        data fx_prcd_&year spine_xray_&year;
-            set &in_lib..px_&year;
+    data fx_prcd spine_xray;
+        set UCB.tempPxMPCD
+            UCB.tempPxUCB
+            UCB.tempPxSABR;
+
             length tx_site $30;
             length HLAT $1;
 
@@ -305,88 +307,88 @@ run;
                                  '21355' '21356' '21360' '21365' '21366' '21385' '21386' '21387' '21390' '21395' '21400' '21401' '21406' '21407' '21408' '21421' '21422' '21423' 
                                  '21431' '21432' '21433' '21435' '21436' '21440' '21445' '21450' '21451' '21452' '21453' '21454' '21461' '21462' '21465' '21470'
                                  '62000' '62005' '62010')  and lengthn(strip(px)) = 5 then do; 
-                tx_site='(800-804) skull/face'; output fx_prcd_&year; end; 
+                tx_site='(800-804) skull/face'; output fx_prcd; end; 
 
             if strip(px) in ('22305' '22310' '22315' '22318' '22319' '22325' '22326' '22327' '22328' '22520' '22521' '22522' '22523' '22524' '22525' '76012' '76013' 
                                  'S2360' 'S2361' 'S2362' 'S2363' '72291' '72292')  and lengthn(strip(px)) = 5 then do;
-                tx_site = '(805, 806, 73313) spine'; output fx_prcd_&year; end;
+                tx_site = '(805, 806, 73313) spine'; output fx_prcd; end;
      
             if  strip(px) in ('21493' '21494' '21495' '21800' '21805' '21810' '21820' '21825' ) then do;
-                tx_site='(807) rib/sternum/trachea'; output fx_prcd_&year; end;
+                tx_site='(807) rib/sternum/trachea'; output fx_prcd; end;
 
             if strip(px) in ('27193' '27194' '27215' '27216' '27217' '27218' '27220' '27222' '27226' '27227' '27228')  and lengthn(strip(px)) = 5 then do;
-                tx_site = '(808) pelvis'; output fx_prcd_&year; end;
+                tx_site = '(808) pelvis'; output fx_prcd; end;
 
             if strip(px) in ('23500' '23505' '23515')  and lengthn(strip(px)) = 5 then do;
-                tx_site = '(810) clavicle'; output fx_prcd_&year; end;
+                tx_site = '(810) clavicle'; output fx_prcd; end;
 
             if strip(px) in ('23570' '23575' '23585') then do;
-                tx_site= '(811) scapula'; output fx_prcd_&year; end;  
+                tx_site= '(811) scapula'; output fx_prcd; end;  
 
             if strip(px) in ('23600' '23605' '23615' '23616' '23620' '23625' '23630' '23665' '24500' '24505' '24515' '24516' '24530' '24535' '24538' '24545' '24546' '24560'
                          '24565' '24566' '24575' '24576' '24577' '24579' '24582')  and lengthn(strip(px)) = 5 then do;
-                tx_site = '(812, 73311) humerus'; output fx_prcd_&year; end;
+                tx_site = '(812, 73311) humerus'; output fx_prcd; end;
                     
             if strip(px) in ('25600' '25605' '25606' '25607' '25608' '25609' '25620' '25650' '25651' '25652')  and lengthn(strip(px)) = 5 then do;
-                tx_site = '(813, 73312) radius_ulna'; output fx_prcd_&year; end; /*Procedure codes are the same for both categories*/
+                tx_site = '(813, 73312) radius_ulna'; output fx_prcd; end; /*Procedure codes are the same for both categories*/
         
             if strip(px) in ('24650' '24655' '24665' '24666' '24670' '24675' '24685' '25500' '25505' '25515' '25520' '25525' '25526' '25530' '25535' '25545' '25560' '25565'
                          '25574' '25575')  and lengthn(strip(px)) = 5 then do;
-                tx_site = '(813, 73312) radius_ulna'; output fx_prcd_&year; end; /*Procedure codes are the same for both categories*/
+                tx_site = '(813, 73312) radius_ulna'; output fx_prcd; end; /*Procedure codes are the same for both categories*/
            
             if strip(px) in ('25622' '25624' '25628' '25630' '25635' '25645' '25680' '25685')  and lengthn(strip(px)) = 5 then do;
-                tx_site = '(814) carpal'; output fx_prcd_&year; end;   
+                tx_site = '(814) carpal'; output fx_prcd; end;   
         
             if strip(px) in ('26600' '26605' '26607' '26608' '26615' '26645' '26650' '26665' '26720' '26725' '26727' '26735' '26740' '26742' '26746' '26750' '26755' '26756' '26765' )
                        and lengthn(strip(px)) = 5 then do;
-                tx_site='(815-817) hand/fingers'; output fx_prcd_&year; end;  
+                tx_site='(815-817) hand/fingers'; output fx_prcd; end;  
 
             if '27230' <= strip(px) <= '27248' and lengthn(strip(px)) = 5 then do;
-                tx_site = '(820, 73314) hip'; output fx_prcd_&year; end;
+                tx_site = '(820, 73314) hip'; output fx_prcd; end;
 
             if '27500' <= strip(px) <= '27514'  and lengthn(strip(px)) = 5 then do;
-                tx_site = '(821, 73315) femur'; output fx_prcd_&year; end;
+                tx_site = '(821, 73315) femur'; output fx_prcd; end;
 
             if strip(px) in ('27520' '27524')  and lengthn(strip(px)) = 5 then do;
-                tx_site = '(822) patella'; output fx_prcd_&year; end;  
+                tx_site = '(822) patella'; output fx_prcd; end;  
 
             if ('27530' <= strip(px) <= '27536' or '27750' <= strip(px) <= '27759' or '27780' <= strip(px) <= '27784' or '27824' <= strip(px) <= '27828') and lengthn(strip(px)) = 5  then do;
-                tx_site = '(823, 73316) tib_fib'; output fx_prcd_&year; end;
+                tx_site = '(823, 73316) tib_fib'; output fx_prcd; end;
 
             if strip(px) in ('27760' '27762' '27766' '27786' '27788' '27792' '27808' '27810' '27814' '27816' '27818' '27822' '27823' '28430' '28435' '28436' '28445')  and lengthn(strip(px)) = 5 then do;
-                tx_site = '(824) ankle'; output fx_prcd_&year; end;
+                tx_site = '(824) ankle'; output fx_prcd; end;
  
             if strip(px) in ('28320' '28322' '28400' '28405' '28406' '28415' '28420' ) and lengthn(strip(px)) = 5 then do; 
-                tx_site='(825) tarsal_metatarsal'; output fx_prcd_&year; end;
+                tx_site='(825) tarsal_metatarsal'; output fx_prcd; end;
 
          /********************************Hip/Femur Additions - must be matched with DGNS to be included*/
          /*Hip replacement codes*/
             /*Hip*/
             if strip(px) in ('27130' '27125') and lengthn(strip(px)) = 5  then do;
-                HLAT='1'; tx_site = '(820, 73314) hip'; output fx_prcd_&year; end;
+                HLAT='1'; tx_site = '(820, 73314) hip'; output fx_prcd; end;
     
             /*Codes below are the only ICD9 Procedure Codes that we are using for "repair"*/
             if strip(px) in ('8151' '8152') and lengthn(strip(px)) = 4 then do;
-                HLAT = '1'; tx_site = '(820, 73314) hip'; output fx_prcd_&year; end;
+                HLAT = '1'; tx_site = '(820, 73314) hip'; output fx_prcd; end;
      
             /*Femur repair codes, assigned to both Hip and Femur treatment sites... CHECK - MAYBE WE NEED TO DO THIS THE OTHER WAY AS WELL*/
             /*Hip*/
             if strip(px) in ('7855' '7905' '7915' '7925' '7935' '7965') and lengthn(strip(px)) = 4 then do;
-                HLAT = '1'; tx_site = '(820, 73314) hip'; output fx_prcd_&year; end;
+                HLAT = '1'; tx_site = '(820, 73314) hip'; output fx_prcd; end;
         
             /*Femur*/
             if strip(px) in ('7855' '7905' '7915' '7925' '7935' '7965') and lengthn(strip(px)) = 4 then do;
-                HLAT = '1'; tx_site = '(821, 73315) femur'; output fx_prcd_&year; end;
+                HLAT = '1'; tx_site = '(821, 73315) femur'; output fx_prcd; end;
              /*spine image*/
                 if '72010' <= strip(px) <= '72159' or '72240' <= strip(px) <= '72285' or strip(px) = '72295' then do;   /*Spine Imaging Codes*/
                 tx_site='(805, 806, 73313) spine';
-                output spine_xray_&year; end;  
+                output spine_xray; end;  
  
     %end;
     run;
 
     data fx_prcd;  /*7,111,777*/
-        set %do year=&firstyear %to &lastyear; fx_prcd_&year %end;;
+        set fx_prcd;
         /*To add laterality info*/
 /*        array hcpcs{*} hcpcs_1st_mdfr_cd hcpcs_2nd_mdfr_cd hcpcs_3rd_mdfr_cd hcpcs_4th_mdfr_cd ; */
         if HLAT='1' then do;
@@ -401,7 +403,7 @@ run;
     proc sort data=fx_prcd nodupkey; by patid ENCOUNTERID px_date tx_site; run;      /*6,232,497*/ 
  
     data spine_xray;  /*45,816,552*/
-        set %do year=&firstyear %to &lastyear; spine_xray_&year %end;;
+        set spine_xray;
         keep patid px_date tx_site  ENCOUNTERID begin_date;
     run;
     proc sort data=spine_xray nodupkey; by patid px_date; run;   /*26,146,253*/ 
