@@ -28,6 +28,22 @@ FRACTURES
 See "ALGORITHMS TO ENHANCE SPECIFICITY OF FRACTURE IDENTIFICATION_ 100316.docx"
 
 Adapted from Lang's code in "001_fx_data.sas"
+
+
+From: Chen, Lang [mailto:langchen@uabmc.edu] 
+Sent: Monday, July 24, 2017 8:56 AM
+To: Benjamin Chan <chanb@ohsu.edu>
+Subject: RE: fracture identification algorithm
+
+Here it is. 
+For 001_fx_data, find all fx related claim and run the algorithm.
+Please ignore any code after line 476
+Modify code from line 1 -50
+
+For 002_fx_epi_data
+Define fx episode.
+
+Final output data is fx_dgns_&firstyr._&lastyr._4. Please let me if you have any questions.
  */
 
 
