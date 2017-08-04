@@ -428,6 +428,13 @@ run;
 
 
 
+data trauma (rename=(begin_date=trauma_dt));
+        set UCB.tempFracDxMPCD (where = (diagCodeType = "Trauma code"))
+            UCB.tempFracDxUCB (where = (diagCodeType = "Trauma code"))
+            UCB.tempFracDxSABR (where = (diagCodeType = "Trauma code"));
+run;
+proc sort data= trauma(keep=patid trauma_dt) nodupkey; by patid trauma_dt;run;
+
 
 proc sql;
   drop table UCB.tempFracDxMPCD;
