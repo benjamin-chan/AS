@@ -677,6 +677,35 @@ run;
 proc sql;
 select count(distinct seq) from FX_CLM_DB;
 quit;
+
+
+
+
+/* 
+Collapse to fracture episodes
+
+Q: Why are some seq_start_date values missing?
+ */
+proc sort 
+  data = Work.fx_clm_db 
+  out = Work.fractureEpisodes (drop = seq
+                               rename = (seq_start_date = fractureEpisodeStart
+                                         seq_end_date = fractureEpisodeEnd
+                                         fx_site = fractureSite))
+  nodupkey;
+  by patid seq seq_start_date seq_end_date fx_site;
+run;
+proc sql;
+  create table Work.summaryFractureEpisodes as
+    select fractureSite,
+           count(distinct patid) as countDistinctPatid,
+           count(*) as countFractureEpisodes
+    from Work.fractureEpisodes
+    group by fractureSite;
+  select * from Work.summaryFractureEpisodes;
+  select sum(countDistinctPatid) as sumDistinctPatid,
+         sum(countFractureEpisodes) as sumFractureEpisodes
+    from Work.summaryFractureEpisodes;
 quit;
 proc sql;
   drop table UCB.tempFracDxMPCD;
@@ -686,7 +715,7 @@ quit;
 
 
 proc export
-  data = Work.prev
+  data = Work.summaryFractureEpisodes
   outfile = "data\processed\&cmt..csv"
   dbms = csv
   replace;
