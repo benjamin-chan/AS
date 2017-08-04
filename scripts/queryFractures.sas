@@ -707,10 +707,21 @@ proc sql;
          sum(countFractureEpisodes) as sumFractureEpisodes
     from Work.summaryFractureEpisodes;
 quit;
+
+
+
+
+/* 
+CLEAN UP
+ */
+
 proc sql;
   drop table UCB.tempFracDxMPCD;
   drop table UCB.tempFracDxUCB;
   drop table UCB.tempFracDxSABR;
+  drop table UCB.tempPxMPCD;
+  drop table UCB.tempPxUCB;
+  drop table UCB.tempPxSABR;
 quit;
 
 
