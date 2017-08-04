@@ -122,6 +122,12 @@ proc sql;
 quit;
 
 
+
+/* 
+START OF 001_fx_data.sas
+ */
+
+
 /*Assign "Broad" fracture site (fx_site) for all ICD9 diagnoses, outputting separately, so some records are cloned, then combining into one file */
 /*No longer using matched trauma files here*/
 
