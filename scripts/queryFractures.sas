@@ -436,6 +436,93 @@ run;
 proc sort data= trauma(keep=patid trauma_dt) nodupkey; by patid trauma_dt;run;
 
 
+/*subset the spine xray procedure claim for patients with fx diagnosis code only*/
+/*so SAS will not run out of memory*/
+data fx_spine_xray(keep=patid tx_site px_date ENCOUNTERID begin_date);
+if _n_=1 then do;
+  declare hash hid(dataset:"fx_dgns_3(where=(fx_site='(805, 806, 73313) spine')))", multidata:"N", hashexp:20);
+  rc=hid.defineKey("patid");
+  rc=hid.defineDone();
+end;
+set spine_xray;
+rc=hid.find();
+if rc=0;
+run;
+/*subset the Trauma code for patients with fx diagnosis code only*/
+/*so SAS will not run out of memory*/
+data fx_trauma(drop=rc);
+if _n_=1 then do;
+  declare hash hid(dataset:"fx_dgns_3", multidata:"N", hashexp:20);
+  rc=hid.defineKey("patid");
+  rc=hid.defineDone();
+end;
+set trauma;
+rc=hid.find();
+if rc=0;
+run;
+/************************************Link Fracture Claims (ICD9 Diagnosis) with Repair Claims (CPT/HCPCS, some ICD9 procedure code)***************/
+
+data fx_dgns_4(drop=rc: px_date tx_site xray_date trauma_dt);
+if _n_=1 then do;
+  declare hash hid(dataset:"fx_prcd", multidata:"N", hashexp:20);
+  rc=hid.defineKey("patid", "px_date", "tx_site");
+/*  rc=hid.defineData("px_date", "tx_site");*/
+  rc=hid.defineDone();
+  declare hash hxray(dataset:"fx_spine_xray(rename=px_date=xray_date)", multidata:"Y", hashexp:20);
+  rc=hxray.defineKey("patid", "tx_site");
+  rc=hxray.defineData("xray_date");
+  rc=hxray.defineDone();
+  declare hash htrauma(dataset:"fx_trauma", multidata:"Y", hashexp:20);
+  rc=htrauma.defineKey("patid");
+  rc=htrauma.defineData("trauma_dt");
+  rc=htrauma.defineDone();
+end;
+if 0 then set fx_prcd(keep=patid px_date tx_site) 
+              fx_spine_xray(keep=patid px_date tx_site rename=px_date=xray_date)
+              fx_trauma;
+set fx_dgns_3;
+length cq $4 spine_image trauma_date 4 trauma $1;
+format spine_image trauma_date mmddyy10.;
+cq="0000";
+rc=hid.find(key:patid, key:begin_date,key:fx_site);
+if rc^=0 then do;
+    px_date=.;
+    tx_site=" ";
+end;
+if enc_type="IP" then do;
+/*CQ = 1 Inpatient claim with primary diagnosis code */
+    if pdx="P" then substr(cq,1,1)="1";
+/*CQ = 2 Inpatient claim with secondary diagnosis code*/
+    else substr(cq,2,1)="2";
+end; else do;
+/*CQ = 3 outpatient diagnosis code AND carrier line with repair/replace HCPCS*/
+    if rc=0 then substr(cq,3,1)="3";
+    rc1=hxray.find(key:patid, key:fx_site);
+    do while (rc1 = 0);
+        if begin_date-10 <=xray_date<= begin_date then do;
+            if enc_type in ("AV" "IF" "NH" "HH" "ER" "ED") then do;
+/*CQ = 4 outpatient [Physician E&M codes] diagnosis code with spine image/x-ray within 10 day early*/
+                substr(cq,4,1)="4";
+                spine_image=min(spine_image,xray_date);
+            end;
+        end;
+        rc1=hxray.find_next(key:patid, key:fx_site);
+    end;
+end;
+/*is there trauma dx within 14 days*/
+rc2=htrauma.find(key:patid);
+do while (rc2 = 0) ;
+    if 0<=abs(trauma_dt-begin_date)<=14 then do;
+            trauma="1";
+            trauma_date=min(trauma_date,trauma_dt);
+   end ;    
+   rc2=htrauma.find_next(key:patid) ;
+end;
+
+run;
+proc freq data=fx_dgns_4; tables enc_type*cq fx_site*cq trauma/missing;run;
+
+*goto 002_fx_epi.sas;
 proc sql;
   drop table UCB.tempFracDxMPCD;
   drop table UCB.tempFracDxUCB;
