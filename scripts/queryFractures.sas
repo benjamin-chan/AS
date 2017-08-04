@@ -50,7 +50,7 @@ proc sql;
                           else ""
                           end as diagCodeType;
   %let join2 = inner join Work.lookupProvTypePhysician B on (A.prov_type = B.prov_type_code); 
-  
+
   %let where2 = where A.dx_type = "09" & B.indPhysician = 1 & ^missing(calculated diagCodeType);
   %let selectfrom3 = select * from DT.indexLookup;
   create table UCB.tempFracDxMPCD as
@@ -387,7 +387,7 @@ run;
     %end;
     run;
 
-    data fx_prcd;  /*7,111,777*/
+    data fx_prcd;
         set fx_prcd;
         /*To add laterality info*/
 /*        array hcpcs{*} hcpcs_1st_mdfr_cd hcpcs_2nd_mdfr_cd hcpcs_3rd_mdfr_cd hcpcs_4th_mdfr_cd ; */
@@ -400,13 +400,13 @@ run;
 /*                else if hcpcs{i} = 'LT' then repair_left='1';*/
 /*            end;*/
     run;
-    proc sort data=fx_prcd nodupkey; by patid ENCOUNTERID px_date tx_site; run;      /*6,232,497*/ 
+    proc sort data=fx_prcd nodupkey; by patid ENCOUNTERID px_date tx_site; run;
  
-    data spine_xray;  /*45,816,552*/
+    data spine_xray;
         set spine_xray;
         keep patid px_date tx_site  ENCOUNTERID begin_date;
     run;
-    proc sort data=spine_xray nodupkey; by patid px_date; run;   /*26,146,253*/ 
+    proc sort data=spine_xray nodupkey; by patid px_date; run;
 %mend;
 %fx_prcd; 
 
