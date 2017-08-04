@@ -56,13 +56,13 @@ proc sql;
   %let on1 = on (A.patid = B.patid);
   %let select2 = select A.patid, A.encounterID, A.enc_type, A.admit_date, A.begin_date, A.discharge_date, A.end_date, A.dx_type, A.dx, A.pdx,
                         case
-                          when '800' <= substr(A.dx, 1, 3) <= '829' or substr(A.dx, 1, 4) = '7331' then "DX fx claim"
-                          when substr(A.dx, 1, 4) in ('V541' 'V542') then "DX extend care claim"
+                          when '800' <= substr(A.dx, 1, 3) <= '829' or substr(A.dx, 1, 4) = '7331' then "Fracture code"
+                          when substr(A.dx, 1, 4) in ('V541' 'V542') then "Extended care code"
                           when 'E800' <= substr(A.dx, 1, 4) <= 'E848' or 
                                'E881' <= substr(A.dx, 1, 4) <= 'E884' or 
                                'E908' <= substr(A.dx, 1, 4) <= 'E909' or 
                                'E916' <= substr(A.dx, 1, 4) <= 'E928' 
-                            then "Only keeping patid and claim_date for the Trauma M2M Macro Later"
+                            then "Trauma code"
                           else ""
                           end as diagCodeType;
   %let join2 = inner join Work.lookupProvTypePhysician B on (A.prov_type = B.prov_type_code); 
@@ -127,9 +127,9 @@ quit;
 
 %macro comballfxdgns;
     data fx_dgns;
-        set UCB.tempFracDxMPCD (where = (diagCodeType = "DX fx claim"))
-            UCB.tempFracDxUCB (where = (diagCodeType = "DX fx claim"))
-            UCB.tempFracDxSABR (where = (diagCodeType = "DX fx claim"));
+        set UCB.tempFracDxMPCD (where = (diagCodeType = "Fracture code"))
+            UCB.tempFracDxUCB (where = (diagCodeType = "Fracture code"))
+            UCB.tempFracDxSABR (where = (diagCodeType = "Fracture code"));
             length fx_site $30 ;
             fx_site = '';
             if strip(DX) in: ('800' '801' '802' '803' '804') then           do; fx_site='(800-804) skull/face'; output; end;
@@ -156,9 +156,9 @@ quit;
             if strip(DX) in: ('829') then                                           do; fx_site='(829) fx_nos'; output; end;
             if strip(DX) in ('73310' '73319' '7331') then                 do; fx_site='(7331) pathologic nos/nec'; output; end;
     data fx_excare;
-        set UCB.tempFracDxMPCD (where = (diagCodeType = "DX extend care claim"))
-            UCB.tempFracDxUCB (where = (diagCodeType = "DX extend care claim"))
-            UCB.tempFracDxSABR (where = (diagCodeType = "DX extend care claim"));
+        set UCB.tempFracDxMPCD (where = (diagCodeType = "Extended care code"))
+            UCB.tempFracDxUCB (where = (diagCodeType = "Extended care code"))
+            UCB.tempFracDxSABR (where = (diagCodeType = "Extended care code"));
             length fx_site $30 ;
             fx_site = '';
             /*Expanded Diagnosis Codes - Fracture Aftercare Codes*/
