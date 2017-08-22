@@ -322,9 +322,9 @@ run;
 
 %macro fx_prcd;
     data fx_prcd spine_xray;
-        set UCB.tempPxMPCD
-            UCB.tempPxUCB
-            UCB.tempPxSABR;
+        set UCB.tempFracPxMPCD
+            UCB.tempFracPxUCB
+            UCB.tempFracPxSABR;
 
             length tx_site $30;
             length HLAT $1;
@@ -729,9 +729,9 @@ proc sql;
   drop table UCB.tempFracDxMPCD;
   drop table UCB.tempFracDxUCB;
   drop table UCB.tempFracDxSABR;
-  drop table UCB.tempPxMPCD;
-  drop table UCB.tempPxUCB;
-  drop table UCB.tempPxSABR;
+  drop table UCB.tempFracPxMPCD;
+  drop table UCB.tempFracPxUCB;
+  drop table UCB.tempFracPxSABR;
 quit;
 
 
