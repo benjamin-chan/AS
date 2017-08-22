@@ -694,7 +694,7 @@ Q: Why are some seq_start_date values missing?
  */
 proc sort 
   data = Work.fx_clm_db 
-  out = Work.fractureEpisodes (drop = seq
+  out = DT.fractureEpisodes (drop = seq
                                rename = (seq_start_date = fractureEpisodeStart
                                          seq_end_date = fractureEpisodeEnd
                                          fx_site = fractureSite))
@@ -706,7 +706,7 @@ proc sql;
     select fractureSite,
            count(distinct patid) as countDistinctPatid,
            count(*) as countFractureEpisodes
-    from Work.fractureEpisodes
+    from DT.fractureEpisodes
     group by fractureSite;
   select * from Work.summaryFractureEpisodes;
   select sum(countDistinctPatid) as sumDistinctPatid,
