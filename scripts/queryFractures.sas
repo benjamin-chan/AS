@@ -67,7 +67,8 @@ proc sql;
                                'E916' <= substr(A.dx, 1, 4) <= 'E928' 
                             then "Trauma code"
                           else ""
-                          end as diagCodeType;
+                          end as diagCodeType,
+                        B.prov_type_code as provTypeCategory;
   %let join2 = inner join Work.lookupProvTypePhysician B on (A.prov_type = B.prov_type_code); 
 
   %let where2 = where A.dx_type = "09" & B.indPhysician = 1 & ^missing(calculated diagCodeType);
