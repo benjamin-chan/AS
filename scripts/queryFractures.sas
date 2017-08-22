@@ -47,6 +47,9 @@ Final output data is fx_dgns_&firstyr._&lastyr._4. Please let me if you have any
  */
 
 
+%include "lib\provTypeCategory.sas";  /* Call script to query only physician diagnosed ICD-9 codes */
+
+
 proc sql;
 
   %let select1 = select A.*, 
