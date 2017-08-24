@@ -810,7 +810,7 @@ proc export
   outfile = "data\processed\&cmt..csv"
   dbms = csv
   replace;
-  delimiter = ",";
+  delimiter = '09'x;
 run;
 
 
