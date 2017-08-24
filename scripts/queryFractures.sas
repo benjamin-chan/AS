@@ -609,7 +609,7 @@ START OF 002_fx_data.sas
 
 /*all the claims to define episode sequence */
 data _dat0(keep=
-PATID ENCOUNTERID ADMIT_DATE DISCHARGE_DATE BEGIN_DATE END_DATE DX DX_TYPE PDX  SOURCE ENC_TYPE fx_site px px_date
+PATID ENCOUNTERID ADMIT_DATE DISCHARGE_DATE BEGIN_DATE END_DATE DX DX_TYPE PDX  /* SOURCE */ ENC_TYPE fx_site px px_date
 site cq spine_image trauma_date trauma );
 set fx_dgns_4 fx_excare Fx_prcd(rename=tx_site=fx_site);
 run;
