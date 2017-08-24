@@ -735,6 +735,10 @@ end;
 run;
 proc freq data=seq_COMBO; tables alone_combo; run;
 
+proc sort data = Work.combo_seq;
+  by patid seq_start_date;
+run;
+
 data combo_seq;
 set seq_COMBO;
 by patid seq_start_date;
