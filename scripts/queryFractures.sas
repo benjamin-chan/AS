@@ -477,7 +477,6 @@ run;
                 tx_site='(805, 806, 73313) spine';
                 output spine_xray; end;  
  
-    %end;
     run;
 
     data fx_prcd;
