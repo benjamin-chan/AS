@@ -749,6 +749,10 @@ where seq_cq^='0000' and seq_cq^=' ';
 if combo_fx_site=" " or ""<site_order<lag(site_order) then combo_fx_site=fx_site;
 run;
 
+proc sort data = Work.seq_COMBO;
+  by patid seq;
+run;
+
 data FX_CLM_DB;
 merge _dat2 seq_start seq_end seq_cq(drop=fx_site) seq_COMBO(keep=patid seq alone_combo);
 by patid seq;
