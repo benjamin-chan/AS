@@ -789,15 +789,20 @@ proc sql;
            A.indexID,
            A.age,
            A.sex,
-           B.*
+           B.*,
+           case
+             when prxmatch("/spine/", B.fractureSite) then "Clinical vertebral fracture"
+             when prxmatch("/(hip)|(pelvis)|(femur)|(humerus)|(radius)|(ulna)/", B.fractureSite) then "Non-vertebral osteoporotic fracture"
+             else ""
+             end as fractureType
     from DT.indexLookup A inner join
          Work.fractureEpisodes B on (A.patid = B.patid);
   create table Work.summaryFractureEpisodes as
-    select fractureSite,
+    select fractureType, fractureSite,
            count(distinct patid) as countDistinctPatid,
            count(*) as countFractureEpisodes
     from DT.fractureEpisodes
-    group by fractureSite;
+    group by fractureType, fractureSite;
   select * from Work.summaryFractureEpisodes;
   select sum(countDistinctPatid) as sumDistinctPatid,
          sum(countFractureEpisodes) as sumFractureEpisodes
