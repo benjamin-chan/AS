@@ -772,7 +772,7 @@ Q: Why are some seq_start_date values missing?
  */
 proc sort 
   data = Work.fx_clm_db 
-  out = DT.fractureEpisodes (drop = seq
+  out = Work.fractureEpisodes (drop = seq
                                rename = (seq_start_date = fractureEpisodeStart
                                          seq_end_date = fractureEpisodeEnd
                                          fx_site = fractureSite))
@@ -780,6 +780,18 @@ proc sort
   by patid seq seq_start_date seq_end_date fx_site;
 run;
 proc sql;
+  create table DT.fractureEpisodes as
+    select A.database,
+           A.exposure,
+           A.indexGNN,
+           A.indexDate,
+           A.ASCohortDate,
+           A.indexID,
+           A.age,
+           A.sex,
+           B.*
+    from DT.indexLookup A inner join
+         Work.fractureEpisodes B on (A.patid = B.patid);
   create table Work.summaryFractureEpisodes as
     select fractureSite,
            count(distinct patid) as countDistinctPatid,
