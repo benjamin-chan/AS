@@ -261,12 +261,14 @@ proc sql;
     group by database, exposure, outcomeCategory, disease;
   select * from Work.incidence;
 
+/* 
   drop table UCB.tempDxMPCD;
   drop table UCB.tempDxUCB;
   drop table UCB.tempDxSABR;
   drop table UCB.tempPxMPCD;
   drop table UCB.tempPxUCB;
   drop table UCB.tempPxSABR;
+ */
 
 quit;
 

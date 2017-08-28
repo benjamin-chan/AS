@@ -284,6 +284,7 @@ proc sql;
 quit;
 
 
+/* 
 proc sql;
   drop table UCB.tempDxMPCD;
   drop table UCB.tempDxUCB;
@@ -292,6 +293,7 @@ proc sql;
   drop table UCB.tempPxUCB;
   drop table UCB.tempPxSABR;
 quit;
+ */
 
 
 proc export

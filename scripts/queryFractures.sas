@@ -814,7 +814,6 @@ quit;
 
 /* 
 CLEAN UP
- */
 
 proc sql;
   drop table UCB.tempFracDxMPCD;
@@ -824,6 +823,7 @@ proc sql;
   drop table UCB.tempFracPxUCB;
   drop table UCB.tempFracPxSABR;
 quit;
+ */
 
 
 proc export
