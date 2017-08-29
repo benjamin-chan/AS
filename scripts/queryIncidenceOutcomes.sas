@@ -63,7 +63,7 @@ proc sql;
 
   create table UCB.tempLookupMPCD as &selectfrom3 where database = "MPCD";
   create table UCB.temp0710 as &select2 from MPSTD.DX_07_10 A &join2 &where2;
-  create table UCB.tempDxMPCD as
+  create table UCB.tempIncDxMPCD as
     &select1 from UCB.tempLookupMPCD A inner join UCB.temp0710 B &on1;
   drop table UCB.temp0710;
 
@@ -73,7 +73,7 @@ proc sql;
   create table UCB.temp12 as &select2 from UCBSTD.DX_2012 A &join2 &where2;
   create table UCB.temp13 as &select2 from UCBSTD.DX_2013 A &join2 &where2;
   create table UCB.temp14 as &select2 from UCBSTD.DX_2014 A &join2 &where2;
-  create table UCB.tempDxUCB as
+  create table UCB.tempIncDxUCB as
     &select1 from UCB.tempLookupMarketscan A inner join UCB.temp10 B &on1 union corr
     &select1 from UCB.tempLookupMarketscan A inner join UCB.temp11 B &on1 union corr
     &select1 from UCB.tempLookupMarketscan A inner join UCB.temp12 B &on1 union corr
@@ -95,7 +95,7 @@ proc sql;
   create table UCB.temp12 as &select2 from STD_SABR.STD_DX_2012    A &join2 &where2;
   create table UCB.temp13 as &select2 from STD_SABR.STD_DX_2013    A &join2 &where2;
   create table UCB.temp14 as &select2 from STD_SABR.STD_DX_2014    A &join2 &where2;
-  create table UCB.tempDxSABR as
+  create table UCB.tempIncDxSABR as
     &select1 from UCB.tempLookupMedicare A inner join UCB.temp06 B &on1 union corr
     &select1 from UCB.tempLookupMedicare A inner join UCB.temp07 B &on1 union corr
     &select1 from UCB.tempLookupMedicare A inner join UCB.temp08 B &on1 union corr
@@ -121,7 +121,7 @@ proc sql;
   %let selectfrom3 = select * from DT.exposureTimeline;
 
   create table UCB.temp0710 as &select2 from MPSTD.PX_07_10;
-  create table UCB.tempPxMPCD as
+  create table UCB.tempIncPxMPCD as
     &select1 from UCB.tempLookupMPCD A inner join UCB.temp0710 B &on1;
   drop table UCB.temp0710;
 
@@ -130,7 +130,7 @@ proc sql;
   create table UCB.temp12 as &select2 from UCBSTD.PX_2012;
   create table UCB.temp13 as &select2 from UCBSTD.PX_2013;
   create table UCB.temp14 as &select2 from UCBSTD.PX_2014;
-  create table UCB.tempPxUCB as
+  create table UCB.tempIncPxUCB as
     &select1 from UCB.tempLookupMarketscan A inner join UCB.temp10 B &on1 union corr
     &select1 from UCB.tempLookupMarketscan A inner join UCB.temp11 B &on1 union corr
     &select1 from UCB.tempLookupMarketscan A inner join UCB.temp12 B &on1 union corr
@@ -151,7 +151,7 @@ proc sql;
   create table UCB.temp12 as &select2 from STD_SABR.STD_PX_2012;
   create table UCB.temp13 as &select2 from STD_SABR.STD_PX_2013;
   create table UCB.temp14 as &select2 from STD_SABR.STD_PX_2014;
-  create table UCB.tempPxSABR as
+  create table UCB.tempIncPxSABR as
     &select1 from UCB.tempLookupMedicare A inner join UCB.temp06 B &on1 union corr
     &select1 from UCB.tempLookupMedicare A inner join UCB.temp07 B &on1 union corr
     &select1 from UCB.tempLookupMedicare A inner join UCB.temp08 B &on1 union corr
@@ -180,16 +180,16 @@ Call interstitial lung disease macro
 %include "lib\IPP_2IPSOPplusPX_ILD.sas" / source2;
 %IPP_2IPSOPplusPX_ILD(outdata = Work.outcome_ILD_MPCD,
                       IDS = exposureID,
-                      Dxs = UCB.tempDxMPCD,
-                      Pxs = UCB.tempPxMPCD);
+                      Dxs = UCB.tempIncDxMPCD,
+                      Pxs = UCB.tempIncPxMPCD);
 %IPP_2IPSOPplusPX_ILD(outdata = Work.outcome_ILD_UCB,
                       IDS = exposureID,
-                      Dxs = UCB.tempDxUCB,
-                      Pxs = UCB.tempPxUCB);
+                      Dxs = UCB.tempIncDxUCB,
+                      Pxs = UCB.tempIncPxUCB);
 %IPP_2IPSOPplusPX_ILD(outdata = Work.outcome_ILD_SABR,
                       IDS = exposureID,
-                      Dxs = UCB.tempDxSABR,
-                      Pxs = UCB.tempPxSABR);
+                      Dxs = UCB.tempIncDxSABR,
+                      Pxs = UCB.tempIncPxSABR);
 
 
 proc sql;
@@ -212,12 +212,12 @@ proc sql;
            C.outcomeCategory,
            C.disease,
            C.begin_date
-    from (&select1 from UCB.tempDxMPCD A &join1 &where1a &where1b union corr
-          &select1 from UCB.tempDxUCB  A &join1 &where1a &where1b union corr
-          &select1 from UCB.tempDxSABR A &join1 &where1a &where1b union corr
-          &select1 from UCB.tempPxMPCD A &join1 &where1a union corr
-          &select1 from UCB.tempPxUCB  A &join1 &where1a union corr
-          &select1 from UCB.tempPxSABR A &join1 &where1a union corr
+    from (&select1 from UCB.tempIncDxMPCD A &join1 &where1a &where1b union corr
+          &select1 from UCB.tempIncDxUCB  A &join1 &where1a &where1b union corr
+          &select1 from UCB.tempIncDxSABR A &join1 &where1a &where1b union corr
+          &select1 from UCB.tempIncPxMPCD A &join1 &where1a union corr
+          &select1 from UCB.tempIncPxUCB  A &join1 &where1a union corr
+          &select1 from UCB.tempIncPxSABR A &join1 &where1a union corr
           &select2 from Work.outcome_ILD_MPCD union corr
           &select2 from Work.outcome_ILD_UCB  union corr
           &select2 from Work.outcome_ILD_SABR ) C
@@ -262,12 +262,12 @@ proc sql;
   select * from Work.incidence;
 
 /* 
-  drop table UCB.tempDxMPCD;
-  drop table UCB.tempDxUCB;
-  drop table UCB.tempDxSABR;
-  drop table UCB.tempPxMPCD;
-  drop table UCB.tempPxUCB;
-  drop table UCB.tempPxSABR;
+  drop table UCB.tempIncDxMPCD;
+  drop table UCB.tempIncDxUCB;
+  drop table UCB.tempIncDxSABR;
+  drop table UCB.tempIncPxMPCD;
+  drop table UCB.tempIncPxUCB;
+  drop table UCB.tempIncPxSABR;
  */
 
 quit;
