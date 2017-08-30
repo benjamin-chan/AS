@@ -1,6 +1,6 @@
 ---
 title: "Comorbidities and Disease Manifestations in Ankylosing Spondylitis (BAD AS)"
-date: "2017-08-30 12:12:54"
+date: "2017-08-30 12:20:19"
 author: Benjamin Chan (chanb@ohsu.edu)
 output:
   html_document:
@@ -291,7 +291,7 @@ Build tables for Atul's 2017 ACR abstract.
 Collects code chunks from `summarizePrevalence.Rmd` and `summarizeIncidence.Rmd`.
 
 
-## Prevalence
+## Prevalence, unadjusted
 
 Prevalence is **12-month (6-month baseline to 6-month follow-up)**.
 
@@ -323,7 +323,7 @@ Prevalence is **12-month (6-month baseline to 6-month follow-up)**.
 |Uveitis                    |Uveitis                                   |   7.2    |    5.8     |            5.2            |      1.9       |       1.5        |               1.6               |     8.0      |      5.3       |              4.1              |
 
 
-## Incidence
+## Incidence, unadjusted
 
 
 
