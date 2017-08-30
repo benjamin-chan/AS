@@ -67,6 +67,25 @@ Call interstitial lung disease macro
                       Pxs = UCB.tempIncPxSABR);
 
 
+/* 
+Process fracture episodes data set
+ */
+proc sql;
+  create table Work.fractures as
+    select database, 
+           exposure, 
+           patid, 
+           exposureStart,
+           exposureEnd,
+           exposureID,
+           "Osteoporotic fracture" as outcomeCategory, 
+           fractureType as disease, 
+           fractureEpisodeStart as begin_date
+    from DT.fractureEpisodesInc
+    where ^missing(fractureType);
+quit;
+
+
 proc sql;
 
   create table Work.defOutcomes as
@@ -76,6 +95,9 @@ proc sql;
   create table Work.lookupDisease as
     select distinct outcomeCategory, disease
     from DT.defOutcomes;
+  insert into Work.lookupDisease (outcomeCategory, disease)
+    values ("Osteoporotic fracture", "Clinical vertebral fracture")
+    values ("Osteoporotic fracture", "Non-vertebral osteoporotic fracture");
   
   %let select1 = select A.*, B.outcomeCategory, B.disease;
   %let join1 = inner join Work.defOutcomes B on (A.codeType = B.codeType & A.code = B.code);
@@ -95,7 +117,8 @@ proc sql;
           &select1 from UCB.tempIncPxSABR A &join1 &where1a union corr
           &select2 from Work.outcome_ILD_MPCD union corr
           &select2 from Work.outcome_ILD_UCB  union corr
-          &select2 from Work.outcome_ILD_SABR ) C
+          &select2 from Work.outcome_ILD_SABR union corr
+          select * from Work.fractures) C
     order by C.database, C.exposureID, C.outcomeCategory, C.disease, C.begin_date;
 quit;
 

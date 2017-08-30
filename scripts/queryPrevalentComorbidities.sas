@@ -55,6 +55,29 @@ Call interstitial lung disease macro
                       Dxs = UCB.tempPrevDxSABR,
                       Pxs = UCB.tempPrevPxSABR);
 
+/* 
+Process fracture episodes data set
+ */
+proc sql;
+  create table Work.fractures as
+    select database, 
+           exposure, 
+           patid, 
+           ASCohortDate, 
+           indexGNN, 
+           indexDate, 
+           indexID, 
+           age, 
+           sex, 
+           "Osteoporotic fracture" as outcomeCategory, 
+           fractureType as disease, 
+           fractureEpisodeStart as begin_date
+    from DT.fractureEpisodesPrev
+    where ^missing(fractureType);
+quit;
+
+
+
 
 proc sql;
 
@@ -87,7 +110,8 @@ proc sql;
           &select1 from UCB.tempPrevPxSABR A &join1 &where1a union corr
           &select2 from Work.outcome_ILD_MPCD union corr
           &select2 from Work.outcome_ILD_UCB  union corr
-          &select2 from Work.outcome_ILD_SABR ) C
+          &select2 from Work.outcome_ILD_SABR union corr
+          select * from Work.fractures) C
     group by C.database, C.exposure, C.patid, C.ASCohortDate, C.indexGNN, C.indexDate, C.indexID, C.age, C.sex,
              C.outcomeCategory,
              C.disease
