@@ -47,153 +47,6 @@ Final output data is fx_dgns_&firstyr._&lastyr._4. Please let me if you have any
  */
 
 
-%include "lib\provTypeCategory.sas";  /* Call script to query only physician diagnosed ICD-9 codes */
-
-
-proc sql;
-
-  %let select1 = select A.*, 
-                        B.encounterID, B.enc_type, B.admit_date, B.begin_date, B.discharge_date, B.end_date, B.dx_type, B.dx, B.pdx, "ICD9-DX" as codeType, B.dx as code,
-                        B.diagCodeType,
-                        B.provTypeCategory;
-  %let on1 = on (A.patid = B.patid);
-  %let select2 = select A.patid, A.encounterID, A.enc_type, A.admit_date, A.begin_date, A.discharge_date, A.end_date, A.dx_type, A.dx, A.pdx,
-                        case
-                          when '800' <= substr(A.dx, 1, 3) <= '829' or substr(A.dx, 1, 4) = '7331' then "Fracture code"
-                          when substr(A.dx, 1, 4) in ('V541' 'V542') then "Extended care code"
-                          when 'E800' <= substr(A.dx, 1, 4) <= 'E848' or 
-                               'E881' <= substr(A.dx, 1, 4) <= 'E884' or 
-                               'E908' <= substr(A.dx, 1, 4) <= 'E909' or 
-                               'E916' <= substr(A.dx, 1, 4) <= 'E928' 
-                            then "Trauma code"
-                          else ""
-                          end as diagCodeType,
-                        B.prov_type_code as provTypeCategory;
-  %let join2 = inner join Work.lookupProvTypePhysician B on (A.prov_type = B.prov_type_code); 
-  %let where2 = where A.dx_type = "09" & B.indPhysician = 1 & ^missing(calculated diagCodeType);
-  %let selectfrom3 = select * from DT.indexLookup;
-
-  create table UCB.tempLookupMPCD as &selectfrom3 where database = "MPCD";
-  create table UCB.temp0710 as &select2 from MPSTD.DX_07_10 A &join2 &where2;
-  create table UCB.tempFracDxMPCD as
-    &select1 from UCB.tempLookupMPCD A inner join UCB.temp0710 B &on1;
-  drop table UCB.temp0710;
-
-  create table UCB.tempLookupMarketscan as &selectfrom3 where database = "Marketscan";
-  create table UCB.temp10 as &select2 from UCBSTD.DX_2010 A &join2 &where2;
-  create table UCB.temp11 as &select2 from UCBSTD.DX_2011 A &join2 &where2;
-  create table UCB.temp12 as &select2 from UCBSTD.DX_2012 A &join2 &where2;
-  create table UCB.temp13 as &select2 from UCBSTD.DX_2013 A &join2 &where2;
-  create table UCB.temp14 as &select2 from UCBSTD.DX_2014 A &join2 &where2;
-  create table UCB.tempFracDxUCB as
-    &select1 from UCB.tempLookupMarketscan A inner join UCB.temp10 B &on1 union corr
-    &select1 from UCB.tempLookupMarketscan A inner join UCB.temp11 B &on1 union corr
-    &select1 from UCB.tempLookupMarketscan A inner join UCB.temp12 B &on1 union corr
-    &select1 from UCB.tempLookupMarketscan A inner join UCB.temp13 B &on1 union corr
-    &select1 from UCB.tempLookupMarketscan A inner join UCB.temp14 B &on1 ;
-  drop table UCB.temp10;
-  drop table UCB.temp11;
-  drop table UCB.temp12;
-  drop table UCB.temp13;
-  drop table UCB.temp14;
-
-  create table UCB.tempLookupMedicare as &selectfrom3 where database = "Medicare";
-  create table UCB.temp06 as &select2 from STD_SABR.STD_DX_2006    A &join2 &where2;
-  create table UCB.temp07 as &select2 from STD_SABR.STD_DX_2007    A &join2 &where2;
-  create table UCB.temp08 as &select2 from STD_SABR.STD_DX_2008_V2 A &join2 &where2;
-  create table UCB.temp09 as &select2 from STD_SABR.STD_DX_2009    A &join2 &where2;
-  create table UCB.temp10 as &select2 from STD_SABR.STD_DX_2010    A &join2 &where2;
-  create table UCB.temp11 as &select2 from STD_SABR.STD_DX_2011    A &join2 &where2;
-  create table UCB.temp12 as &select2 from STD_SABR.STD_DX_2012    A &join2 &where2;
-  create table UCB.temp13 as &select2 from STD_SABR.STD_DX_2013    A &join2 &where2;
-  create table UCB.temp14 as &select2 from STD_SABR.STD_DX_2014    A &join2 &where2;
-  create table UCB.tempFracDxSABR as
-    &select1 from UCB.tempLookupMedicare A inner join UCB.temp06 B &on1 union corr
-    &select1 from UCB.tempLookupMedicare A inner join UCB.temp07 B &on1 union corr
-    &select1 from UCB.tempLookupMedicare A inner join UCB.temp08 B &on1 union corr
-    &select1 from UCB.tempLookupMedicare A inner join UCB.temp09 B &on1 union corr
-    &select1 from UCB.tempLookupMedicare A inner join UCB.temp10 B &on1 union corr
-    &select1 from UCB.tempLookupMedicare A inner join UCB.temp11 B &on1 union corr
-    &select1 from UCB.tempLookupMedicare A inner join UCB.temp12 B &on1 union corr
-    &select1 from UCB.tempLookupMedicare A inner join UCB.temp13 B &on1 union corr
-    &select1 from UCB.tempLookupMedicare A inner join UCB.temp14 B &on1 ;
-  drop table UCB.temp06;
-  drop table UCB.temp07;
-  drop table UCB.temp08;
-  drop table UCB.temp09;
-  drop table UCB.temp10;
-  drop table UCB.temp11;
-  drop table UCB.temp12;
-  drop table UCB.temp13;
-  drop table UCB.temp14;
-
-  %let select1 = select A.*, 
-                        B.encounterID, B.admit_date, B.begin_date, B.discharge_date, B.end_date, B.px_date, B.px_type, B.px, 
-                        case 
-                          when B.px_type = "09" then "ICD9-PX" 
-                          when B.px_type = "C1" | ^anyalpha(strip(B.px)) then "CPT" 
-                          when B.px_type = "H1" & anyalpha(substr(strip(B.px), 1, 1)) & ^anyalpha(strip(B.px), 2) then "HCPCS" 
-                          else "" 
-                          end as codeType, 
-                        B.px as code;
-  %let on1 = on (A.patid = B.patid);
-  %let select2 = select patid, encounterID, admit_date, begin_date, discharge_date, end_date, px_date, px_type, px;
-  %let selectfrom3 = select * from DT.indexLookup;
-
-  create table UCB.temp0710 as &select2 from MPSTD.PX_07_10;
-  create table UCB.tempFracPxMPCD as
-    &select1 from UCB.tempLookupMPCD A inner join UCB.temp0710 B &on1;
-  drop table UCB.temp0710;
-
-  create table UCB.temp10 as &select2 from UCBSTD.PX_2010;
-  create table UCB.temp11 as &select2 from UCBSTD.PX_2011;
-  create table UCB.temp12 as &select2 from UCBSTD.PX_2012;
-  create table UCB.temp13 as &select2 from UCBSTD.PX_2013;
-  create table UCB.temp14 as &select2 from UCBSTD.PX_2014;
-  create table UCB.tempFracPxUCB as
-    &select1 from UCB.tempLookupMarketscan A inner join UCB.temp10 B &on1 union corr
-    &select1 from UCB.tempLookupMarketscan A inner join UCB.temp11 B &on1 union corr
-    &select1 from UCB.tempLookupMarketscan A inner join UCB.temp12 B &on1 union corr
-    &select1 from UCB.tempLookupMarketscan A inner join UCB.temp13 B &on1 union corr
-    &select1 from UCB.tempLookupMarketscan A inner join UCB.temp14 B &on1 ;
-  drop table UCB.temp10;
-  drop table UCB.temp11;
-  drop table UCB.temp12;
-  drop table UCB.temp13;
-  drop table UCB.temp14;
-
-  create table UCB.temp06 as &select2 from STD_SABR.STD_PX_2006;
-  create table UCB.temp07 as &select2 from STD_SABR.STD_PX_2007;
-  create table UCB.temp08 as &select2 from STD_SABR.STD_PX_2008;
-  create table UCB.temp09 as &select2 from STD_SABR.STD_PX_2009;
-  create table UCB.temp10 as &select2 from STD_SABR.STD_PX_2010;
-  create table UCB.temp11 as &select2 from STD_SABR.STD_PX_2011;
-  create table UCB.temp12 as &select2 from STD_SABR.STD_PX_2012;
-  create table UCB.temp13 as &select2 from STD_SABR.STD_PX_2013;
-  create table UCB.temp14 as &select2 from STD_SABR.STD_PX_2014;
-  create table UCB.tempFracPxSABR as
-    &select1 from UCB.tempLookupMedicare A inner join UCB.temp06 B &on1 union corr
-    &select1 from UCB.tempLookupMedicare A inner join UCB.temp07 B &on1 union corr
-    &select1 from UCB.tempLookupMedicare A inner join UCB.temp08 B &on1 union corr
-    &select1 from UCB.tempLookupMedicare A inner join UCB.temp09 B &on1 union corr
-    &select1 from UCB.tempLookupMedicare A inner join UCB.temp10 B &on1 union corr
-    &select1 from UCB.tempLookupMedicare A inner join UCB.temp11 B &on1 union corr
-    &select1 from UCB.tempLookupMedicare A inner join UCB.temp12 B &on1 union corr
-    &select1 from UCB.tempLookupMedicare A inner join UCB.temp13 B &on1 union corr
-    &select1 from UCB.tempLookupMedicare A inner join UCB.temp14 B &on1 ;
-  drop table UCB.temp06;
-  drop table UCB.temp07;
-  drop table UCB.temp08;
-  drop table UCB.temp09;
-  drop table UCB.temp10;
-  drop table UCB.temp11;
-  drop table UCB.temp12;
-  drop table UCB.temp13;
-  drop table UCB.temp14;
-quit;
-
-
-
 /* 
 START OF 001_fx_data.sas
  */
@@ -772,24 +625,74 @@ Q: Why are some seq_start_date values missing?
  */
 proc sort 
   data = Work.fx_clm_db 
-  out = DT.fractureEpisodes (drop = seq
+  out = Work.fractureEpisodes (drop = seq
                                rename = (seq_start_date = fractureEpisodeStart
                                          seq_end_date = fractureEpisodeEnd
                                          fx_site = fractureSite))
   nodupkey;
   by patid seq seq_start_date seq_end_date fx_site;
 run;
+
 proc sql;
-  create table Work.summaryFractureEpisodes as
-    select fractureSite,
+  create table DT.fractureEpisodesPrev as
+    select A.database,
+           A.exposure,
+           A.indexGNN,
+           A.indexDate,
+           A.ASCohortDate,
+           A.indexID,
+           A.age,
+           A.sex,
+           B.*,
+           case
+             when prxmatch("/spine/", B.fractureSite) then "Clinical vertebral fracture"
+             when prxmatch("/(hip)|(pelvis)|(femur)|(humerus)|(radius)|(ulna)/", B.fractureSite) then "Non-vertebral osteoporotic fracture"
+             else ""
+             end as fractureType
+    from DT.indexLookup A inner join
+         Work.fractureEpisodes B on (A.patid = B.patid);
+  create table Work.summaryFractureEpisodesPrev as
+    select "DT.fractureEpisodesPrev" as table,
+           fractureType, fractureSite,
            count(distinct patid) as countDistinctPatid,
            count(*) as countFractureEpisodes
-    from DT.fractureEpisodes
-    group by fractureSite;
-  select * from Work.summaryFractureEpisodes;
-  select sum(countDistinctPatid) as sumDistinctPatid,
+    from DT.fractureEpisodesPrev
+    group by fractureType, fractureSite;
+  select * from Work.summaryFractureEpisodesPrev;
+  select "DT.fractureEpisodesPrev" as table,
+         sum(countDistinctPatid) as sumDistinctPatid,
          sum(countFractureEpisodes) as sumFractureEpisodes
-    from Work.summaryFractureEpisodes;
+    from Work.summaryFractureEpisodesPrev;
+
+  create table DT.fractureEpisodesInc as
+    select A.database,
+           A.ENR_END_DATE,
+           A.DEATH_DATE,
+           A.exposure,
+           A.exposureStart,
+           A.exposureEnd,
+           A.daysExposed,
+           A.exposureID,
+           B.*,
+           case
+             when prxmatch("/spine/", B.fractureSite) then "Clinical vertebral fracture"
+             when prxmatch("/(hip)|(pelvis)|(femur)|(humerus)|(radius)|(ulna)/", B.fractureSite) then "Non-vertebral osteoporotic fracture"
+             else ""
+             end as fractureType
+    from DT.exposureTimeline A inner join
+         Work.fractureEpisodes B on (A.patid = B.patid  & A.exposureStart <= B.fractureEpisodeStart <= A.exposureEnd);
+  create table Work.summaryFractureEpisodesInc as
+    select "DT.fractureEpisodesInc" as table,
+           fractureType, fractureSite,
+           count(distinct patid) as countDistinctPatid,
+           count(*) as countFractureEpisodes
+    from DT.fractureEpisodesInc
+    group by fractureType, fractureSite;
+  select * from Work.summaryFractureEpisodesInc;
+  select "DT.fractureEpisodesInc" as table,
+         sum(countDistinctPatid) as sumDistinctPatid,
+         sum(countFractureEpisodes) as sumFractureEpisodes
+    from Work.summaryFractureEpisodesInc;
 quit;
 
 
@@ -797,7 +700,6 @@ quit;
 
 /* 
 CLEAN UP
- */
 
 proc sql;
   drop table UCB.tempFracDxMPCD;
@@ -807,6 +709,7 @@ proc sql;
   drop table UCB.tempFracPxUCB;
   drop table UCB.tempFracPxSABR;
 quit;
+ */
 
 
 proc export
