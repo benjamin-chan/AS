@@ -664,6 +664,35 @@ proc sql;
          sum(countFractureEpisodes) as sumFractureEpisodes
     from Work.summaryFractureEpisodesPrev;
 
+  create table DT.fractureEpisodesInc as
+    select A.database,
+           A.ENR_END_DATE,
+           A.DEATH_DATE,
+           A.exposure,
+           A.exposureStart,
+           A.exposureEnd,
+           A.daysExposed,
+           A.exposureID,
+           B.*,
+           case
+             when prxmatch("/spine/", B.fractureSite) then "Clinical vertebral fracture"
+             when prxmatch("/(hip)|(pelvis)|(femur)|(humerus)|(radius)|(ulna)/", B.fractureSite) then "Non-vertebral osteoporotic fracture"
+             else ""
+             end as fractureType
+    from DT.exposureTimeline A inner join
+         Work.fractureEpisodes B on (A.patid = B.patid  & A.exposureStart <= B.fractureEpisodeStart <= A.exposureEnd);
+  create table Work.summaryFractureEpisodesInc as
+    select "DT.fractureEpisodesInc" as table,
+           fractureType, fractureSite,
+           count(distinct patid) as countDistinctPatid,
+           count(*) as countFractureEpisodes
+    from DT.fractureEpisodesInc
+    group by fractureType, fractureSite;
+  select * from Work.summaryFractureEpisodesInc;
+  select "DT.fractureEpisodesInc" as table,
+         sum(countDistinctPatid) as sumDistinctPatid,
+         sum(countFractureEpisodes) as sumFractureEpisodes
+    from Work.summaryFractureEpisodesInc;
 quit;
 
 
