@@ -175,18 +175,6 @@ proc sql;
 quit;
 
 
-/* 
-proc sql;
-  drop table UCB.tempPrevDxMPCD;
-  drop table UCB.tempPrevDxUCB;
-  drop table UCB.tempPrevDxSABR;
-  drop table UCB.tempPrevPxMPCD;
-  drop table UCB.tempPrevPxUCB;
-  drop table UCB.tempPrevPxSABR;
-quit;
- */
-
-
 proc export
   data = Work.prev
   outfile = "data\processed\&cmt..csv"
