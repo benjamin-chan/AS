@@ -632,8 +632,9 @@ proc sort
   nodupkey;
   by patid seq seq_start_date seq_end_date fx_site;
 run;
+
 proc sql;
-  create table DT.fractureEpisodes as
+  create table DT.fractureEpisodesPrev as
     select A.database,
            A.exposure,
            A.indexGNN,
@@ -650,16 +651,19 @@ proc sql;
              end as fractureType
     from DT.indexLookup A inner join
          Work.fractureEpisodes B on (A.patid = B.patid);
-  create table Work.summaryFractureEpisodes as
-    select fractureType, fractureSite,
+  create table Work.summaryFractureEpisodesPrev as
+    select "DT.fractureEpisodesPrev" as table,
+           fractureType, fractureSite,
            count(distinct patid) as countDistinctPatid,
            count(*) as countFractureEpisodes
-    from DT.fractureEpisodes
+    from DT.fractureEpisodesPrev
     group by fractureType, fractureSite;
-  select * from Work.summaryFractureEpisodes;
-  select sum(countDistinctPatid) as sumDistinctPatid,
+  select * from Work.summaryFractureEpisodesPrev;
+  select "DT.fractureEpisodesPrev" as table,
+         sum(countDistinctPatid) as sumDistinctPatid,
          sum(countFractureEpisodes) as sumFractureEpisodes
-    from Work.summaryFractureEpisodes;
+    from Work.summaryFractureEpisodesPrev;
+
 quit;
 
 
