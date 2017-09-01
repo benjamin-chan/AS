@@ -91,7 +91,7 @@ proc sql;
   %let where1a = where B.disease ^in ("Myocardial infarction", "Hospitalized infection");
   %let where1b = | (B.disease in ("Myocardial infarction", "Hospitalized infection") & A.enc_type = "IP");
   %let select2 = select database, exposure, patid, ASCohortDate, indexGNN, indexDate, indexID, enc_type, age, sex, "Lung disease" as outcomeCategory, "Interstitial lung disease" as disease, outcome_start_date as begin_date;
-  create table Work.comorbidities as
+  create table DT.comorbidities as
     select C.database, C.exposure, C.patid, C.ASCohortDate, C.indexGNN, C.indexDate, C.indexID, C.age, C.sex,
            C.outcomeCategory,
            C.disease,
@@ -138,7 +138,7 @@ proc sql;
            "AS cohort entry to exposure" as timeWindow,
            sum(A.indPrevPriorToIndex) as numer,
            sum(A.indPrevPriorToIndex) / B.denomIndexExp * 100 as prevPct
-    from Work.comorbidities A inner join
+    from DT.comorbidities A inner join
          Work.denominator B on (A.database = B.database & A.exposure = B.exposure)
     group by A.database, A.exposure, A.outcomeCategory, A.disease, B.denomPatid, B.denomIndexExp
     union corr
@@ -148,7 +148,7 @@ proc sql;
            "12 months" as timeWindow,
            sum(A.indPrev12mo) as numer,
            sum(A.indPrev12mo) / B.denomIndexExp * 100 as prevPct
-    from Work.comorbidities A inner join
+    from DT.comorbidities A inner join
          Work.denominator B on (A.database = B.database & A.exposure = B.exposure)
     group by A.database, A.exposure, A.outcomeCategory, A.disease, B.denomPatid, B.denomIndexExp
     union corr
@@ -158,7 +158,7 @@ proc sql;
            "24 months" as timeWindow,
            sum(A.indPrev24mo) as numer,
            sum(A.indPrev24mo) / B.denomIndexExp * 100 as prevPct
-    from Work.comorbidities A inner join
+    from DT.comorbidities A inner join
          Work.denominator B on (A.database = B.database & A.exposure = B.exposure)
     group by A.database, A.exposure, A.outcomeCategory, A.disease, B.denomPatid, B.denomIndexExp
     union corr
@@ -168,7 +168,7 @@ proc sql;
            "36 months" as timeWindow,
            sum(A.indPrev36mo) as numer,
            sum(A.indPrev36mo) / B.denomIndexExp * 100 as prevPct
-    from Work.comorbidities A inner join
+    from DT.comorbidities A inner join
          Work.denominator B on (A.database = B.database & A.exposure = B.exposure)
     group by A.database, A.exposure, A.outcomeCategory, A.disease, B.denomPatid, B.denomIndexExp;
   select * from Work.prev;
