@@ -40,9 +40,9 @@ proc sql;
   select database, 
          cohort, 
          count(distinct patid) as countDistinctPatid, 
-         count(distinct indexID) as countDistinctIndexes, 
+         count(distinct controlID) as countDistinctID, 
          count(*) as countRows
-    from DT.indexLookup
+    from DT.controlLookup
     group by database, cohort;
 quit;
 
