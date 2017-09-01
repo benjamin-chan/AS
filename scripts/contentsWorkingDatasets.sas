@@ -49,6 +49,12 @@ UCB CntlCohortStdMPCD
 DT defOutcomes
 DT indexLookup
 DT exposureTimeline
+DT incidentDiseaseTimelines
+DT fractureEpisodesPrev
+DT fractureEpisodesInc
+DT comorbidities
+DT comorbiditiesOther
+DT comorbiditiesAll
   ;
 run;
 proc sort data = Work.WorkingDatasets;
