@@ -1,0 +1,215 @@
+1                                                          The SAS System                            17:51 Friday, September 1, 2017
+
+NOTE: Unable to open SASUSER.REGSTRY. WORK.REGSTRY will be opened instead.
+NOTE: All registry changes will be lost at the end of the session.
+
+WARNING: Unable to copy SASUSER registry to WORK registry. Because of this, you will not see registry customizations during this 
+         session.
+NOTE: Unable to open SASUSER.PROFILE. WORK.PROFILE will be opened instead.
+NOTE: All profile changes will be lost at the end of the session.
+NOTE: Copyright (c) 2002-2012 by SAS Institute Inc., Cary, NC, USA. 
+NOTE: SAS (r) Proprietary Software 9.4 (TS1M1) 
+      Licensed to UNIVERSITY OF ALABAMA AT BIRMINGHAM - SFA - T&R, Site 70058223.
+NOTE: This session is executing on the W32_ES08R2  platform.
+
+
+
+NOTE: Updated analytical products:
+      
+      SAS/STAT 13.1
+      SAS/ETS 13.1
+      SAS/OR 13.1
+      SAS/IML 13.1
+      SAS/QC 13.1
+
+NOTE: Additional host information:
+
+ W32_ES08R2 WIN 6.1.7601 Service Pack 1 Server
+
+--- PEER News and Updates ---
+
+: SECURITY REMINDER :
+Please remember not to copy any data files that contain PHI (protected health identifiers) to any of the shared folders.
+
+ 
+
+
+NOTE: SAS initialization used:
+      real time           0.18 seconds
+      cpu time            0.14 seconds
+      
+1          *  University of Alabama at Birmingham                               *
+2          *  AS project                                            *
+3          **********************************************************************;
+4          options pagesize=74 linesize=150 pageno=1 missing=' ' date FORMCHAR="|----|+|---+=|-/\<>*";
+5          * Programmer    : Benjamin Chan <chanb@ohsu.edu>
+6          * Creation date :
+7          * Modify date   :
+8          ;
+9          %let cmt=buildControlLookup; * type the name of your program here (without the filename extension);
+10         %let pgm=&cmt..sas;
+11         %include "lib\libname.sas" ;
+NOTE: Libref CCW5STD was successfully assigned as follows: 
+      Engine:        SPDE 
+      Physical Name: h:\studies\osteo\data\CDM\5pct\
+NOTE: Libref STD_SABR was successfully assigned as follows: 
+      Engine:        SPDE 
+      Physical Name: q:\data\std_SABER\
+NOTE: Libref MPSTD was successfully assigned as follows: 
+      Engine:        SPDE 
+      Physical Name: h:\studies\mpcd\data\stddata\
+NOTE: Libref UCBSTD was successfully assigned as follows: 
+      Engine:        SPDE 
+      Physical Name: q:\studies\AS\data\stddata\
+NOTE: Libref UCB was successfully assigned as follows: 
+      Engine:        SPDE 
+      Physical Name: q:\studies\AS\data\UCB\
+NOTE: Libref DT was successfully assigned as follows: 
+      Engine:        V9 
+      Physical Name: V:\studies\AS\data
+89         footnote "&pgm.";
+90         * footnote2 "%sysfunc(datetime(),datetime14.)";
+91         title1 '--- AS project ---';
+92         **********************************************************************;
+93         options macrogen mlogic mprint symbolgen;
+2                                                                   The SAS System                                     17:51 Friday, September 1, 2017
+
+94         options nomacrogen nomlogic nomprint nosymbolgen;
+95         
+96         
+97         ods html
+98           body = "output\&cmt..html"
+99           style = Statistical;
+NOTE: Writing HTML Body file: output\buildControlLookup.html
+100        
+101        
+102        %let var = patid, indexDate, age, sex, enr_start_date, enr_end_date;
+103        proc sql;
+104          create table DT.controlLookup AS
+105            select "MPCD"       as database, "Non-AS" as cohort, &var from UCB.cntlCohortStdMPCD union corr
+106            select "Medicare"   as database, "Non-AS" as cohort, &var from UCB.cntlCohortStdC5P ;
+NOTE: Table DT.CONTROLLOOKUP created, with 2983928 rows and 8 columns.
+
+107          alter table DT.controlLookup add controlID numeric;
+NOTE: Table DT.CONTROLLOOKUP has been modified, with 9 columns.
+108          update DT.controlLookup
+109            set controlID = monotonic();
+NOTE: 2983928 rows were updated in DT.CONTROLLOOKUP.
+
+110        quit;
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           11.43 seconds
+      cpu time            13.52 seconds
+      
+
+111        
+112        proc sort data = DT.controlLookup nodupkey;
+113          by database cohort patid indexDate;
+114        run;
+
+NOTE: There were 2983928 observations read from the data set DT.CONTROLLOOKUP.
+NOTE: 0 observations with duplicate key values were deleted.
+NOTE: The data set DT.CONTROLLOOKUP has 2983928 observations and 9 variables.
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           1.15 seconds
+      cpu time            2.63 seconds
+      
+
+115        
+116        proc sql;
+117          select database,
+118                 cohort,
+119                 count(distinct patid) as countDistinctPatid,
+120                 count(distinct controlID) as countDistinctID,
+121                 count(*) as countRows
+122            from DT.controlLookup
+123            group by database, cohort;
+                                                                  --- AS project ---                               17:51 Friday, September 1, 2017   1
+
+                                                                        count
+                                                                     Distinct         count
+                                               database  cohort         Patid    DistinctID  countRows
+                                               -------------------------------------------------------
+                                               MPCD      Non-AS       1139225       1139225    1139225
+                                               Medicare  Non-AS       1844703       1844703    1844703
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+                                                                buildControlLookup.sas
+124        quit;
+NOTE: The PROCEDURE SQL printed page 1.
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           8.11 seconds
+      cpu time            8.05 seconds
+      
+
+125        
+126        
+127        ods html close;
+NOTE: SAS Institute Inc., SAS Campus Drive, Cary, NC USA 27513-2414
+NOTE: The SAS System used:
+      real time           21.17 seconds
+      cpu time            24.58 seconds
+      
