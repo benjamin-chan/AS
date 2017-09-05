@@ -663,7 +663,7 @@ quit;
 
 
 proc export
-  data = Work.summaryFractureEpisodesControl
+  data = Work.summaryFractureEpisodesPrev
   outfile = "data\processed\&cmt..csv"
   dbms = csv
   replace;

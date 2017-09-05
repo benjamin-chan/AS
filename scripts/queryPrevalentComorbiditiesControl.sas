@@ -100,9 +100,9 @@ proc sql;
           /* &select1 from UCB.tempPrevDxSABRControl A &join1 &where1a &where1b union corr */
           &select1 from UCB.tempPrevPxMPCDControl A &join1 &where1a union corr
           /* &select1 from UCB.tempPrevPxSABRControl A &join1 &where1a union corr */
-          &select2 from Work.outcome_ILD_MPCDControl union corr
-          /* &select2 from Work.outcome_ILD_SABRControl union corr */
-          select * from Work.fracturesControl) C
+          &select2 from Work.outcome_ILD_MPCD union corr
+          /* &select2 from Work.outcome_ILD_SABR union corr */
+          select * from Work.fractures) C
     group by C.database, C.cohort, C.patid, C.indexDate, C.controlID, C.age, C.sex,
              C.outcomeCategory,
              C.disease
