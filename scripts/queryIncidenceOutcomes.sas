@@ -151,7 +151,7 @@ proc sql;
                                     A.disease = B.disease);
   create table Work.incidence as
     select database, exposure, outcomeCategory, disease,
-         count(distinct exposureID) as n,
+           count(distinct exposureID) as n,
            sum(censor = 0) as incidence,
            sum(daysToOutcome) / 365.25 as personYears,
            sum(censor = 0) / (sum(daysToOutcome) / 365.25) * 1000 as incidencePer1000PY
