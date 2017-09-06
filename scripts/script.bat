@@ -14,6 +14,8 @@ call :execute queryFracturesControl
 call :execute queryPrevalentComorbidities
 call :execute queryPrevalentComorbiditiesControl
 call :execute queryIncidenceOutcomes
+call :execute queryOtherComorbidities
+rem call :execute modelPropensityScore
 call :execute contentsWorkingDatasets
 
 "C:\Program Files\7-Zip\7z.exe" d ..\output.zip ..\output\*
