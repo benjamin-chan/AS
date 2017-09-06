@@ -1,0 +1,678 @@
+1                                                          The SAS System                           17:51 Tuesday, September 5, 2017
+
+NOTE: Copyright (c) 2002-2012 by SAS Institute Inc., Cary, NC, USA. 
+NOTE: SAS (r) Proprietary Software 9.4 (TS1M1) 
+      Licensed to UNIVERSITY OF ALABAMA AT BIRMINGHAM - SFA - T&R, Site 70058223.
+NOTE: This session is executing on the W32_ES08R2  platform.
+
+
+
+NOTE: Updated analytical products:
+      
+      SAS/STAT 13.1
+      SAS/ETS 13.1
+      SAS/OR 13.1
+      SAS/IML 13.1
+      SAS/QC 13.1
+
+NOTE: Additional host information:
+
+ W32_ES08R2 WIN 6.1.7601 Service Pack 1 Server
+
+--- PEER News and Updates ---
+
+: SECURITY REMINDER :
+Please remember not to copy any data files that contain PHI (protected health identifiers) to any of the shared folders.
+
+ 
+
+
+NOTE: SAS initialization used:
+      real time           0.18 seconds
+      cpu time            0.03 seconds
+      
+1          *  University of Alabama at Birmingham                               *
+2          *  AS project                                            *
+3          **********************************************************************;
+4          options pagesize=74 linesize=150 pageno=1 missing=' ' date FORMCHAR="|----|+|---+=|-/\<>*";
+5          * Programmer    : Benjamin Chan <chanb@ohsu.edu>
+6          * Creation date :
+7          * Modify date   :
+8          ;
+9          %let cmt=queryPrevalentComorbiditiesControl; * type the name of your program here (without the filename extension);
+10         %let pgm=&cmt..sas;
+11         %include "lib\libname.sas" ;
+NOTE: Libref CCW5STD was successfully assigned as follows: 
+      Engine:        SPDE 
+      Physical Name: h:\studies\osteo\data\CDM\5pct\
+NOTE: Libref STD_SABR was successfully assigned as follows: 
+      Engine:        SPDE 
+      Physical Name: q:\data\std_SABER\
+NOTE: Libref MPSTD was successfully assigned as follows: 
+      Engine:        SPDE 
+      Physical Name: h:\studies\mpcd\data\stddata\
+NOTE: Libref UCBSTD was successfully assigned as follows: 
+      Engine:        SPDE 
+      Physical Name: q:\studies\AS\data\stddata\
+NOTE: Libref UCB was successfully assigned as follows: 
+      Engine:        SPDE 
+      Physical Name: q:\studies\AS\data\UCB\
+NOTE: Libref DT was successfully assigned as follows: 
+      Engine:        V9 
+      Physical Name: V:\studies\AS\data
+89         footnote "&pgm.";
+90         * footnote2 "%sysfunc(datetime(),datetime14.)";
+91         title1 '--- AS project ---';
+92         **********************************************************************;
+93         options macrogen mlogic mprint symbolgen;
+94         options nomacrogen nomlogic nomprint nosymbolgen;
+95         
+96         
+97         ods html
+98           body = "output\&cmt..html"
+99           style = Statistical;
+NOTE: Writing HTML Body file: output\queryPrevalentComorbiditiesControl.html
+2                                                                   The SAS System                                    17:51 Tuesday, September 5, 2017
+
+100        
+101        
+102        /*
+103        Calculate the prevalence of each comorbidity over various time intervals, by
+104        disease cohort (AS vs. non-AS). We will explore how the prevalence of each
+105        condition varies according to the amount of data available. Outcomes will be
+106        examined in discrete 12 month increments (i.e. using 12 months of data, 24
+107        months, 36 months, etc.) using the 6 months baseline plus an additional 6
+108        (1st year), 18 (1st and 2nd year), 30 (1st, 2nd, and 3rd year), etc. months
+109        of follow-up.
+110         */
+111        
+112        
+113        /*
+114        See the *Compact Outcome Definition* worksheet in `AS Project Cohort Outcome Codebook-20170410.xlsx`
+115         */
+116        
+117        
+118        /*
+119        Call interstitial lung disease macro
+120         */
+121        %include "lib\IPP_2IPSOPplusPX_ILD.sas" / source2;
+NOTE: %INCLUDE (level 1) file lib\IPP_2IPSOPplusPX_ILD.sas is file U:\studies\AS\pgms\bchan\lib\IPP_2IPSOPplusPX_ILD.sas.
+122       +/*
+123       +Interstitial lung disease;
+124       +1)  One or more diagnosis codes for ILD from primary discharge
+125       +Or
+126       +2)  (Two or more diagnosis codes for ILD from secondary discharge or physician EMM ) plus one or more diagnosis tests within 90 days prior
+126      !+to (inclusive) one of the diagnosis code for ILD
+127       +*/
+128       +%macro IPP_2IPSOPplusPX_ILD(outdata=,ids=,Dxs=, Pxs=);
+129       +*DXs=diagnosis code in followup, Pxs=CPT code in follow up;
+130       +*do not name outData as IPPILD dxIPSILD dxOPILD dxIPSOPILD pxILD dxpxIPSOPILD IPSOPILD;
+131       +
+132       +data IPPILD dxIPSILD dxOPILD;
+133       +set &dxs();
+134       +length dx1_date 4;
+135       +format dx1_date mmddyy10.;
+136       +dx1_date=min(ADMIT_DATE,  BEGIN_DATE);
+137       +
+138       +if dx in :('515','51630','51631','51632','51633','51634','51635','51636','51637',
+139       +           '5164','5165','5166','5168','5169','71481');
+140       +
+141       +if enc_type='IP' and pdx='P'
+142       +    then output IPPILD;
+143       +if enc_type='IP' and pdx ne 'P'
+144       +    then output dxIPSILD;
+145       +if enc_type not in ('IP','IF', 'OT', " ")
+146       +    then output dxOPILD;
+147       +run;
+148       +
+149       +data dxIPSOPILD; *ILD from secondary discharge or physician EMM;
+150       +set dxIPSILD dxOPILD;
+151       +run;
+152       +
+153       +data pxILD; *diagnosis tests;
+154       +set &pxs();
+155       +if (px_type='09' and px in ('8741','8742')) or
+156       +   (px_type='C1' and px in ('71250','71260','71270','71275','31625','31628',
+157       +                             '31629','31632','31633','32095','32096','32097',
+158       +                             '32098','32400','32405','32604','32606','32607',
+159       +                             '32608','32609'));
+160       +run;
+161       +proc sort data=pxILD nodupkey; by &IDS px_date;run; * drop duplicate PX date and keep only one;
+162       +
+163       +proc sql;
+164       +/*one or more diagnosis tests within 90 days prior to (inclusive) one of the diagnosis code for ILD*/
+165       +create table dxpxIPSOPILD as
+166       +select a.* , b.px_date
+167       +from dxIPSOPILD as a
+168       +    ,
+169       +     pxILD as b
+3                                                                   The SAS System                                    17:51 Tuesday, September 5, 2017
+
+170       +where a.&IDS=b.&IDS and
+171       +      min(b.ADMIT_DATE, b.BEGIN_DATE)-90<=b.px_date<=min(b.ADMIT_DATE, b.BEGIN_DATE);
+172       +
+173       +/* sencond DX code */
+174       +create table IPSOPILD as
+175       +select a.*, min(b.ADMIT_DATE, b.BEGIN_DATE) as DX2_date length=4 format mmddyy10.
+176       +from dxpxIPSOPILD as a
+177       +    ,
+178       +     dxIPSOPILD(drop=dx1_date) as b
+179       +where a.patid=b.patid and
+180       +      (a.ADMIT_DATE ne b.ADMIT_DATE and a.BEGIN_DATE ne b.BEGIN_DATE)
+181       +order by &IDS,ADMIT_DATE, BEGIN_DATE;
+182       +quit;
+183       +
+184       +
+185       +data &outData;
+186       +set IPPILD IPSOPILD;
+187       +length outcome $20 outcome_date outcome_start_date 4;
+188       +format outcome_date outcome_start_date mmddyy10.;
+189       +outcome="ILD";
+190       +outcome_date=max(dx1_date, dx2_date, px_date);
+191       +outcome_start_date=min(dx1_date, dx2_date, px_date);
+192       +drop ADMIT_DATE BEGIN_DATE DISCHARGE_DATE END_DATE;
+193       +run;
+194       +
+195       +proc sort data=&outData;
+196       +by &IDS outcome_date descending outcome_start_date descending Enc_type;
+197       +run;
+198       +
+199       +data &outData;
+200       +set &outData;
+201       +by &IDS outcome_date descending outcome_start_date;
+202       +if first.outcome_date;
+203       +run;
+204       +
+205       +proc datasets nolist;
+206       +delete IPPILD dxIPSILD dxOPILD dxIPSOPILD pxILD dxpxIPSOPILD IPSOPILD;
+207       +quit;run;
+208       +%mend IPP_2IPSOPplusPX_ILD;
+NOTE: %INCLUDE (level 1) ending.
+209        %IPP_2IPSOPplusPX_ILD(outdata = Work.outcome_ILD_MPCD,
+210                              IDS = controlID,
+211                              Dxs = UCB.tempPrevDxMPCDControl,
+212                              Pxs = UCB.tempPrevPxMPCDControl);
+
+NOTE: There were 72355341 observations read from the data set UCB.TEMPPREVDXMPCDCONTROL.
+NOTE: The data set WORK.IPPILD has 65 observations and 21 variables.
+NOTE: The data set WORK.DXIPSILD has 380 observations and 21 variables.
+NOTE: The data set WORK.DXOPILD has 49677 observations and 21 variables.
+NOTE: DATA statement used (Total process time):
+      real time           33.14 seconds
+      cpu time            32.86 seconds
+      
+
+
+NOTE: There were 380 observations read from the data set WORK.DXIPSILD.
+NOTE: There were 49677 observations read from the data set WORK.DXOPILD.
+NOTE: The data set WORK.DXIPSOPILD has 50057 observations and 21 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.07 seconds
+      cpu time            0.03 seconds
+      
+
+
+NOTE: There were 168458870 observations read from the data set UCB.TEMPPREVPXMPCDCONTROL.
+NOTE: The data set WORK.PXILD has 328143 observations and 18 variables.
+NOTE: DATA statement used (Total process time):
+      real time           45.42 seconds
+      cpu time            45.13 seconds
+      
+
+
+4                                                                   The SAS System                                    17:51 Tuesday, September 5, 2017
+
+NOTE: There were 328143 observations read from the data set WORK.PXILD.
+NOTE: 65698 observations with duplicate key values were deleted.
+NOTE: The data set WORK.PXILD has 262445 observations and 18 variables.
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           0.42 seconds
+      cpu time            0.34 seconds
+      
+
+NOTE: Table WORK.DXPXIPSOPILD created, with 132602 rows and 22 columns.
+
+NOTE: Table WORK.IPSOPILD created, with 12278 rows and 23 columns.
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           1.01 seconds
+      cpu time            0.78 seconds
+      
+
+
+NOTE: There were 65 observations read from the data set WORK.IPPILD.
+NOTE: There were 12278 observations read from the data set WORK.IPSOPILD.
+NOTE: The data set WORK.OUTCOME_ILD_MPCD has 12343 observations and 22 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.07 seconds
+      cpu time            0.01 seconds
+      
+
+
+NOTE: There were 12343 observations read from the data set WORK.OUTCOME_ILD_MPCD.
+NOTE: The data set WORK.OUTCOME_ILD_MPCD has 12343 observations and 22 variables.
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           0.06 seconds
+      cpu time            0.01 seconds
+      
+
+
+NOTE: There were 12343 observations read from the data set WORK.OUTCOME_ILD_MPCD.
+NOTE: The data set WORK.OUTCOME_ILD_MPCD has 301 observations and 22 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.06 seconds
+      cpu time            0.03 seconds
+      
+
+
+NOTE: Deleting WORK.IPPILD (memtype=DATA).
+NOTE: Deleting WORK.DXIPSILD (memtype=DATA).
+NOTE: Deleting WORK.DXOPILD (memtype=DATA).
+NOTE: Deleting WORK.DXIPSOPILD (memtype=DATA).
+NOTE: Deleting WORK.PXILD (memtype=DATA).
+NOTE: Deleting WORK.DXPXIPSOPILD (memtype=DATA).
+NOTE: Deleting WORK.IPSOPILD (memtype=DATA).
+NOTE: PROCEDURE DATASETS used (Total process time):
+      real time           0.04 seconds
+      cpu time            0.04 seconds
+      
+
+213        /* %IPP_2IPSOPplusPX_ILD(outdata = Work.outcome_ILD_SABR,
+214                              IDS = controlID,
+215                              Dxs = UCB.tempPrevDxSABRControl,
+216                              Pxs = UCB.tempPrevPxSABRControl); */
+217        
+218        /*
+219        Process fracture episodes data set
+220         */
+221        proc sql;
+222          create table Work.fractures as
+223            select database,
+224                   cohort,
+225                   patid,
+226                   indexDate,
+227                   controlID,
+228                   age,
+229                   sex,
+5                                                                   The SAS System                                    17:51 Tuesday, September 5, 2017
+
+230                   "Osteoporotic fracture" as outcomeCategory,
+231                   fractureType as disease,
+232                   fractureEpisodeStart as begin_date
+233            from DT.fractureEpisodesPrevControl
+234            where ^missing(fractureType);
+NOTE: Table WORK.FRACTURES created, with 77286 rows and 10 columns.
+
+235        quit;
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.31 seconds
+      cpu time            0.12 seconds
+      
+
+236        
+237        
+238        
+239        
+240        proc sql;
+241        
+242          create table Work.defOutcomes as
+243            select *
+244            from DT.defOutcomes
+245            where disease ^in ("Interstitial lung disease");
+NOTE: Table WORK.DEFOUTCOMES created, with 2664 rows and 6 columns.
+
+246        
+247          %let select1 = select A.*, B.outcomeCategory, B.disease;
+248          %let join1 = inner join Work.defOutcomes B on (A.codeType = B.codeType & A.code = B.code);
+249          %let where1a = where B.disease ^in ("Myocardial infarction", "Hospitalized infection");
+250          %let where1b = | (B.disease in ("Myocardial infarction", "Hospitalized infection") & A.enc_type = "IP");
+251          %let select2 = select database, cohort, patid, indexDate, controlID, enc_type, age, sex, "Lung disease" as outcomeCategory, "Interstitial
+251      !  lung disease" as disease, outcome_start_date as begin_date;
+252          create table DT.comorbiditiesControl as
+253            select C.database, C.cohort, C.patid, C.indexDate, C.controlID, C.age, C.sex,
+254                   C.outcomeCategory,
+255                   C.disease,
+256                   sum(C.begin_date <= C.indexDate) > 0 as indPrevPriorToIndex,
+257                   sum(0 <= C.indexDate  - C.begin_date <= 183 |
+258                       0 <= C.begin_date - C.indexDate  <= (183 * 1)) > 0 as indPrev12mo,
+259                   sum(0 <= C.indexDate  - C.begin_date <= 183 |
+260                       0 <= C.begin_date - C.indexDate  <= (183 * 3)) > 0 as indPrev24mo,
+261                   sum(0 <= C.indexDate  - C.begin_date <= 183 |
+262                       0 <= C.begin_date - C.indexDate  <= (183 * 5)) > 0 as indPrev36mo
+263            from (&select1 from UCB.tempPrevDxMPCDControl A &join1 &where1a &where1b union corr
+264                  /* &select1 from UCB.tempPrevDxSABRControl A &join1 &where1a &where1b union corr */
+265                  &select1 from UCB.tempPrevPxMPCDControl A &join1 &where1a union corr
+266                  /* &select1 from UCB.tempPrevPxSABRControl A &join1 &where1a union corr */
+267                  &select2 from Work.outcome_ILD_MPCD union corr
+268                  /* &select2 from Work.outcome_ILD_SABR union corr */
+269                  select * from Work.fractures) C
+270            group by C.database, C.cohort, C.patid, C.indexDate, C.controlID, C.age, C.sex,
+271                     C.outcomeCategory,
+272                     C.disease
+273            having calculated indPrevPriorToIndex > 0 |
+274                   calculated indPrev12mo > 0 |
+275                   calculated indPrev24mo > 0 |
+276                   calculated indPrev36mo > 0;
+NOTE: Table DT.COMORBIDITIESCONTROL created, with 378428 rows and 13 columns.
+
+277        
+278          create table Work.denominator as
+279            select database,
+280                   cohort,
+281                   /* mean(indexDate - ASCohortDate) as meanDaysASCohortToExposure,
+282                   min(indexDate - ASCohortDate) as minDaysASCohortToExposure,
+283                   max(indexDate - ASCohortDate) as maxDaysASCohortToExposure, */
+284                   count(distinct patid) as denomPatid,
+285                   count(distinct controlID) as denomControlCohort
+286            from DT.controlLookup
+287            group by database, cohort;
+NOTE: Table WORK.DENOMINATOR created, with 2 rows and 4 columns.
+
+6                                                                   The SAS System                                    17:51 Tuesday, September 5, 2017
+
+288        
+289          create table Work.prev as
+290            select A.database, A.cohort, A.outcomeCategory, A.disease,
+291                   B.denomPatid,
+292                   B.denomControlCohort,
+293                   "Prior to index" as timeWindow,
+294                   sum(A.indPrevPriorToIndex) as numer,
+295                   sum(A.indPrevPriorToIndex) / B.denomControlCohort * 100 as prevPct
+296            from DT.comorbiditiesControl A inner join
+297                 Work.denominator B on (A.database = B.database & A.cohort = B.cohort)
+298            group by A.database, A.cohort, A.outcomeCategory, A.disease, B.denomPatid, B.denomControlCohort
+299            union corr
+300            select A.database, A.cohort, A.outcomeCategory, A.disease,
+301                   B.denomPatid,
+302                   B.denomControlCohort,
+303                   "12 months" as timeWindow,
+304                   sum(A.indPrev12mo) as numer,
+305                   sum(A.indPrev12mo) / B.denomControlCohort * 100 as prevPct
+306            from DT.comorbiditiesControl A inner join
+307                 Work.denominator B on (A.database = B.database & A.cohort = B.cohort)
+308            group by A.database, A.cohort, A.outcomeCategory, A.disease, B.denomPatid, B.denomControlCohort
+309            union corr
+310            select A.database, A.cohort, A.outcomeCategory, A.disease,
+311                   B.denomPatid,
+312                   B.denomControlCohort,
+313                   "24 months" as timeWindow,
+314                   sum(A.indPrev24mo) as numer,
+315                   sum(A.indPrev24mo) / B.denomControlCohort * 100 as prevPct
+316            from DT.comorbiditiesControl A inner join
+317                 Work.denominator B on (A.database = B.database & A.cohort = B.cohort)
+318            group by A.database, A.cohort, A.outcomeCategory, A.disease, B.denomPatid, B.denomControlCohort
+319            union corr
+320            select A.database, A.cohort, A.outcomeCategory, A.disease,
+321                   B.denomPatid,
+322                   B.denomControlCohort,
+323                   "36 months" as timeWindow,
+324                   sum(A.indPrev36mo) as numer,
+325                   sum(A.indPrev36mo) / B.denomControlCohort * 100 as prevPct
+326            from DT.comorbiditiesControl A inner join
+327                 Work.denominator B on (A.database = B.database & A.cohort = B.cohort)
+328            group by A.database, A.cohort, A.outcomeCategory, A.disease, B.denomPatid, B.denomControlCohort;
+NOTE: Table WORK.PREV created, with 92 rows and 9 columns.
+
+329          select * from Work.prev;
+                                                                  --- AS project ---                              17:51 Tuesday, September 5, 2017   1
+
+                                                                                                            denom
+                                                                                                          Control
+database  cohort  Disease Category            Disease                                    denomPatid        Cohort  timeWindow         numer   prevPct
+-----------------------------------------------------------------------------------------------------------------------------------------------------
+MPCD      Non-AS  Cancer                      Hematologic Cancer                            1139225       1139225  12 months           4681  0.410893
+MPCD      Non-AS  Cancer                      Hematologic Cancer                            1139225       1139225  24 months           8048  0.706445
+MPCD      Non-AS  Cancer                      Hematologic Cancer                            1139225       1139225  36 months          10496  0.921328
+MPCD      Non-AS  Cancer                      Hematologic Cancer                            1139225       1139225  Prior to index      3369  0.295727
+MPCD      Non-AS  Cancer                      Non Melanoma Skin Cancer                      1139225       1139225  12 months              6  0.000527
+MPCD      Non-AS  Cancer                      Non Melanoma Skin Cancer                      1139225       1139225  24 months              7  0.000614
+MPCD      Non-AS  Cancer                      Non Melanoma Skin Cancer                      1139225       1139225  36 months              7  0.000614
+MPCD      Non-AS  Cancer                      Non Melanoma Skin Cancer                      1139225       1139225  Prior to index         4  0.000351
+MPCD      Non-AS  Cancer                      Solid Cancer                                  1139225       1139225  12 months          31774  2.789089
+MPCD      Non-AS  Cancer                      Solid Cancer                                  1139225       1139225  24 months          51175  4.492089
+MPCD      Non-AS  Cancer                      Solid Cancer                                  1139225       1139225  36 months          64326   5.64647
+MPCD      Non-AS  Cancer                      Solid Cancer                                  1139225       1139225  Prior to index     23524  2.064913
+MPCD      Non-AS  Cardiac disease             Aortic Insufficiency/Aortic Regurgitation     1139225       1139225  12 months           8908  0.781935
+MPCD      Non-AS  Cardiac disease             Aortic Insufficiency/Aortic Regurgitation     1139225       1139225  24 months          15381  1.350128
+MPCD      Non-AS  Cardiac disease             Aortic Insufficiency/Aortic Regurgitation     1139225       1139225  36 months          20239  1.776559
+MPCD      Non-AS  Cardiac disease             Aortic Insufficiency/Aortic Regurgitation     1139225       1139225  Prior to index      6642  0.583028
+MPCD      Non-AS  Cardiac disease             Conduction Block                              1139225       1139225  12 months           5886  0.516667
+MPCD      Non-AS  Cardiac disease             Conduction Block                              1139225       1139225  24 months          11257  0.988128
+MPCD      Non-AS  Cardiac disease             Conduction Block                              1139225       1139225  36 months          15451  1.356273
+MPCD      Non-AS  Cardiac disease             Conduction Block                              1139225       1139225  Prior to index      4195  0.368233
+MPCD      Non-AS  Cardiac disease             Myocardial infarction                         1139225       1139225  12 months            120  0.010533
+MPCD      Non-AS  Cardiac disease             Myocardial infarction                         1139225       1139225  24 months            227  0.019926
+MPCD      Non-AS  Cardiac disease             Myocardial infarction                         1139225       1139225  36 months            290  0.025456
+MPCD      Non-AS  Cardiac disease             Myocardial infarction                         1139225       1139225  Prior to index        88  0.007725
+MPCD      Non-AS  Infection                   Hospitalized infection                        1139225       1139225  12 months           1221  0.107178
+MPCD      Non-AS  Infection                   Hospitalized infection                        1139225       1139225  24 months           1968  0.172749
+MPCD      Non-AS  Infection                   Hospitalized infection                        1139225       1139225  36 months           2473  0.217077
+MPCD      Non-AS  Infection                   Hospitalized infection                        1139225       1139225  Prior to index      1054  0.092519
+MPCD      Non-AS  Infection                   Opportunistic infection                       1139225       1139225  12 months           3845   0.33751
+MPCD      Non-AS  Infection                   Opportunistic infection                       1139225       1139225  24 months           7258    0.6371
+MPCD      Non-AS  Infection                   Opportunistic infection                       1139225       1139225  36 months          10048  0.882003
+MPCD      Non-AS  Infection                   Opportunistic infection                       1139225       1139225  Prior to index      2564  0.225065
+MPCD      Non-AS  Inflammatory bowel disease  Crohn’s Disease                               1139225       1139225  12 months          21713  1.905945
+MPCD      Non-AS  Inflammatory bowel disease  Crohn’s Disease                               1139225       1139225  24 months          30056  2.638285
+MPCD      Non-AS  Inflammatory bowel disease  Crohn’s Disease                               1139225       1139225  36 months          34518  3.029955
+MPCD      Non-AS  Inflammatory bowel disease  Crohn’s Disease                               1139225       1139225  Prior to index     15903  1.395949
+MPCD      Non-AS  Inflammatory bowel disease  Ulcerative Colitis                            1139225       1139225  12 months          21123  1.854155
+MPCD      Non-AS  Inflammatory bowel disease  Ulcerative Colitis                            1139225       1139225  24 months          31795  2.790932
+MPCD      Non-AS  Inflammatory bowel disease  Ulcerative Colitis                            1139225       1139225  36 months          37981  3.333933
+MPCD      Non-AS  Inflammatory bowel disease  Ulcerative Colitis                            1139225       1139225  Prior to index     14537  1.276043
+MPCD      Non-AS  Kidney disease              Amyloidosis                                   1139225       1139225  12 months            193  0.016941
+MPCD      Non-AS  Kidney disease              Amyloidosis                                   1139225       1139225  24 months            462  0.040554
+MPCD      Non-AS  Kidney disease              Amyloidosis                                   1139225       1139225  36 months            697  0.061182
+MPCD      Non-AS  Kidney disease              Amyloidosis                                   1139225       1139225  Prior to index       108   0.00948
+MPCD      Non-AS  Kidney disease              IgA nephropathy                               1139225       1139225  12 months            552  0.048454
+MPCD      Non-AS  Kidney disease              IgA nephropathy                               1139225       1139225  24 months            938  0.082337
+MPCD      Non-AS  Kidney disease              IgA nephropathy                               1139225       1139225  36 months           1222  0.107266
+MPCD      Non-AS  Kidney disease              IgA nephropathy                               1139225       1139225  Prior to index       413  0.036253
+MPCD      Non-AS  Kidney disease              Nephrotic syndrome                            1139225       1139225  12 months            255  0.022384
+MPCD      Non-AS  Kidney disease              Nephrotic syndrome                            1139225       1139225  24 months            470  0.041256
+MPCD      Non-AS  Kidney disease              Nephrotic syndrome                            1139225       1139225  36 months            601  0.052755
+MPCD      Non-AS  Kidney disease              Nephrotic syndrome                            1139225       1139225  Prior to index       216   0.01896
+MPCD      Non-AS  Lung disease                Apical Pulmonary fibrosis                     1139225       1139225  12 months             79  0.006935
+MPCD      Non-AS  Lung disease                Apical Pulmonary fibrosis                     1139225       1139225  24 months            145  0.012728
+MPCD      Non-AS  Lung disease                Apical Pulmonary fibrosis                     1139225       1139225  36 months            206  0.018082
+MPCD      Non-AS  Lung disease                Apical Pulmonary fibrosis                     1139225       1139225  Prior to index        46  0.004038
+MPCD      Non-AS  Lung disease                Interstitial lung disease                     1139225       1139225  12 months             31  0.002721
+MPCD      Non-AS  Lung disease                Interstitial lung disease                     1139225       1139225  24 months             56  0.004916
+MPCD      Non-AS  Lung disease                Interstitial lung disease                     1139225       1139225  36 months             62  0.005442
+MPCD      Non-AS  Lung disease                Interstitial lung disease                     1139225       1139225  Prior to index        29  0.002546
+MPCD      Non-AS  Lung disease                Restrictive lung disease                      1139225       1139225  12 months           6119   0.53712
+MPCD      Non-AS  Lung disease                Restrictive lung disease                      1139225       1139225  24 months          11634  1.021221
+MPCD      Non-AS  Lung disease                Restrictive lung disease                      1139225       1139225  36 months          15781   1.38524
+MPCD      Non-AS  Lung disease                Restrictive lung disease                      1139225       1139225  Prior to index      4220  0.370427
+MPCD      Non-AS  Neurological Disease        Cauda Equina syndrome                         1139225       1139225  12 months             54   0.00474
+MPCD      Non-AS  Neurological Disease        Cauda Equina syndrome                         1139225       1139225  24 months            113  0.009919
+ 
+                                                        queryPrevalentComorbiditiesControl.sas
+                                                                  --- AS project ---                              17:51 Tuesday, September 5, 2017   2
+
+                                                                                                            denom
+                                                                                                          Control
+database  cohort  Disease Category            Disease                                    denomPatid        Cohort  timeWindow         numer   prevPct
+-----------------------------------------------------------------------------------------------------------------------------------------------------
+MPCD      Non-AS  Neurological Disease        Cauda Equina syndrome                         1139225       1139225  36 months            154  0.013518
+MPCD      Non-AS  Neurological Disease        Cauda Equina syndrome                         1139225       1139225  Prior to index        42  0.003687
+MPCD      Non-AS  Neurological Disease        Spinal Cord compression                       1139225       1139225  12 months            423  0.037131
+MPCD      Non-AS  Neurological Disease        Spinal Cord compression                       1139225       1139225  24 months            793  0.069609
+MPCD      Non-AS  Neurological Disease        Spinal Cord compression                       1139225       1139225  36 months           1079  0.094714
+MPCD      Non-AS  Neurological Disease        Spinal Cord compression                       1139225       1139225  Prior to index       296  0.025983
+MPCD      Non-AS  Osteoporotic fracture       Clinical vertebral fracture                   1139225       1139225  12 months           3989   0.35015
+MPCD      Non-AS  Osteoporotic fracture       Clinical vertebral fracture                   1139225       1139225  24 months           7873  0.691084
+MPCD      Non-AS  Osteoporotic fracture       Clinical vertebral fracture                   1139225       1139225  36 months          11040   0.96908
+MPCD      Non-AS  Osteoporotic fracture       Clinical vertebral fracture                   1139225       1139225  Prior to index      3045  0.267287
+MPCD      Non-AS  Osteoporotic fracture       Non-vertebral osteoporotic fracture           1139225       1139225  12 months          11336  0.995062
+MPCD      Non-AS  Osteoporotic fracture       Non-vertebral osteoporotic fracture           1139225       1139225  24 months          22261  1.954048
+MPCD      Non-AS  Osteoporotic fracture       Non-vertebral osteoporotic fracture           1139225       1139225  36 months          30838  2.706928
+MPCD      Non-AS  Osteoporotic fracture       Non-vertebral osteoporotic fracture           1139225       1139225  Prior to index      8449  0.741645
+MPCD      Non-AS  PsO/PsA                     Psoriasis                                     1139225       1139225  12 months          47825  4.198029
+MPCD      Non-AS  PsO/PsA                     Psoriasis                                     1139225       1139225  24 months          71429  6.269964
+MPCD      Non-AS  PsO/PsA                     Psoriasis                                     1139225       1139225  36 months          84205  7.391428
+MPCD      Non-AS  PsO/PsA                     Psoriasis                                     1139225       1139225  Prior to index     33212  2.915315
+MPCD      Non-AS  PsO/PsA                     Psoriatic arthritis                           1139225       1139225  12 months          10408  0.913604
+MPCD      Non-AS  PsO/PsA                     Psoriatic arthritis                           1139225       1139225  24 months          14643  1.285347
+MPCD      Non-AS  PsO/PsA                     Psoriatic arthritis                           1139225       1139225  36 months          17232  1.512607
+MPCD      Non-AS  PsO/PsA                     Psoriatic arthritis                           1139225       1139225  Prior to index      7755  0.680726
+MPCD      Non-AS  Uveitis                     Uveitis                                       1139225       1139225  12 months           1849  0.162303
+MPCD      Non-AS  Uveitis                     Uveitis                                       1139225       1139225  24 months           3151  0.276592
+MPCD      Non-AS  Uveitis                     Uveitis                                       1139225       1139225  36 months           3991  0.350326
+MPCD      Non-AS  Uveitis                     Uveitis                                       1139225       1139225  Prior to index      1262  0.110777
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+                                                        queryPrevalentComorbiditiesControl.sas
+330        quit;
+NOTE: The PROCEDURE SQL printed pages 1-2.
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           48.36 seconds
+      cpu time            1:45.53
+      
+
+331        
+332        
+333        proc export
+334          data = Work.prev
+335          outfile = "data\processed\&cmt..csv"
+336          dbms = csv
+337          replace;
+338          delimiter = ",";
+339        run;
+
+340         /**********************************************************************
+341         *   PRODUCT:   SAS
+342         *   VERSION:   9.4
+343         *   CREATOR:   External File Interface
+344         *   DATE:      05SEP17
+345         *   DESC:      Generated SAS Datastep Code
+346         *   TEMPLATE SOURCE:  (None Specified.)
+347         ***********************************************************************/
+348            data _null_;
+349            %let _EFIERR_ = 0; /* set the ERROR detection macro variable */
+350            %let _EFIREC_ = 0;     /* clear export record count macro variable */
+7                                                                   The SAS System                                    17:51 Tuesday, September 5, 2017
+
+351            file 'data\processed\queryPrevalentComorbiditiesControl.csv' delimiter=',' DSD DROPOVER lrecl=32767;
+352            if _n_ = 1 then        /* write column names or labels */
+353             do;
+354               put
+355                  "database"
+356               ','
+357                  "cohort"
+358               ','
+359                  "outcomeCategory"
+360               ','
+361                  "Disease"
+362               ','
+363                  "denomPatid"
+364               ','
+365                  "denomControlCohort"
+366               ','
+367                  "timeWindow"
+368               ','
+369                  "numer"
+370               ','
+371                  "prevPct"
+372               ;
+373             end;
+374           set  WORK.PREV   end=EFIEOD;
+375               format database $8. ;
+376               format cohort $6. ;
+377               format outcomeCategory $26. ;
+378               format Disease $41. ;
+379               format denomPatid best12. ;
+380               format denomControlCohort best12. ;
+381               format timeWindow $14. ;
+382               format numer best12. ;
+383               format prevPct best12. ;
+384             do;
+385               EFIOUT + 1;
+386               put database $ @;
+387               put cohort $ @;
+388               put outcomeCategory $ @;
+389               put Disease $ @;
+390               put denomPatid @;
+391               put denomControlCohort @;
+392               put timeWindow $ @;
+393               put numer @;
+394               put prevPct ;
+395               ;
+396             end;
+397            if _ERROR_ then call symputx('_EFIERR_',1);  /* set ERROR detection macro variable */
+398            if EFIEOD then call symputx('_EFIREC_',EFIOUT);
+399            run;
+
+NOTE: The file 'data\processed\queryPrevalentComorbiditiesControl.csv' is:
+      Filename=U:\studies\AS\pgms\bchan\data\processed\queryPrevalentComorbiditiesControl.csv,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=05Sep2017:17:53:48,
+      Create Time=05Sep2017:17:53:48
+
+NOTE: 93 records were written to the file 'data\processed\queryPrevalentComorbiditiesControl.csv'.
+      The minimum record length was 71.
+      The maximum record length was 118.
+NOTE: There were 92 observations read from the data set WORK.PREV.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+      
+
+92 records created in data\processed\queryPrevalentComorbiditiesControl.csv from WORK.PREV.
+  
+  
+NOTE: "data\processed\queryPrevalentComorbiditiesControl.csv" file was successfully created.
+NOTE: PROCEDURE EXPORT used (Total process time):
+      real time           0.49 seconds
+      cpu time            0.04 seconds
+8                                                                   The SAS System                                    17:51 Tuesday, September 5, 2017
+
+      
+
+400        
+401        
+402        ods html close;
+NOTE: SAS Institute Inc., SAS Campus Drive, Cary, NC USA 27513-2414
+NOTE: The SAS System used:
+      real time           2:10.02
+      cpu time            3:05.25
+      
