@@ -9,6 +9,7 @@ sink("script.log")
 files <- c("header.yaml",
            "preamble.Rmd",
            "summarizePrevalence.Rmd",
+           "summarizePrevalenceControl.Rmd",
            "summarizeIncidence.Rmd",
            "abstractACR2017.Rmd")
 f <- file("master.Rmd", open = "w")

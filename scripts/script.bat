@@ -4,12 +4,18 @@ del ..\data\processed\* /q
 call :execute contentsSourceDatasets
 call :execute importOutcomeCodebook
 call :execute buildIndexLookup
+call :execute buildControlLookup
 call :execute buildExposureFollowUp
 call :execute reproduceTables2
 call :execute buildServiceCodeDatasets
+call :execute buildServiceCodeDatasetsControl
 call :execute queryFractures
+call :execute queryFracturesControl
 call :execute queryPrevalentComorbidities
+call :execute queryPrevalentComorbiditiesControl
 call :execute queryIncidenceOutcomes
+call :execute queryOtherComorbidities
+rem call :execute modelPropensityScore
 call :execute contentsWorkingDatasets
 
 "C:\Program Files\7-Zip\7z.exe" d ..\output.zip ..\output\*

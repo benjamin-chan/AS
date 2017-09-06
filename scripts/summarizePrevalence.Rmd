@@ -1,4 +1,4 @@
-# Summarize prevalence
+# Summarize prevalence, AS cohort
 
 ```
 From: Curtis, Jeffrey R [mailto:jrcurtis@uabmc.edu] 
@@ -15,12 +15,67 @@ This would be the same format for Aim II that provides the corresponding
 information with each column representing the exposure episodes.
 ```
 
+
+## Overall for the AS cohort
+
 Read prevalence data.
 See `queryPrevalentComorbidities.sas`.
 
 ```{r}
 df <-
-  "../data/processed/queryPrevalentComorbidities.csv" %>% 
+  "../data/processed/queryPrevalentComorbiditiesOverall.csv" %>% 
+  read.csv(file = ., na.string = c("NA", "")) %>% 
+  rename(disease = Disease)
+df %>% 
+  select(c(database, denomPatid, denomIndexExp)) %>% 
+  unique %>% 
+  kable
+```
+
+Table of **prevalence %**
+
+```{r}
+foo <- function(db) {
+    col <- which(names(df) %in% c("database", "outcomeCategory", "timeWindow", "disease", "prevPct"))
+    df %>% 
+      filter(timeWindow == "12 months") %>% 
+      filter(database == db) %>% 
+      select(col)
+}
+df1a <- foo("MPCD")
+df2a <- foo("Marketscan")
+df3a <- foo("Medicare")
+by <- c("database", "outcomeCategory", "disease", "timeWindow")
+prev <- 
+  merge(df1a, 
+        merge(df2a,
+              df3a,
+              by = by[2:length(by)],
+              all = TRUE,
+              suffixes = c("_Marketscan", "_Medicare")),
+        by = by[2:length(by)],
+        all = TRUE) %>% 
+  rename(prevPct_MPCD = prevPct) %>%
+  select(c(outcomeCategory, disease, timeWindow,
+           prevPct_MPCD,
+           prevPct_Marketscan,
+           prevPct_Medicare)) %>% 
+  rename("MPCD AS cohort" = prevPct_MPCD,
+         "Marketscan AS cohort" = prevPct_Marketscan,
+         "Medicare AS cohort" = prevPct_Medicare)
+prev %>% kable(digits = 1)
+prev %>% write.csv(file = "../data/processed/prevalenceOverall.csv", row.names = FALSE, na = "0")
+```
+
+
+## By exposure
+
+Read prevalence data.
+See `queryPrevalentComorbidities.sas`.
+
+```{r}
+df <-
+  "../data/processed/queryPrevalentComorbiditiesByExposure.csv" %>% 
   read.csv(file = ., na.string = c("NA", "")) %>% 
   rename(disease = Disease)
 df %>% 
@@ -85,5 +140,5 @@ prev <-
          "Medicare DMARD" = prevPct_DMARD_Medicare,
          "Medicare TNF" = prevPct_TNF_Medicare)
 prev %>% kable(digits = 1)
-prev %>% write.csv(file = "../data/processed/prevalence.csv", row.names = FALSE)
+prev %>% write.csv(file = "../data/processed/prevalenceByExposure.csv", row.names = FALSE, na = "0")
 ```
