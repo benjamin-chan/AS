@@ -177,7 +177,7 @@ quit;
 
 proc export
   data = Work.prev
-  outfile = "data\processed\&cmt..csv"
+  outfile = "data\processed\&cmt.ByExposure.csv"
   dbms = csv
   replace;
   delimiter = ",";
