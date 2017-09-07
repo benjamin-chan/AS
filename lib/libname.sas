@@ -3,13 +3,16 @@ Medicare 5% Sample
 2006-2014
 (data can track back to 1999, but only use from 2006 in this project)
  */
-libname ccw5std spde "h:\studies\osteo\data\CDM\5pct"
-                 datapath=("h:\studies\osteo\data\CDM\5pct"
-                           "j:\studies\osteo\data\CDM\5pct"
-                           "k:\studies\osteo\data\CDM\5pct"
-                           "l:\studies\osteo\data\CDM\5pct")
-                 indexpath=("i:\studies\osteo\data\CDM\5pct"
-                            "m:\studies\osteo\data\CDM\5pct");
+libname stdc5p spde "H:\studies\osteo\data\STD_files\5pct"
+                 datapath=("J:\studies\osteo\data\STD_files\5pct"
+                           "K:\studies\osteo\data\STD_files\5pct"
+                           "L:\studies\osteo\data\STD_files\5pct"
+                           "M:\studies\osteo\data\STD_files\5pct"
+                           "O:\studies\osteo\data\STD_files\5pct"
+                           "P:\studies\osteo\data\STD_files\5pct")
+                 indexpath=("I:\studies\osteo\data\STD_files\5pct"
+                            "M:\studies\osteo\data\STD_files\5pct")
+                   compress=binary;
 /* 
 Medicare SABER2 
 2006-2014 
