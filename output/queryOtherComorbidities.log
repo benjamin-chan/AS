@@ -1,0 +1,156 @@
+1                                                          The SAS System                          09:28 Thursday, September 7, 2017
+
+NOTE: Copyright (c) 2002-2012 by SAS Institute Inc., Cary, NC, USA. 
+NOTE: SAS (r) Proprietary Software 9.4 (TS1M1) 
+      Licensed to UNIVERSITY OF ALABAMA AT BIRMINGHAM - SFA - T&R, Site 70058223.
+NOTE: This session is executing on the W32_ES08R2  platform.
+
+
+
+NOTE: Updated analytical products:
+      
+      SAS/STAT 13.1
+      SAS/ETS 13.1
+      SAS/OR 13.1
+      SAS/IML 13.1
+      SAS/QC 13.1
+
+NOTE: Additional host information:
+
+ W32_ES08R2 WIN 6.1.7601 Service Pack 1 Server
+
+--- PEER News and Updates ---
+
+: SECURITY REMINDER :
+Please remember not to copy any data files that contain PHI (protected health identifiers) to any of the shared folders.
+
+ 
+
+
+NOTE: SAS initialization used:
+      real time           0.13 seconds
+      cpu time            0.07 seconds
+      
+1          *  University of Alabama at Birmingham                               *
+2          *  AS project                                            *
+3          **********************************************************************;
+4          options pagesize=74 linesize=150 pageno=1 missing=' ' date FORMCHAR="|----|+|---+=|-/\<>*";
+5          * Programmer    : Benjamin Chan <chanb@ohsu.edu>
+6          * Creation date :
+7          * Modify date   :
+8          ;
+9          %let cmt=queryOtherComorbidities; * type the name of your program here (without the filename extension);
+10         %let pgm=&cmt..sas;
+11         %include "lib\libname.sas" ;
+NOTE: Libref CCW5STD was successfully assigned as follows: 
+      Engine:        SPDE 
+      Physical Name: h:\studies\osteo\data\CDM\5pct\
+NOTE: Libref STD_SABR was successfully assigned as follows: 
+      Engine:        SPDE 
+      Physical Name: q:\data\std_SABER\
+NOTE: Libref MPSTD was successfully assigned as follows: 
+      Engine:        SPDE 
+      Physical Name: h:\studies\mpcd\data\stddata\
+NOTE: Libref UCBSTD was successfully assigned as follows: 
+      Engine:        SPDE 
+      Physical Name: q:\studies\AS\data\stddata\
+NOTE: Libref UCB was successfully assigned as follows: 
+      Engine:        SPDE 
+      Physical Name: q:\studies\AS\data\UCB\
+NOTE: Libref DT was successfully assigned as follows: 
+      Engine:        V9 
+      Physical Name: V:\studies\AS\data
+89         footnote "&pgm.";
+90         * footnote2 "%sysfunc(datetime(),datetime14.)";
+91         title1 '--- AS project ---';
+92         **********************************************************************;
+93         options macrogen mlogic mprint symbolgen;
+94         options nomacrogen nomlogic nomprint nosymbolgen;
+95         
+96         
+97         ods html
+98           body = "output\&cmt..html"
+99           style = Statistical;
+NOTE: Writing HTML Body file: output\queryOtherComorbidities.html
+2                                                                   The SAS System                                   09:28 Thursday, September 7, 2017
+
+100        
+101        
+102        
+103        
+104        proc import out = Work.comorbidityLookup
+105                    datafile = "U:\studies\AS\pgms\bchan\data\raw\AS Project Codebooks - 20170410\AS Project Covariates Codebook-20170410.xlsx"
+106                    dbms = xlsx
+107                    replace;
+108          sheet = "Comorbidity";
+109          getnames = yes;
+110          datarow = 2;
+111        run;
+
+NOTE:    Variable Name Change.  Compact Definion -> Compact_Definion                
+NOTE: The import data set has 1112 observations and 6 variables.
+NOTE: WORK.COMORBIDITYLOOKUP data set was successfully created.
+NOTE: PROCEDURE IMPORT used (Total process time):
+      real time           0.32 seconds
+      cpu time            0.21 seconds
+      
+
+112        proc sql;
+113          alter table Work.comorbidityLookup
+114            add code varchar;
+NOTE: Table WORK.COMORBIDITYLOOKUP has been modified, with 7 columns.
+115          update Work.comorbidityLookup
+116            set code = dequote(icd9_list);
+NOTE: 1112 rows were updated in WORK.COMORBIDITYLOOKUP.
+
+117          alter table Work.comorbidityLookup
+118            drop compact_definion, icd9_list, billable, description, F;
+NOTE: Table WORK.COMORBIDITYLOOKUP has been modified, with 2 columns.
+119          delete from Work.comorbidityLookup
+120            where missing(code);
+NOTE: 1009 rows were deleted from WORK.COMORBIDITYLOOKUP.
+
+121        quit;
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.10 seconds
+      cpu time            0.03 seconds
+      
+
+122        
+123        
+124        proc sql;
+125        
+126          %let select1 = select A.*, B.comorbidity;
+127          %let join1 = inner join Work.comorbidityLookup B on (A.code = B.code);
+128          create table DT.comorbiditiesOther as
+129            select distinct
+130                   C.database, C.exposure, C.patid, C.ASCohortDate, C.indexGNN, C.indexDate, C.indexID,
+131                   C.age, C.sex,
+132                   C.comorbidity,
+133                   1 as indPreExposure
+134            from (&select1 from UCB.tempPrevDxMPCD A &join1 union corr
+135                  &select1 from UCB.tempPrevDxUCB  A &join1 union corr
+136                  &select1 from UCB.tempPrevDxSABR A &join1 ) C;
+NOTE: Parallel WHERE evaluation suppressed due to sort order on table.
+NOTE: Parallel WHERE evaluation suppressed due to sort order on table.
+NOTE: Table DT.COMORBIDITIESOTHER created, with 60278 rows and 11 columns.
+
+137        
+138        quit;
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           57.94 seconds
+      cpu time            1:03.30
+      
+
+139        
+140        
+141        
+142        
+3                                                                   The SAS System                                   09:28 Thursday, September 7, 2017
+
+143        ods html close;
+NOTE: SAS Institute Inc., SAS Campus Drive, Cary, NC USA 27513-2414
+NOTE: The SAS System used:
+      real time           58.82 seconds
+      cpu time            1:03.83
+      

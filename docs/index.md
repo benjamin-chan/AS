@@ -1,6 +1,6 @@
 ---
 title: "Comorbidities and Disease Manifestations in Ankylosing Spondylitis (BAD AS)"
-date: "2017-09-06 13:04:01"
+date: "2017-09-07 09:06:24"
 author: Benjamin Chan (chanb@ohsu.edu)
 output:
   html_document:
@@ -114,7 +114,7 @@ Source user-defined functions.
 ##     url = {https://CRAN.R-project.org/package=epitools},
 ##   }
 ```
-# Summarize prevalence
+# Summarize prevalence, AS cohort
 
 ```
 From: Curtis, Jeffrey R [mailto:jrcurtis@uabmc.edu] 
@@ -163,7 +163,7 @@ Table of **prevalence %**
 |Kidney disease             |IgA nephropathy                           |12 months  |            0.2|                  0.0|                0.2|
 |Kidney disease             |Nephrotic syndrome                        |12 months  |             NA|                  0.0|                0.2|
 |Lung disease               |Apical Pulmonary fibrosis                 |12 months  |             NA|                  0.0|                0.0|
-|Lung disease               |Interstitial lung disease                 |12 months  |             NA|                  0.1|                0.1|
+|Lung disease               |Interstitial lung disease                 |12 months  |             NA|                  0.1|                0.5|
 |Lung disease               |Restrictive lung disease                  |12 months  |            1.0|                  0.9|                9.1|
 |Neurological Disease       |Cauda Equina syndrome                     |12 months  |            0.0|                  0.0|                0.2|
 |Neurological Disease       |Spinal Cord compression                   |12 months  |            0.3|                  0.2|                1.0|
@@ -211,7 +211,7 @@ Table of **prevalence %**
 |Kidney disease             |IgA nephropathy                           |12 months  |      0.3|        0.2|                       0.1|            0.1|              0.1|                             0.0|          0.2|            0.3|                           0.2|
 |Kidney disease             |Nephrotic syndrome                        |12 months  |       NA|         NA|                        NA|             NA|              0.0|                             0.0|          0.2|            0.3|                           0.2|
 |Lung disease               |Apical Pulmonary fibrosis                 |12 months  |       NA|         NA|                        NA|             NA|               NA|                             0.0|          0.0|            0.1|                           0.0|
-|Lung disease               |Interstitial lung disease                 |12 months  |       NA|         NA|                        NA|            0.1|              0.0|                             0.1|          0.1|            0.3|                           0.1|
+|Lung disease               |Interstitial lung disease                 |12 months  |       NA|         NA|                        NA|            0.1|              0.0|                             0.1|          0.3|            0.8|                           0.4|
 |Lung disease               |Restrictive lung disease                  |12 months  |      0.7|        0.4|                       1.2|            0.7|              0.8|                             1.0|          6.5|            9.4|                           9.7|
 |Neurological Disease       |Cauda Equina syndrome                     |12 months  |       NA|         NA|                       0.1|            0.0|              0.1|                             0.0|          0.1|            0.0|                           0.2|
 |Neurological Disease       |Spinal Cord compression                   |12 months  |      0.2|         NA|                       0.3|            0.1|              0.2|                             0.2|          0.5|            0.7|                           1.2|
@@ -220,7 +220,7 @@ Table of **prevalence %**
 |PsO/PsA                    |Psoriasis                                 |12 months  |      4.1|        1.2|                       1.8|            0.8|              0.9|                             0.5|          5.0|            3.5|                           1.8|
 |PsO/PsA                    |Psoriatic arthritis                       |12 months  |      6.4|        5.4|                       2.2|            2.2|              2.1|                             0.6|         11.0|            8.5|                           3.2|
 |Uveitis                    |Uveitis                                   |12 months  |      7.2|        5.8|                       5.2|            1.9|              1.5|                             1.6|          8.0|            5.3|                           4.1|
-# Summarize prevalence
+# Summarize prevalence, non-AS cohort
 
 See `background/table shells.docx`, page 5, 
 *Table XX: Prevalence of comorbidities by disease cohort and data source using all available prior data*,
@@ -314,7 +314,7 @@ Table of **incidence per 100 person-years**
 |Kidney disease             |IgA nephropathy                           |      0.2|        0.0|                       0.1|            0.0|              0.1|                             0.0|          0.2|            0.1|                           0.2|
 |Kidney disease             |Nephrotic syndrome                        |      0.0|        0.0|                       0.0|            0.0|              0.1|                             0.0|          0.2|            0.1|                           0.1|
 |Lung disease               |Apical Pulmonary fibrosis                 |      0.0|        0.0|                       0.0|            0.0|              0.0|                             0.0|          0.0|            0.0|                           0.0|
-|Lung disease               |Interstitial lung disease                 |      0.0|        0.0|                       0.0|            0.0|              0.1|                             0.1|          0.1|            0.2|                           0.1|
+|Lung disease               |Interstitial lung disease                 |      0.0|        0.0|                       0.0|            0.0|              0.1|                             0.1|          0.3|            0.7|                           0.3|
 |Lung disease               |Restrictive lung disease                  |      0.9|        0.0|                       1.5|            0.6|              0.6|                             0.9|          5.3|            6.9|                           7.8|
 |Neurological Disease       |Cauda Equina syndrome                     |      0.0|        0.0|                       0.1|            0.0|              0.1|                             0.0|          0.1|            0.1|                           0.1|
 |Neurological Disease       |Spinal Cord compression                   |      0.1|        0.0|                       0.3|            0.1|              0.2|                             0.1|          0.4|            0.4|                           0.7|
@@ -399,7 +399,7 @@ Prevalence is **12-month (6-month baseline to 6-month follow-up)**.
 |Kidney disease             |IgA nephropathy                           |   0.3    |    0.2     |            0.1            |      0.1       |       0.1        |               0.0               |     0.2      |      0.3       |              0.2              |
 |Kidney disease             |Nephrotic syndrome                        |   0.0    |    0.0     |            0.0            |      0.0       |       0.0        |               0.0               |     0.2      |      0.3       |              0.2              |
 |Lung disease               |Apical Pulmonary fibrosis                 |   0.0    |    0.0     |            0.0            |      0.0       |       0.0        |               0.0               |     0.0      |      0.1       |              0.0              |
-|Lung disease               |Interstitial lung disease                 |   0.0    |    0.0     |            0.0            |      0.1       |       0.0        |               0.1               |     0.1      |      0.3       |              0.1              |
+|Lung disease               |Interstitial lung disease                 |   0.0    |    0.0     |            0.0            |      0.1       |       0.0        |               0.1               |     0.3      |      0.8       |              0.4              |
 |Lung disease               |Restrictive lung disease                  |   0.7    |    0.4     |            1.2            |      0.7       |       0.8        |               1.0               |     6.5      |      9.4       |              9.7              |
 |Neurological Disease       |Cauda Equina syndrome                     |   0.0    |    0.0     |            0.1            |      0.0       |       0.1        |               0.0               |     0.1      |      0.0       |              0.2              |
 |Neurological Disease       |Spinal Cord compression                   |   0.2    |    0.0     |            0.3            |      0.1       |       0.2        |               0.2               |     0.5      |      0.7       |              1.2              |
@@ -433,7 +433,7 @@ Prevalence is **12-month (6-month baseline to 6-month follow-up)**.
 |Kidney disease             |IgA nephropathy                           |   0.2    |            0.1            |      NS      |      0.0       |               0.0               |         NS         |     0.2      |              0.2              |        NS        |
 |Kidney disease             |Nephrotic syndrome                        |   0.0    |            0.0            |      NS      |      0.0       |               0.0               |         NS         |     0.2      |              0.1              |        NS        |
 |Lung disease               |Apical Pulmonary fibrosis                 |   0.0    |            0.0            |      NS      |      0.0       |               0.0               |         NS         |     0.0      |              0.0              |        NS        |
-|Lung disease               |Interstitial lung disease                 |   0.0    |            0.0            |      NS      |      0.0       |               0.1               |         NS         |     0.1      |              0.1              |        NS        |
+|Lung disease               |Interstitial lung disease                 |   0.0    |            0.0            |      NS      |      0.0       |               0.1               |         NS         |     0.3      |              0.3              |        NS        |
 |Lung disease               |Restrictive lung disease                  |   0.9    |            1.5            |      NS      |      0.6       |               0.9               |       0.017        |     5.3      |              7.8              |      <0.001      |
 |Neurological Disease       |Cauda Equina syndrome                     |   0.0    |            0.1            |      NS      |      0.0       |               0.0               |         NS         |     0.1      |              0.1              |        NS        |
 |Neurological Disease       |Spinal Cord compression                   |   0.1    |            0.3            |      NS      |      0.1       |               0.1               |         NS         |     0.4      |              0.7              |      <0.001      |
@@ -464,7 +464,7 @@ Prevalence is **12-month (6-month baseline to 6-month follow-up)**.
 |Kidney disease             |IgA nephropathy                           |   0.2    |    0.0     |      NS      |      0.0       |       0.1        |         NS         |     0.2      |      0.1       |      0.038       |
 |Kidney disease             |Nephrotic syndrome                        |   0.0    |    0.0     |      NS      |      0.0       |       0.1        |         NS         |     0.2      |      0.1       |        NS        |
 |Lung disease               |Apical Pulmonary fibrosis                 |   0.0    |    0.0     |      NS      |      0.0       |       0.0        |         NS         |     0.0      |      0.0       |        NS        |
-|Lung disease               |Interstitial lung disease                 |   0.0    |    0.0     |      NS      |      0.0       |       0.1        |         NS         |     0.1      |      0.2       |      0.005       |
+|Lung disease               |Interstitial lung disease                 |   0.0    |    0.0     |      NS      |      0.0       |       0.1        |         NS         |     0.3      |      0.7       |      <0.001      |
 |Lung disease               |Restrictive lung disease                  |   0.9    |    0.0     |    0.029     |      0.6       |       0.6        |         NS         |     5.3      |      6.9       |      <0.001      |
 |Neurological Disease       |Cauda Equina syndrome                     |   0.0    |    0.0     |      NS      |      0.0       |       0.1        |         NS         |     0.1      |      0.1       |        NS        |
 |Neurological Disease       |Spinal Cord compression                   |   0.1    |    0.0     |      NS      |      0.1       |       0.2        |         NS         |     0.4      |      0.4       |        NS        |

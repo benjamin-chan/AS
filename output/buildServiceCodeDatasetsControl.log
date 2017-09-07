@@ -1,12 +1,5 @@
-1                                                          The SAS System                            17:52 Friday, September 1, 2017
+1                                                          The SAS System                          09:02 Thursday, September 7, 2017
 
-NOTE: Unable to open SASUSER.REGSTRY. WORK.REGSTRY will be opened instead.
-NOTE: All registry changes will be lost at the end of the session.
-
-WARNING: Unable to copy SASUSER registry to WORK registry. Because of this, you will not see registry customizations during this 
-         session.
-NOTE: Unable to open SASUSER.PROFILE. WORK.PROFILE will be opened instead.
-NOTE: All profile changes will be lost at the end of the session.
 NOTE: Copyright (c) 2002-2012 by SAS Institute Inc., Cary, NC, USA. 
 NOTE: SAS (r) Proprietary Software 9.4 (TS1M1) 
       Licensed to UNIVERSITY OF ALABAMA AT BIRMINGHAM - SFA - T&R, Site 70058223.
@@ -35,8 +28,8 @@ Please remember not to copy any data files that contain PHI (protected health id
 
 
 NOTE: SAS initialization used:
-      real time           0.18 seconds
-      cpu time            0.12 seconds
+      real time           1.29 seconds
+      cpu time            0.03 seconds
       
 1          *  University of Alabama at Birmingham                               *
 2          *  AS project                                            *
@@ -72,8 +65,6 @@ NOTE: Libref DT was successfully assigned as follows:
 91         title1 '--- AS project ---';
 92         **********************************************************************;
 93         options macrogen mlogic mprint symbolgen;
-2                                                                   The SAS System                                     17:52 Friday, September 1, 2017
-
 94         options nomacrogen nomlogic nomprint nosymbolgen;
 95         
 96         
@@ -81,6 +72,8 @@ NOTE: Libref DT was successfully assigned as follows:
 98           body = "output\&cmt..html"
 99           style = Statistical;
 NOTE: Writing HTML Body file: output\buildServiceCodeDatasetsControl.html
+2                                                                   The SAS System                                   09:02 Thursday, September 7, 2017
+
 100        
 101        
 102        %include "lib\provTypeCategory.sas";  /* Call script to query only physician diagnosed ICD-9 codes */
@@ -96,8 +89,8 @@ NOTE: 496 records were read from the infile F.
       The maximum record length was 187.
 NOTE: The data set WORK.TAXONOMYCROSSWALK has 496 observations and 5 variables.
 NOTE: DATA statement used (Total process time):
-      real time           0.10 seconds
-      cpu time            0.00 seconds
+      real time           0.12 seconds
+      cpu time            0.01 seconds
       
 
 
@@ -105,7 +98,7 @@ NOTE: There were 496 observations read from the data set WORK.TAXONOMYCROSSWALK.
 NOTE: 382 observations with duplicate key values were deleted.
 NOTE: The data set WORK.LOOKUPPROVTYPEPHYSICIAN has 114 observations and 3 variables.
 NOTE: PROCEDURE SORT used (Total process time):
-      real time           0.06 seconds
+      real time           0.09 seconds
       cpu time            0.01 seconds
       
 
@@ -129,14 +122,14 @@ NOTE: Table UCB.TEMPLOOKUPMPCDCONTROL created, with 1139225 rows and 9 columns.
 
 NOTE: Table UCB.TEMP0710 created, with 128860163 rows and 11 columns.
 
-NOTE: Table UCB.TEMPPREVDXMPCDCONTROL created, with 72355341 rows and 20 columns.
+NOTE: Table UCB.TEMPPREVDXMPCDCONTROL created, with 373191 rows and 24 columns.
 
 NOTE: Table UCB.TEMP0710 has been dropped.
 NOTE: Table UCB.TEMPLOOKUPMEDICARECONTROL created, with 1844703 rows and 9 columns.
 
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           1:55.08
-      cpu time            4:45.38
+      real time           1:43.41
+      cpu time            4:27.47
       
 
 190        
@@ -146,8 +139,6 @@ NOTE: PROCEDURE SQL used (Total process time):
 194                                when B.px_type = "09" then "ICD9-PX"
 195                                when B.px_type = "C1" | ^anyalpha(strip(B.px)) then "CPT"
 196                                when B.px_type = "H1" & anyalpha(substr(strip(B.px), 1, 1)) & ^anyalpha(strip(B.px), 2) then "HCPCS"
-3                                                                   The SAS System                                     17:52 Friday, September 1, 2017
-
 197                                else ""
 198                                end as codeType,
 199                              B.px as code;
@@ -155,13 +146,15 @@ NOTE: PROCEDURE SQL used (Total process time):
 201        
 202        %include "lib\buildPxControl.sas";  /* Call script to query procedure codes */
 NOTE: Table UCB.TEMP0710 created, with 346484578 rows and 8 columns.
+3                                                                   The SAS System                                   09:02 Thursday, September 7, 2017
 
-NOTE: Table UCB.TEMPPREVPXMPCDCONTROL created, with 168458870 rows and 18 columns.
+
+NOTE: Table UCB.TEMPPREVPXMPCDCONTROL created, with 880584 rows and 22 columns.
 
 NOTE: Table UCB.TEMP0710 has been dropped.
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           7:52.67
-      cpu time            7:46.72
+      real time           6:44.12
+      cpu time            6:31.54
       
 
 240        
@@ -199,14 +192,14 @@ NOTE: Table UCB.TEMPLOOKUPMPCDCONTROL created, with 1139225 rows and 9 columns.
 
 NOTE: Table UCB.TEMP0710 created, with 950326 rows and 12 columns.
 
-NOTE: Table UCB.TEMPFRACDXMPCDCONTROL created, with 520972 rows and 22 columns.
+NOTE: Table UCB.TEMPFRACDXMPCDCONTROL created, with 2545 rows and 26 columns.
 
 NOTE: Table UCB.TEMP0710 has been dropped.
 NOTE: Table UCB.TEMPLOOKUPMEDICARECONTROL created, with 1844703 rows and 9 columns.
 
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           3:14.14
-      cpu time            4:10.89
+      real time           3:19.21
+      cpu time            4:14.21
       
 
 309        
@@ -220,18 +213,18 @@ NOTE: PROCEDURE SQL used (Total process time):
 317                                end as codeType,
 318                              B.px as code;
 319        %let select2 = select patid, encounterID, admit_date, begin_date, discharge_date, end_date, px_date, px_type, px;
-4                                                                   The SAS System                                     17:52 Friday, September 1, 2017
-
 320        
 321        %include "lib\buildPxControl.sas";  /* Call script to query procedure codes */
 NOTE: Table UCB.TEMP0710 created, with 346484578 rows and 9 columns.
 
-NOTE: Table UCB.TEMPFRACPXMPCDCONTROL created, with 168458870 rows and 19 columns.
+NOTE: Table UCB.TEMPFRACPXMPCDCONTROL created, with 880584 rows and 23 columns.
 
 NOTE: Table UCB.TEMP0710 has been dropped.
+4                                                                   The SAS System                                   09:02 Thursday, September 7, 2017
+
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           8:13.60
-      cpu time            8:10.78
+      real time           7:18.52
+      cpu time            6:54.13
       
 
 359        
@@ -241,6 +234,6 @@ NOTE: PROCEDURE SQL used (Total process time):
 363        ods html close;
 NOTE: SAS Institute Inc., SAS Campus Drive, Cary, NC USA 27513-2414
 NOTE: The SAS System used:
-      real time           21:16.25
-      cpu time            24:54.19
+      real time           19:07.79
+      cpu time            22:07.64
       
