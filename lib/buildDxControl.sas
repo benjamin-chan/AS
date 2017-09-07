@@ -3,7 +3,7 @@ proc sql;
   create table UCB.tempLookupMPCDControl as &selectfrom3 where database = "MPCD";
   create table UCB.temp0710 as &select2 from MPSTD.DX_07_10 A &join2 &where2;
   create table UCB.temp&type.DxMPCDControl as
-    &select1 from UCB.tempLookupMPCD A inner join UCB.temp0710 B &on1;
+    &select1 from UCB.tempLookupMPCDControl A inner join UCB.temp0710 B &on1;
   drop table UCB.temp0710;
 
   create table UCB.tempLookupMedicareControl as &selectfrom3 where database = "Medicare";
@@ -17,15 +17,15 @@ proc sql;
   create table UCB.temp13 as &select2 from StdC5p.STD_DX_2013 A &join2 &where2;
   create table UCB.temp14 as &select2 from StdC5p.STD_DX_2014 A &join2 &where2;
   create table UCB.temp&type.DxSABRControl as
-    &select1 from UCB.tempLookupMedicare A inner join UCB.temp06 B &on1 union corr
-    &select1 from UCB.tempLookupMedicare A inner join UCB.temp07 B &on1 union corr
-    &select1 from UCB.tempLookupMedicare A inner join UCB.temp08 B &on1 union corr
-    &select1 from UCB.tempLookupMedicare A inner join UCB.temp09 B &on1 union corr
-    &select1 from UCB.tempLookupMedicare A inner join UCB.temp10 B &on1 union corr
-    &select1 from UCB.tempLookupMedicare A inner join UCB.temp11 B &on1 union corr
-    &select1 from UCB.tempLookupMedicare A inner join UCB.temp12 B &on1 union corr
-    &select1 from UCB.tempLookupMedicare A inner join UCB.temp13 B &on1 union corr
-    &select1 from UCB.tempLookupMedicare A inner join UCB.temp14 B &on1 ;
+    &select1 from UCB.tempLookupMedicareControl A inner join UCB.temp06 B &on1 union corr
+    &select1 from UCB.tempLookupMedicareControl A inner join UCB.temp07 B &on1 union corr
+    &select1 from UCB.tempLookupMedicareControl A inner join UCB.temp08 B &on1 union corr
+    &select1 from UCB.tempLookupMedicareControl A inner join UCB.temp09 B &on1 union corr
+    &select1 from UCB.tempLookupMedicareControl A inner join UCB.temp10 B &on1 union corr
+    &select1 from UCB.tempLookupMedicareControl A inner join UCB.temp11 B &on1 union corr
+    &select1 from UCB.tempLookupMedicareControl A inner join UCB.temp12 B &on1 union corr
+    &select1 from UCB.tempLookupMedicareControl A inner join UCB.temp13 B &on1 union corr
+    &select1 from UCB.tempLookupMedicareControl A inner join UCB.temp14 B &on1 ;
   drop table UCB.temp06;
   drop table UCB.temp07;
   drop table UCB.temp08;
