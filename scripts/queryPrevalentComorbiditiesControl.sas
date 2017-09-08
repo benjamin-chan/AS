@@ -46,10 +46,10 @@ Call interstitial lung disease macro
                       IDS = controlID,
                       Dxs = UCB.tempPrevDxMPCDControl,
                       Pxs = UCB.tempPrevPxMPCDControl);
-/* %IPP_2IPSOPplusPX_ILD(outdata = Work.outcome_ILD_SABR,
+%IPP_2IPSOPplusPX_ILD(outdata = Work.outcome_ILD_SABR,
                       IDS = controlID,
                       Dxs = UCB.tempPrevDxSABRControl,
-                      Pxs = UCB.tempPrevPxSABRControl); */
+                      Pxs = UCB.tempPrevPxSABRControl);
 
 /* 
 Process fracture episodes data set
@@ -97,11 +97,11 @@ proc sql;
            sum(0 <= C.indexDate  - C.begin_date <= 183 |
                0 <= C.begin_date - C.indexDate  <= (183 * 5)) > 0 as indPrev36mo
     from (&select1 from UCB.tempPrevDxMPCDControl A &join1 &where1a &where1b union corr
-          /* &select1 from UCB.tempPrevDxSABRControl A &join1 &where1a &where1b union corr */
+          &select1 from UCB.tempPrevDxSABRControl A &join1 &where1a &where1b union corr
           &select1 from UCB.tempPrevPxMPCDControl A &join1 &where1a union corr
-          /* &select1 from UCB.tempPrevPxSABRControl A &join1 &where1a union corr */
+          &select1 from UCB.tempPrevPxSABRControl A &join1 &where1a union corr
           &select2 from Work.outcome_ILD_MPCD union corr
-          /* &select2 from Work.outcome_ILD_SABR union corr */
+          &select2 from Work.outcome_ILD_SABR union corr
           select * from Work.fractures) C
     group by C.database, C.cohort, C.patid, C.indexDate, C.controlID, C.age, C.sex,
              C.outcomeCategory,
