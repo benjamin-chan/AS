@@ -1,4 +1,4 @@
-1                                                          The SAS System                          09:02 Thursday, September 7, 2017
+1                                                          The SAS System                          18:05 Thursday, September 7, 2017
 
 NOTE: Copyright (c) 2002-2012 by SAS Institute Inc., Cary, NC, USA. 
 NOTE: SAS (r) Proprietary Software 9.4 (TS1M1) 
@@ -28,8 +28,8 @@ Please remember not to copy any data files that contain PHI (protected health id
 
 
 NOTE: SAS initialization used:
-      real time           1.29 seconds
-      cpu time            0.03 seconds
+      real time           0.10 seconds
+      cpu time            0.12 seconds
       
 1          *  University of Alabama at Birmingham                               *
 2          *  AS project                                            *
@@ -42,9 +42,9 @@ NOTE: SAS initialization used:
 9          %let cmt=buildServiceCodeDatasetsControl; * type the name of your program here (without the filename extension);
 10         %let pgm=&cmt..sas;
 11         %include "lib\libname.sas" ;
-NOTE: Libref CCW5STD was successfully assigned as follows: 
+NOTE: Libref STDC5P was successfully assigned as follows: 
       Engine:        SPDE 
-      Physical Name: h:\studies\osteo\data\CDM\5pct\
+      Physical Name: H:\studies\osteo\data\STD_files\5pct\
 NOTE: Libref STD_SABR was successfully assigned as follows: 
       Engine:        SPDE 
       Physical Name: q:\data\std_SABER\
@@ -60,23 +60,23 @@ NOTE: Libref UCB was successfully assigned as follows:
 NOTE: Libref DT was successfully assigned as follows: 
       Engine:        V9 
       Physical Name: V:\studies\AS\data
-89         footnote "&pgm.";
-90         * footnote2 "%sysfunc(datetime(),datetime14.)";
-91         title1 '--- AS project ---';
-92         **********************************************************************;
-93         options macrogen mlogic mprint symbolgen;
-94         options nomacrogen nomlogic nomprint nosymbolgen;
-95         
-96         
-97         ods html
-98           body = "output\&cmt..html"
-99           style = Statistical;
+92         footnote "&pgm.";
+93         * footnote2 "%sysfunc(datetime(),datetime14.)";
+94         title1 '--- AS project ---';
+95         **********************************************************************;
+96         options macrogen mlogic mprint symbolgen;
+97         options nomacrogen nomlogic nomprint nosymbolgen;
+98         
+99         
+100        ods html
+101          body = "output\&cmt..html"
+102          style = Statistical;
 NOTE: Writing HTML Body file: output\buildServiceCodeDatasetsControl.html
-2                                                                   The SAS System                                   09:02 Thursday, September 7, 2017
+2                                                                   The SAS System                                   18:05 Thursday, September 7, 2017
 
-100        
-101        
-102        %include "lib\provTypeCategory.sas";  /* Call script to query only physician diagnosed ICD-9 codes */
+103        
+104        
+105        %include "lib\provTypeCategory.sas";  /* Call script to query only physician diagnosed ICD-9 codes */
 
 NOTE: The infile F is:
       Filename=U:\studies\AS\pgms\bchan\data\raw\PublicUseData\TaxonomyCrosswalk.txt,
@@ -89,8 +89,8 @@ NOTE: 496 records were read from the infile F.
       The maximum record length was 187.
 NOTE: The data set WORK.TAXONOMYCROSSWALK has 496 observations and 5 variables.
 NOTE: DATA statement used (Total process time):
-      real time           0.12 seconds
-      cpu time            0.01 seconds
+      real time           0.01 seconds
+      cpu time            0.00 seconds
       
 
 
@@ -98,142 +98,260 @@ NOTE: There were 496 observations read from the data set WORK.TAXONOMYCROSSWALK.
 NOTE: 382 observations with duplicate key values were deleted.
 NOTE: The data set WORK.LOOKUPPROVTYPEPHYSICIAN has 114 observations and 3 variables.
 NOTE: PROCEDURE SORT used (Total process time):
-      real time           0.09 seconds
-      cpu time            0.01 seconds
+      real time           0.00 seconds
+      cpu time            0.00 seconds
       
 
-137        
-138        
-139        /*
-140        Service code data sets for prevalence (non-fracture outcomes)
-141         */
-142        %let type = Prev;
-143        %let select1 = select A.*, B.enc_type, B.admit_date, B.begin_date, B.discharge_date, B.end_date, B.dx_type, B.dx, B.pdx, "ICD9-DX" as
-143      ! codeType, B.dx as code, B.provTypeCategory;
-144        %let on1 = on (A.patid = B.patid);
-145        %let select2 = select A.patid, A.enc_type, A.admit_date, A.begin_date, A.discharge_date, A.end_date, A.dx_type, A.dx, A.pdx, A.prov_type,
-145      ! &provTypeCategory;
-146        %let join2 = inner join Work.lookupProvTypePhysician B on (A.prov_type = B.prov_type_code);
-147        %let where2 = where A.dx_type = "09" & B.indPhysician = 1;
-148        %let selectfrom3 = select * from DT.controlLookup;
-149        
-150        %include "lib\buildDxControl.sas";  /* Call script to query ICD-9 diagnosis codes */
+140        
+141        
+142        /*
+143        Service code data sets for prevalence (non-fracture outcomes)
+144         */
+145        %let type = Prev;
+146        %let select1 = select A.*, B.enc_type, B.admit_date, B.begin_date, B.discharge_date, B.end_date, B.dx_type, B.dx, B.pdx, "ICD9-DX" as
+146      ! codeType, B.dx as code, B.provTypeCategory;
+147        %let on1 = on (A.patid = B.patid);
+148        %let select2 = select A.patid, A.enc_type, A.admit_date, A.begin_date, A.discharge_date, A.end_date, A.dx_type, A.dx, A.pdx, A.prov_type,
+148      ! &provTypeCategory;
+149        %let join2 = inner join Work.lookupProvTypePhysician B on (A.prov_type = B.prov_type_code);
+150        %let where2 = where A.dx_type = "09" & B.indPhysician = 1;
+151        %let selectfrom3 = select * from DT.controlLookup;
+152        
+153        %include "lib\buildDxControl.sas";  /* Call script to query ICD-9 diagnosis codes */
 NOTE: Table UCB.TEMPLOOKUPMPCDCONTROL created, with 1139225 rows and 9 columns.
 
 NOTE: Table UCB.TEMP0710 created, with 128860163 rows and 11 columns.
 
-NOTE: Table UCB.TEMPPREVDXMPCDCONTROL created, with 373191 rows and 24 columns.
+NOTE: Table UCB.TEMPPREVDXMPCDCONTROL created, with 72355341 rows and 20 columns.
 
 NOTE: Table UCB.TEMP0710 has been dropped.
 NOTE: Table UCB.TEMPLOOKUPMEDICARECONTROL created, with 1844703 rows and 9 columns.
 
+NOTE: Table UCB.TEMP06 created, with 95516671 rows and 11 columns.
+
+NOTE: Table UCB.TEMP07 created, with 97620481 rows and 11 columns.
+
+NOTE: Table UCB.TEMP08 created, with 100400486 rows and 11 columns.
+
+NOTE: Table UCB.TEMP09 created, with 102690173 rows and 11 columns.
+
+NOTE: Table UCB.TEMP10 created, with 112159319 rows and 11 columns.
+
+NOTE: Table UCB.TEMP11 created, with 141027885 rows and 11 columns.
+
+NOTE: Table UCB.TEMP12 created, with 140796039 rows and 11 columns.
+
+NOTE: Table UCB.TEMP13 created, with 142065862 rows and 11 columns.
+
+NOTE: Table UCB.TEMP14 created, with 142390049 rows and 11 columns.
+
+NOTE: Table UCB.TEMPPREVDXSABRCONTROL created, with 645527317 rows and 20 columns.
+3                                                                   The SAS System                                   18:05 Thursday, September 7, 2017
+
+
+NOTE: Table UCB.TEMP06 has been dropped.
+NOTE: Table UCB.TEMP07 has been dropped.
+NOTE: Table UCB.TEMP08 has been dropped.
+NOTE: Table UCB.TEMP09 has been dropped.
+NOTE: Table UCB.TEMP10 has been dropped.
+NOTE: Table UCB.TEMP11 has been dropped.
+NOTE: Table UCB.TEMP12 has been dropped.
+NOTE: Table UCB.TEMP13 has been dropped.
+NOTE: Table UCB.TEMP14 has been dropped.
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           1:43.41
-      cpu time            4:27.47
+      real time           2:44:50.18
+      cpu time            3:13:55.80
       
 
-190        
-191        %let select1 = select A.*,
-192                              B.admit_date, B.begin_date, B.discharge_date, B.end_date, B.px_date, B.px_type, B.px,
-193                              case
-194                                when B.px_type = "09" then "ICD9-PX"
-195                                when B.px_type = "C1" | ^anyalpha(strip(B.px)) then "CPT"
-196                                when B.px_type = "H1" & anyalpha(substr(strip(B.px), 1, 1)) & ^anyalpha(strip(B.px), 2) then "HCPCS"
-197                                else ""
-198                                end as codeType,
-199                              B.px as code;
-200        %let select2 = select patid, admit_date, begin_date, discharge_date, end_date, px_date, px_type, px;
-201        
-202        %include "lib\buildPxControl.sas";  /* Call script to query procedure codes */
+193        
+194        %let select1 = select A.*,
+195                              B.admit_date, B.begin_date, B.discharge_date, B.end_date, B.px_date, B.px_type, B.px,
+196                              case
+197                                when B.px_type = "09" then "ICD9-PX"
+198                                when B.px_type = "C1" | ^anyalpha(strip(B.px)) then "CPT"
+199                                when B.px_type = "H1" & anyalpha(substr(strip(B.px), 1, 1)) & ^anyalpha(strip(B.px), 2) then "HCPCS"
+200                                else ""
+201                                end as codeType,
+202                              B.px as code;
+203        %let select2 = select patid, admit_date, begin_date, discharge_date, end_date, px_date, px_type, px;
+204        
+205        %include "lib\buildPxControl.sas";  /* Call script to query procedure codes */
 NOTE: Table UCB.TEMP0710 created, with 346484578 rows and 8 columns.
-3                                                                   The SAS System                                   09:02 Thursday, September 7, 2017
 
-
-NOTE: Table UCB.TEMPPREVPXMPCDCONTROL created, with 880584 rows and 22 columns.
+NOTE: Table UCB.TEMPPREVPXMPCDCONTROL created, with 168458870 rows and 18 columns.
 
 NOTE: Table UCB.TEMP0710 has been dropped.
+NOTE: Table UCB.TEMP06 created, with 137802721 rows and 8 columns.
+
+NOTE: Table UCB.TEMP07 created, with 141996458 rows and 8 columns.
+
+NOTE: Table UCB.TEMP08 created, with 147118053 rows and 8 columns.
+
+NOTE: Table UCB.TEMP09 created, with 152579039 rows and 8 columns.
+
+NOTE: Table UCB.TEMP10 created, with 154866267 rows and 8 columns.
+
+NOTE: Table UCB.TEMP11 created, with 157181115 rows and 8 columns.
+
+NOTE: Table UCB.TEMP12 created, with 161224747 rows and 8 columns.
+
+NOTE: Table UCB.TEMP13 created, with 164298030 rows and 8 columns.
+
+NOTE: Table UCB.TEMP14 created, with 166228741 rows and 8 columns.
+
+NOTE: Table UCB.TEMPPREVPXSABRCONTROL created, with 896909634 rows and 18 columns.
+
+NOTE: Table UCB.TEMP06 has been dropped.
+NOTE: Table UCB.TEMP07 has been dropped.
+NOTE: Table UCB.TEMP08 has been dropped.
+NOTE: Table UCB.TEMP09 has been dropped.
+NOTE: Table UCB.TEMP10 has been dropped.
+NOTE: Table UCB.TEMP11 has been dropped.
+NOTE: Table UCB.TEMP12 has been dropped.
+NOTE: Table UCB.TEMP13 has been dropped.
+NOTE: Table UCB.TEMP14 has been dropped.
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           6:44.12
-      cpu time            6:31.54
+      real time           2:56:55.78
+      cpu time            3:20:12.67
       
 
-240        
-241        
-242        /*
-243        Service code data sets for fracture outcomes
-244        Fracture service code data sets are used for both prevalence and incidence;
-245        unlike non-fracture service code data sets
-246         */
-247        %let type = Frac;
-248        %let select1 = select A.*,
-249                              B.encounterID, B.enc_type, B.admit_date, B.begin_date, B.discharge_date, B.end_date, B.dx_type, B.dx, B.pdx,
-249      ! "ICD9-DX" as codeType, B.dx as code,
-250                              B.diagCodeType,
-251                              B.provTypeCategory;
-252        %let on1 = on (A.patid = B.patid);
-253        %let select2 = select A.patid, A.encounterID, A.enc_type, A.admit_date, A.begin_date, A.discharge_date, A.end_date, A.dx_type, A.dx, A.pdx,
-254                              case
-255                                when '800' <= substr(A.dx, 1, 3) <= '829' or substr(A.dx, 1, 4) = '7331' then "Fracture code"
-256                                when substr(A.dx, 1, 4) in ('V541' 'V542') then "Extended care code"
-257                                when 'E800' <= substr(A.dx, 1, 4) <= 'E848' or
-258                                     'E881' <= substr(A.dx, 1, 4) <= 'E884' or
-259                                     'E908' <= substr(A.dx, 1, 4) <= 'E909' or
-260                                     'E916' <= substr(A.dx, 1, 4) <= 'E928'
-261                                  then "Trauma code"
-262                                else ""
-263                                end as diagCodeType,
-264                              B.prov_type_code as provTypeCategory;
-265        %let join2 = inner join Work.lookupProvTypePhysician B on (A.prov_type = B.prov_type_code);
-266        %let where2 = where A.dx_type = "09" & B.indPhysician = 1 & ^missing(calculated diagCodeType);
-267        %let selectfrom3 = select * from DT.controlLookup;
-268        
-269        %include "lib\buildDxControl.sas";  /* Call script to query ICD-9 diagnosis codes */
+243        
+244        
+245        /*
+246        Service code data sets for fracture outcomes
+247        Fracture service code data sets are used for both prevalence and incidence;
+4                                                                   The SAS System                                   18:05 Thursday, September 7, 2017
+
+248        unlike non-fracture service code data sets
+249         */
+250        %let type = Frac;
+251        %let select1 = select A.*,
+252                              B.encounterID, B.enc_type, B.admit_date, B.begin_date, B.discharge_date, B.end_date, B.dx_type, B.dx, B.pdx,
+252      ! "ICD9-DX" as codeType, B.dx as code,
+253                              B.diagCodeType,
+254                              B.provTypeCategory;
+255        %let on1 = on (A.patid = B.patid);
+256        %let select2 = select A.patid, A.encounterID, A.enc_type, A.admit_date, A.begin_date, A.discharge_date, A.end_date, A.dx_type, A.dx, A.pdx,
+257                              case
+258                                when '800' <= substr(A.dx, 1, 3) <= '829' or substr(A.dx, 1, 4) = '7331' then "Fracture code"
+259                                when substr(A.dx, 1, 4) in ('V541' 'V542') then "Extended care code"
+260                                when 'E800' <= substr(A.dx, 1, 4) <= 'E848' or
+261                                     'E881' <= substr(A.dx, 1, 4) <= 'E884' or
+262                                     'E908' <= substr(A.dx, 1, 4) <= 'E909' or
+263                                     'E916' <= substr(A.dx, 1, 4) <= 'E928'
+264                                  then "Trauma code"
+265                                else ""
+266                                end as diagCodeType,
+267                              B.prov_type_code as provTypeCategory;
+268        %let join2 = inner join Work.lookupProvTypePhysician B on (A.prov_type = B.prov_type_code);
+269        %let where2 = where A.dx_type = "09" & B.indPhysician = 1 & ^missing(calculated diagCodeType);
+270        %let selectfrom3 = select * from DT.controlLookup;
+271        
+272        %include "lib\buildDxControl.sas";  /* Call script to query ICD-9 diagnosis codes */
 NOTE: Table UCB.TEMPLOOKUPMPCDCONTROL created, with 1139225 rows and 9 columns.
 
 NOTE: Table UCB.TEMP0710 created, with 950326 rows and 12 columns.
 
-NOTE: Table UCB.TEMPFRACDXMPCDCONTROL created, with 2545 rows and 26 columns.
+NOTE: Table UCB.TEMPFRACDXMPCDCONTROL created, with 520972 rows and 22 columns.
 
 NOTE: Table UCB.TEMP0710 has been dropped.
 NOTE: Table UCB.TEMPLOOKUPMEDICARECONTROL created, with 1844703 rows and 9 columns.
 
+NOTE: Table UCB.TEMP06 created, with 1309066 rows and 12 columns.
+
+NOTE: Table UCB.TEMP07 created, with 1332876 rows and 12 columns.
+
+NOTE: Table UCB.TEMP08 created, with 1345546 rows and 12 columns.
+
+NOTE: Table UCB.TEMP09 created, with 1379888 rows and 12 columns.
+
+NOTE: Table UCB.TEMP10 created, with 1569333 rows and 12 columns.
+
+NOTE: Table UCB.TEMP11 created, with 1990260 rows and 12 columns.
+
+NOTE: Table UCB.TEMP12 created, with 1951251 rows and 12 columns.
+
+NOTE: Table UCB.TEMP13 created, with 1945155 rows and 12 columns.
+
+NOTE: Table UCB.TEMP14 created, with 1973047 rows and 12 columns.
+
+NOTE: Table UCB.TEMPFRACDXSABRCONTROL created, with 9616192 rows and 22 columns.
+
+NOTE: Table UCB.TEMP06 has been dropped.
+NOTE: Table UCB.TEMP07 has been dropped.
+NOTE: Table UCB.TEMP08 has been dropped.
+NOTE: Table UCB.TEMP09 has been dropped.
+NOTE: Table UCB.TEMP10 has been dropped.
+NOTE: Table UCB.TEMP11 has been dropped.
+NOTE: Table UCB.TEMP12 has been dropped.
+NOTE: Table UCB.TEMP13 has been dropped.
+NOTE: Table UCB.TEMP14 has been dropped.
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           3:19.21
-      cpu time            4:14.21
+      real time           36:53.85
+      cpu time            52:09.47
       
 
-309        
-310        %let select1 = select A.*,
-311                              B.encounterID, B.admit_date, B.begin_date, B.discharge_date, B.end_date, B.px_date, B.px_type, B.px,
-312                              case
-313                                when B.px_type = "09" then "ICD9-PX"
-314                                when B.px_type = "C1" | ^anyalpha(strip(B.px)) then "CPT"
-315                                when B.px_type = "H1" & anyalpha(substr(strip(B.px), 1, 1)) & ^anyalpha(strip(B.px), 2) then "HCPCS"
-316                                else ""
-317                                end as codeType,
-318                              B.px as code;
-319        %let select2 = select patid, encounterID, admit_date, begin_date, discharge_date, end_date, px_date, px_type, px;
-320        
-321        %include "lib\buildPxControl.sas";  /* Call script to query procedure codes */
+312        
+313        %let select1 = select A.*,
+314                              B.encounterID, B.admit_date, B.begin_date, B.discharge_date, B.end_date, B.px_date, B.px_type, B.px,
+5                                                                   The SAS System                                   18:05 Thursday, September 7, 2017
+
+315                              case
+316                                when B.px_type = "09" then "ICD9-PX"
+317                                when B.px_type = "C1" | ^anyalpha(strip(B.px)) then "CPT"
+318                                when B.px_type = "H1" & anyalpha(substr(strip(B.px), 1, 1)) & ^anyalpha(strip(B.px), 2) then "HCPCS"
+319                                else ""
+320                                end as codeType,
+321                              B.px as code;
+322        %let select2 = select patid, encounterID, admit_date, begin_date, discharge_date, end_date, px_date, px_type, px;
+323        
+324        %include "lib\buildPxControl.sas";  /* Call script to query procedure codes */
 NOTE: Table UCB.TEMP0710 created, with 346484578 rows and 9 columns.
 
-NOTE: Table UCB.TEMPFRACPXMPCDCONTROL created, with 880584 rows and 23 columns.
+NOTE: Table UCB.TEMPFRACPXMPCDCONTROL created, with 168458870 rows and 19 columns.
 
 NOTE: Table UCB.TEMP0710 has been dropped.
-4                                                                   The SAS System                                   09:02 Thursday, September 7, 2017
+NOTE: Table UCB.TEMP06 created, with 137802721 rows and 9 columns.
 
+NOTE: Table UCB.TEMP07 created, with 141996458 rows and 9 columns.
+
+NOTE: Table UCB.TEMP08 created, with 147118053 rows and 9 columns.
+
+NOTE: Table UCB.TEMP09 created, with 152579039 rows and 9 columns.
+
+NOTE: Table UCB.TEMP10 created, with 154866267 rows and 9 columns.
+
+NOTE: Table UCB.TEMP11 created, with 157181115 rows and 9 columns.
+
+NOTE: Table UCB.TEMP12 created, with 161224747 rows and 9 columns.
+
+NOTE: Table UCB.TEMP13 created, with 164298030 rows and 9 columns.
+
+NOTE: Table UCB.TEMP14 created, with 166228741 rows and 9 columns.
+
+NOTE: Table UCB.TEMPFRACPXSABRCONTROL created, with 941591964 rows and 19 columns.
+
+NOTE: Table UCB.TEMP06 has been dropped.
+NOTE: Table UCB.TEMP07 has been dropped.
+NOTE: Table UCB.TEMP08 has been dropped.
+NOTE: Table UCB.TEMP09 has been dropped.
+NOTE: Table UCB.TEMP10 has been dropped.
+NOTE: Table UCB.TEMP11 has been dropped.
+NOTE: Table UCB.TEMP12 has been dropped.
+NOTE: Table UCB.TEMP13 has been dropped.
+NOTE: Table UCB.TEMP14 has been dropped.
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           7:18.52
-      cpu time            6:54.13
+      real time           4:32:13.20
+      cpu time            3:38:04.59
       
 
-359        
-360        
-361        
 362        
-363        ods html close;
+363        
+364        
+365        
+366        ods html close;
 NOTE: SAS Institute Inc., SAS Campus Drive, Cary, NC USA 27513-2414
 NOTE: The SAS System used:
-      real time           19:07.79
-      cpu time            22:07.64
+      real time           10:50:53.50
+      cpu time            11:04:22.95
       
