@@ -1,6 +1,6 @@
 ---
 title: "Comorbidities and Disease Manifestations in Ankylosing Spondylitis (BAD AS)"
-date: "2017-09-07 09:06:24"
+date: "2017-09-08 11:57:16"
 author: Benjamin Chan (chanb@ohsu.edu)
 output:
   html_document:
@@ -230,38 +230,39 @@ Read prevalence data.
 See `queryPrevalentComorbiditiesControl.sas`.
 
 
-|database |cohort | denomPatid| denomControlCohort|
-|:--------|:------|----------:|------------------:|
-|MPCD     |Non-AS |    1139225|            1139225|
+|   |database |cohort | denomPatid| denomControlCohort|
+|:--|:--------|:------|----------:|------------------:|
+|1  |MPCD     |Non-AS |    1139225|            1139225|
+|93 |Medicare |Non-AS |    1844703|            1844703|
 
 Table of **prevalence %**
 
 
 |outcomeCategory            |disease                                   |timeWindow | MPCD Non-AS cohort| Medicare Non-AS cohort|
 |:--------------------------|:-----------------------------------------|:----------|------------------:|----------------------:|
-|Cancer                     |Hematologic Cancer                        |12 months  |                0.4|                     NA|
-|Cancer                     |Non Melanoma Skin Cancer                  |12 months  |                0.0|                     NA|
-|Cancer                     |Solid Cancer                              |12 months  |                2.8|                     NA|
-|Cardiac disease            |Aortic Insufficiency/Aortic Regurgitation |12 months  |                0.8|                     NA|
-|Cardiac disease            |Conduction Block                          |12 months  |                0.5|                     NA|
-|Cardiac disease            |Myocardial infarction                     |12 months  |                0.0|                     NA|
-|Infection                  |Hospitalized infection                    |12 months  |                0.1|                     NA|
-|Infection                  |Opportunistic infection                   |12 months  |                0.3|                     NA|
-|Inflammatory bowel disease |Crohn’s Disease                           |12 months  |                1.9|                     NA|
-|Inflammatory bowel disease |Ulcerative Colitis                        |12 months  |                1.9|                     NA|
-|Kidney disease             |Amyloidosis                               |12 months  |                0.0|                     NA|
-|Kidney disease             |IgA nephropathy                           |12 months  |                0.0|                     NA|
-|Kidney disease             |Nephrotic syndrome                        |12 months  |                0.0|                     NA|
-|Lung disease               |Apical Pulmonary fibrosis                 |12 months  |                0.0|                     NA|
-|Lung disease               |Interstitial lung disease                 |12 months  |                0.0|                     NA|
-|Lung disease               |Restrictive lung disease                  |12 months  |                0.5|                     NA|
-|Neurological Disease       |Cauda Equina syndrome                     |12 months  |                0.0|                     NA|
-|Neurological Disease       |Spinal Cord compression                   |12 months  |                0.0|                     NA|
-|Osteoporotic fracture      |Clinical vertebral fracture               |12 months  |                0.4|                     NA|
-|Osteoporotic fracture      |Non-vertebral osteoporotic fracture       |12 months  |                1.0|                     NA|
-|PsO/PsA                    |Psoriasis                                 |12 months  |                4.2|                     NA|
-|PsO/PsA                    |Psoriatic arthritis                       |12 months  |                0.9|                     NA|
-|Uveitis                    |Uveitis                                   |12 months  |                0.2|                     NA|
+|Cancer                     |Hematologic Cancer                        |12 months  |                0.4|                    1.3|
+|Cancer                     |Non Melanoma Skin Cancer                  |12 months  |                0.0|                    0.6|
+|Cancer                     |Solid Cancer                              |12 months  |                2.8|                    9.6|
+|Cardiac disease            |Aortic Insufficiency/Aortic Regurgitation |12 months  |                0.8|                    2.3|
+|Cardiac disease            |Conduction Block                          |12 months  |                0.5|                    2.2|
+|Cardiac disease            |Myocardial infarction                     |12 months  |                0.0|                    0.5|
+|Infection                  |Hospitalized infection                    |12 months  |                0.1|                    6.5|
+|Infection                  |Opportunistic infection                   |12 months  |                0.3|                    0.7|
+|Inflammatory bowel disease |Crohn’s Disease                           |12 months  |                1.9|                    0.4|
+|Inflammatory bowel disease |Ulcerative Colitis                        |12 months  |                1.9|                    0.4|
+|Kidney disease             |Amyloidosis                               |12 months  |                0.0|                    0.0|
+|Kidney disease             |IgA nephropathy                           |12 months  |                0.0|                    0.1|
+|Kidney disease             |Nephrotic syndrome                        |12 months  |                0.0|                    0.1|
+|Lung disease               |Apical Pulmonary fibrosis                 |12 months  |                0.0|                    0.0|
+|Lung disease               |Interstitial lung disease                 |12 months  |                0.0|                    0.0|
+|Lung disease               |Restrictive lung disease                  |12 months  |                0.5|                    4.7|
+|Neurological Disease       |Cauda Equina syndrome                     |12 months  |                0.0|                    0.0|
+|Neurological Disease       |Spinal Cord compression                   |12 months  |                0.0|                    0.1|
+|Osteoporotic fracture      |Clinical vertebral fracture               |12 months  |                0.4|                    1.4|
+|Osteoporotic fracture      |Non-vertebral osteoporotic fracture       |12 months  |                1.0|                    2.8|
+|PsO/PsA                    |Psoriasis                                 |12 months  |                4.2|                    0.4|
+|PsO/PsA                    |Psoriatic arthritis                       |12 months  |                0.9|                    0.1|
+|Uveitis                    |Uveitis                                   |12 months  |                0.2|                    0.3|
 # Summarize incidence
 
 ```
