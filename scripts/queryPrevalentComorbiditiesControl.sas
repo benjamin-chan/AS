@@ -114,9 +114,6 @@ proc sql;
   create table Work.denominator as
     select database, 
            cohort, 
-           /* mean(indexDate - ASCohortDate) as meanDaysASCohortToExposure,
-           min(indexDate - ASCohortDate) as minDaysASCohortToExposure,
-           max(indexDate - ASCohortDate) as maxDaysASCohortToExposure, */
            count(distinct patid) as denomPatid,
            count(distinct controlID) as denomControlCohort
     from DT.controlLookup
