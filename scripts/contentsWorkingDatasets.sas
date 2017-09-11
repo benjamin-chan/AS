@@ -86,6 +86,7 @@ DT fractureEpisodesPrev
 DT fractureEpisodesPrevControl
 DT fractureEpisodesInc
 DT comorbidities
+DT comorbiditiesByPatid
 DT comorbiditiesControl
 DT comorbiditiesOther
   ;
