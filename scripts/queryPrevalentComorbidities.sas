@@ -38,6 +38,19 @@ See the *Compact Outcome Definition* worksheet in `AS Project Cohort Outcome Cod
  */
 
 
+proc sql;
+  create table Work.defOutcomes as
+    select * 
+    from DT.defOutcomes 
+    where disease ^in ("Interstitial lung disease");
+quit;
+
+%let select1 = select A.*, B.outcomeCategory, B.disease;
+%let join1 = inner join Work.defOutcomes B on (A.codeType = B.codeType & A.code = B.code);
+%let where1a = where B.disease ^in ("Myocardial infarction", "Hospitalized infection");
+%let where1b = | (B.disease in ("Myocardial infarction", "Hospitalized infection") & A.enc_type in ("IF", "IP"));
+
+
 /* 
 Call interstitial lung disease macro
  */
