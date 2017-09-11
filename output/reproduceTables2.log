@@ -1,4 +1,4 @@
-1                                                          The SAS System                         16:55 Wednesday, September 6, 2017
+1                                                          The SAS System                            16:50 Friday, September 8, 2017
 
 NOTE: Copyright (c) 2002-2012 by SAS Institute Inc., Cary, NC, USA. 
 NOTE: SAS (r) Proprietary Software 9.4 (TS1M1) 
@@ -28,7 +28,7 @@ Please remember not to copy any data files that contain PHI (protected health id
 
 
 NOTE: SAS initialization used:
-      real time           0.15 seconds
+      real time           0.10 seconds
       cpu time            0.12 seconds
       
 1          *  University of Alabama at Birmingham                               *
@@ -42,9 +42,9 @@ NOTE: SAS initialization used:
 9          %let cmt=reproduceTables2; * type the name of your program here (without the filename extension);
 10         %let pgm=&cmt..sas;
 11         %include "lib\libname.sas" ;
-NOTE: Libref CCW5STD was successfully assigned as follows: 
+NOTE: Libref STDC5P was successfully assigned as follows: 
       Engine:        SPDE 
-      Physical Name: h:\studies\osteo\data\CDM\5pct\
+      Physical Name: H:\studies\osteo\data\STD_files\5pct\
 NOTE: Libref STD_SABR was successfully assigned as follows: 
       Engine:        SPDE 
       Physical Name: q:\data\std_SABER\
@@ -60,42 +60,42 @@ NOTE: Libref UCB was successfully assigned as follows:
 NOTE: Libref DT was successfully assigned as follows: 
       Engine:        V9 
       Physical Name: V:\studies\AS\data
-89         footnote "&pgm.";
-90         * footnote2 "%sysfunc(datetime(),datetime14.)";
-91         title1 '--- AS project ---';
-92         **********************************************************************;
-93         options macrogen mlogic mprint symbolgen;
-94         options nomacrogen nomlogic nomprint nosymbolgen;
-95         
-96         
-97         ods html
-98           body = "output\&cmt..html"
-99           style = Statistical;
+92         footnote "&pgm.";
+93         * footnote2 "%sysfunc(datetime(),datetime14.)";
+94         title1 '--- AS project ---';
+95         **********************************************************************;
+96         options macrogen mlogic mprint symbolgen;
+97         options nomacrogen nomlogic nomprint nosymbolgen;
+98         
+99         
+100        ods html
+101          body = "output\&cmt..html"
+102          style = Statistical;
 NOTE: Writing HTML Body file: output\reproduceTables2.html
-2                                                                   The SAS System                                  16:55 Wednesday, September 6, 2017
+2                                                                   The SAS System                                     16:50 Friday, September 8, 2017
 
-100        
-101        
-102        proc sort data = DT.indexLookup out = Work.patidCharacteristics nodupkey;
-103          by database exposure patid;
-104        run;
+103        
+104        
+105        proc sort data = DT.indexLookup out = Work.patidCharacteristics nodupkey;
+106          by database exposure patid;
+107        run;
 
 NOTE: There were 60010 observations read from the data set DT.INDEXLOOKUP.
 NOTE: 14698 observations with duplicate key values were deleted.
 NOTE: The data set WORK.PATIDCHARACTERISTICS has 45312 observations and 13 variables.
 NOTE: PROCEDURE SORT used (Total process time):
-      real time           0.15 seconds
-      cpu time            0.09 seconds
+      real time           0.07 seconds
+      cpu time            0.07 seconds
       
 
-105        proc sql;
-106          select database,
-107                 exposure,
-108                 strip(put(mean(age), 8.0)) || " (" || strip(put(std(age), 8.0)) || ")" as age,
-109                 strip(put(sum(sex = "F") / count(*), percent9.2)) as female
-110            from Work.patidCharacteristics
-111          group by database, exposure;
-                                                                  --- AS project ---                            16:55 Wednesday, September 6, 2017   1
+108        proc sql;
+109          select database,
+110                 exposure,
+111                 strip(put(mean(age), 8.0)) || " (" || strip(put(std(age), 8.0)) || ")" as age,
+112                 strip(put(sum(sex = "F") / count(*), percent9.2)) as female
+113            from Work.patidCharacteristics
+114          group by database, exposure;
+                                                                  --- AS project ---                               16:50 Friday, September 8, 2017   1
 
                                            database    exposure              age                  female
                                            ----------------------------------------------------------------
@@ -169,18 +169,18 @@ NOTE: PROCEDURE SORT used (Total process time):
  
  
                                                                  reproduceTables2.sas
-112        quit;
+115        quit;
 NOTE: The PROCEDURE SQL printed page 1.
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           0.12 seconds
-      cpu time            0.06 seconds
+      real time           0.07 seconds
+      cpu time            0.04 seconds
       
 
-113        
-114        
-115        ods html close;
+116        
+117        
+118        ods html close;
 NOTE: SAS Institute Inc., SAS Campus Drive, Cary, NC USA 27513-2414
 NOTE: The SAS System used:
-      real time           0.68 seconds
+      real time           0.54 seconds
       cpu time            0.49 seconds
       

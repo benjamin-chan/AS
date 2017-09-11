@@ -1,4 +1,4 @@
-1                                                          The SAS System                          09:24 Thursday, September 7, 2017
+1                                                          The SAS System                          21:32 Saturday, September 9, 2017
 
 NOTE: Copyright (c) 2002-2012 by SAS Institute Inc., Cary, NC, USA. 
 NOTE: SAS (r) Proprietary Software 9.4 (TS1M1) 
@@ -28,8 +28,8 @@ Please remember not to copy any data files that contain PHI (protected health id
 
 
 NOTE: SAS initialization used:
-      real time           0.13 seconds
-      cpu time            0.12 seconds
+      real time           0.65 seconds
+      cpu time            0.17 seconds
       
 1          *  University of Alabama at Birmingham                               *
 2          *  AS project                                            *
@@ -42,9 +42,9 @@ NOTE: SAS initialization used:
 9          %let cmt=queryPrevalentComorbidities; * type the name of your program here (without the filename extension);
 10         %let pgm=&cmt..sas;
 11         %include "lib\libname.sas" ;
-NOTE: Libref CCW5STD was successfully assigned as follows: 
+NOTE: Libref STDC5P was successfully assigned as follows: 
       Engine:        SPDE 
-      Physical Name: h:\studies\osteo\data\CDM\5pct\
+      Physical Name: H:\studies\osteo\data\STD_files\5pct\
 NOTE: Libref STD_SABR was successfully assigned as follows: 
       Engine:        SPDE 
       Physical Name: q:\data\std_SABER\
@@ -60,146 +60,146 @@ NOTE: Libref UCB was successfully assigned as follows:
 NOTE: Libref DT was successfully assigned as follows: 
       Engine:        V9 
       Physical Name: V:\studies\AS\data
-89         footnote "&pgm.";
-90         * footnote2 "%sysfunc(datetime(),datetime14.)";
-91         title1 '--- AS project ---';
-92         **********************************************************************;
-93         options macrogen mlogic mprint symbolgen;
-94         options nomacrogen nomlogic nomprint nosymbolgen;
-95         
-96         
-97         ods html
-98           body = "output\&cmt..html"
-99           style = Statistical;
+92         footnote "&pgm.";
+93         * footnote2 "%sysfunc(datetime(),datetime14.)";
+94         title1 '--- AS project ---';
+95         **********************************************************************;
+96         options macrogen mlogic mprint symbolgen;
+97         options nomacrogen nomlogic nomprint nosymbolgen;
+98         
+99         
+100        ods html
+101          body = "output\&cmt..html"
+102          style = Statistical;
 NOTE: Writing HTML Body file: output\queryPrevalentComorbidities.html
-2                                                                   The SAS System                                   09:24 Thursday, September 7, 2017
+2                                                                   The SAS System                                   21:32 Saturday, September 9, 2017
 
-100        
-101        
-102        /*
-103        Calculate the prevalence of each comorbidity over various time intervals, by
-104        disease cohort (AS vs. non-AS). We will explore how the prevalence of each
-105        condition varies according to the amount of data available. Outcomes will be
-106        examined in discrete 12 month increments (i.e. using 12 months of data, 24
-107        months, 36 months, etc.) using the 6 months baseline plus an additional 6
-108        (1st year), 18 (1st and 2nd year), 30 (1st, 2nd, and 3rd year), etc. months
-109        of follow-up.
-110         */
-111        
-112        
-113        /*
-114        See the *Compact Outcome Definition* worksheet in `AS Project Cohort Outcome Codebook-20170410.xlsx`
-115         */
-116        
-117        
-118        /*
-119        Call interstitial lung disease macro
-120         */
-121        %include "lib\IPP_2IPSOPplusPX_ILD.sas" / source2;
+103        
+104        
+105        /*
+106        Calculate the prevalence of each comorbidity over various time intervals, by
+107        disease cohort (AS vs. non-AS). We will explore how the prevalence of each
+108        condition varies according to the amount of data available. Outcomes will be
+109        examined in discrete 12 month increments (i.e. using 12 months of data, 24
+110        months, 36 months, etc.) using the 6 months baseline plus an additional 6
+111        (1st year), 18 (1st and 2nd year), 30 (1st, 2nd, and 3rd year), etc. months
+112        of follow-up.
+113         */
+114        
+115        
+116        /*
+117        See the *Compact Outcome Definition* worksheet in `AS Project Cohort Outcome Codebook-20170410.xlsx`
+118         */
+119        
+120        
+121        /*
+122        Call interstitial lung disease macro
+123         */
+124        %include "lib\IPP_2IPSOPplusPX_ILD.sas" / source2;
 NOTE: %INCLUDE (level 1) file lib\IPP_2IPSOPplusPX_ILD.sas is file U:\studies\AS\pgms\bchan\lib\IPP_2IPSOPplusPX_ILD.sas.
-122       +/*
-123       +Interstitial lung disease;
-124       +1)  One or more diagnosis codes for ILD from primary discharge
-125       +Or
-126       +2)  (Two or more diagnosis codes for ILD from secondary discharge or physician EMM ) plus one or more diagnosis tests within 90 days prior
-126      !+to (inclusive) one of the diagnosis code for ILD
-127       +*/
-128       +%macro IPP_2IPSOPplusPX_ILD(outdata=,ids=,Dxs=, Pxs=);
-129       +*DXs=diagnosis code in followup, Pxs=CPT code in follow up;
-130       +*do not name outData as IPPILD dxIPSILD dxOPILD dxIPSOPILD pxILD dxpxIPSOPILD IPSOPILD;
-131       +
-132       +data IPPILD dxIPSILD dxOPILD;
-133       +set &dxs();
-134       +length dx1_date 4;
-135       +format dx1_date mmddyy10.;
-136       +dx1_date=min(ADMIT_DATE,  BEGIN_DATE);
-137       +
-138       +if dx in :('515','51630','51631','51632','51633','51634','51635','51636','51637',
-139       +           '5164','5165','5166','5168','5169','71481');
+125       +/*
+126       +Interstitial lung disease;
+127       +1)  One or more diagnosis codes for ILD from primary discharge
+128       +Or
+129       +2)  (Two or more diagnosis codes for ILD from secondary discharge or physician EMM ) plus one or more diagnosis tests within 90 days prior
+129      !+to (inclusive) one of the diagnosis code for ILD
+130       +*/
+131       +%macro IPP_2IPSOPplusPX_ILD(outdata=,ids=,Dxs=, Pxs=);
+132       +*DXs=diagnosis code in followup, Pxs=CPT code in follow up;
+133       +*do not name outData as IPPILD dxIPSILD dxOPILD dxIPSOPILD pxILD dxpxIPSOPILD IPSOPILD;
+134       +
+135       +data IPPILD dxIPSILD dxOPILD;
+136       +set &dxs();
+137       +length dx1_date 4;
+138       +format dx1_date mmddyy10.;
+139       +dx1_date=min(ADMIT_DATE,  BEGIN_DATE);
 140       +
-141       +if enc_type='IP' and pdx='P'
-142       +    then output IPPILD;
-143       +if enc_type='IP' and pdx ne 'P'
-144       +    then output dxIPSILD;
-145       +if enc_type not in ('IP','IF', 'OT', " ")
-146       +    then output dxOPILD;
-147       +run;
-148       +
-149       +data dxIPSOPILD; *ILD from secondary discharge or physician EMM;
-150       +set dxIPSILD dxOPILD;
-151       +run;
-152       +
-153       +data pxILD; *diagnosis tests;
-154       +set &pxs();
-155       +if (px_type='09' and px in ('8741','8742')) or
-156       +   (px_type='C1' and px in ('71250','71260','71270','71275','31625','31628',
-157       +                             '31629','31632','31633','32095','32096','32097',
-158       +                             '32098','32400','32405','32604','32606','32607',
-159       +                             '32608','32609'));
-160       +run;
-161       +proc sort data=pxILD nodupkey; by &IDS px_date;run; * drop duplicate PX date and keep only one;
-162       +
-163       +proc sql;
-164       +/*one or more diagnosis tests within 90 days prior to (inclusive) one of the diagnosis code for ILD*/
-165       +create table dxpxIPSOPILD as
-166       +select a.* , b.px_date
-167       +from dxIPSOPILD as a
-168       +    ,
-169       +     pxILD as b
-3                                                                   The SAS System                                   09:24 Thursday, September 7, 2017
+141       +if dx in :('515','51630','51631','51632','51633','51634','51635','51636','51637',
+142       +           '5164','5165','5166','5168','5169','71481');
+143       +
+144       +if enc_type='IP' and pdx='P'
+145       +    then output IPPILD;
+146       +if enc_type='IP' and pdx ne 'P'
+147       +    then output dxIPSILD;
+148       +if enc_type not in ('IP','IF', 'OT', " ")
+149       +    then output dxOPILD;
+150       +run;
+151       +
+152       +data dxIPSOPILD; *ILD from secondary discharge or physician EMM;
+153       +set dxIPSILD dxOPILD;
+154       +run;
+155       +
+156       +data pxILD; *diagnosis tests;
+157       +set &pxs();
+158       +if (px_type='09' and px in ('8741','8742')) or
+159       +   (px_type='C1' and px in ('71250','71260','71270','71275','31625','31628',
+160       +                             '31629','31632','31633','32095','32096','32097',
+161       +                             '32098','32400','32405','32604','32606','32607',
+162       +                             '32608','32609'));
+163       +run;
+164       +proc sort data=pxILD nodupkey; by &IDS px_date;run; * drop duplicate PX date and keep only one;
+165       +
+166       +proc sql;
+167       +/*one or more diagnosis tests within 90 days prior to (inclusive) one of the diagnosis code for ILD*/
+168       +create table dxpxIPSOPILD as
+169       +select a.* , b.px_date
+170       +from dxIPSOPILD as a
+171       +    ,
+172       +     pxILD as b
+3                                                                   The SAS System                                   21:32 Saturday, September 9, 2017
 
-170       +where a.&IDS=b.&IDS and
-171       +      min(b.ADMIT_DATE, b.BEGIN_DATE)-90<=b.px_date<=min(b.ADMIT_DATE, b.BEGIN_DATE);
-172       +
-173       +/* sencond DX code */
-174       +create table IPSOPILD as
-175       +select a.*, min(b.ADMIT_DATE, b.BEGIN_DATE) as DX2_date length=4 format mmddyy10.
-176       +from dxpxIPSOPILD as a
-177       +    ,
-178       +     dxIPSOPILD(drop=dx1_date) as b
-179       +where a.patid=b.patid and
-180       +      (a.ADMIT_DATE ne b.ADMIT_DATE and a.BEGIN_DATE ne b.BEGIN_DATE)
-181       +order by &IDS,ADMIT_DATE, BEGIN_DATE;
-182       +quit;
-183       +
-184       +
-185       +data &outData;
-186       +set IPPILD IPSOPILD;
-187       +length outcome $20 outcome_date outcome_start_date 4;
-188       +format outcome_date outcome_start_date mmddyy10.;
-189       +outcome="ILD";
-190       +outcome_date=max(dx1_date, dx2_date, px_date);
-191       +outcome_start_date=min(dx1_date, dx2_date, px_date);
-192       +drop ADMIT_DATE BEGIN_DATE DISCHARGE_DATE END_DATE;
-193       +run;
-194       +
-195       +proc sort data=&outData;
-196       +by &IDS outcome_date descending outcome_start_date descending Enc_type;
-197       +run;
-198       +
-199       +data &outData;
-200       +set &outData;
-201       +by &IDS outcome_date descending outcome_start_date;
-202       +if first.outcome_date;
-203       +run;
-204       +
-205       +proc datasets nolist;
-206       +delete IPPILD dxIPSILD dxOPILD dxIPSOPILD pxILD dxpxIPSOPILD IPSOPILD;
-207       +quit;run;
-208       +%mend IPP_2IPSOPplusPX_ILD;
+173       +where a.&IDS=b.&IDS and
+174       +      min(b.ADMIT_DATE, b.BEGIN_DATE)-90<=b.px_date<=min(b.ADMIT_DATE, b.BEGIN_DATE);
+175       +
+176       +/* sencond DX code */
+177       +create table IPSOPILD as
+178       +select a.*, min(b.ADMIT_DATE, b.BEGIN_DATE) as DX2_date length=4 format mmddyy10.
+179       +from dxpxIPSOPILD as a
+180       +    ,
+181       +     dxIPSOPILD(drop=dx1_date) as b
+182       +where a.patid=b.patid and
+183       +      (a.ADMIT_DATE ne b.ADMIT_DATE and a.BEGIN_DATE ne b.BEGIN_DATE)
+184       +order by &IDS,ADMIT_DATE, BEGIN_DATE;
+185       +quit;
+186       +
+187       +
+188       +data &outData;
+189       +set IPPILD IPSOPILD;
+190       +length outcome $20 outcome_date outcome_start_date 4;
+191       +format outcome_date outcome_start_date mmddyy10.;
+192       +outcome="ILD";
+193       +outcome_date=max(dx1_date, dx2_date, px_date);
+194       +outcome_start_date=min(dx1_date, dx2_date, px_date);
+195       +drop ADMIT_DATE BEGIN_DATE DISCHARGE_DATE END_DATE;
+196       +run;
+197       +
+198       +proc sort data=&outData;
+199       +by &IDS outcome_date descending outcome_start_date descending Enc_type;
+200       +run;
+201       +
+202       +data &outData;
+203       +set &outData;
+204       +by &IDS outcome_date descending outcome_start_date;
+205       +if first.outcome_date;
+206       +run;
+207       +
+208       +proc datasets nolist;
+209       +delete IPPILD dxIPSILD dxOPILD dxIPSOPILD pxILD dxpxIPSOPILD IPSOPILD;
+210       +quit;run;
+211       +%mend IPP_2IPSOPplusPX_ILD;
 NOTE: %INCLUDE (level 1) ending.
-209        %IPP_2IPSOPplusPX_ILD(outdata = Work.outcome_ILD_MPCD,
-210                              IDS = indexID,
-211                              Dxs = UCB.tempPrevDxMPCD,
-212                              Pxs = UCB.tempPrevPxMPCD);
+212        %IPP_2IPSOPplusPX_ILD(outdata = Work.outcome_ILD_MPCD,
+213                              IDS = indexID,
+214                              Dxs = UCB.tempPrevDxMPCD,
+215                              Pxs = UCB.tempPrevPxMPCD);
 
 NOTE: There were 373191 observations read from the data set UCB.TEMPPREVDXMPCD.
 NOTE: The data set WORK.IPPILD has 0 observations and 25 variables.
 NOTE: The data set WORK.DXIPSILD has 0 observations and 25 variables.
 NOTE: The data set WORK.DXOPILD has 189 observations and 25 variables.
 NOTE: DATA statement used (Total process time):
-      real time           1.23 seconds
-      cpu time            0.09 seconds
+      real time           0.99 seconds
+      cpu time            0.07 seconds
       
 
 
@@ -207,26 +207,26 @@ NOTE: There were 0 observations read from the data set WORK.DXIPSILD.
 NOTE: There were 189 observations read from the data set WORK.DXOPILD.
 NOTE: The data set WORK.DXIPSOPILD has 189 observations and 25 variables.
 NOTE: DATA statement used (Total process time):
-      real time           0.04 seconds
-      cpu time            0.03 seconds
+      real time           0.01 seconds
+      cpu time            0.01 seconds
       
 
 
 NOTE: There were 880584 observations read from the data set UCB.TEMPPREVPXMPCD.
 NOTE: The data set WORK.PXILD has 1327 observations and 22 variables.
 NOTE: DATA statement used (Total process time):
-      real time           2.07 seconds
-      cpu time            0.06 seconds
+      real time           1.57 seconds
+      cpu time            0.26 seconds
       
 
 
-4                                                                   The SAS System                                   09:24 Thursday, September 7, 2017
+4                                                                   The SAS System                                   21:32 Saturday, September 9, 2017
 
 NOTE: There were 1327 observations read from the data set WORK.PXILD.
 NOTE: 236 observations with duplicate key values were deleted.
 NOTE: The data set WORK.PXILD has 1091 observations and 22 variables.
 NOTE: PROCEDURE SORT used (Total process time):
-      real time           0.04 seconds
+      real time           0.03 seconds
       cpu time            0.00 seconds
       
 
@@ -235,7 +235,7 @@ NOTE: Table WORK.DXPXIPSOPILD created, with 565 rows and 26 columns.
 NOTE: Table WORK.IPSOPILD created, with 0 rows and 27 columns.
 
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           0.09 seconds
+      real time           0.04 seconds
       cpu time            0.03 seconds
       
 
@@ -244,7 +244,7 @@ NOTE: There were 0 observations read from the data set WORK.IPPILD.
 NOTE: There were 0 observations read from the data set WORK.IPSOPILD.
 NOTE: The data set WORK.OUTCOME_ILD_MPCD has 0 observations and 26 variables.
 NOTE: DATA statement used (Total process time):
-      real time           0.04 seconds
+      real time           0.01 seconds
       cpu time            0.01 seconds
       
 
@@ -252,7 +252,7 @@ NOTE: DATA statement used (Total process time):
 NOTE: Input data set is empty.
 NOTE: The data set WORK.OUTCOME_ILD_MPCD has 0 observations and 26 variables.
 NOTE: PROCEDURE SORT used (Total process time):
-      real time           0.03 seconds
+      real time           0.00 seconds
       cpu time            0.00 seconds
       
 
@@ -260,7 +260,7 @@ NOTE: PROCEDURE SORT used (Total process time):
 NOTE: There were 0 observations read from the data set WORK.OUTCOME_ILD_MPCD.
 NOTE: The data set WORK.OUTCOME_ILD_MPCD has 0 observations and 26 variables.
 NOTE: DATA statement used (Total process time):
-      real time           0.03 seconds
+      real time           0.00 seconds
       cpu time            0.00 seconds
       
 
@@ -273,32 +273,32 @@ NOTE: Deleting WORK.PXILD (memtype=DATA).
 NOTE: Deleting WORK.DXPXIPSOPILD (memtype=DATA).
 NOTE: Deleting WORK.IPSOPILD (memtype=DATA).
 NOTE: PROCEDURE DATASETS used (Total process time):
-      real time           0.06 seconds
+      real time           0.04 seconds
       cpu time            0.03 seconds
       
 
-213        %IPP_2IPSOPplusPX_ILD(outdata = Work.outcome_ILD_UCB,
-214                              IDS = indexID,
-215                              Dxs = UCB.tempPrevDxUCB,
-216                              Pxs = UCB.tempPrevPxUCB);
+216        %IPP_2IPSOPplusPX_ILD(outdata = Work.outcome_ILD_UCB,
+217                              IDS = indexID,
+218                              Dxs = UCB.tempPrevDxUCB,
+219                              Pxs = UCB.tempPrevPxUCB);
 
 NOTE: There were 843818 observations read from the data set UCB.TEMPPREVDXUCB.
 NOTE: The data set WORK.IPPILD has 10 observations and 25 variables.
 NOTE: The data set WORK.DXIPSILD has 143 observations and 25 variables.
 NOTE: The data set WORK.DXOPILD has 41 observations and 25 variables.
 NOTE: DATA statement used (Total process time):
-      real time           2.63 seconds
-      cpu time            0.29 seconds
+      real time           2.12 seconds
+      cpu time            0.34 seconds
       
 
 
 NOTE: There were 143 observations read from the data set WORK.DXIPSILD.
 NOTE: There were 41 observations read from the data set WORK.DXOPILD.
-5                                                                   The SAS System                                   09:24 Thursday, September 7, 2017
+5                                                                   The SAS System                                   21:32 Saturday, September 9, 2017
 
 NOTE: The data set WORK.DXIPSOPILD has 184 observations and 25 variables.
 NOTE: DATA statement used (Total process time):
-      real time           0.03 seconds
+      real time           0.00 seconds
       cpu time            0.00 seconds
       
 
@@ -306,8 +306,8 @@ NOTE: DATA statement used (Total process time):
 NOTE: There were 4303647 observations read from the data set UCB.TEMPPREVPXUCB.
 NOTE: The data set WORK.PXILD has 6781 observations and 22 variables.
 NOTE: DATA statement used (Total process time):
-      real time           10.95 seconds
-      cpu time            0.31 seconds
+      real time           10.93 seconds
+      cpu time            0.82 seconds
       
 
 
@@ -315,8 +315,8 @@ NOTE: There were 6781 observations read from the data set WORK.PXILD.
 NOTE: 865 observations with duplicate key values were deleted.
 NOTE: The data set WORK.PXILD has 5916 observations and 22 variables.
 NOTE: PROCEDURE SORT used (Total process time):
-      real time           0.07 seconds
-      cpu time            0.03 seconds
+      real time           0.01 seconds
+      cpu time            0.01 seconds
       
 
 NOTE: Table WORK.DXPXIPSOPILD created, with 550 rows and 26 columns.
@@ -324,8 +324,8 @@ NOTE: Table WORK.DXPXIPSOPILD created, with 550 rows and 26 columns.
 NOTE: Table WORK.IPSOPILD created, with 1688 rows and 27 columns.
 
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           0.07 seconds
-      cpu time            0.03 seconds
+      real time           0.04 seconds
+      cpu time            0.04 seconds
       
 
 
@@ -333,23 +333,23 @@ NOTE: There were 10 observations read from the data set WORK.IPPILD.
 NOTE: There were 1688 observations read from the data set WORK.IPSOPILD.
 NOTE: The data set WORK.OUTCOME_ILD_UCB has 1698 observations and 26 variables.
 NOTE: DATA statement used (Total process time):
-      real time           0.03 seconds
-      cpu time            0.01 seconds
+      real time           0.00 seconds
+      cpu time            0.00 seconds
       
 
 
 NOTE: There were 1698 observations read from the data set WORK.OUTCOME_ILD_UCB.
 NOTE: The data set WORK.OUTCOME_ILD_UCB has 1698 observations and 26 variables.
 NOTE: PROCEDURE SORT used (Total process time):
-      real time           0.04 seconds
-      cpu time            0.00 seconds
+      real time           0.01 seconds
+      cpu time            0.01 seconds
       
 
 
 NOTE: There were 1698 observations read from the data set WORK.OUTCOME_ILD_UCB.
 NOTE: The data set WORK.OUTCOME_ILD_UCB has 57 observations and 26 variables.
 NOTE: DATA statement used (Total process time):
-      real time           0.03 seconds
+      real time           0.01 seconds
       cpu time            0.00 seconds
       
 
@@ -366,20 +366,20 @@ NOTE: PROCEDURE DATASETS used (Total process time):
       cpu time            0.01 seconds
       
 
-217        %IPP_2IPSOPplusPX_ILD(outdata = Work.outcome_ILD_SABR,
-218                              IDS = indexID,
-6                                                                   The SAS System                                   09:24 Thursday, September 7, 2017
+220        %IPP_2IPSOPplusPX_ILD(outdata = Work.outcome_ILD_SABR,
+221                              IDS = indexID,
+6                                                                   The SAS System                                   21:32 Saturday, September 9, 2017
 
-219                              Dxs = UCB.tempPrevDxSABR,
-220                              Pxs = UCB.tempPrevPxSABR);
+222                              Dxs = UCB.tempPrevDxSABR,
+223                              Pxs = UCB.tempPrevPxSABR);
 
 NOTE: There were 22496556 observations read from the data set UCB.TEMPPREVDXSABR.
 NOTE: The data set WORK.IPPILD has 156 observations and 25 variables.
 NOTE: The data set WORK.DXIPSILD has 2089 observations and 25 variables.
 NOTE: The data set WORK.DXOPILD has 8197 observations and 25 variables.
 NOTE: DATA statement used (Total process time):
-      real time           1:07.76
-      cpu time            4.89 seconds
+      real time           1:03.21
+      cpu time            8.23 seconds
       
 
 
@@ -387,16 +387,16 @@ NOTE: There were 2089 observations read from the data set WORK.DXIPSILD.
 NOTE: There were 8197 observations read from the data set WORK.DXOPILD.
 NOTE: The data set WORK.DXIPSOPILD has 10286 observations and 25 variables.
 NOTE: DATA statement used (Total process time):
-      real time           0.07 seconds
-      cpu time            0.03 seconds
+      real time           0.01 seconds
+      cpu time            0.01 seconds
       
 
 
 NOTE: There were 29446326 observations read from the data set UCB.TEMPPREVPXSABR.
 NOTE: The data set WORK.PXILD has 63169 observations and 22 variables.
 NOTE: DATA statement used (Total process time):
-      real time           1:18.68
-      cpu time            3.68 seconds
+      real time           1:09.43
+      cpu time            7.23 seconds
       
 
 
@@ -404,8 +404,8 @@ NOTE: There were 63169 observations read from the data set WORK.PXILD.
 NOTE: 19147 observations with duplicate key values were deleted.
 NOTE: The data set WORK.PXILD has 44022 observations and 22 variables.
 NOTE: PROCEDURE SORT used (Total process time):
-      real time           0.14 seconds
-      cpu time            0.07 seconds
+      real time           0.09 seconds
+      cpu time            0.09 seconds
       
 
 NOTE: Table WORK.DXPXIPSOPILD created, with 32975 rows and 26 columns.
@@ -413,8 +413,8 @@ NOTE: Table WORK.DXPXIPSOPILD created, with 32975 rows and 26 columns.
 NOTE: Table WORK.IPSOPILD created, with 813340 rows and 27 columns.
 
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           1.21 seconds
-      cpu time            1.32 seconds
+      real time           1.12 seconds
+      cpu time            1.66 seconds
       
 
 
@@ -422,27 +422,27 @@ NOTE: There were 156 observations read from the data set WORK.IPPILD.
 NOTE: There were 813340 observations read from the data set WORK.IPSOPILD.
 NOTE: The data set WORK.OUTCOME_ILD_SABR has 813496 observations and 26 variables.
 NOTE: DATA statement used (Total process time):
-      real time           0.71 seconds
-      cpu time            0.65 seconds
+      real time           0.63 seconds
+      cpu time            0.62 seconds
       
 
 
 NOTE: There were 813496 observations read from the data set WORK.OUTCOME_ILD_SABR.
 NOTE: The data set WORK.OUTCOME_ILD_SABR has 813496 observations and 26 variables.
 NOTE: PROCEDURE SORT used (Total process time):
-      real time           0.85 seconds
-      cpu time            1.32 seconds
+      real time           0.76 seconds
+      cpu time            1.40 seconds
       
 
 
 NOTE: There were 813496 observations read from the data set WORK.OUTCOME_ILD_SABR.
 NOTE: The data set WORK.OUTCOME_ILD_SABR has 3542 observations and 26 variables.
 NOTE: DATA statement used (Total process time):
-      real time           0.46 seconds
-      cpu time            0.42 seconds
+      real time           0.40 seconds
+      cpu time            0.40 seconds
       
 
-7                                                                   The SAS System                                   09:24 Thursday, September 7, 2017
+7                                                                   The SAS System                                   21:32 Saturday, September 9, 2017
 
 
 NOTE: Deleting WORK.IPPILD (memtype=DATA).
@@ -453,162 +453,162 @@ NOTE: Deleting WORK.PXILD (memtype=DATA).
 NOTE: Deleting WORK.DXPXIPSOPILD (memtype=DATA).
 NOTE: Deleting WORK.IPSOPILD (memtype=DATA).
 NOTE: PROCEDURE DATASETS used (Total process time):
-      real time           0.06 seconds
-      cpu time            0.03 seconds
-      
-
-221        
-222        /*
-223        Process fracture episodes data set
-224         */
-225        proc sql;
-226          create table Work.fractures as
-227            select database,
-228                   exposure,
-229                   patid,
-230                   ASCohortDate,
-231                   indexGNN,
-232                   indexDate,
-233                   indexID,
-234                   age,
-235                   sex,
-236                   "Osteoporotic fracture" as outcomeCategory,
-237                   fractureType as disease,
-238                   fractureEpisodeStart as begin_date
-239            from DT.fractureEpisodesPrev
-240            where ^missing(fractureType);
-NOTE: Table WORK.FRACTURES created, with 24209 rows and 12 columns.
-
-241        quit;
-NOTE: PROCEDURE SQL used (Total process time):
-      real time           0.15 seconds
+      real time           0.04 seconds
       cpu time            0.04 seconds
       
 
-242        
-243        
-244        
+224        
+225        /*
+226        Process fracture episodes data set
+227         */
+228        proc sql;
+229          create table Work.fractures as
+230            select database,
+231                   exposure,
+232                   patid,
+233                   ASCohortDate,
+234                   indexGNN,
+235                   indexDate,
+236                   indexID,
+237                   age,
+238                   sex,
+239                   "Osteoporotic fracture" as outcomeCategory,
+240                   fractureType as disease,
+241                   fractureEpisodeStart as begin_date
+242            from DT.fractureEpisodesPrev
+243            where ^missing(fractureType);
+NOTE: Table WORK.FRACTURES created, with 24209 rows and 12 columns.
+
+244        quit;
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.10 seconds
+      cpu time            0.06 seconds
+      
+
 245        
-246        proc sql;
+246        
 247        
-248          create table Work.defOutcomes as
-249            select *
-250            from DT.defOutcomes
-251            where disease ^in ("Interstitial lung disease");
+248        
+249        proc sql;
+250        
+251          create table Work.defOutcomes as
+252            select *
+253            from DT.defOutcomes
+254            where disease ^in ("Interstitial lung disease");
 NOTE: Table WORK.DEFOUTCOMES created, with 2664 rows and 6 columns.
 
-252        
-253          %let select1 = select A.*, B.outcomeCategory, B.disease;
-254          %let join1 = inner join Work.defOutcomes B on (A.codeType = B.codeType & A.code = B.code);
-255          %let where1a = where B.disease ^in ("Myocardial infarction", "Hospitalized infection");
-256          %let where1b = | (B.disease in ("Myocardial infarction", "Hospitalized infection") & A.enc_type = "IP");
-257          %let select2 = select database, exposure, patid, ASCohortDate, indexGNN, indexDate, indexID, enc_type, age, sex, "Lung disease" as
-257      ! outcomeCategory, "Interstitial lung disease" as disease, outcome_start_date as begin_date;
-258          create table DT.comorbidities as
-259            select C.database, C.exposure, C.patid, C.ASCohortDate, C.indexGNN, C.indexDate, C.indexID, C.age, C.sex,
-260                   C.outcomeCategory,
-261                   C.disease,
-262                   sum(C.ASCohortDate <= C.begin_date <= C.indexDate) > 0 as indPrevPriorToIndex,
-263                   sum(0 <= C.indexDate  - C.begin_date <= 183 |
-264                       0 <= C.begin_date - C.indexDate  <= (183 * 1)) > 0 as indPrev12mo,
-265                   sum(0 <= C.indexDate  - C.begin_date <= 183 |
-266                       0 <= C.begin_date - C.indexDate  <= (183 * 3)) > 0 as indPrev24mo,
-267                   sum(0 <= C.indexDate  - C.begin_date <= 183 |
-268                       0 <= C.begin_date - C.indexDate  <= (183 * 5)) > 0 as indPrev36mo
-269            from (&select1 from UCB.tempPrevDxMPCD A &join1 &where1a &where1b union corr
-8                                                                   The SAS System                                   09:24 Thursday, September 7, 2017
+255        
+256          %let select1 = select A.*, B.outcomeCategory, B.disease;
+257          %let join1 = inner join Work.defOutcomes B on (A.codeType = B.codeType & A.code = B.code);
+258          %let where1a = where B.disease ^in ("Myocardial infarction", "Hospitalized infection");
+259          %let where1b = | (B.disease in ("Myocardial infarction", "Hospitalized infection") & A.enc_type = "IP");
+260          %let select2 = select database, exposure, patid, ASCohortDate, indexGNN, indexDate, indexID, enc_type, age, sex, "Lung disease" as
+260      ! outcomeCategory, "Interstitial lung disease" as disease, outcome_start_date as begin_date;
+261          create table DT.comorbidities as
+262            select C.database, C.exposure, C.patid, C.ASCohortDate, C.indexGNN, C.indexDate, C.indexID, C.age, C.sex,
+263                   C.outcomeCategory,
+264                   C.disease,
+265                   sum(C.ASCohortDate <= C.begin_date <= C.indexDate) > 0 as indPrevPriorToIndex,
+266                   sum(0 <= C.indexDate  - C.begin_date <= 183 |
+267                       0 <= C.begin_date - C.indexDate  <= (183 * 1)) > 0 as indPrev12mo,
+268                   sum(0 <= C.indexDate  - C.begin_date <= 183 |
+269                       0 <= C.begin_date - C.indexDate  <= (183 * 3)) > 0 as indPrev24mo,
+270                   sum(0 <= C.indexDate  - C.begin_date <= 183 |
+271                       0 <= C.begin_date - C.indexDate  <= (183 * 5)) > 0 as indPrev36mo
+272            from (&select1 from UCB.tempPrevDxMPCD A &join1 &where1a &where1b union corr
+8                                                                   The SAS System                                   21:32 Saturday, September 9, 2017
 
-270                  &select1 from UCB.tempPrevDxUCB  A &join1 &where1a &where1b union corr
-271                  &select1 from UCB.tempPrevDxSABR A &join1 &where1a &where1b union corr
-272                  &select1 from UCB.tempPrevPxMPCD A &join1 &where1a union corr
-273                  &select1 from UCB.tempPrevPxUCB  A &join1 &where1a union corr
-274                  &select1 from UCB.tempPrevPxSABR A &join1 &where1a union corr
-275                  &select2 from Work.outcome_ILD_MPCD union corr
-276                  &select2 from Work.outcome_ILD_UCB  union corr
-277                  &select2 from Work.outcome_ILD_SABR union corr
-278                  select * from Work.fractures) C
-279            group by C.database, C.exposure, C.patid, C.ASCohortDate, C.indexGNN, C.indexDate, C.indexID, C.age, C.sex,
-280                     C.outcomeCategory,
-281                     C.disease
-282            having calculated indPrevPriorToIndex > 0 |
-283                   calculated indPrev12mo > 0 |
-284                   calculated indPrev24mo > 0 |
-285                   calculated indPrev36mo > 0;
+273                  &select1 from UCB.tempPrevDxUCB  A &join1 &where1a &where1b union corr
+274                  &select1 from UCB.tempPrevDxSABR A &join1 &where1a &where1b union corr
+275                  &select1 from UCB.tempPrevPxMPCD A &join1 &where1a union corr
+276                  &select1 from UCB.tempPrevPxUCB  A &join1 &where1a union corr
+277                  &select1 from UCB.tempPrevPxSABR A &join1 &where1a union corr
+278                  &select2 from Work.outcome_ILD_MPCD union corr
+279                  &select2 from Work.outcome_ILD_UCB  union corr
+280                  &select2 from Work.outcome_ILD_SABR union corr
+281                  select * from Work.fractures) C
+282            group by C.database, C.exposure, C.patid, C.ASCohortDate, C.indexGNN, C.indexDate, C.indexID, C.age, C.sex,
+283                     C.outcomeCategory,
+284                     C.disease
+285            having calculated indPrevPriorToIndex > 0 |
+286                   calculated indPrev12mo > 0 |
+287                   calculated indPrev24mo > 0 |
+288                   calculated indPrev36mo > 0;
 NOTE: Parallel WHERE evaluation suppressed due to sort order on table.
 NOTE: Parallel WHERE evaluation suppressed due to sort order on table.
 NOTE: Parallel WHERE evaluation suppressed due to sort order on table.
 NOTE: Parallel WHERE evaluation suppressed due to sort order on table.
 NOTE: Table DT.COMORBIDITIES created, with 63515 rows and 15 columns.
 
-286        
-287        quit;
+289        
+290        quit;
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           23.78 seconds
-      cpu time            26.16 seconds
+      real time           24.24 seconds
+      cpu time            31.37 seconds
       
 
-288        
-289        
-290        proc sql;
 291        
-292          create table Work.denominator as
-293            select database,
-294                   mean(indexDate - ASCohortDate) as meanDaysASCohortToExposure,
-295                   min(indexDate - ASCohortDate) as minDaysASCohortToExposure,
-296                   max(indexDate - ASCohortDate) as maxDaysASCohortToExposure,
-297                   count(distinct patid) as denomPatid,
-298                   count(distinct indexID) as denomIndexExp
-299            from DT.indexLookup
-300            group by database;
+292        
+293        proc sql;
+294        
+295          create table Work.denominator as
+296            select database,
+297                   mean(indexDate - ASCohortDate) as meanDaysASCohortToExposure,
+298                   min(indexDate - ASCohortDate) as minDaysASCohortToExposure,
+299                   max(indexDate - ASCohortDate) as maxDaysASCohortToExposure,
+300                   count(distinct patid) as denomPatid,
+301                   count(distinct indexID) as denomIndexExp
+302            from DT.indexLookup
+303            group by database;
 NOTE: Table WORK.DENOMINATOR created, with 3 rows and 6 columns.
 
-301        
-302          create table Work.prev as
-303            select A.database, A.outcomeCategory, A.disease,
-304                   B.denomPatid,
-305                   B.denomIndexExp,
-306                   "AS cohort entry to exposure" as timeWindow,
-307                   sum(A.indPrevPriorToIndex) as numer,
-308                   sum(A.indPrevPriorToIndex) / B.denomIndexExp * 100 as prevPct
-309            from DT.comorbidities A inner join
-310                 Work.denominator B on (A.database = B.database)
-311            group by A.database, A.outcomeCategory, A.disease, B.denomPatid, B.denomIndexExp
-312            union corr
-313            select A.database, A.outcomeCategory, A.disease,
-314                   B.denomPatid,
-315                   B.denomIndexExp,
-316                   "12 months" as timeWindow,
-317                   sum(A.indPrev12mo) as numer,
-318                   sum(A.indPrev12mo) / B.denomIndexExp * 100 as prevPct
-319            from DT.comorbidities A inner join
-320                 Work.denominator B on (A.database = B.database)
-321            group by A.database, A.outcomeCategory, A.disease, B.denomPatid, B.denomIndexExp
-322            union corr
-323            select A.database, A.outcomeCategory, A.disease,
-324                   B.denomPatid,
-325                   B.denomIndexExp,
-326                   "24 months" as timeWindow,
-327                   sum(A.indPrev24mo) as numer,
-328                   sum(A.indPrev24mo) / B.denomIndexExp * 100 as prevPct
-9                                                                   The SAS System                                   09:24 Thursday, September 7, 2017
+304        
+305          create table Work.prev as
+306            select A.database, A.outcomeCategory, A.disease,
+307                   B.denomPatid,
+308                   B.denomIndexExp,
+309                   "AS cohort entry to exposure" as timeWindow,
+310                   sum(A.indPrevPriorToIndex) as numer,
+311                   sum(A.indPrevPriorToIndex) / B.denomIndexExp * 100 as prevPct
+312            from DT.comorbidities A inner join
+313                 Work.denominator B on (A.database = B.database)
+314            group by A.database, A.outcomeCategory, A.disease, B.denomPatid, B.denomIndexExp
+315            union corr
+316            select A.database, A.outcomeCategory, A.disease,
+317                   B.denomPatid,
+318                   B.denomIndexExp,
+319                   "12 months" as timeWindow,
+320                   sum(A.indPrev12mo) as numer,
+321                   sum(A.indPrev12mo) / B.denomIndexExp * 100 as prevPct
+322            from DT.comorbidities A inner join
+323                 Work.denominator B on (A.database = B.database)
+324            group by A.database, A.outcomeCategory, A.disease, B.denomPatid, B.denomIndexExp
+325            union corr
+326            select A.database, A.outcomeCategory, A.disease,
+327                   B.denomPatid,
+328                   B.denomIndexExp,
+329                   "24 months" as timeWindow,
+330                   sum(A.indPrev24mo) as numer,
+331                   sum(A.indPrev24mo) / B.denomIndexExp * 100 as prevPct
+9                                                                   The SAS System                                   21:32 Saturday, September 9, 2017
 
-329            from DT.comorbidities A inner join
-330                 Work.denominator B on (A.database = B.database)
-331            group by A.database, A.outcomeCategory, A.disease, B.denomPatid, B.denomIndexExp
-332            union corr
-333            select A.database, A.outcomeCategory, A.disease,
-334                   B.denomPatid,
-335                   B.denomIndexExp,
-336                   "36 months" as timeWindow,
-337                   sum(A.indPrev36mo) as numer,
-338                   sum(A.indPrev36mo) / B.denomIndexExp * 100 as prevPct
-339            from DT.comorbidities A inner join
-340                 Work.denominator B on (A.database = B.database)
-341            group by A.database, A.outcomeCategory, A.disease, B.denomPatid, B.denomIndexExp;
+332            from DT.comorbidities A inner join
+333                 Work.denominator B on (A.database = B.database)
+334            group by A.database, A.outcomeCategory, A.disease, B.denomPatid, B.denomIndexExp
+335            union corr
+336            select A.database, A.outcomeCategory, A.disease,
+337                   B.denomPatid,
+338                   B.denomIndexExp,
+339                   "36 months" as timeWindow,
+340                   sum(A.indPrev36mo) as numer,
+341                   sum(A.indPrev36mo) / B.denomIndexExp * 100 as prevPct
+342            from DT.comorbidities A inner join
+343                 Work.denominator B on (A.database = B.database)
+344            group by A.database, A.outcomeCategory, A.disease, B.denomPatid, B.denomIndexExp;
 NOTE: Table WORK.PREV created, with 260 rows and 8 columns.
 
-342          select * from Work.prev;
-                                                                  --- AS project ---                             09:24 Thursday, September 7, 2017   1
+345          select * from Work.prev;
+                                                                  --- AS project ---                             21:32 Saturday, September 9, 2017   1
 
                                                                                       denom     denom
 database    Disease Category            Disease                                       Patid  IndexExp  timeWindow                      numer   prevPct
@@ -682,7 +682,7 @@ MPCD        PsO/PsA                     Psoriasis                               
 MPCD        PsO/PsA                     Psoriasis                                      3000      4353  36 months                         154   3.53779
  
                                                            queryPrevalentComorbidities.sas
-                                                                  --- AS project ---                             09:24 Thursday, September 7, 2017   2
+                                                                  --- AS project ---                             21:32 Saturday, September 9, 2017   2
 
                                                                                       denom     denom
 database    Disease Category            Disease                                       Patid  IndexExp  timeWindow                      numer   prevPct
@@ -756,7 +756,7 @@ Marketscan  Lung disease                Interstitial lung disease               
 Marketscan  Lung disease                Interstitial lung disease                     11982     18413  24 months                          13  0.070602
  
                                                            queryPrevalentComorbidities.sas
-                                                                  --- AS project ---                             09:24 Thursday, September 7, 2017   3
+                                                                  --- AS project ---                             21:32 Saturday, September 9, 2017   3
 
                                                                                       denom     denom
 database    Disease Category            Disease                                       Patid  IndexExp  timeWindow                      numer   prevPct
@@ -830,7 +830,7 @@ Medicare    Infection                   Opportunistic infection                 
 Medicare    Inflammatory bowel disease  Crohn’s Disease                               22584     37244  12 months                        1883  5.055848
  
                                                            queryPrevalentComorbidities.sas
-                                                                  --- AS project ---                             09:24 Thursday, September 7, 2017   4
+                                                                  --- AS project ---                             21:32 Saturday, September 9, 2017   4
 
                                                                                       denom     denom
 database    Disease Category            Disease                                       Patid  IndexExp  timeWindow                      numer   prevPct
@@ -904,94 +904,94 @@ Medicare    Uveitis                     Uveitis                                 
  
  
                                                            queryPrevalentComorbidities.sas
-343        quit;
+346        quit;
 NOTE: The PROCEDURE SQL printed pages 1-4.
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           0.96 seconds
-      cpu time            0.85 seconds
+      real time           0.81 seconds
+      cpu time            0.92 seconds
       
 
-344        
-345        
-346        proc export
-347          data = Work.prev
-348          outfile = "data\processed\&cmt.Overall.csv"
-349          dbms = csv
-350          replace;
-351          delimiter = ",";
-352        run;
+347        
+348        
+349        proc export
+350          data = Work.prev
+351          outfile = "data\processed\&cmt.Overall.csv"
+352          dbms = csv
+353          replace;
+354          delimiter = ",";
+355        run;
 
-353         /**********************************************************************
-354         *   PRODUCT:   SAS
-355         *   VERSION:   9.4
-356         *   CREATOR:   External File Interface
-357         *   DATE:      07SEP17
-358         *   DESC:      Generated SAS Datastep Code
-359         *   TEMPLATE SOURCE:  (None Specified.)
-360         ***********************************************************************/
-361            data _null_;
-362            %let _EFIERR_ = 0; /* set the ERROR detection macro variable */
-363            %let _EFIREC_ = 0;     /* clear export record count macro variable */
-364            file 'data\processed\queryPrevalentComorbiditiesOverall.csv' delimiter=',' DSD DROPOVER lrecl=32767;
-365            if _n_ = 1 then        /* write column names or labels */
-366             do;
-367               put
-368                  "database"
-369               ','
-370                  "outcomeCategory"
-371               ','
-372                  "Disease"
-373               ','
-374                  "denomPatid"
-375               ','
-376                  "denomIndexExp"
-377               ','
-378                  "timeWindow"
-379               ','
-380                  "numer"
-381               ','
-382                  "prevPct"
-383               ;
-384             end;
-385           set  WORK.PREV   end=EFIEOD;
-386               format database $10. ;
-387               format outcomeCategory $26. ;
-388               format Disease $41. ;
-389               format denomPatid best12. ;
-390               format denomIndexExp best12. ;
-391               format timeWindow $27. ;
-10                                                                  The SAS System                                   09:24 Thursday, September 7, 2017
+356         /**********************************************************************
+357         *   PRODUCT:   SAS
+358         *   VERSION:   9.4
+359         *   CREATOR:   External File Interface
+360         *   DATE:      09SEP17
+361         *   DESC:      Generated SAS Datastep Code
+362         *   TEMPLATE SOURCE:  (None Specified.)
+363         ***********************************************************************/
+364            data _null_;
+365            %let _EFIERR_ = 0; /* set the ERROR detection macro variable */
+366            %let _EFIREC_ = 0;     /* clear export record count macro variable */
+367            file 'data\processed\queryPrevalentComorbiditiesOverall.csv' delimiter=',' DSD DROPOVER lrecl=32767;
+368            if _n_ = 1 then        /* write column names or labels */
+369             do;
+370               put
+371                  "database"
+372               ','
+373                  "outcomeCategory"
+374               ','
+375                  "Disease"
+376               ','
+377                  "denomPatid"
+378               ','
+379                  "denomIndexExp"
+380               ','
+381                  "timeWindow"
+382               ','
+383                  "numer"
+384               ','
+385                  "prevPct"
+386               ;
+387             end;
+388           set  WORK.PREV   end=EFIEOD;
+389               format database $10. ;
+390               format outcomeCategory $26. ;
+391               format Disease $41. ;
+392               format denomPatid best12. ;
+393               format denomIndexExp best12. ;
+394               format timeWindow $27. ;
+10                                                                  The SAS System                                   21:32 Saturday, September 9, 2017
 
-392               format numer best12. ;
-393               format prevPct best12. ;
-394             do;
-395               EFIOUT + 1;
-396               put database $ @;
-397               put outcomeCategory $ @;
-398               put Disease $ @;
-399               put denomPatid @;
-400               put denomIndexExp @;
-401               put timeWindow $ @;
-402               put numer @;
-403               put prevPct ;
-404               ;
-405             end;
-406            if _ERROR_ then call symputx('_EFIERR_',1);  /* set ERROR detection macro variable */
-407            if EFIEOD then call symputx('_EFIREC_',EFIOUT);
-408            run;
+395               format numer best12. ;
+396               format prevPct best12. ;
+397             do;
+398               EFIOUT + 1;
+399               put database $ @;
+400               put outcomeCategory $ @;
+401               put Disease $ @;
+402               put denomPatid @;
+403               put denomIndexExp @;
+404               put timeWindow $ @;
+405               put numer @;
+406               put prevPct ;
+407               ;
+408             end;
+409            if _ERROR_ then call symputx('_EFIERR_',1);  /* set ERROR detection macro variable */
+410            if EFIEOD then call symputx('_EFIREC_',EFIOUT);
+411            run;
 
 NOTE: The file 'data\processed\queryPrevalentComorbiditiesOverall.csv' is:
       Filename=U:\studies\AS\pgms\bchan\data\processed\queryPrevalentComorbiditiesOverall.csv,
       RECFM=V,LRECL=32767,File Size (bytes)=0,
-      Last Modified=07Sep2017:09:27:30,
-      Create Time=07Sep2017:09:27:30
+      Last Modified=09Sep2017:21:35:26,
+      Create Time=09Sep2017:21:35:26
 
 NOTE: 261 records were written to the file 'data\processed\queryPrevalentComorbiditiesOverall.csv'.
       The minimum record length was 56.
       The maximum record length was 125.
 NOTE: There were 260 observations read from the data set WORK.PREV.
 NOTE: DATA statement used (Total process time):
-      real time           0.00 seconds
+      real time           0.01 seconds
       cpu time            0.00 seconds
       
 
@@ -1000,73 +1000,73 @@ NOTE: DATA statement used (Total process time):
   
 NOTE: "data\processed\queryPrevalentComorbiditiesOverall.csv" file was successfully created.
 NOTE: PROCEDURE EXPORT used (Total process time):
-      real time           0.07 seconds
-      cpu time            0.01 seconds
+      real time           0.09 seconds
+      cpu time            0.04 seconds
       
 
-409        
-410        
-411        proc sql;
 412        
-413          create table Work.denominator as
-414            select database,
-415                   exposure,
-416                   mean(indexDate - ASCohortDate) as meanDaysASCohortToExposure,
-417                   min(indexDate - ASCohortDate) as minDaysASCohortToExposure,
-418                   max(indexDate - ASCohortDate) as maxDaysASCohortToExposure,
-419                   count(distinct patid) as denomPatid,
-420                   count(distinct indexID) as denomIndexExp
-421            from DT.indexLookup
-422            group by database, exposure;
+413        
+414        proc sql;
+415        
+416          create table Work.denominator as
+417            select database,
+418                   exposure,
+419                   mean(indexDate - ASCohortDate) as meanDaysASCohortToExposure,
+420                   min(indexDate - ASCohortDate) as minDaysASCohortToExposure,
+421                   max(indexDate - ASCohortDate) as maxDaysASCohortToExposure,
+422                   count(distinct patid) as denomPatid,
+423                   count(distinct indexID) as denomIndexExp
+424            from DT.indexLookup
+425            group by database, exposure;
 NOTE: Table WORK.DENOMINATOR created, with 9 rows and 7 columns.
 
-423        
-424          create table Work.prev as
-425            select A.database, A.exposure, A.outcomeCategory, A.disease,
-426                   B.denomPatid,
-427                   B.denomIndexExp,
-428                   "AS cohort entry to exposure" as timeWindow,
-429                   sum(A.indPrevPriorToIndex) as numer,
-430                   sum(A.indPrevPriorToIndex) / B.denomIndexExp * 100 as prevPct
-431            from DT.comorbidities A inner join
-432                 Work.denominator B on (A.database = B.database & A.exposure = B.exposure)
-433            group by A.database, A.exposure, A.outcomeCategory, A.disease, B.denomPatid, B.denomIndexExp
-434            union corr
-435            select A.database, A.exposure, A.outcomeCategory, A.disease,
-436                   B.denomPatid,
-11                                                                  The SAS System                                   09:24 Thursday, September 7, 2017
+426        
+427          create table Work.prev as
+428            select A.database, A.exposure, A.outcomeCategory, A.disease,
+429                   B.denomPatid,
+430                   B.denomIndexExp,
+431                   "AS cohort entry to exposure" as timeWindow,
+432                   sum(A.indPrevPriorToIndex) as numer,
+433                   sum(A.indPrevPriorToIndex) / B.denomIndexExp * 100 as prevPct
+434            from DT.comorbidities A inner join
+435                 Work.denominator B on (A.database = B.database & A.exposure = B.exposure)
+436            group by A.database, A.exposure, A.outcomeCategory, A.disease, B.denomPatid, B.denomIndexExp
+437            union corr
+438            select A.database, A.exposure, A.outcomeCategory, A.disease,
+439                   B.denomPatid,
+11                                                                  The SAS System                                   21:32 Saturday, September 9, 2017
 
-437                   B.denomIndexExp,
-438                   "12 months" as timeWindow,
-439                   sum(A.indPrev12mo) as numer,
-440                   sum(A.indPrev12mo) / B.denomIndexExp * 100 as prevPct
-441            from DT.comorbidities A inner join
-442                 Work.denominator B on (A.database = B.database & A.exposure = B.exposure)
-443            group by A.database, A.exposure, A.outcomeCategory, A.disease, B.denomPatid, B.denomIndexExp
-444            union corr
-445            select A.database, A.exposure, A.outcomeCategory, A.disease,
-446                   B.denomPatid,
-447                   B.denomIndexExp,
-448                   "24 months" as timeWindow,
-449                   sum(A.indPrev24mo) as numer,
-450                   sum(A.indPrev24mo) / B.denomIndexExp * 100 as prevPct
-451            from DT.comorbidities A inner join
-452                 Work.denominator B on (A.database = B.database & A.exposure = B.exposure)
-453            group by A.database, A.exposure, A.outcomeCategory, A.disease, B.denomPatid, B.denomIndexExp
-454            union corr
-455            select A.database, A.exposure, A.outcomeCategory, A.disease,
-456                   B.denomPatid,
-457                   B.denomIndexExp,
-458                   "36 months" as timeWindow,
-459                   sum(A.indPrev36mo) as numer,
-460                   sum(A.indPrev36mo) / B.denomIndexExp * 100 as prevPct
-461            from DT.comorbidities A inner join
-462                 Work.denominator B on (A.database = B.database & A.exposure = B.exposure)
-463            group by A.database, A.exposure, A.outcomeCategory, A.disease, B.denomPatid, B.denomIndexExp;
+440                   B.denomIndexExp,
+441                   "12 months" as timeWindow,
+442                   sum(A.indPrev12mo) as numer,
+443                   sum(A.indPrev12mo) / B.denomIndexExp * 100 as prevPct
+444            from DT.comorbidities A inner join
+445                 Work.denominator B on (A.database = B.database & A.exposure = B.exposure)
+446            group by A.database, A.exposure, A.outcomeCategory, A.disease, B.denomPatid, B.denomIndexExp
+447            union corr
+448            select A.database, A.exposure, A.outcomeCategory, A.disease,
+449                   B.denomPatid,
+450                   B.denomIndexExp,
+451                   "24 months" as timeWindow,
+452                   sum(A.indPrev24mo) as numer,
+453                   sum(A.indPrev24mo) / B.denomIndexExp * 100 as prevPct
+454            from DT.comorbidities A inner join
+455                 Work.denominator B on (A.database = B.database & A.exposure = B.exposure)
+456            group by A.database, A.exposure, A.outcomeCategory, A.disease, B.denomPatid, B.denomIndexExp
+457            union corr
+458            select A.database, A.exposure, A.outcomeCategory, A.disease,
+459                   B.denomPatid,
+460                   B.denomIndexExp,
+461                   "36 months" as timeWindow,
+462                   sum(A.indPrev36mo) as numer,
+463                   sum(A.indPrev36mo) / B.denomIndexExp * 100 as prevPct
+464            from DT.comorbidities A inner join
+465                 Work.denominator B on (A.database = B.database & A.exposure = B.exposure)
+466            group by A.database, A.exposure, A.outcomeCategory, A.disease, B.denomPatid, B.denomIndexExp;
 NOTE: Table WORK.PREV created, with 728 rows and 9 columns.
 
-464          select * from Work.prev;
-                                                                  --- AS project ---                             09:24 Thursday, September 7, 2017   5
+467          select * from Work.prev;
+                                                                  --- AS project ---                             21:32 Saturday, September 9, 2017   5
 
                                                                                                                                  denomIndex
           database    exposure              Disease Category            Disease                                    denomPatid           Exp
@@ -1140,7 +1140,7 @@ NOTE: Table WORK.PREV created, with 728 rows and 9 columns.
  
  
                                                            queryPrevalentComorbidities.sas
-                                                                  --- AS project ---                             09:24 Thursday, September 7, 2017   6
+                                                                  --- AS project ---                             21:32 Saturday, September 9, 2017   6
 
                                                                                                                                  denomIndex
           database    exposure              Disease Category            Disease                                    denomPatid           Exp
@@ -1214,7 +1214,7 @@ NOTE: Table WORK.PREV created, with 728 rows and 9 columns.
  
  
                                                            queryPrevalentComorbidities.sas
-                                                                  --- AS project ---                             09:24 Thursday, September 7, 2017   7
+                                                                  --- AS project ---                             21:32 Saturday, September 9, 2017   7
 
                                                                                                                                  denomIndex
           database    exposure              Disease Category            Disease                                    denomPatid           Exp
@@ -1288,7 +1288,7 @@ NOTE: Table WORK.PREV created, with 728 rows and 9 columns.
  
  
                                                            queryPrevalentComorbidities.sas
-                                                                  --- AS project ---                             09:24 Thursday, September 7, 2017   8
+                                                                  --- AS project ---                             21:32 Saturday, September 9, 2017   8
 
                                                                                                                                  denomIndex
           database    exposure              Disease Category            Disease                                    denomPatid           Exp
@@ -1362,7 +1362,7 @@ NOTE: Table WORK.PREV created, with 728 rows and 9 columns.
  
  
                                                            queryPrevalentComorbidities.sas
-                                                                  --- AS project ---                             09:24 Thursday, September 7, 2017   9
+                                                                  --- AS project ---                             21:32 Saturday, September 9, 2017   9
 
                                                                                                                                  denomIndex
           database    exposure              Disease Category            Disease                                    denomPatid           Exp
@@ -1436,7 +1436,7 @@ NOTE: Table WORK.PREV created, with 728 rows and 9 columns.
  
  
                                                            queryPrevalentComorbidities.sas
-                                                                  --- AS project ---                             09:24 Thursday, September 7, 2017  10
+                                                                  --- AS project ---                             21:32 Saturday, September 9, 2017  10
 
                                                                                                                                  denomIndex
           database    exposure              Disease Category            Disease                                    denomPatid           Exp
@@ -1510,7 +1510,7 @@ NOTE: Table WORK.PREV created, with 728 rows and 9 columns.
  
  
                                                            queryPrevalentComorbidities.sas
-                                                                  --- AS project ---                             09:24 Thursday, September 7, 2017  11
+                                                                  --- AS project ---                             21:32 Saturday, September 9, 2017  11
 
                                                                                                                                  denomIndex
           database    exposure              Disease Category            Disease                                    denomPatid           Exp
@@ -1584,7 +1584,7 @@ NOTE: Table WORK.PREV created, with 728 rows and 9 columns.
  
  
                                                            queryPrevalentComorbidities.sas
-                                                                  --- AS project ---                             09:24 Thursday, September 7, 2017  12
+                                                                  --- AS project ---                             21:32 Saturday, September 9, 2017  12
 
                                                                                                                                  denomIndex
           database    exposure              Disease Category            Disease                                    denomPatid           Exp
@@ -1658,7 +1658,7 @@ NOTE: Table WORK.PREV created, with 728 rows and 9 columns.
  
  
                                                            queryPrevalentComorbidities.sas
-                                                                  --- AS project ---                             09:24 Thursday, September 7, 2017  13
+                                                                  --- AS project ---                             21:32 Saturday, September 9, 2017  13
 
                                                                                                                                  denomIndex
           database    exposure              Disease Category            Disease                                    denomPatid           Exp
@@ -1732,7 +1732,7 @@ NOTE: Table WORK.PREV created, with 728 rows and 9 columns.
  
  
                                                            queryPrevalentComorbidities.sas
-                                                                  --- AS project ---                             09:24 Thursday, September 7, 2017  14
+                                                                  --- AS project ---                             21:32 Saturday, September 9, 2017  14
 
                                                                                                                                  denomIndex
           database    exposure              Disease Category            Disease                                    denomPatid           Exp
@@ -1806,7 +1806,7 @@ NOTE: Table WORK.PREV created, with 728 rows and 9 columns.
  
  
                                                            queryPrevalentComorbidities.sas
-                                                                  --- AS project ---                             09:24 Thursday, September 7, 2017  15
+                                                                  --- AS project ---                             21:32 Saturday, September 9, 2017  15
 
                                                                                                                                  denomIndex
           database    exposure              Disease Category            Disease                                    denomPatid           Exp
@@ -1880,7 +1880,7 @@ NOTE: Table WORK.PREV created, with 728 rows and 9 columns.
  
  
                                                            queryPrevalentComorbidities.sas
-                                                                  --- AS project ---                             09:24 Thursday, September 7, 2017  16
+                                                                  --- AS project ---                             21:32 Saturday, September 9, 2017  16
 
                                                                                                                                  denomIndex
           database    exposure              Disease Category            Disease                                    denomPatid           Exp
@@ -1954,7 +1954,7 @@ NOTE: Table WORK.PREV created, with 728 rows and 9 columns.
  
  
                                                            queryPrevalentComorbidities.sas
-                                                                  --- AS project ---                             09:24 Thursday, September 7, 2017  17
+                                                                  --- AS project ---                             21:32 Saturday, September 9, 2017  17
 
                                                                                                                                  denomIndex
           database    exposure              Disease Category            Disease                                    denomPatid           Exp
@@ -2028,7 +2028,7 @@ NOTE: Table WORK.PREV created, with 728 rows and 9 columns.
  
  
                                                            queryPrevalentComorbidities.sas
-                                                                  --- AS project ---                             09:24 Thursday, September 7, 2017  18
+                                                                  --- AS project ---                             21:32 Saturday, September 9, 2017  18
 
                                                                                                                                  denomIndex
           database    exposure              Disease Category            Disease                                    denomPatid           Exp
@@ -2102,7 +2102,7 @@ NOTE: Table WORK.PREV created, with 728 rows and 9 columns.
  
  
                                                            queryPrevalentComorbidities.sas
-                                                                  --- AS project ---                             09:24 Thursday, September 7, 2017  19
+                                                                  --- AS project ---                             21:32 Saturday, September 9, 2017  19
 
                                                                                                                                  denomIndex
           database    exposure              Disease Category            Disease                                    denomPatid           Exp
@@ -2176,7 +2176,7 @@ NOTE: Table WORK.PREV created, with 728 rows and 9 columns.
  
  
                                                            queryPrevalentComorbidities.sas
-                                                                  --- AS project ---                             09:24 Thursday, September 7, 2017  20
+                                                                  --- AS project ---                             21:32 Saturday, September 9, 2017  20
 
                                                                                                                                  denomIndex
           database    exposure              Disease Category            Disease                                    denomPatid           Exp
@@ -2250,7 +2250,7 @@ NOTE: Table WORK.PREV created, with 728 rows and 9 columns.
  
  
                                                            queryPrevalentComorbidities.sas
-                                                                  --- AS project ---                             09:24 Thursday, September 7, 2017  21
+                                                                  --- AS project ---                             21:32 Saturday, September 9, 2017  21
 
                                                                                                                                  denomIndex
           database    exposure              Disease Category            Disease                                    denomPatid           Exp
@@ -2324,7 +2324,7 @@ NOTE: Table WORK.PREV created, with 728 rows and 9 columns.
  
  
                                                            queryPrevalentComorbidities.sas
-                                                                  --- AS project ---                             09:24 Thursday, September 7, 2017  22
+                                                                  --- AS project ---                             21:32 Saturday, September 9, 2017  22
 
                                                                                                                                  denomIndex
           database    exposure              Disease Category            Disease                                    denomPatid           Exp
@@ -2398,7 +2398,7 @@ NOTE: Table WORK.PREV created, with 728 rows and 9 columns.
  
  
                                                            queryPrevalentComorbidities.sas
-                                                                  --- AS project ---                             09:24 Thursday, September 7, 2017  23
+                                                                  --- AS project ---                             21:32 Saturday, September 9, 2017  23
 
                                                                                                                                  denomIndex
           database    exposure              Disease Category            Disease                                    denomPatid           Exp
@@ -2472,7 +2472,7 @@ NOTE: Table WORK.PREV created, with 728 rows and 9 columns.
  
  
                                                            queryPrevalentComorbidities.sas
-                                                                  --- AS project ---                             09:24 Thursday, September 7, 2017  24
+                                                                  --- AS project ---                             21:32 Saturday, September 9, 2017  24
 
                                                                                                                                  denomIndex
           database    exposure              Disease Category            Disease                                    denomPatid           Exp
@@ -2546,7 +2546,7 @@ NOTE: Table WORK.PREV created, with 728 rows and 9 columns.
  
  
                                                            queryPrevalentComorbidities.sas
-                                                                  --- AS project ---                             09:24 Thursday, September 7, 2017  25
+                                                                  --- AS project ---                             21:32 Saturday, September 9, 2017  25
 
                                                                                                                                  denomIndex
           database    exposure              Disease Category            Disease                                    denomPatid           Exp
@@ -2620,7 +2620,7 @@ NOTE: Table WORK.PREV created, with 728 rows and 9 columns.
  
  
                                                            queryPrevalentComorbidities.sas
-                                                                  --- AS project ---                             09:24 Thursday, September 7, 2017  26
+                                                                  --- AS project ---                             21:32 Saturday, September 9, 2017  26
 
                                                                                                                                  denomIndex
           database    exposure              Disease Category            Disease                                    denomPatid           Exp
@@ -2694,7 +2694,7 @@ NOTE: Table WORK.PREV created, with 728 rows and 9 columns.
  
  
                                                            queryPrevalentComorbidities.sas
-                                                                  --- AS project ---                             09:24 Thursday, September 7, 2017  27
+                                                                  --- AS project ---                             21:32 Saturday, September 9, 2017  27
 
                                                                                                                                  denomIndex
           database    exposure              Disease Category            Disease                                    denomPatid           Exp
@@ -2768,7 +2768,7 @@ NOTE: Table WORK.PREV created, with 728 rows and 9 columns.
  
  
                                                            queryPrevalentComorbidities.sas
-                                                                  --- AS project ---                             09:24 Thursday, September 7, 2017  28
+                                                                  --- AS project ---                             21:32 Saturday, September 9, 2017  28
 
                                                                                                                                  denomIndex
           database    exposure              Disease Category            Disease                                    denomPatid           Exp
@@ -2842,7 +2842,7 @@ NOTE: Table WORK.PREV created, with 728 rows and 9 columns.
  
  
                                                            queryPrevalentComorbidities.sas
-                                                                  --- AS project ---                             09:24 Thursday, September 7, 2017  29
+                                                                  --- AS project ---                             21:32 Saturday, September 9, 2017  29
 
                                                                                                                                  denomIndex
           database    exposure              Disease Category            Disease                                    denomPatid           Exp
@@ -2916,7 +2916,7 @@ NOTE: Table WORK.PREV created, with 728 rows and 9 columns.
  
  
                                                            queryPrevalentComorbidities.sas
-                                                                  --- AS project ---                             09:24 Thursday, September 7, 2017  30
+                                                                  --- AS project ---                             21:32 Saturday, September 9, 2017  30
 
                                                                                                                                  denomIndex
           database    exposure              Disease Category            Disease                                    denomPatid           Exp
@@ -2990,7 +2990,7 @@ NOTE: Table WORK.PREV created, with 728 rows and 9 columns.
  
  
                                                            queryPrevalentComorbidities.sas
-                                                                  --- AS project ---                             09:24 Thursday, September 7, 2017  31
+                                                                  --- AS project ---                             21:32 Saturday, September 9, 2017  31
 
                                                                                                                                  denomIndex
           database    exposure              Disease Category            Disease                                    denomPatid           Exp
@@ -3064,7 +3064,7 @@ NOTE: Table WORK.PREV created, with 728 rows and 9 columns.
  
  
                                                            queryPrevalentComorbidities.sas
-                                                                  --- AS project ---                             09:24 Thursday, September 7, 2017  32
+                                                                  --- AS project ---                             21:32 Saturday, September 9, 2017  32
 
                                                                                                                                  denomIndex
           database    exposure              Disease Category            Disease                                    denomPatid           Exp
@@ -3138,7 +3138,7 @@ NOTE: Table WORK.PREV created, with 728 rows and 9 columns.
  
  
                                                            queryPrevalentComorbidities.sas
-                                                                  --- AS project ---                             09:24 Thursday, September 7, 2017  33
+                                                                  --- AS project ---                             21:32 Saturday, September 9, 2017  33
 
                                                                                                                                  denomIndex
           database    exposure              Disease Category            Disease                                    denomPatid           Exp
@@ -3212,7 +3212,7 @@ NOTE: Table WORK.PREV created, with 728 rows and 9 columns.
  
  
                                                            queryPrevalentComorbidities.sas
-                                                                  --- AS project ---                             09:24 Thursday, September 7, 2017  34
+                                                                  --- AS project ---                             21:32 Saturday, September 9, 2017  34
 
                                                                                                                                  denomIndex
           database    exposure              Disease Category            Disease                                    denomPatid           Exp
@@ -3286,7 +3286,7 @@ NOTE: Table WORK.PREV created, with 728 rows and 9 columns.
  
  
                                                            queryPrevalentComorbidities.sas
-                                                                  --- AS project ---                             09:24 Thursday, September 7, 2017  35
+                                                                  --- AS project ---                             21:32 Saturday, September 9, 2017  35
 
                                                                                                                                  denomIndex
           database    exposure              Disease Category            Disease                                    denomPatid           Exp
@@ -3360,7 +3360,7 @@ NOTE: Table WORK.PREV created, with 728 rows and 9 columns.
  
  
                                                            queryPrevalentComorbidities.sas
-                                                                  --- AS project ---                             09:24 Thursday, September 7, 2017  36
+                                                                  --- AS project ---                             21:32 Saturday, September 9, 2017  36
 
                                                                                                                                  denomIndex
           database    exposure              Disease Category            Disease                                    denomPatid           Exp
@@ -3434,7 +3434,7 @@ NOTE: Table WORK.PREV created, with 728 rows and 9 columns.
  
  
                                                            queryPrevalentComorbidities.sas
-                                                                  --- AS project ---                             09:24 Thursday, September 7, 2017  37
+                                                                  --- AS project ---                             21:32 Saturday, September 9, 2017  37
 
                                                                                                                                  denomIndex
           database    exposure              Disease Category            Disease                                    denomPatid           Exp
@@ -3508,7 +3508,7 @@ NOTE: Table WORK.PREV created, with 728 rows and 9 columns.
  
  
                                                            queryPrevalentComorbidities.sas
-                                                                  --- AS project ---                             09:24 Thursday, September 7, 2017  38
+                                                                  --- AS project ---                             21:32 Saturday, September 9, 2017  38
 
                                                                                                                                  denomIndex
           database    exposure              Disease Category            Disease                                    denomPatid           Exp
@@ -3582,99 +3582,99 @@ NOTE: Table WORK.PREV created, with 728 rows and 9 columns.
  
  
                                                            queryPrevalentComorbidities.sas
-465        quit;
+468        quit;
 NOTE: The PROCEDURE SQL printed pages 5-38.
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           1.27 seconds
-      cpu time            1.34 seconds
+      real time           1.15 seconds
+      cpu time            1.42 seconds
       
 
-466        
-467        
-468        proc export
-469          data = Work.prev
-470          outfile = "data\processed\&cmt.ByExposure.csv"
-471          dbms = csv
-472          replace;
-473          delimiter = ",";
-474        run;
+469        
+470        
+471        proc export
+472          data = Work.prev
+473          outfile = "data\processed\&cmt.ByExposure.csv"
+474          dbms = csv
+475          replace;
+476          delimiter = ",";
+477        run;
 
-475         /**********************************************************************
-476         *   PRODUCT:   SAS
-477         *   VERSION:   9.4
-478         *   CREATOR:   External File Interface
-479         *   DATE:      07SEP17
-480         *   DESC:      Generated SAS Datastep Code
-481         *   TEMPLATE SOURCE:  (None Specified.)
-482         ***********************************************************************/
-483            data _null_;
-484            %let _EFIERR_ = 0; /* set the ERROR detection macro variable */
-485            %let _EFIREC_ = 0;     /* clear export record count macro variable */
-486            file 'data\processed\queryPrevalentComorbiditiesByExposure.csv' delimiter=',' DSD DROPOVER lrecl=32767;
-487            if _n_ = 1 then        /* write column names or labels */
-488             do;
-489               put
-490                  "database"
-491               ','
-492                  "exposure"
-493               ','
-494                  "outcomeCategory"
-495               ','
-496                  "Disease"
-497               ','
-498                  "denomPatid"
-499               ','
-12                                                                  The SAS System                                   09:24 Thursday, September 7, 2017
+478         /**********************************************************************
+479         *   PRODUCT:   SAS
+480         *   VERSION:   9.4
+481         *   CREATOR:   External File Interface
+482         *   DATE:      09SEP17
+483         *   DESC:      Generated SAS Datastep Code
+484         *   TEMPLATE SOURCE:  (None Specified.)
+485         ***********************************************************************/
+486            data _null_;
+487            %let _EFIERR_ = 0; /* set the ERROR detection macro variable */
+488            %let _EFIREC_ = 0;     /* clear export record count macro variable */
+489            file 'data\processed\queryPrevalentComorbiditiesByExposure.csv' delimiter=',' DSD DROPOVER lrecl=32767;
+490            if _n_ = 1 then        /* write column names or labels */
+491             do;
+492               put
+493                  "database"
+494               ','
+495                  "exposure"
+496               ','
+497                  "outcomeCategory"
+498               ','
+499                  "Disease"
+500               ','
+501                  "denomPatid"
+502               ','
+12                                                                  The SAS System                                   21:32 Saturday, September 9, 2017
 
-500                  "denomIndexExp"
-501               ','
-502                  "timeWindow"
-503               ','
-504                  "numer"
-505               ','
-506                  "prevPct"
-507               ;
-508             end;
-509           set  WORK.PREV   end=EFIEOD;
-510               format database $10. ;
-511               format exposure $20. ;
-512               format outcomeCategory $26. ;
-513               format Disease $41. ;
-514               format denomPatid best12. ;
-515               format denomIndexExp best12. ;
-516               format timeWindow $27. ;
-517               format numer best12. ;
-518               format prevPct best12. ;
-519             do;
-520               EFIOUT + 1;
-521               put database $ @;
-522               put exposure $ @;
-523               put outcomeCategory $ @;
-524               put Disease $ @;
-525               put denomPatid @;
-526               put denomIndexExp @;
-527               put timeWindow $ @;
-528               put numer @;
-529               put prevPct ;
-530               ;
-531             end;
-532            if _ERROR_ then call symputx('_EFIERR_',1);  /* set ERROR detection macro variable */
-533            if EFIEOD then call symputx('_EFIREC_',EFIOUT);
-534            run;
+503                  "denomIndexExp"
+504               ','
+505                  "timeWindow"
+506               ','
+507                  "numer"
+508               ','
+509                  "prevPct"
+510               ;
+511             end;
+512           set  WORK.PREV   end=EFIEOD;
+513               format database $10. ;
+514               format exposure $20. ;
+515               format outcomeCategory $26. ;
+516               format Disease $41. ;
+517               format denomPatid best12. ;
+518               format denomIndexExp best12. ;
+519               format timeWindow $27. ;
+520               format numer best12. ;
+521               format prevPct best12. ;
+522             do;
+523               EFIOUT + 1;
+524               put database $ @;
+525               put exposure $ @;
+526               put outcomeCategory $ @;
+527               put Disease $ @;
+528               put denomPatid @;
+529               put denomIndexExp @;
+530               put timeWindow $ @;
+531               put numer @;
+532               put prevPct ;
+533               ;
+534             end;
+535            if _ERROR_ then call symputx('_EFIERR_',1);  /* set ERROR detection macro variable */
+536            if EFIEOD then call symputx('_EFIREC_',EFIOUT);
+537            run;
 
 NOTE: The file 'data\processed\queryPrevalentComorbiditiesByExposure.csv' is:
       Filename=U:\studies\AS\pgms\bchan\data\processed\queryPrevalentComorbiditiesByExposure.csv,
       RECFM=V,LRECL=32767,File Size (bytes)=0,
-      Last Modified=07Sep2017:09:27:32,
-      Create Time=07Sep2017:09:27:32
+      Last Modified=09Sep2017:21:35:28,
+      Create Time=09Sep2017:21:35:28
 
 NOTE: 729 records were written to the file 'data\processed\queryPrevalentComorbiditiesByExposure.csv'.
       The minimum record length was 60.
       The maximum record length was 145.
 NOTE: There were 728 observations read from the data set WORK.PREV.
 NOTE: DATA statement used (Total process time):
-      real time           0.01 seconds
-      cpu time            0.01 seconds
+      real time           0.00 seconds
+      cpu time            0.00 seconds
       
 
 728 records created in data\processed\queryPrevalentComorbiditiesByExposure.csv from WORK.PREV.
@@ -3686,11 +3686,11 @@ NOTE: PROCEDURE EXPORT used (Total process time):
       cpu time            0.06 seconds
       
 
-535        
-536        
-537        ods html close;
+538        
+539        
+540        ods html close;
 NOTE: SAS Institute Inc., SAS Campus Drive, Cary, NC USA 27513-2414
 NOTE: The SAS System used:
-      real time           3:14.37
-      cpu time            42.32 seconds
+      real time           2:59.51
+      cpu time            55.76 seconds
       

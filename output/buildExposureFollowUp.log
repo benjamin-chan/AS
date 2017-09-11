@@ -1,4 +1,4 @@
-1                                                          The SAS System                         16:55 Wednesday, September 6, 2017
+1                                                          The SAS System                            16:50 Friday, September 8, 2017
 
 NOTE: Copyright (c) 2002-2012 by SAS Institute Inc., Cary, NC, USA. 
 NOTE: SAS (r) Proprietary Software 9.4 (TS1M1) 
@@ -28,8 +28,8 @@ Please remember not to copy any data files that contain PHI (protected health id
 
 
 NOTE: SAS initialization used:
-      real time           0.17 seconds
-      cpu time            0.15 seconds
+      real time           0.18 seconds
+      cpu time            0.12 seconds
       
 1          *  University of Alabama at Birmingham                               *
 2          *  AS project                                            *
@@ -42,9 +42,9 @@ NOTE: SAS initialization used:
 9          %let cmt=buildExposureFollowUp; * type the name of your program here (without the filename extension);
 10         %let pgm=&cmt..sas;
 11         %include "lib\libname.sas" ;
-NOTE: Libref CCW5STD was successfully assigned as follows: 
+NOTE: Libref STDC5P was successfully assigned as follows: 
       Engine:        SPDE 
-      Physical Name: h:\studies\osteo\data\CDM\5pct\
+      Physical Name: H:\studies\osteo\data\STD_files\5pct\
 NOTE: Libref STD_SABR was successfully assigned as follows: 
       Engine:        SPDE 
       Physical Name: q:\data\std_SABER\
@@ -60,170 +60,170 @@ NOTE: Libref UCB was successfully assigned as follows:
 NOTE: Libref DT was successfully assigned as follows: 
       Engine:        V9 
       Physical Name: V:\studies\AS\data
-89         footnote "&pgm.";
-90         * footnote2 "%sysfunc(datetime(),datetime14.)";
-91         title1 '--- AS project ---';
-92         **********************************************************************;
-93         options macrogen mlogic mprint symbolgen;
-94         options nomacrogen nomlogic nomprint nosymbolgen;
-95         
-96         
-97         ods html
-98           body = "output\&cmt..html"
-99           style = Statistical;
+92         footnote "&pgm.";
+93         * footnote2 "%sysfunc(datetime(),datetime14.)";
+94         title1 '--- AS project ---';
+95         **********************************************************************;
+96         options macrogen mlogic mprint symbolgen;
+97         options nomacrogen nomlogic nomprint nosymbolgen;
+98         
+99         
+100        ods html
+101          body = "output\&cmt..html"
+102          style = Statistical;
 NOTE: Writing HTML Body file: output\buildExposureFollowUp.html
-2                                                                   The SAS System                                  16:55 Wednesday, September 6, 2017
+2                                                                   The SAS System                                     16:50 Friday, September 8, 2017
 
-100        
-101        
-102        /*
-103        See the *Compact Outcome Definition* worksheet in `AS Project Cohort Outcome Codebook-20170410.xlsx`
-104         */
-105        
-106        
-107        /*
-108        From: Xie, Fenglong [mailto:fenglongxie@uabmc.edu]
-109        Sent: Wednesday, May 17, 2017 7:03 AM
-110        To: Benjamin Chan <chanb@ohsu.edu>
-111        Subject: RE: AS project data
-112        
-113        Hi, Ben
-114        
-115        The data are stored at UCB library defined as below email.
-116        
-117        Attached please find the cohort list.
-118        
-119        No exclusion was done except excluded for higher level exposure in six month
-120        baseline.
+103        
+104        
+105        /*
+106        See the *Compact Outcome Definition* worksheet in `AS Project Cohort Outcome Codebook-20170410.xlsx`
+107         */
+108        
+109        
+110        /*
+111        From: Xie, Fenglong [mailto:fenglongxie@uabmc.edu]
+112        Sent: Wednesday, May 17, 2017 7:03 AM
+113        To: Benjamin Chan <chanb@ohsu.edu>
+114        Subject: RE: AS project data
+115        
+116        Hi, Ben
+117        
+118        The data are stored at UCB library defined as below email.
+119        
+120        Attached please find the cohort list.
 121        
-122        You need to do appropriate censor (such as censor for discontinues of
-123        exposure, switch to same level or higher lever exposure ...).
+122        No exclusion was done except excluded for higher level exposure in six month
+123        baseline.
 124        
-125        If you have question, please let me know.
-126         */
+125        You need to do appropriate censor (such as censor for discontinues of
+126        exposure, switch to same level or higher lever exposure ...).
 127        
-128        
-129        proc sql;
-130          create table Work.indexLookup as
-131            select * from DT.indexLookup
-132            order by database, patid, indexDate;
+128        If you have question, please let me know.
+129         */
+130        
+131        
+132        proc sql;
+133          create table Work.indexLookup as
+134            select * from DT.indexLookup
+135            order by database, patid, indexDate;
 NOTE: Table WORK.INDEXLOOKUP created, with 60010 rows and 13 columns.
 
-133        /*
-134        Attach exposure end dates to exposure segments
-135         */
-136          create table Work.temp0 as
-137            select A.database,
-138                   A.patid,
-139                   A.enr_end_date,
-140                   A.death_date,
-141                   A.exposure as exposureA,
-142                   A.indexDate format = mmddyy10. as indexStartA,
-143                   min(B.indexDate - 1, A.enr_end_date, A.death_date) format = mmddyy10. as indexEndA,
-144                   B.exposure as exposureB,
-145                   B.indexDate format = mmddyy10. as indexStartB
-146            from Work.indexLookup A left join
-147                 Work.indexLookup B on (A.database = B.database &
-148                                        A.patid = B.patid &
-149                                        A.indexDate < B.indexDate);
+136        /*
+137        Attach exposure end dates to exposure segments
+138         */
+139          create table Work.temp0 as
+140            select A.database,
+141                   A.patid,
+142                   A.enr_end_date,
+143                   A.death_date,
+144                   A.exposure as exposureA,
+145                   A.indexDate format = mmddyy10. as indexStartA,
+146                   min(B.indexDate - 1, A.enr_end_date, A.death_date) format = mmddyy10. as indexEndA,
+147                   B.exposure as exposureB,
+148                   B.indexDate format = mmddyy10. as indexStartB
+149            from Work.indexLookup A left join
+150                 Work.indexLookup B on (A.database = B.database &
+151                                        A.patid = B.patid &
+152                                        A.indexDate < B.indexDate);
 NOTE: Table WORK.TEMP0 created, with 71797 rows and 9 columns.
 
-150          create table Work.tempLookup as
-151            select database,
-152                   patid,
-153                   indexStartA,
-154                   min(indexEndA) as earliestIndexEndA
-155            from Work.temp0
-156            group by database,
-157                     patid,
-158                     indexStartA;
+153          create table Work.tempLookup as
+154            select database,
+155                   patid,
+156                   indexStartA,
+157                   min(indexEndA) as earliestIndexEndA
+158            from Work.temp0
+159            group by database,
+160                     patid,
+161                     indexStartA;
 NOTE: Table WORK.TEMPLOOKUP created, with 59836 rows and 4 columns.
 
-159          create table Work.tempExposureSegments as
-160            select A.database,
-161                   A.patid,
-162                   A.enr_end_date,
-163                   A.death_date,
-164                   A.exposureA as exposure,
-165                   A.indexStartA as exposureStart,
-3                                                                   The SAS System                                  16:55 Wednesday, September 6, 2017
+162          create table Work.tempExposureSegments as
+163            select A.database,
+164                   A.patid,
+165                   A.enr_end_date,
+166                   A.death_date,
+167                   A.exposureA as exposure,
+168                   A.indexStartA as exposureStart,
+3                                                                   The SAS System                                     16:50 Friday, September 8, 2017
 
-166                   A.indexEndA as exposureEnd
-167            from Work.temp0 A inner join
-168                 Work.tempLookup B on (A.database = B.database &
-169                                       A.patid = B.patid &
-170                                       A.indexStartA = B.indexStartA &
-171                                       A.indexEndA = B.earliestIndexEndA)
-172            order by A.database,
-173                     A.patid,
-174                     A.indexStartA;
+169                   A.indexEndA as exposureEnd
+170            from Work.temp0 A inner join
+171                 Work.tempLookup B on (A.database = B.database &
+172                                       A.patid = B.patid &
+173                                       A.indexStartA = B.indexStartA &
+174                                       A.indexEndA = B.earliestIndexEndA)
+175            order by A.database,
+176                     A.patid,
+177                     A.indexStartA;
 NOTE: Table WORK.TEMPEXPOSURESEGMENTS created, with 60252 rows and 7 columns.
 
-175        quit;
+178        quit;
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           0.71 seconds
-      cpu time            0.45 seconds
+      real time           0.39 seconds
+      cpu time            0.46 seconds
       
 
-176        
-177        
-178        /*
-179        Collapse exposure segments
+179        
 180        
-181        See *Starts and Stops: Processing Episode Data With Beginning and Ending Dates*
-182        http://www2.sas.com/proceedings/sugi29/260-29.pdf
-183         */
-184        data DT.exposureTimeline;
-185          set Work.tempExposureSegments;
-186          by database patid exposure notsorted;
-187          format holdPeriodStart mmddyy10.;
-188          drop holdPeriodStart;
-189          retain holdPeriodStart;
-190          if first.exposure then do;  /* Check the last variable in the BY group */
-191            holdPeriodStart = exposureStart;
-192          end;
-193          if last.exposure then do;  /* Check the last variable in the BY group */
-194            exposureStart = holdPeriodStart;
-195            output;
-196          end;
-197        run;
+181        /*
+182        Collapse exposure segments
+183        
+184        See *Starts and Stops: Processing Episode Data With Beginning and Ending Dates*
+185        http://www2.sas.com/proceedings/sugi29/260-29.pdf
+186         */
+187        data DT.exposureTimeline;
+188          set Work.tempExposureSegments;
+189          by database patid exposure notsorted;
+190          format holdPeriodStart mmddyy10.;
+191          drop holdPeriodStart;
+192          retain holdPeriodStart;
+193          if first.exposure then do;  /* Check the last variable in the BY group */
+194            holdPeriodStart = exposureStart;
+195          end;
+196          if last.exposure then do;  /* Check the last variable in the BY group */
+197            exposureStart = holdPeriodStart;
+198            output;
+199          end;
+200        run;
 
 NOTE: There were 60252 observations read from the data set WORK.TEMPEXPOSURESEGMENTS.
 NOTE: The data set DT.EXPOSURETIMELINE has 46055 observations and 7 variables.
 NOTE: DATA statement used (Total process time):
       real time           0.06 seconds
-      cpu time            0.01 seconds
+      cpu time            0.04 seconds
       
 
-198        proc sql;
-199          alter table DT.exposureTimeline add daysExposed numeric;
+201        proc sql;
+202          alter table DT.exposureTimeline add daysExposed numeric;
 NOTE: Table DT.EXPOSURETIMELINE has been modified, with 8 columns.
-200          update DT.exposureTimeline
-201            set daysExposed = exposureEnd - exposureStart + 1;
-NOTE: 46055 rows were updated in DT.EXPOSURETIMELINE.
-
-202          alter table DT.exposureTimeline add exposureID numeric;
-NOTE: Table DT.EXPOSURETIMELINE has been modified, with 9 columns.
 203          update DT.exposureTimeline
-204            set exposureID = monotonic();
+204            set daysExposed = exposureEnd - exposureStart + 1;
 NOTE: 46055 rows were updated in DT.EXPOSURETIMELINE.
 
-205        quit ;
+205          alter table DT.exposureTimeline add exposureID numeric;
+NOTE: Table DT.EXPOSURETIMELINE has been modified, with 9 columns.
+206          update DT.exposureTimeline
+207            set exposureID = monotonic();
+NOTE: 46055 rows were updated in DT.EXPOSURETIMELINE.
+
+208        quit ;
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           0.31 seconds
-      cpu time            0.21 seconds
+      real time           0.24 seconds
+      cpu time            0.18 seconds
       
 
-206        
-207        
-208        proc means data = DT.exposureTimeline n sum mean std min q1 median q3 max maxdec = 1;
-209          class database exposure;
-210          var daysExposed;
-211        run;
-4                                                                   The SAS System                                  16:55 Wednesday, September 6, 2017
+209        
+210        
+211        proc means data = DT.exposureTimeline n sum mean std min q1 median q3 max maxdec = 1;
+212          class database exposure;
+213          var daysExposed;
+214        run;
+4                                                                   The SAS System                                     16:50 Friday, September 8, 2017
 
 
-                                                                  --- AS project ---                            16:55 Wednesday, September 6, 2017   1
+                                                                  --- AS project ---                               16:50 Friday, September 8, 2017   1
 
                                                                  The MEANS Procedure
 
@@ -300,15 +300,15 @@ NOTE: PROCEDURE SQL used (Total process time):
 NOTE: There were 46055 observations read from the data set DT.EXPOSURETIMELINE.
 NOTE: The PROCEDURE MEANS printed page 1.
 NOTE: PROCEDURE MEANS used (Total process time):
-      real time           0.09 seconds
-      cpu time            0.09 seconds
+      real time           0.15 seconds
+      cpu time            0.07 seconds
       
 
-212        
-213        
-214        ods html close;
+215        
+216        
+217        ods html close;
 NOTE: SAS Institute Inc., SAS Campus Drive, Cary, NC USA 27513-2414
 NOTE: The SAS System used:
-      real time           1.62 seconds
-      cpu time            1.16 seconds
+      real time           1.32 seconds
+      cpu time            1.15 seconds
       
