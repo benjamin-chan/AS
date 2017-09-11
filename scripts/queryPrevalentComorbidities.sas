@@ -180,6 +180,80 @@ proc export
 run;
 
 
+
+
+/* 
+Call interstitial lung disease macro
+ */
+%include "lib\IPP_2IPSOPplusPX_ILD.sas" / source2;
+%IPP_2IPSOPplusPX_ILD(outdata = Work.outcome_ILD_MPCD,
+                      IDS = indexID,
+                      Dxs = UCB.tempPrevDxMPCD,
+                      Pxs = UCB.tempPrevPxMPCD);
+%IPP_2IPSOPplusPX_ILD(outdata = Work.outcome_ILD_UCB,
+                      IDS = indexID,
+                      Dxs = UCB.tempPrevDxUCB,
+                      Pxs = UCB.tempPrevPxUCB);
+%IPP_2IPSOPplusPX_ILD(outdata = Work.outcome_ILD_SABR,
+                      IDS = indexID,
+                      Dxs = UCB.tempPrevDxSABR,
+                      Pxs = UCB.tempPrevPxSABR);
+
+/* 
+Process fracture episodes data set
+ */
+proc sql;
+  create table Work.fractures as
+    select database, 
+           exposure, 
+           patid, 
+           ASCohortDate, 
+           indexGNN, 
+           indexDate, 
+           indexID, 
+           "Osteoporotic fracture" as outcomeCategory, 
+           fractureType as disease, 
+           fractureEpisodeStart as begin_date
+    from DT.fractureEpisodesPrev
+    where ^missing(fractureType);
+quit;
+
+
+proc sql;
+
+  %let select2 = select database, exposure, patid, ASCohortDate, indexGNN, indexDate, indexID, enc_type, "Lung disease" as outcomeCategory, "Interstitial lung disease" as disease, outcome_start_date as begin_date;
+  create table DT.comorbidities as
+    select C.database, C.exposure, C.patid, C.ASCohortDate, C.indexGNN, C.indexDate, C.indexID,
+           C.outcomeCategory,
+           C.disease,
+           sum(C.ASCohortDate <= C.begin_date <= C.indexDate) > 0 as indPrevPriorToIndex,
+           sum(0 <= C.indexDate  - C.begin_date <= 183 |
+               0 <= C.begin_date - C.indexDate  <= (183 * 1)) > 0 as indPrev12mo,
+           sum(0 <= C.indexDate  - C.begin_date <= 183 |
+               0 <= C.begin_date - C.indexDate  <= (183 * 3)) > 0 as indPrev24mo,
+           sum(0 <= C.indexDate  - C.begin_date <= 183 |
+               0 <= C.begin_date - C.indexDate  <= (183 * 5)) > 0 as indPrev36mo
+    from (&select1 from UCB.tempPrevDxMPCD A &join1 &where1a &where1b union corr
+          &select1 from UCB.tempPrevDxUCB  A &join1 &where1a &where1b union corr
+          &select1 from UCB.tempPrevDxSABR A &join1 &where1a &where1b union corr
+          &select1 from UCB.tempPrevPxMPCD A &join1 &where1a union corr
+          &select1 from UCB.tempPrevPxUCB  A &join1 &where1a union corr
+          &select1 from UCB.tempPrevPxSABR A &join1 &where1a union corr
+          &select2 from Work.outcome_ILD_MPCD union corr
+          &select2 from Work.outcome_ILD_UCB  union corr
+          &select2 from Work.outcome_ILD_SABR union corr
+          select * from Work.fractures) C
+    group by C.database, C.exposure, C.patid, C.ASCohortDate, C.indexGNN, C.indexDate, C.indexID,
+             C.outcomeCategory,
+             C.disease
+    having calculated indPrevPriorToIndex > 0 | 
+           calculated indPrev12mo > 0 | 
+           calculated indPrev24mo > 0 | 
+           calculated indPrev36mo > 0;
+
+quit;
+
+
 proc sql;
 
   create table Work.denominator as
