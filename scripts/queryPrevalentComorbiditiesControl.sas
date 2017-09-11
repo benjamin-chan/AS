@@ -83,7 +83,7 @@ proc sql;
   %let select1 = select A.*, B.outcomeCategory, B.disease;
   %let join1 = inner join Work.defOutcomes B on (A.codeType = B.codeType & A.code = B.code);
   %let where1a = where B.disease ^in ("Myocardial infarction", "Hospitalized infection");
-  %let where1b = | (B.disease in ("Myocardial infarction", "Hospitalized infection") & A.enc_type in ("IF", "IP"));
+  %let where1b = | (B.disease in ("Myocardial infarction", "Hospitalized infection") & A.enc_type = "IP");
   %let select2 = select database, cohort, patid, indexDate, controlID, enc_type, age, sex, "Lung disease" as outcomeCategory, "Interstitial lung disease" as disease, outcome_start_date as begin_date;
   create table DT.comorbiditiesControl as
     select C.database, C.cohort, C.patid, C.indexDate, C.controlID, C.age, C.sex,
