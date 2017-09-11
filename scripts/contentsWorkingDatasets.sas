@@ -57,7 +57,6 @@ DT fractureEpisodesInc
 DT comorbidities
 DT comorbiditiesControl
 DT comorbiditiesOther
-DT comorbiditiesAll
   ;
 run;
 proc sort data = Work.WorkingDatasets;
