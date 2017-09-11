@@ -58,6 +58,10 @@ proc sql;
           &select1 from UCB.tempPrevDxUCB  A &join1 union corr
           &select1 from UCB.tempPrevDxSABR A &join1 ) C;
 
+  select comorbidity, database, exposure, sum(indPreExposure) as sumIndPreExposure
+    from DT.comorbiditiesOther
+    group by comorbidity, database, exposure;
+
 quit;
 
 

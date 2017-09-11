@@ -22,18 +22,27 @@ ods html
   style = Statistical;
 
 
-%include "lib\provTypeCategory.sas";  /* Call script to query only physician diagnosed ICD-9 codes */
+/* 
+From: Chen, Lang [mailto:langchen@uabmc.edu] 
+Sent: Monday, September 11, 2017 1:59 PM
+To: Benjamin Chan <chanb@ohsu.edu>; Curtis, Jeffrey R <jrcurtis@uabmc.edu>; Kevin Winthrop <winthrop@ohsu.edu>
+Cc: Atul Deodhar <deodhara@ohsu.edu>; Sarah Siegel <siegels@ohsu.edu>; Yang, Shuo <shuoyang@uabmc.edu>; Xie, Fenglong <fenglongxie@uabmc.edu>
+Subject: RE: quick summary of AS call
+
+physician-diagnosed codes is usually define by IP AV ED NH and HH. We usually
+do not use provider type field. Provider type is provider specialty and MPCD
+and CMS use different coding system.
+ */
 
 
 /* 
 Service code data sets for prevalence (non-fracture outcomes)
  */
 %let type = Prev;
-%let select1 = select A.*, B.enc_type, B.admit_date, B.begin_date, B.discharge_date, B.end_date, B.dx_type, B.dx, B.pdx, "ICD9-DX" as codeType, B.dx as code, B.provTypeCategory;
+%let select1 = select A.*, B.enc_type, B.admit_date, B.begin_date, B.discharge_date, B.end_date, B.dx_type, B.dx, B.pdx, "ICD9-DX" as codeType, B.dx as code;
 %let on1 = on (A.patid = B.patid);
-%let select2 = select A.patid, A.enc_type, A.admit_date, A.begin_date, A.discharge_date, A.end_date, A.dx_type, A.dx, A.pdx, A.prov_type, &provTypeCategory;
-%let join2 = inner join Work.lookupProvTypePhysician B on (A.prov_type = B.prov_type_code);
-%let where2 = where A.dx_type = "09" & B.indPhysician = 1;
+%let select2 = select A.patid, A.enc_type, A.admit_date, A.begin_date, A.discharge_date, A.end_date, A.dx_type, A.dx, A.pdx;
+%let where2 = where A.dx_type = "09" & A.enc_type in ("IP", "AV", "ED", "NH", "HH");
 %let selectfrom3 = select * from DT.controlLookup;
 
 %include "lib\buildDxControl.sas";  /* Call script to query ICD-9 diagnosis codes */
@@ -60,8 +69,7 @@ unlike non-fracture service code data sets
 %let type = Frac;
 %let select1 = select A.*, 
                       B.encounterID, B.enc_type, B.admit_date, B.begin_date, B.discharge_date, B.end_date, B.dx_type, B.dx, B.pdx, "ICD9-DX" as codeType, B.dx as code,
-                      B.diagCodeType,
-                      B.provTypeCategory;
+                      B.diagCodeType;
 %let on1 = on (A.patid = B.patid);
 %let select2 = select A.patid, A.encounterID, A.enc_type, A.admit_date, A.begin_date, A.discharge_date, A.end_date, A.dx_type, A.dx, A.pdx,
                       case
@@ -73,10 +81,8 @@ unlike non-fracture service code data sets
                              'E916' <= substr(A.dx, 1, 4) <= 'E928' 
                           then "Trauma code"
                         else ""
-                        end as diagCodeType,
-                      B.prov_type_code as provTypeCategory;
-%let join2 = inner join Work.lookupProvTypePhysician B on (A.prov_type = B.prov_type_code); 
-%let where2 = where A.dx_type = "09" & B.indPhysician = 1 & ^missing(calculated diagCodeType);
+                        end as diagCodeType;
+%let where2 = where A.dx_type = "09" & A.enc_type in ("IP", "AV", "ED", "NH", "HH") & ^missing(calculated diagCodeType);
 %let selectfrom3 = select * from DT.controlLookup;
 
 %include "lib\buildDxControl.sas";  /* Call script to query ICD-9 diagnosis codes */

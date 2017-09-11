@@ -38,6 +38,150 @@ See the *Compact Outcome Definition* worksheet in `AS Project Cohort Outcome Cod
  */
 
 
+proc sql;
+  create table Work.defOutcomes as
+    select * 
+    from DT.defOutcomes 
+    where disease ^in ("Interstitial lung disease");
+quit;
+
+%let select1 = select A.*, B.outcomeCategory, B.disease;
+%let join1 = inner join Work.defOutcomes B on (A.codeType = B.codeType & A.code = B.code);
+%let where1a = where B.disease ^in ("Myocardial infarction", "Hospitalized infection");
+%let where1b = | (B.disease in ("Myocardial infarction", "Hospitalized infection") & A.enc_type = "IP");
+
+
+/* 
+Call interstitial lung disease macro
+ */
+%include "lib\IPP_2IPSOPplusPX_ILD.sas" / source2;
+%IPP_2IPSOPplusPX_ILD(outdata = Work.outcome_ILD_MPCD,
+                      IDS = patid,
+                      Dxs = UCB.tempPrevDxMPCD,
+                      Pxs = UCB.tempPrevPxMPCD);
+%IPP_2IPSOPplusPX_ILD(outdata = Work.outcome_ILD_UCB,
+                      IDS = patid,
+                      Dxs = UCB.tempPrevDxUCB,
+                      Pxs = UCB.tempPrevPxUCB);
+%IPP_2IPSOPplusPX_ILD(outdata = Work.outcome_ILD_SABR,
+                      IDS = patid,
+                      Dxs = UCB.tempPrevDxSABR,
+                      Pxs = UCB.tempPrevPxSABR);
+
+/* 
+Process fracture episodes data set
+ */
+proc sql;
+  create table Work.fractures as
+    select database, 
+           exposure, 
+           patid, 
+           ASCohortDate, 
+           "Osteoporotic fracture" as outcomeCategory, 
+           fractureType as disease, 
+           fractureEpisodeStart as begin_date
+    from DT.fractureEpisodesPrev
+    where ^missing(fractureType);
+quit;
+
+
+proc sql;
+
+  %let select2 = select database, exposure, patid, ASCohortDate, enc_type, "Lung disease" as outcomeCategory, "Interstitial lung disease" as disease, outcome_start_date as begin_date;
+  create table DT.comorbiditiesByPatid as
+    select C.database, C.exposure, C.patid, C.ASCohortDate,
+           C.outcomeCategory,
+           C.disease,
+           sum(C.begin_date < C.ASCohortDate) > 0 as indPrevPriorToCohortEntry,
+           sum(0 <= C.ASCohortDate  - C.begin_date <= 183 |
+               0 <= C.begin_date - C.ASCohortDate  <= (183 * 1)) > 0 as indPrev12mo,
+           sum(0 <= C.ASCohortDate  - C.begin_date <= 183 |
+               0 <= C.begin_date - C.ASCohortDate  <= (183 * 3)) > 0 as indPrev24mo,
+           sum(0 <= C.ASCohortDate  - C.begin_date <= 183 |
+               0 <= C.begin_date - C.ASCohortDate  <= (183 * 5)) > 0 as indPrev36mo
+    from (&select1 from UCB.tempPrevDxMPCD A &join1 &where1a &where1b union corr
+          &select1 from UCB.tempPrevDxUCB  A &join1 &where1a &where1b union corr
+          &select1 from UCB.tempPrevDxSABR A &join1 &where1a &where1b union corr
+          &select1 from UCB.tempPrevPxMPCD A &join1 &where1a union corr
+          &select1 from UCB.tempPrevPxUCB  A &join1 &where1a union corr
+          &select1 from UCB.tempPrevPxSABR A &join1 &where1a union corr
+          &select2 from Work.outcome_ILD_MPCD union corr
+          &select2 from Work.outcome_ILD_UCB  union corr
+          &select2 from Work.outcome_ILD_SABR union corr
+          select * from Work.fractures) C
+    group by C.database, C.exposure, C.patid, C.ASCohortDate,
+             C.outcomeCategory,
+             C.disease
+    having calculated indPrevPriorToCohortEntry > 0 | 
+           calculated indPrev12mo > 0 | 
+           calculated indPrev24mo > 0 | 
+           calculated indPrev36mo > 0;
+
+quit;
+
+
+proc sql;
+
+  create table Work.denominator as
+    select database, 
+           mean(indexDate - ASCohortDate) as meanDaysASCohortToExposure,
+           min(indexDate - ASCohortDate) as minDaysASCohortToExposure,
+           max(indexDate - ASCohortDate) as maxDaysASCohortToExposure,
+           count(distinct patid) as denomPatid
+    from DT.indexLookup
+    group by database;
+
+  create table Work.prev as
+    select A.database, A.outcomeCategory, A.disease,
+           B.denomPatid,
+           "AS cohort entry to exposure" as timeWindow,
+           sum(A.indPrevPriorToCohortEntry) as numer,
+           sum(A.indPrevPriorToCohortEntry) / B.denomPatid * 100 as prevPct
+    from DT.comorbiditiesByPatid A inner join
+         Work.denominator B on (A.database = B.database)
+    group by A.database, A.outcomeCategory, A.disease, B.denomPatid
+    union corr
+    select A.database, A.outcomeCategory, A.disease,
+           B.denomPatid,
+           "12 months" as timeWindow,
+           sum(A.indPrev12mo) as numer,
+           sum(A.indPrev12mo) / B.denomPatid * 100 as prevPct
+    from DT.comorbiditiesByPatid A inner join
+         Work.denominator B on (A.database = B.database)
+    group by A.database, A.outcomeCategory, A.disease, B.denomPatid
+    union corr
+    select A.database, A.outcomeCategory, A.disease,
+           B.denomPatid,
+           "24 months" as timeWindow,
+           sum(A.indPrev24mo) as numer,
+           sum(A.indPrev24mo) / B.denomPatid * 100 as prevPct
+    from DT.comorbiditiesByPatid A inner join
+         Work.denominator B on (A.database = B.database)
+    group by A.database, A.outcomeCategory, A.disease, B.denomPatid
+    union corr
+    select A.database, A.outcomeCategory, A.disease,
+           B.denomPatid,
+           "36 months" as timeWindow,
+           sum(A.indPrev36mo) as numer,
+           sum(A.indPrev36mo) / B.denomPatid * 100 as prevPct
+    from DT.comorbiditiesByPatid A inner join
+         Work.denominator B on (A.database = B.database)
+    group by A.database, A.outcomeCategory, A.disease, B.denomPatid;
+  select * from Work.prev;
+quit;
+
+
+proc export
+  data = Work.prev
+  outfile = "data\processed\&cmt.Overall.csv"
+  dbms = csv
+  replace;
+  delimiter = ",";
+run;
+
+
+
+
 /* 
 Call interstitial lung disease macro
  */
@@ -67,8 +211,6 @@ proc sql;
            indexGNN, 
            indexDate, 
            indexID, 
-           age, 
-           sex, 
            "Osteoporotic fracture" as outcomeCategory, 
            fractureType as disease, 
            fractureEpisodeStart as begin_date
@@ -77,22 +219,11 @@ proc sql;
 quit;
 
 
-
-
 proc sql;
 
-  create table Work.defOutcomes as
-    select * 
-    from DT.defOutcomes 
-    where disease ^in ("Interstitial lung disease");
-  
-  %let select1 = select A.*, B.outcomeCategory, B.disease;
-  %let join1 = inner join Work.defOutcomes B on (A.codeType = B.codeType & A.code = B.code);
-  %let where1a = where B.disease ^in ("Myocardial infarction", "Hospitalized infection");
-  %let where1b = | (B.disease in ("Myocardial infarction", "Hospitalized infection") & A.enc_type = "IP");
-  %let select2 = select database, exposure, patid, ASCohortDate, indexGNN, indexDate, indexID, enc_type, age, sex, "Lung disease" as outcomeCategory, "Interstitial lung disease" as disease, outcome_start_date as begin_date;
+  %let select2 = select database, exposure, patid, ASCohortDate, indexGNN, indexDate, indexID, enc_type, "Lung disease" as outcomeCategory, "Interstitial lung disease" as disease, outcome_start_date as begin_date;
   create table DT.comorbidities as
-    select C.database, C.exposure, C.patid, C.ASCohortDate, C.indexGNN, C.indexDate, C.indexID, C.age, C.sex,
+    select C.database, C.exposure, C.patid, C.ASCohortDate, C.indexGNN, C.indexDate, C.indexID,
            C.outcomeCategory,
            C.disease,
            sum(C.ASCohortDate <= C.begin_date <= C.indexDate) > 0 as indPrevPriorToIndex,
@@ -112,7 +243,7 @@ proc sql;
           &select2 from Work.outcome_ILD_UCB  union corr
           &select2 from Work.outcome_ILD_SABR union corr
           select * from Work.fractures) C
-    group by C.database, C.exposure, C.patid, C.ASCohortDate, C.indexGNN, C.indexDate, C.indexID, C.age, C.sex,
+    group by C.database, C.exposure, C.patid, C.ASCohortDate, C.indexGNN, C.indexDate, C.indexID,
              C.outcomeCategory,
              C.disease
     having calculated indPrevPriorToIndex > 0 | 
@@ -121,71 +252,6 @@ proc sql;
            calculated indPrev36mo > 0;
 
 quit;
-
-
-proc sql;
-
-  create table Work.denominator as
-    select database, 
-           mean(indexDate - ASCohortDate) as meanDaysASCohortToExposure,
-           min(indexDate - ASCohortDate) as minDaysASCohortToExposure,
-           max(indexDate - ASCohortDate) as maxDaysASCohortToExposure,
-           count(distinct patid) as denomPatid,
-           count(distinct indexID) as denomIndexExp
-    from DT.indexLookup
-    group by database;
-
-  create table Work.prev as
-    select A.database, A.outcomeCategory, A.disease,
-           B.denomPatid,
-           B.denomIndexExp,
-           "AS cohort entry to exposure" as timeWindow,
-           sum(A.indPrevPriorToIndex) as numer,
-           sum(A.indPrevPriorToIndex) / B.denomIndexExp * 100 as prevPct
-    from DT.comorbidities A inner join
-         Work.denominator B on (A.database = B.database)
-    group by A.database, A.outcomeCategory, A.disease, B.denomPatid, B.denomIndexExp
-    union corr
-    select A.database, A.outcomeCategory, A.disease,
-           B.denomPatid,
-           B.denomIndexExp,
-           "12 months" as timeWindow,
-           sum(A.indPrev12mo) as numer,
-           sum(A.indPrev12mo) / B.denomIndexExp * 100 as prevPct
-    from DT.comorbidities A inner join
-         Work.denominator B on (A.database = B.database)
-    group by A.database, A.outcomeCategory, A.disease, B.denomPatid, B.denomIndexExp
-    union corr
-    select A.database, A.outcomeCategory, A.disease,
-           B.denomPatid,
-           B.denomIndexExp,
-           "24 months" as timeWindow,
-           sum(A.indPrev24mo) as numer,
-           sum(A.indPrev24mo) / B.denomIndexExp * 100 as prevPct
-    from DT.comorbidities A inner join
-         Work.denominator B on (A.database = B.database)
-    group by A.database, A.outcomeCategory, A.disease, B.denomPatid, B.denomIndexExp
-    union corr
-    select A.database, A.outcomeCategory, A.disease,
-           B.denomPatid,
-           B.denomIndexExp,
-           "36 months" as timeWindow,
-           sum(A.indPrev36mo) as numer,
-           sum(A.indPrev36mo) / B.denomIndexExp * 100 as prevPct
-    from DT.comorbidities A inner join
-         Work.denominator B on (A.database = B.database)
-    group by A.database, A.outcomeCategory, A.disease, B.denomPatid, B.denomIndexExp;
-  select * from Work.prev;
-quit;
-
-
-proc export
-  data = Work.prev
-  outfile = "data\processed\&cmt.Overall.csv"
-  dbms = csv
-  replace;
-  delimiter = ",";
-run;
 
 
 proc sql;

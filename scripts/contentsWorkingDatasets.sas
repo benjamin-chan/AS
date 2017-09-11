@@ -46,6 +46,37 @@ UCB ASNSAIDCohortStd_SABR_ex2
 UCB ASNoExpCohortStd_SABR_ex2
 UCB CntlCohortStdC5P
 UCB CntlCohortStdMPCD
+UCB tempLookupMPCD
+UCB tempPrevDxMPCD
+UCB tempPrevPxMPCD
+UCB tempFracDxMPCD
+UCB tempFracPxMPCD
+UCB tempLookupMarketscan
+UCB tempPrevDxUCB
+UCB tempPrevPxUCB
+UCB tempFracDxUCB
+UCB tempFracPxUCB
+UCB tempLookupMedicare
+UCB tempPrevDxSABR
+UCB tempPrevPxSABR
+UCB tempFracDxSABR
+UCB tempFracPxSABR
+UCB tempLookupMPCDControl
+UCB tempPrevDxMPCDControl
+UCB tempPrevPxMPCDControl
+UCB tempFracDxMPCDControl
+UCB tempFracPxMPCDControl
+UCB tempLookupMedicareControl
+UCB tempPrevDxSABRControl
+UCB tempPrevPxSABRControl
+UCB tempFracDxSABRControl
+UCB tempFracPxSABRControl
+UCB tempIncDxMPCD
+UCB tempIncPxMPCD
+UCB tempIncDxUCB
+UCB tempIncPxUCB
+UCB tempIncDxSABR
+UCB tempIncPxSABR
 DT defOutcomes
 DT indexLookup
 DT controlLookup
@@ -55,9 +86,9 @@ DT fractureEpisodesPrev
 DT fractureEpisodesPrevControl
 DT fractureEpisodesInc
 DT comorbidities
+DT comorbiditiesByPatid
 DT comorbiditiesControl
 DT comorbiditiesOther
-DT comorbiditiesAll
   ;
 run;
 proc sort data = Work.WorkingDatasets;

@@ -27,7 +27,7 @@ ods html
   proc sql;
     create table Work.libs (libname varchar(8), desc varchar(20), yearRange varchar(9), note varchar(80));
     insert into Work.libs
-      values ("ccw5std", "Medicare 5% Sample", "2006-2014", "Data can track back to 1999, but only use from 2006 in this project")
+      values ("stdc5p", "Medicare 5% Sample", "2006-2014", "Data can track back to 1999, but only use from 2006 in this project")
       values ("std_SABR", "Medicare SABER2", "2006-2014", "Standardization data are in server 1 in SAS lib Std_sabr")
       values ("MPSTD", "MPCD", "2007-2010", "Only RA(SP) & Healthy(CP2) population from 'Commercial' (eg. not Medicaid) coverage included)")
       values ("UCBSTD", "MarketScan", "2010-2014", "");
