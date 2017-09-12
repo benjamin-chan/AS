@@ -80,10 +80,10 @@ if compress(DX,".", "s" ) in (
 where substr(compress(DX,".", "s" ),1,3)="173";
 run;
 
-proc sort data=_dat_NMSC_DX nodupkey; by PATID begin_date dx ENC_TYPE;run;
+proc sort data=_dat_NMSC_DX nodupkey; by exposureID begin_date dx ENC_TYPE;run;
 data _dat_NMSC_dX ;
 set _dat_NMSC_dX ;
-by PATID begin_date dx ENC_TYPE;
+by exposureID begin_date dx ENC_TYPE;
 if first.dx;
 run;
 
@@ -100,20 +100,20 @@ rc=hpx.find(key:PX);
 if rc=0 then output _dat_NMSC_PX;
 if px in ("88305" "88304") then output _dat_NMSC_path;
 run;
-proc sort data=_dat_NMSC_PX(keep=PATID px_date px px_type biopsy) nodupkey; by PATID px_date PX;run;
-proc sort data= _dat_NMSC_path nodupkey; by patid path_date px_path;run;
+proc sort data=_dat_NMSC_PX(keep=exposureID px_date px px_type biopsy) nodupkey; by exposureID px_date PX;run;
+proc sort data= _dat_NMSC_path nodupkey; by exposureID path_date px_path;run;
 proc freq data=_dat_NMSC_path; tables px_path;run;
 data _dat_NMSC_path_dx(drop=rc);
 /* dx on the day of pathologist PX code */
 if _n_=1 then do;
   declare hash hpx(dataset:"_dat_NMSC_path");
-  rc=hpx.defineKey("patid", "PATH_date");
-  rc=hpx.defineData("patid", "PATH_date", "PX_PATH");
+  rc=hpx.defineKey("exposureID", "PATH_date");
+  rc=hpx.defineData("exposureID", "PATH_date", "PX_PATH");
   rc=hpx.defineDone();
 end;
-if 0 then set _dat_NMSC_path(keep=patid PATH_date PX_PATH);
+if 0 then set _dat_NMSC_path(keep=exposureID PATH_date PX_PATH);
 SET &indxdat;;
-rc=hpx.find(key:Patid,key:begin_date);
+rc=hpx.find(key:exposureID,key:begin_date);
 length NMSC_Basal NMSC_Squamous $1;
 if compress(DX,".", "s" ) in (
 '17301'
@@ -141,16 +141,16 @@ if compress(DX,".", "s" ) in (
 ) then NMSC_Squamous="Y";
 if rc=0 then output _dat_NMSC_path_dx;
 run;
-proc sort data=_dat_NMSC_path_dx ; by patid PATH_date dx pdx;run;
-proc sort data=_dat_NMSC_path_dx nodupkey; by patid PATH_date dx;run;
+proc sort data=_dat_NMSC_path_dx ; by exposureID PATH_date dx pdx;run;
+proc sort data=_dat_NMSC_path_dx nodupkey; by exposureID PATH_date dx;run;
 
 proc freq data=_dat_NMSC_path_dx order=freq;format dx $icd9dx.; table dx;run;
 
-proc sort data=_dat_NMSC_path_dx out=_dat_NMSC_path_dxNMSC nodupkey; by patid PATH_date dx; where dx in :("173");run;
+proc sort data=_dat_NMSC_path_dx out=_dat_NMSC_path_dxNMSC nodupkey; by exposureID PATH_date dx; where dx in :("173");run;
 proc sql outobs=50;
 title "pat can have both DX Squamous and Basal on the same day";
 select *, count(*) as n from _dat_NMSC_path_dxNMSC(drop=PROV_ID PROV_ID_TYPE FACILITY_ID ADMIT_DATE DISCHARGE_DATE DISCHARGE_STATUS)
-group by patid, path_date
+group by exposureID, path_date
 having n>1;
 title;
 quit;
@@ -159,19 +159,19 @@ proc freq data=_dat_NMSC_path_dxNMSC; tables NMSC_Basal *NMSC_Squamous/missing;r
 proc freq data=_dat_NMSC_DX; tables NMSC_Basal*NMSC_Squamous dx/missing;run;
 proc freq data=_dat_NMSC_PX; tables PX_TYPE;run;
 
-data _cancer_NMSC12(keep=PATID NMSC_def1 NMSC_def2 begin_date DX PX px_type dx_type px_date outcome_date outcome_start_date NMSC_Basal NMSC_Squamous ENC_TYPE);
+data _cancer_NMSC12(keep=exposureID NMSC_def1 NMSC_def2 begin_date DX PX px_type dx_type px_date outcome_date outcome_start_date NMSC_Basal NMSC_Squamous ENC_TYPE);
 if _n_=1 then do;
   declare hash hpx(dataset:"_dat_NMSC_PX(where=(biopsy^=1))", multidata:"Y");
-  rc=hpx.defineKey("PATID");
+  rc=hpx.defineKey("exposureID");
   rc=hpx.defineData("px_date", "PX", "px_type");
   rc=hpx.defineDone();
 end;
-if 0 then set _dat_NMSC_PX(keep=PATID px_date PX px_type);
+if 0 then set _dat_NMSC_PX(keep=exposureID px_date PX px_type);
 set _dat_NMSC_DX;
-by PATID begin_date;
+by exposureID begin_date;
 length NMSC_def1 NMSC_def2 $1 outcome_date outcome_start_date 4;
 format outcome_date outcome_start_date mmddyy10.;
-        rc =hpx.find(key:PATID);
+        rc =hpx.find(key:exposureID);
          do while (rc = 0);
             if begin_date=px_date then NMSC_def1="Y"; 
                 else NMSC_def1="N"; 
@@ -186,11 +186,11 @@ run;
 proc sql;
 create table _cancer_NMSC3 as
 select * from _dat_NMSC_PX(where=(biopsy=1)) a
-join _dat_NMSC_path_dxNMSC(keep=PATID Path_date PX_path DX NMSC_Basal 
+join _dat_NMSC_path_dxNMSC(keep=exposureID Path_date PX_path DX NMSC_Basal 
     NMSC_Squamous ENC_TYPE dx_type begin_date)  b
-on a.patid=b.patid and a.px_date<=b.path_date<=a.px_date+14;
+on a.exposureID=b.exposureID and a.px_date<=b.path_date<=a.px_date+14;
 quit;
-data _cancer_NMSC3(keep=PATID NMSC_def3 begin_date DX PX px_type dx_type px_date outcome_date outcome_start_date 
+data _cancer_NMSC3(keep=exposureID NMSC_def3 begin_date DX PX px_type dx_type px_date outcome_date outcome_start_date 
 NMSC_Basal NMSC_Squamous ENC_TYPE path_date px_path);
 set _cancer_NMSC3;
 length NMSC_def3 $1 outcome_date outcome_start_date 4;
@@ -207,20 +207,20 @@ run;
 
 
 proc sort data=_cancer_NMSC nodupkey;
-by PATID outcome_date descending outcome_start_date NMSC_def1 NMSC_def2 NMSC_def3 NMSC_Basal NMSC_Squamous;run;
+by exposureID outcome_date descending outcome_start_date NMSC_def1 NMSC_def2 NMSC_def3 NMSC_Basal NMSC_Squamous;run;
 
-data Outcome_cancer_nmsc(keep=PATID NMSC_def1 NMSC_def2 NMSC_def3 begin_date PX px_date outcome_date 
+data Outcome_cancer_nmsc(keep=exposureID NMSC_def1 NMSC_def2 NMSC_def3 begin_date PX px_date outcome_date 
 outcome_start_date NMSC_Basal NMSC_Squamous DX ENC_TYPE Path_date PX_path dx_type px_type);
 set _cancer_NMSC;
 length cancer $10;
-by PATID outcome_date descending outcome_start_date;
+by exposureID outcome_date descending outcome_start_date;
 /*if first.outcome_date;*/
 cancer="NMSC";
 run; 
 
 proc sql outobs=50;
 select *, count(*) as n from _cancer_NMSC
-group by PATID, outcome_date
+group by exposureID, outcome_date
 having n>1;
 quit;
 
