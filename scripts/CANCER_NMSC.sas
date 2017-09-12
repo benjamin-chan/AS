@@ -14,11 +14,12 @@ TODO:
 ****************************************************************************************;
 
 *To edit the following two lines only;
-%let indxdat=UC.Subsetdx UC.Subsetdxif UC.Subsetdxot;
-%let inpxdat=UC.Subsetpx;
-%let inrxdat=UC.Subsetrx;
-proc sort data=&inpxdat; by patid px_date;run;
-proc sort data=&inrxdat; by patid dispense_date;run;
+%let indxdat = UCB.tempIncDxAll;
+%let inpxdat = UCB.tempIncPxAll;
+%let inrxdat = UCB.tempIncRxAll;
+proc sort data=&indxdat; by exposureID begin_date;run;
+proc sort data=&inpxdat; by exposureID px_date;run;
+proc sort data=&inrxdat; by exposureID dispense_date;run;
 
 
 proc datasets nolist; delete 
