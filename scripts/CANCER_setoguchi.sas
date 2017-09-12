@@ -58,12 +58,6 @@ proc sort data=malignancy(where=(code^='')) out=malignancy2 ; by table code anyc
 *these datasets are used to identify subsets of where the datasets are coming from;
 *please adjust to point all PX/DX/RX/etc.;
 
-%let indxdat=UC.Subsetdx;
-%let inpxdat=UC.Subsetpx;
-%let inrxdat=UC.Subsetrx;
-proc sort data=&indxdat; by patid begin_date;run;
-proc sort data=&inpxdat; by patid px_date;run;
-proc sort data=&inrxdat; by patid dispense_date;run;
 proc sql;
   create table UCB.tempIncDxAll as
     select UCB.tempIncDxMPCD union corr
@@ -79,6 +73,12 @@ proc sql;
     select UCB.tempIncRxSABR ;
 quit;
 
+%let indxdat = UCB.tempIncDxAll;
+%let inpxdat = UCB.tempIncPxAll;
+%let inrxdat = UCB.tempIncRxAll;
+proc sort data=&indxdat; by exposureID begin_date;run;
+proc sort data=&inpxdat; by exposureID px_date;run;
+proc sort data=&inrxdat; by exposureID dispense_date;run;
 
 
 data cancer_dat_dx(drop=rc);
