@@ -64,6 +64,21 @@ proc sort data=malignancy(where=(code^='')) out=malignancy2 ; by table code anyc
 proc sort data=&indxdat; by patid begin_date;run;
 proc sort data=&inpxdat; by patid px_date;run;
 proc sort data=&inrxdat; by patid dispense_date;run;
+proc sql;
+  create table UCB.tempIncDxAll as
+    select UCB.tempIncDxMPCD union corr
+    select UCB.tempIncDxUCB  union corr
+    select UCB.tempIncDxSABR ;
+  create table UCB.tempIncPxAll as
+    select UCB.tempIncPxMPCD union corr
+    select UCB.tempIncPxUCB  union corr
+    select UCB.tempIncPxSABR ;
+  create table UCB.tempIncRxAll as
+    select UCB.tempIncRxMPCD union corr
+    select UCB.tempIncRxUCB  union corr
+    select UCB.tempIncRxSABR ;
+quit;
+
 
 
 data cancer_dat_dx(drop=rc);
