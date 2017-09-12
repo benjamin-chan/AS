@@ -86,6 +86,12 @@ Service code data sets for incidence (non-fracture outcomes)
 
 %include "lib\buildPx.sas";  /* Call script to query procedure codes */
 
+%let select1 = select A.*, 
+                      B.dispense_date, B.ndc, B.gnn, B.dispense_sup;
+%let select2 = select patid, admit_date, ndc, gnn, dispense_sup;
+
+%include "lib\buildRx.sas";  /* Call script to query prescription drug codes */
+
 
 /* 
 Service code data sets for fracture outcomes
