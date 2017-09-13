@@ -6,7 +6,7 @@ options pagesize=74 linesize=150 pageno=1 missing=' ' date FORMCHAR="|----|+|---
 * Creation date : 
 * Modify date   :
 ;
-%let cmt=CANCER_setoguchi; * type the name of your program here (without the filename extension);
+%let cmt=CANCER_NMSC; * type the name of your program here (without the filename extension);
 %let pgm=&cmt..sas;
 %include "lib\libname.sas" ;
 footnote "&pgm.";
