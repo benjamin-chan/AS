@@ -48,7 +48,7 @@ quit;
 %let select1 = select A.*, B.outcomeCategory, B.disease;
 %let join1 = inner join Work.defOutcomes B on (A.codeType = B.codeType & A.code = B.code);
 %let where1a = where B.disease ^in ("Myocardial infarction", "Hospitalized infection");
-%let where1b = | (B.disease in ("Myocardial infarction", "Hospitalized infection") & A.enc_type = "IP");
+%let where1b = | (B.disease in ("Myocardial infarction", "Hospitalized infection") & A.enc_type in ("IP", "AV", "ED", "NH", "HH"));
 
 
 /* 
