@@ -1,4 +1,4 @@
-1                                                          The SAS System                          23:19 Saturday, September 9, 2017
+1                                                          The SAS System                          18:41 Tuesday, September 12, 2017
 
 NOTE: Copyright (c) 2002-2012 by SAS Institute Inc., Cary, NC, USA. 
 NOTE: SAS (r) Proprietary Software 9.4 (TS1M1) 
@@ -28,8 +28,8 @@ Please remember not to copy any data files that contain PHI (protected health id
 
 
 NOTE: SAS initialization used:
-      real time           0.15 seconds
-      cpu time            0.10 seconds
+      real time           0.14 seconds
+      cpu time            0.12 seconds
       
 1          *  University of Alabama at Birmingham                               *
 2          *  AS project                                            *
@@ -72,7 +72,7 @@ NOTE: Libref DT was successfully assigned as follows:
 101          body = "output\&cmt..html"
 102          style = Statistical;
 NOTE: Writing HTML Body file: output\queryOtherComorbidities.html
-2                                                                   The SAS System                                   23:19 Saturday, September 9, 2017
+2                                                                   The SAS System                                   18:41 Tuesday, September 12, 2017
 
 103        
 104        
@@ -91,8 +91,8 @@ NOTE:    Variable Name Change.  Compact Definion -> Compact_Definion
 NOTE: The import data set has 1112 observations and 6 variables.
 NOTE: WORK.COMORBIDITYLOOKUP data set was successfully created.
 NOTE: PROCEDURE IMPORT used (Total process time):
-      real time           0.37 seconds
-      cpu time            0.21 seconds
+      real time           0.35 seconds
+      cpu time            0.23 seconds
       
 
 115        proc sql;
@@ -133,24 +133,103 @@ NOTE: PROCEDURE SQL used (Total process time):
 139                  &select1 from UCB.tempPrevDxSABR A &join1 ) C;
 NOTE: Parallel WHERE evaluation suppressed due to sort order on table.
 NOTE: Parallel WHERE evaluation suppressed due to sort order on table.
-NOTE: Table DT.COMORBIDITIESOTHER created, with 60278 rows and 11 columns.
+NOTE: Table DT.COMORBIDITIESOTHER created, with 61082 rows and 11 columns.
 
 140        
-141        quit;
-NOTE: PROCEDURE SQL used (Total process time):
-      real time           1:42.33
-      cpu time            1:03.79
-      
+141          select comorbidity, database, exposure, sum(indPreExposure) as sumIndPreExposure
+142            from DT.comorbiditiesOther
+143            group by comorbidity, database, exposure;
+                                                                  --- AS project ---                             18:41 Tuesday, September 12, 2017   1
 
-142        
-143        
+                                                                                                          sumIndPre
+                                  Comorbidity                        database    exposure                  Exposure
+                                  ---------------------------------------------------------------------------------
+                                  Diabetes                           MPCD        DMARD                           69
+                                  Diabetes                           MPCD        NSAID or no exposure           522
+                                  Diabetes                           MPCD        TNF                            135
+                                  Diabetes                           Marketscan  DMARD                          268
+                                  Diabetes                           Marketscan  NSAID or no exposure          1528
+                                  Diabetes                           Marketscan  TNF                            636
+                                  Diabetes                           Medicare    DMARD                         2040
+                                  Diabetes                           Medicare    NSAID or no exposure         10403
+                                  Diabetes                           Medicare    TNF                           2117
+                                  Hypertention                       MPCD        DMARD                          192
+                                  Hypertention                       MPCD        NSAID or no exposure          1222
+                                  Hypertention                       MPCD        TNF                            437
+                                  Hypertention                       Marketscan  DMARD                          864
+                                  Hypertention                       Marketscan  NSAID or no exposure          4445
+                                  Hypertention                       Marketscan  TNF                           2152
+                                  Hypertention                       Medicare    DMARD                         4321
+                                  Hypertention                       Medicare    NSAID or no exposure         21882
+                                  Hypertention                       Medicare    TNF                           4484
+                                  Metabolic syndrome                 MPCD        DMARD                            5
+                                  Metabolic syndrome                 MPCD        NSAID or no exposure            35
+                                  Metabolic syndrome                 MPCD        TNF                             13
+                                  Metabolic syndrome                 Marketscan  DMARD                           43
+                                  Metabolic syndrome                 Marketscan  NSAID or no exposure           123
+                                  Metabolic syndrome                 Marketscan  TNF                             79
+                                  Metabolic syndrome                 Medicare    DMARD                          130
+                                  Metabolic syndrome                 Medicare    NSAID or no exposure           571
+                                  Metabolic syndrome                 Medicare    TNF                            171
+                                  Non-alcoholic fatty liver disease  MPCD        DMARD                            6
+                                  Non-alcoholic fatty liver disease  MPCD        NSAID or no exposure            25
+                                  Non-alcoholic fatty liver disease  MPCD        TNF                             23
+                                  Non-alcoholic fatty liver disease  Marketscan  DMARD                           34
+                                  Non-alcoholic fatty liver disease  Marketscan  NSAID or no exposure           243
+                                  Non-alcoholic fatty liver disease  Marketscan  TNF                            168
+                                  Non-alcoholic fatty liver disease  Medicare    DMARD                          261
+                                  Non-alcoholic fatty liver disease  Medicare    NSAID or no exposure          1095
+                                  Non-alcoholic fatty liver disease  Medicare    TNF                            340
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+                                                             queryOtherComorbidities.sas
 144        
-145        
-3                                                                   The SAS System                                   23:19 Saturday, September 9, 2017
+145        quit;
+NOTE: The PROCEDURE SQL printed page 1.
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           1:16.66
+      cpu time            48.84 seconds
+      
+3                                                                   The SAS System                                   18:41 Tuesday, September 12, 2017
 
-146        ods html close;
+
+146        
+147        
+148        
+149        
+150        ods html close;
 NOTE: SAS Institute Inc., SAS Campus Drive, Cary, NC USA 27513-2414
 NOTE: The SAS System used:
-      real time           1:43.38
-      cpu time            1:04.39
+      real time           1:17.54
+      cpu time            49.46 seconds
       
