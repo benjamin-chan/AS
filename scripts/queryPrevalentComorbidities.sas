@@ -55,18 +55,11 @@ quit;
 Call interstitial lung disease macro
  */
 %include "lib\IPP_2IPSOPplusPX_ILD.sas" / source2;
-%IPP_2IPSOPplusPX_ILD(outdata = Work.outcome_ILD_MPCD,
+%IPP_2IPSOPplusPX_ILD(outdata = Work.outcome_ILD_All,
                       IDS = patid,
-                      Dxs = UCB.tempPrevDxMPCD,
-                      Pxs = UCB.tempPrevPxMPCD);
-%IPP_2IPSOPplusPX_ILD(outdata = Work.outcome_ILD_UCB,
-                      IDS = patid,
-                      Dxs = UCB.tempPrevDxUCB,
-                      Pxs = UCB.tempPrevPxUCB);
-%IPP_2IPSOPplusPX_ILD(outdata = Work.outcome_ILD_SABR,
-                      IDS = patid,
-                      Dxs = UCB.tempPrevDxSABR,
-                      Pxs = UCB.tempPrevPxSABR);
+                      Dxs = UCB.tempPrevDxAll,
+                      Pxs = UCB.tempPrevPxAll);
+
 
 /* 
 Process fracture episodes data set
@@ -99,15 +92,9 @@ proc sql;
                0 <= C.begin_date - C.ASCohortDate  <= (183 * 3)) > 0 as indPrev24mo,
            sum(0 <= C.ASCohortDate  - C.begin_date <= 183 |
                0 <= C.begin_date - C.ASCohortDate  <= (183 * 5)) > 0 as indPrev36mo
-    from (&select1 from UCB.tempPrevDxMPCD A &join1 &where1a &where1b union corr
-          &select1 from UCB.tempPrevDxUCB  A &join1 &where1a &where1b union corr
-          &select1 from UCB.tempPrevDxSABR A &join1 &where1a &where1b union corr
-          &select1 from UCB.tempPrevPxMPCD A &join1 &where1a union corr
-          &select1 from UCB.tempPrevPxUCB  A &join1 &where1a union corr
-          &select1 from UCB.tempPrevPxSABR A &join1 &where1a union corr
-          &select2 from Work.outcome_ILD_MPCD union corr
-          &select2 from Work.outcome_ILD_UCB  union corr
-          &select2 from Work.outcome_ILD_SABR union corr
+    from (&select1 from UCB.tempPrevDxAll A &join1 &where1a &where1b union corr
+          &select1 from UCB.tempPrevPxAll A &join1 &where1a union corr
+          &select2 from Work.outcome_ILD_All union corr
           select * from Work.fractures) C
     group by C.database, C.exposure, C.patid, C.ASCohortDate,
              C.outcomeCategory,
@@ -186,18 +173,11 @@ run;
 Call interstitial lung disease macro
  */
 %include "lib\IPP_2IPSOPplusPX_ILD.sas" / source2;
-%IPP_2IPSOPplusPX_ILD(outdata = Work.outcome_ILD_MPCD,
+%IPP_2IPSOPplusPX_ILD(outdata = Work.outcome_ILD_All,
                       IDS = indexID,
-                      Dxs = UCB.tempPrevDxMPCD,
-                      Pxs = UCB.tempPrevPxMPCD);
-%IPP_2IPSOPplusPX_ILD(outdata = Work.outcome_ILD_UCB,
-                      IDS = indexID,
-                      Dxs = UCB.tempPrevDxUCB,
-                      Pxs = UCB.tempPrevPxUCB);
-%IPP_2IPSOPplusPX_ILD(outdata = Work.outcome_ILD_SABR,
-                      IDS = indexID,
-                      Dxs = UCB.tempPrevDxSABR,
-                      Pxs = UCB.tempPrevPxSABR);
+                      Dxs = UCB.tempPrevDxAll,
+                      Pxs = UCB.tempPrevPxAll);
+
 
 /* 
 Process fracture episodes data set
@@ -233,15 +213,9 @@ proc sql;
                0 <= C.begin_date - C.indexDate  <= (183 * 3)) > 0 as indPrev24mo,
            sum(0 <= C.indexDate  - C.begin_date <= 183 |
                0 <= C.begin_date - C.indexDate  <= (183 * 5)) > 0 as indPrev36mo
-    from (&select1 from UCB.tempPrevDxMPCD A &join1 &where1a &where1b union corr
-          &select1 from UCB.tempPrevDxUCB  A &join1 &where1a &where1b union corr
-          &select1 from UCB.tempPrevDxSABR A &join1 &where1a &where1b union corr
-          &select1 from UCB.tempPrevPxMPCD A &join1 &where1a union corr
-          &select1 from UCB.tempPrevPxUCB  A &join1 &where1a union corr
-          &select1 from UCB.tempPrevPxSABR A &join1 &where1a union corr
-          &select2 from Work.outcome_ILD_MPCD union corr
-          &select2 from Work.outcome_ILD_UCB  union corr
-          &select2 from Work.outcome_ILD_SABR union corr
+    from (&select1 from UCB.tempPrevDxAll A &join1 &where1a &where1b union corr
+          &select1 from UCB.tempPrevPxAll A &join1 &where1a union corr
+          &select2 from Work.outcome_ILD_All union corr
           select * from Work.fractures) C
     group by C.database, C.exposure, C.patid, C.ASCohortDate, C.indexGNN, C.indexDate, C.indexID,
              C.outcomeCategory,
