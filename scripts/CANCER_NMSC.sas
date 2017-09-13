@@ -149,7 +149,7 @@ proc freq data=_dat_NMSC_path_dx order=freq;format dx $icd9dx.; table dx;run;
 proc sort data=_dat_NMSC_path_dx out=_dat_NMSC_path_dxNMSC nodupkey; by exposureID PATH_date dx; where dx in :("173");run;
 proc sql outobs=50;
 title "pat can have both DX Squamous and Basal on the same day";
-select *, count(*) as n from _dat_NMSC_path_dxNMSC(drop=PROV_ID PROV_ID_TYPE FACILITY_ID ADMIT_DATE DISCHARGE_DATE DISCHARGE_STATUS)
+select *, count(*) as n from _dat_NMSC_path_dxNMSC(drop=/* PROV_ID PROV_ID_TYPE FACILITY_ID */ ADMIT_DATE DISCHARGE_DATE /* DISCHARGE_STATUS */)
 group by exposureID, path_date
 having n>1;
 title;
