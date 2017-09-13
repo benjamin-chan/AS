@@ -1,15 +1,27 @@
-**********************************************************************
 *  University of Alabama at Birmingham                               *
-*  SABER project                                                      *
+*  AS project                                            *
 **********************************************************************;
-options fmtsearch=(MyFormat.formats);
-options pagesize=45 linesize=150 pageno=1 missing=' ' date FORMCHAR="|----|+|---+=|-/\<>*" fullstimer msglevel=i;
-* Programmer    : Wilson Smith
+options pagesize=74 linesize=150 pageno=1 missing=' ' date FORMCHAR="|----|+|---+=|-/\<>*";
+* Programmer    : Benjamin Chan <chanb@ohsu.edu>
 * Creation date : 
-* Modify date   : by LC 08/17/2016 for standardized data.
-* original code in Q:\pgms\wsmith\CANCER-Amgen psoriasis v01.sas;
-%let cmt=CANCER_Setoguchi;
+* Modify date   :
+;
+%let cmt=CANCER_setoguchi; * type the name of your program here (without the filename extension);
 %let pgm=&cmt..sas;
+%include "lib\libname.sas" ;
+footnote "&pgm.";
+* footnote2 "%sysfunc(datetime(),datetime14.)";
+title1 '--- AS project ---';
+**********************************************************************;
+options macrogen mlogic mprint symbolgen;
+options nomacrogen nomlogic nomprint nosymbolgen;
+
+
+ods html
+  body = "output\&cmt..html"
+  style = Statistical;
+
+
 libname cancer 'Q:\shared\users\lchen\satoguchi' access = readonly;
 
 **************************************************************************************************;
@@ -27,13 +39,7 @@ TODO:
 1) Add complexity for DX_PX tables.. Add code for all diagnosis look at table DX and all procedures look at table PX
 2) find kaiser date, merge into the master data
 ****************************************************************************************;
-footnote "%sysfunc(datetime(),datetime14.)";
-*options  nomlogic mprint nosymbolgen FORMDLIM="*" ;
-*======================================== START EDIT =================================================================;
-%let numdate = %sysfunc(today(),MMDDYY6.);
-/*
-*/  
-*====================================== END EDIT ===================================================================;
+
 proc datasets nolist; 
 delete  
 malignancy 
@@ -662,3 +668,4 @@ length outcome $20;
 outcome="cancer";
 run;
 
+ods html close;
