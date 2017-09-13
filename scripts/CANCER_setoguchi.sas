@@ -10,7 +10,7 @@ options pagesize=45 linesize=150 pageno=1 missing=' ' date FORMCHAR="|----|+|---
 * original code in Q:\pgms\wsmith\CANCER-Amgen psoriasis v01.sas;
 %let cmt=CANCER_Setoguchi;
 %let pgm=&cmt..sas;
-libname cancer 'Q:\shared\users\lchen\satoguchi';
+libname cancer 'Q:\shared\users\lchen\satoguchi' access = readonly;
 
 **************************************************************************************************;
 
