@@ -34,21 +34,21 @@ _dat_NMSC_path_dxNMSC
 _dat_NMSC_path:
 Outcome_cancer_nmsc;
 quit;
-/*
-*import the list of CPT/HCPCS/ICD9 code related to NMSC;
+
+/* *import the list of CPT/HCPCS/ICD9 code related to NMSC;
 PROC IMPORT OUT= NMSC_code DATAFILE= "W:\Users\lchen\lookupdata\cancer\NMSC.xlsx" 
             DBMS=xlsx REPLACE;
      SHEET="NMSC"; 
      GETNAMES=YES;
-RUN;
-libname lookup "W:\Users\lchen\lookupdata";
-data lookup.NMSC_code ;
+RUN; */
+libname lookup "W:\Users\lchen\lookupdata" access = readonly;
+/* data lookup.NMSC_code ;
 set NMSC_code;
 code=compress(upcase(code),".", "s" ); * also remove space along with ".";
 if Biopsy=. then Biopsy=0;
 where code^=" ";
-run;
-*/
+run; */
+
 data _dat_NMSC_DX;
 set &indxdat;
 length NMSC_Basal NMSC_Squamous $1;
