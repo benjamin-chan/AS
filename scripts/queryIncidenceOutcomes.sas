@@ -57,6 +57,11 @@ Call interstitial lung disease macro
                       IDS = exposureID,
                       Dxs = UCB.tempIncDxAll,
                       Pxs = UCB.tempIncPxAll);
+proc sql;
+  select database, exposure, "Interstitial lung disease" as disease, count(distinct exposureID) as n
+    from Work.outcome_ILD_All
+    group by database, exposure;
+quit;
 
 
 /* 
