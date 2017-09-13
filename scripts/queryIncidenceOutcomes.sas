@@ -75,6 +75,9 @@ proc sql;
            fractureEpisodeStart as begin_date
     from DT.fractureEpisodesInc
     where ^missing(fractureType);
+  select database, exposure, disease, count(distinct exposureID) as n
+    from Work.fractures
+    group by database, exposure, disease;
 quit;
 
 
