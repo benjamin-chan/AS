@@ -119,7 +119,7 @@ if _n_=1 then do;
   rc=hpx.defineDone();
 end;
 if 0 then set lookup.NMSC_code(keep=code Biopsy);
-SET &inpxdat;;
+SET &inpxdat (where = (codeType in ("CPT", "HCPCS")));;
 rc=hpx.find(key:PX);
 if rc=0 then output _dat_NMSC_PX;
 if px in ("88305" "88304") then output _dat_NMSC_path;
