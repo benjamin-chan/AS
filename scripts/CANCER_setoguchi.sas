@@ -10,7 +10,7 @@ options pagesize=45 linesize=150 pageno=1 missing=' ' date FORMCHAR="|----|+|---
 * original code in Q:\pgms\wsmith\CANCER-Amgen psoriasis v01.sas;
 %let cmt=CANCER_Setoguchi;
 %let pgm=&cmt..sas;
-libname cancer 'Q:\shared\users\lchen\satoguchi';
+libname cancer 'Q:\shared\users\lchen\satoguchi' access = readonly;
 
 **************************************************************************************************;
 
@@ -58,12 +58,27 @@ proc sort data=malignancy(where=(code^='')) out=malignancy2 ; by table code anyc
 *these datasets are used to identify subsets of where the datasets are coming from;
 *please adjust to point all PX/DX/RX/etc.;
 
-%let indxdat=UC.Subsetdx;
-%let inpxdat=UC.Subsetpx;
-%let inrxdat=UC.Subsetrx;
-proc sort data=&indxdat; by patid begin_date;run;
-proc sort data=&inpxdat; by patid px_date;run;
-proc sort data=&inrxdat; by patid dispense_date;run;
+proc sql;
+  create table UCB.tempIncDxAll as
+    select UCB.tempIncDxMPCD union corr
+    select UCB.tempIncDxUCB  union corr
+    select UCB.tempIncDxSABR ;
+  create table UCB.tempIncPxAll as
+    select UCB.tempIncPxMPCD union corr
+    select UCB.tempIncPxUCB  union corr
+    select UCB.tempIncPxSABR ;
+  create table UCB.tempIncRxAll as
+    select UCB.tempIncRxMPCD union corr
+    select UCB.tempIncRxUCB  union corr
+    select UCB.tempIncRxSABR ;
+quit;
+
+%let indxdat = UCB.tempIncDxAll;
+%let inpxdat = UCB.tempIncPxAll;
+%let inrxdat = UCB.tempIncRxAll;
+proc sort data=&indxdat; by exposureID begin_date;run;
+proc sort data=&inpxdat; by exposureID px_date;run;
+proc sort data=&inrxdat; by exposureID dispense_date;run;
 
 
 data cancer_dat_dx(drop=rc);
@@ -78,7 +93,7 @@ set &indxdat.;
 rc = cancer_hash.find(key:DX);
 if rc=0;
 run;
-proc sort data=Cancer_dat_DX nodupkey; by patid begin_date dx;run;
+proc sort data=Cancer_dat_DX nodupkey; by exposureID begin_date dx;run;
 
 data cancer_dat_px(drop=rc);
     if _N_=1 then do;
@@ -92,7 +107,7 @@ set &inpxdat.;
 rc = cancer_hash.find(key:PX);
 if rc=0;
 run;
-proc sort data=Cancer_dat_PX nodupkey; by patid px_date px;run;
+proc sort data=Cancer_dat_PX nodupkey; by exposureID px_date px;run;
 
 
 data cancer_dat_rx(drop=rc);
@@ -107,7 +122,7 @@ set &inrxdat.;
 rc = cancer_hash.find(key:NDC);
 if rc=0;
 run;
-proc sort data=Cancer_dat_RX nodupkey; by patid dispense_date ndc;run;
+proc sort data=Cancer_dat_RX nodupkey; by exposureID dispense_date ndc;run;
 
 ********************************************************************************************************************************************;
 proc format;
@@ -233,46 +248,46 @@ def_2_dx_dx
     /*Creating a Cancer specific DX/PX table - select benes with ever &current cancer diagnosis */
     /* bene_id for those with this cancer ever */
     data only (drop=&current); 
-        set Cancer_dat_DX(where=(&Current=1) keep= PATID &current in=a); by PATID; if first.PATID;
+        set Cancer_dat_DX(where=(&Current=1) keep= exposureID &current in=a); by exposureID; if first.exposureID;
     run;
     *proc print data=only(obs=15); run;
 
     data refine_PX(drop=rc);
     if _N_=1 then do;
-        declare hash hpatid(dataset: "only");
-        rc = hpatid.definekey("PATID");
-        rc = hpatid.defineDone();
+        declare hash hexposureID(dataset: "only");
+        rc = hexposureID.definekey("exposureID");
+        rc = hexposureID.defineDone();
         *put rc= ;
     end;
         if 0 then set only;
-        set cancer_dat_PX( ); by PATID PX_DATE;
-        rc =hpatid.find(key:PATID);
+        set cancer_dat_PX( ); by exposureID PX_DATE;
+        rc =hexposureID.find(key:exposureID);
         if rc = 0;
     run;
 
     data refine_DX(drop=rc);
     if _N_=1 then do;
-        declare hash hpatid(dataset: "only");
-        rc = hpatid.definekey("PATID");
-        rc = hpatid.defineDone();
+        declare hash hexposureID(dataset: "only");
+        rc = hexposureID.definekey("exposureID");
+        rc = hexposureID.defineDone();
         *put rc= ;
     end;
         if 0 then set only;
-        set cancer_dat_DX( ); by PATID BEGIN_DATE;
-        rc =hpatid.find(key:PATID);
+        set cancer_dat_DX( ); by exposureID BEGIN_DATE;
+        rc =hexposureID.find(key:exposureID);
         if rc = 0;
     run;
 
     data refine_RX(drop=rc);
     if _N_=1 then do;
-        declare hash hpatid(dataset: "only");
-        rc = hpatid.definekey("PATID");
-        rc = hpatid.defineDone();
+        declare hash hexposureID(dataset: "only");
+        rc = hexposureID.definekey("exposureID");
+        rc = hexposureID.defineDone();
         *put rc= ;
     end;
         if 0 then set only;
-        set cancer_dat_RX( ); by PATID DISPENSE_DATE;
-        rc =hpatid.find(key:PATID);
+        set cancer_dat_RX( ); by exposureID DISPENSE_DATE;
+        rc =hexposureID.find(key:exposureID);
         if rc = 0;
     run;
 
@@ -284,11 +299,11 @@ Note it seems to me that there is not V66.7 Encounter for palliative care in the
 
 */
 
-    Data def_1a_comp(keep = PATID DATE2 PX DX_COMP);  *any diagnosis or procedure codes related to complications of  cancer or palliative care;
+    Data def_1a_comp(keep = exposureID DATE2 PX DX_COMP);  *any diagnosis or procedure codes related to complications of  cancer or palliative care;
         set refine_PX(rename=(PX_DATE=DATE2) where=(sum(&comp)>=1))
              refine_DX(rename=(BEGIN_DATE=DATE2 DX=DX_COMP) where=(sum(&comp)>=1)); 
     run; 
-    proc sort data= def_1a_comp nodupkey; by PATID DATE2; run;
+    proc sort data= def_1a_comp nodupkey; by exposureID DATE2; run;
 
 
     data def_1a_dx_1st; * >=1 cancer diagnosis;
@@ -296,61 +311,61 @@ Note it seems to me that there is not V66.7 Encounter for palliative care in the
         length DATE1 4; format DATE1 mmddyy10.;
         DATE1=BEGIN_DATE;
     run;
-proc sort data=def_1a_dx_1st nodupkey; by PATID DATE1;run;
-    data def_1a_dx_1st_comp(keep=PATID DX: DATE1 DATE2); *+ any diagnosis or procedure codes related to complications of  cancer 
+proc sort data=def_1a_dx_1st nodupkey; by exposureID DATE1;run;
+    data def_1a_dx_1st_comp(keep=exposureID DX: DATE1 DATE2); *+ any diagnosis or procedure codes related to complications of  cancer 
 or palliative care;
     if _N_=1 then do;
-        declare hash hpatid(dataset: "def_1a_comp", multidata:"Y");
-        rc = hpatid.definekey("PATID");
-        rc = hpatid.defineData(all:"YES");
-        rc = hpatid.defineDone();
+        declare hash hexposureID(dataset: "def_1a_comp", multidata:"Y");
+        rc = hexposureID.definekey("exposureID");
+        rc = hexposureID.defineData(all:"YES");
+        rc = hexposureID.defineDone();
         *put rc= ;
     end;
         if 0 then set def_1a_comp;
-        set def_1a_dx_1st( ); by PATID DATE1;
-        rc =hpatid.find(key:PATID);
+        set def_1a_dx_1st( ); by exposureID DATE1;
+        rc =hexposureID.find(key:exposureID);
          do while (rc = 0);
             if rc = 0 and 0<=DATE2-date1<=14 then output;;
-            rc=hpatid.find_next();
+            rc=hexposureID.find_next();
          end;        
     run;
-proc sort data=def_1a_dx_1st_comp; by PATID DATE1 DATE2; run;
+proc sort data=def_1a_dx_1st_comp; by exposureID DATE1 DATE2; run;
 data def_1a_dx_1st_comp;
 set def_1a_dx_1st_comp;
-by PATID DATE1 DATE2;
+by exposureID DATE1 DATE2;
 if first.DATE1;
 run;
 
 
-    data def_1a_dx_1st_comp_dx(keep=PATID DX: DATE1 DATE2 DATE3); *followed by another diagnosis of cancer within 12 months.;
+    data def_1a_dx_1st_comp_dx(keep=exposureID DX: DATE1 DATE2 DATE3); *followed by another diagnosis of cancer within 12 months.;
     if _N_=1 then do;
-        declare hash hpatid(dataset: "def_1a_dx_1st(rename=(date1=date3 dx=dx2)) " , multidata:"Y");
-        rc = hpatid.definekey("PATID");
-        rc = hpatid.defineData("date3","DX2");
-        rc = hpatid.defineDone();
+        declare hash hexposureID(dataset: "def_1a_dx_1st(rename=(date1=date3 dx=dx2)) " , multidata:"Y");
+        rc = hexposureID.definekey("exposureID");
+        rc = hexposureID.defineData("date3","DX2");
+        rc = hexposureID.defineDone();
         *put rc= ;
     end;
         if 0 then set def_1a_dx_1st(rename=(date1=date3  dx=dx2));
-        set def_1a_dx_1st_comp; by PATID DATE1;
-        rc =hpatid.find(key:PATID);
+        set def_1a_dx_1st_comp; by exposureID DATE1;
+        rc =hexposureID.find(key:exposureID);
          do while (rc = 0);
             if rc = 0 and 0 <= intck('month',date1, date3)<=12 and date1^=date3 then output;
-            rc=hpatid.find_next();
+            rc=hexposureID.find_next();
          end;
     run;
 
 data def_1a;
 set def_1a_dx_1st_comp_dx;
 length Def_1a 3 outcome_date outcome_start_date 4; format outcome_date outcome_start_date mmddyy10.;
-by PATID DATE1 DATE2 DATE3;
+by exposureID DATE1 DATE2 DATE3;
 Def_1a=1;
 outcome_start_date=min(DATE1, DATE2, DATE3);
 outcome_date=DATE3;
 run;
-proc sort data=def_1a;by PATID outcome_date descending outcome_start_date;run;
+proc sort data=def_1a;by exposureID outcome_date descending outcome_start_date;run;
 data def_1a;
 set def_1a;
-by PATID outcome_date descending outcome_start_date;
+by exposureID outcome_date descending outcome_start_date;
 if first.outcome_date;
 run;
 
@@ -368,59 +383,59 @@ occasions within 12 months (recorded on different dates from the procedures).
     where &current in (1,3);
     run;
 
-    data def_1b_px_dx(keep=PATID DX: DATE1 PX_DATE); *followed by >=2 cancer diagnoses at two different 
+    data def_1b_px_dx(keep=exposureID DX: DATE1 PX_DATE); *followed by >=2 cancer diagnoses at two different 
 occasions within 12 months (recorded on different dates from the procedures;
     if _N_=1 then do;
-        declare hash hpatid(dataset: "def_1a_dx_1st", multidata:"Y");
-        rc = hpatid.definekey("PATID");
-        rc = hpatid.defineData(all:"YES");
-        rc = hpatid.defineDone();
+        declare hash hexposureID(dataset: "def_1a_dx_1st", multidata:"Y");
+        rc = hexposureID.definekey("exposureID");
+        rc = hexposureID.defineData(all:"YES");
+        rc = hexposureID.defineDone();
         *put rc= ;
     end;
     if 0 then set def_1a_dx_1st;
-    set def_1b_PX; by PATID PX_DATE;
-        rc =hpatid.find(key:PATID);
+    set def_1b_PX; by exposureID PX_DATE;
+        rc =hexposureID.find(key:exposureID);
          do while (rc = 0);
             if rc = 0 and date1>px_date and yrdif(PX_DATE,DATE1,'actual')<1 then output;;
-            rc=hpatid.find_next();
+            rc=hexposureID.find_next();
          end; ;
     run;
-proc sort data=def_1b_px_dx; by PATID PX_DATE DATE1; run;
+proc sort data=def_1b_px_dx; by exposureID PX_DATE DATE1; run;
     data def_1b_px_dx;
     set def_1b_px_dx;
-    by PATID PX_DATE DATE1;
+    by exposureID PX_DATE DATE1;
     if first.PX_DATE;
     run;
 
-    data def_1b_px_dx_dx(keep=PATID DX: DATE1 PX_DATE DATE2); *followed by >=2 cancer diagnoses at two different 
+    data def_1b_px_dx_dx(keep=exposureID DX: DATE1 PX_DATE DATE2); *followed by >=2 cancer diagnoses at two different 
 occasions within 12 months (recorded on different dates from the procedures;
     if _N_=1 then do;
-        declare hash hpatid(dataset: "def_1a_dx_1st(rename=(DATE1= DATE2))", multidata:"Y");
-        rc = hpatid.definekey("PATID");
-        rc = hpatid.defineData(all:"YES");
-        rc = hpatid.defineDone();
+        declare hash hexposureID(dataset: "def_1a_dx_1st(rename=(DATE1= DATE2))", multidata:"Y");
+        rc = hexposureID.definekey("exposureID");
+        rc = hexposureID.defineData(all:"YES");
+        rc = hexposureID.defineDone();
         *put rc= ;
     end;
     if 0 then set def_1a_dx_1st(rename=(DATE1= DATE2));
-    set def_1b_PX_DX; by PATID PX_DATE;
-        rc =hpatid.find(key:PATID);
+    set def_1b_PX_DX; by exposureID PX_DATE;
+        rc =hexposureID.find(key:exposureID);
          do while (rc = 0);
             if rc = 0 and date2>date1 and yrdif(PX_DATE,DATE2,'actual')<1 then output;;
-            rc=hpatid.find_next();
+            rc=hexposureID.find_next();
          end; ;
     run;
     data def_1b;
     set def_1b_px_dx_dx;
     length Def_1b 3 outcome_start_date outcome_date 4; format outcome_start_date outcome_date mmddyy10.;
-/*    by PATID PX_DATE DATE2;*/
+/*    by exposureID PX_DATE DATE2;*/
     Def_1b=1;
     outcome_date=DATE2;
     outcome_start_date=min(PX_DATE, DATE1, DATE2);
     run;
-    proc sort data =def_1b; by PATID outcome_date descending outcome_start_date;run;
+    proc sort data =def_1b; by exposureID outcome_date descending outcome_start_date;run;
     data def_1b;
     set def_1b;
-    by PATID outcome_date descending outcome_start_date;
+    by exposureID outcome_date descending outcome_start_date;
     if first.outcome_date;
     run;
 
@@ -429,10 +444,10 @@ occasions within 12 months (recorded on different dates from the procedures;
     def_1a_dx_1st
     data def_1b;
     set dx_px;
-    by PATID;
+    by exposureID;
     length biop_date diag_1 diag_2 4;
     retain biop_date diag_1 diag_2;
-    if first.PATID then do; biop_date=.; diag_1=.; diag_2=.;  end;
+    if first.exposureID then do; biop_date=.; diag_1=.; diag_2=.;  end;
     if table='PX' and &current in (1,3) then biop_date =outcome_dt;
     if table='DX' and &current=1 then do;  diag_2=diag_1; diag_1=outcome_dt; end;
     def_1b=0;
@@ -451,15 +466,15 @@ visit.
 
     PROC SQL;
     create table def_1c_px_dx as 
-    select a.PATID, a.begin_date, a.ADMIT_DATE, a.DX, b.PX, coalesce(a.begin_date, a.ADMIT_DATE) as outcome_date length=4 format=mmddyy10.  from def_1a_dx_1st(where=(&current=1)) a
+    select a.exposureID, a.begin_date, a.ADMIT_DATE, a.DX, b.PX, coalesce(a.begin_date, a.ADMIT_DATE) as outcome_date length=4 format=mmddyy10.  from def_1a_dx_1st(where=(&current=1)) a
     join refine_PX(where=(&current in (2,3))) b
-    on a.PATID=b.PATID and (a.begin_date=b.begin_date>. or a.ADMIT_DATE=b.ADMIT_DATE>.);
+    on a.exposureID=b.exposureID and (a.begin_date=b.begin_date>. or a.ADMIT_DATE=b.ADMIT_DATE>.);
 quit;
-    proc sort data=def_1c_px_dx; by PATID outcome_date ;run;
+    proc sort data=def_1c_px_dx; by exposureID outcome_date ;run;
     data def_1c;
     set def_1c_px_dx;
     length Def_1c 3 outcome_start_date 4; format outcome_start_date mmddyy10.;
-    by PATID outcome_date ;
+    by exposureID outcome_date ;
     Def_1c=1;
     outcome_start_date=outcome_date;
     if first.outcome_date;
@@ -471,15 +486,15 @@ quit;
 
 PROC SQL;
     create table def_1d_px_dx as 
-    select a.PATID, a.begin_date, a.ADMIT_DATE, a.DX, b.PX, coalesce(a.begin_date, a.ADMIT_DATE) as outcome_date length=4 format=mmddyy10.  from def_1a_dx_1st(where=(&current=1)) a
+    select a.exposureID, a.begin_date, a.ADMIT_DATE, a.DX, b.PX, coalesce(a.begin_date, a.ADMIT_DATE) as outcome_date length=4 format=mmddyy10.  from def_1a_dx_1st(where=(&current=1)) a
     join refine_PX(where=(cpt_chemo=1)) b
-    on a.PATID=b.PATID and (a.begin_date=b.begin_date>. or a.ADMIT_DATE=b.ADMIT_DATE>.);
+    on a.exposureID=b.exposureID and (a.begin_date=b.begin_date>. or a.ADMIT_DATE=b.ADMIT_DATE>.);
 quit;
-    proc sort data=def_1d_px_dx; by PATID outcome_date ;run;
+    proc sort data=def_1d_px_dx; by exposureID outcome_date ;run;
     data def_1d;
     set def_1d_px_dx;
     length Def_1d 3 outcome_start_date 4; format outcome_start_date mmddyy10.;
-    by PATID outcome_date;
+    by exposureID outcome_date;
     Def_1d=1;
     outcome_start_date=outcome_date;
     if first.outcome_date;
@@ -491,9 +506,9 @@ quit;
 
     data def_1e;
     set dx_px;
-    by PATID;
+    by exposureID;
     if &current=1 then  Dx_malig_date=outcome_dt; retain Dx_malig_date ;
-    if first.PATID and &current ^=1 then Dx_malig_date=.;
+    if first.exposureID and &current ^=1 then Dx_malig_date=.;
     def_1e = 0;
     if radiation =1 and (Dx_malig_date=outcome_dt) then def_1e =1;
     if def_1e=1;
@@ -504,15 +519,15 @@ quit;
 
 PROC SQL;
     create table def_1e_px_dx as 
-    select a.PATID, a.begin_date, a.ADMIT_DATE, a.DX, b.PX, coalesce(a.begin_date, a.ADMIT_DATE) as outcome_date length=4 format=mmddyy10.  from def_1a_dx_1st(where=(&current=1)) a
+    select a.exposureID, a.begin_date, a.ADMIT_DATE, a.DX, b.PX, coalesce(a.begin_date, a.ADMIT_DATE) as outcome_date length=4 format=mmddyy10.  from def_1a_dx_1st(where=(&current=1)) a
     join refine_PX(where=(radiation =1)) b
-    on a.PATID=b.PATID and (a.begin_date=b.begin_date>. or a.ADMIT_DATE=b.ADMIT_DATE>.);
+    on a.exposureID=b.exposureID and (a.begin_date=b.begin_date>. or a.ADMIT_DATE=b.ADMIT_DATE>.);
 quit;
-    proc sort data=def_1e_px_dx; by PATID outcome_date ;run;
+    proc sort data=def_1e_px_dx; by exposureID outcome_date ;run;
     data def_1e;
     set def_1e_px_dx;
     length Def_1e 3 outcome_start_date 4; format outcome_start_date mmddyy10.;
-    by PATID outcome_date;
+    by exposureID outcome_date;
     Def_1e=1;
     outcome_start_date=outcome_date;
     if first.outcome_date;
@@ -524,9 +539,9 @@ and/or visit (for leukemia only)
 
         data def_1F;
             set dx_px;
-            by PATID;
+            by exposureID;
             if &current=1 then  Dx_Leuk_date=outcome_dt; retain Dx_Leuk_date ;
-            if first.PATID and &current^=1 then dx_leuk_date=.;
+            if first.exposureID and &current^=1 then dx_leuk_date=.;
             def_1f =0;
             if hema_stem_trans =1 and (dx_leuk_date=outcome_dt) then def_1f =1;
             format dx_leuk_date mmddyy10.;
@@ -538,22 +553,22 @@ and/or visit (for leukemia only)
     %if &n <8 %then %do;
 PROC SQL;
     create table def_1f_px_dx as 
-    select a.PATID, a.begin_date, a.ADMIT_DATE, a.DX, b.PX, 
+    select a.exposureID, a.begin_date, a.ADMIT_DATE, a.DX, b.PX, 
     coalesce(a.begin_date, a.ADMIT_DATE) as outcome_date length=4 format=mmddyy10.  from def_1a_dx_1st(where=(&current=1)) a
     join refine_PX(where=(hema_stem_trans =1)) b
-    on a.PATID=b.PATID and (a.begin_date=b.begin_date>. or a.ADMIT_DATE=b.ADMIT_DATE>.);
+    on a.exposureID=b.exposureID and (a.begin_date=b.begin_date>. or a.ADMIT_DATE=b.ADMIT_DATE>.);
 quit;
-    proc sort data=DEF_1F_PX_DX; by PATID outcome_date; run;
+    proc sort data=DEF_1F_PX_DX; by exposureID outcome_date; run;
     data def_1f;
     set def_1f_px_dx;
     length Def_1f 3 ;
-    by PATID outcome_date;
+    by exposureID outcome_date;
     Def_1f=1;
     outcome_start_date=outcome_date;
     if first.outcome_date;
     run;
     %end; %else %do;
-    data def_1f(keep=PATID outcome_date Def_1f outcome_start_date);
+    data def_1f(keep=exposureID outcome_date Def_1f outcome_start_date);
     set def_1a_dx_1st(rename=begin_date=outcome_date);
     length Def_1f 3 ;
     Def_1f=1;
@@ -561,7 +576,7 @@ quit;
     if 0;
     run;
     %end;
-proc sort data=def_1f; by PATID outcome_date;run;
+proc sort data=def_1f; by exposureID outcome_date;run;
 
 /*
     definition 1g
@@ -569,10 +584,10 @@ proc sort data=def_1f; by PATID outcome_date;run;
 
     data def_1G;
         set dx_rx;
-        by PATID;
+        by exposureID;
         retain dx_&current;
         if table='DX' and &current= 1 then Dx_&current=outcome_dt;
-        if first.PATID and &current^= 1 then dx_&current=.;
+        if first.exposureID and &current^= 1 then dx_&current=.;
         def_1G=0;
         if (table='RX' and &current= 1 ) and (0< (outcome_dt-dx_&current) <=14) then def_1G =1;
         if def_1g=1;
@@ -583,18 +598,18 @@ proc sort data=def_1f; by PATID outcome_date;run;
 
 PROC SQL;
     create table def_1g_dx_rx as 
-    select a.PATID, a.begin_date, a.ADMIT_DATE, b.DISPENSE_DATE, a.DX, b.NDC, 
+    select a.exposureID, a.begin_date, a.ADMIT_DATE, b.DISPENSE_DATE, a.DX, b.NDC, 
     max(b.DISPENSE_DATE, a.begin_date) as outcome_date length=4 format=mmddyy10.,
     min(b.DISPENSE_DATE, a.begin_date) as outcome_start_date length=4 format=mmddyy10.
     from def_1a_dx_1st(where=(&current=1)) a
     join refine_RX(where=(&current= 1)) b
-    on a.PATID=b.PATID and ( 0<= (b.DISPENSE_DATE-a.begin_date) <=14 );
+    on a.exposureID=b.exposureID and ( 0<= (b.DISPENSE_DATE-a.begin_date) <=14 );
 quit;
-    proc sort data=def_1g_dx_rx; by PATID outcome_date descending outcome_start_date;run;
+    proc sort data=def_1g_dx_rx; by exposureID outcome_date descending outcome_start_date;run;
     data def_1g;
     set def_1g_dx_rx;
     length Def_1g 3 ;
-    by PATID outcome_date descending outcome_start_date;
+    by exposureID outcome_date descending outcome_start_date;
     Def_1g=1;
     if first.outcome_date;
     run;
@@ -604,9 +619,9 @@ quit;
  2 diagnoses of cancer within 2 months;
     data def_2;
         set Cancer_dat_DX(where=(&current=1)  rename=(BEGIN_DATE=outcome_dt));
-        by PATID;
+        by exposureID;
         retain date1 date2 first_&current; 
-        if first.PATID then do; first_&current=outcome_dt; date1 =.; date2=.; end;
+        if first.exposureID then do; first_&current=outcome_dt; date1 =.; date2=.; end;
         if &current=1 then do; date2=date1;   date1=outcome_dt; end;
         def_2=0;
         if date2 ne . then do; 
@@ -618,21 +633,21 @@ quit;
 
 PROC SQL;
     create table def_2_dx_dx as 
-    select a.PATID, a.begin_date, max(a.begin_date, b.begin_date) as outcome_date length=4 format=mmddyy10.,
+    select a.exposureID, a.begin_date, max(a.begin_date, b.begin_date) as outcome_date length=4 format=mmddyy10.,
     min(a.begin_date, b.begin_date) as outcome_start_date length=4 format=mmddyy10. from def_1a_dx_1st(where=(&current=1)) a
     join def_1a_dx_1st(where=(&current=1)) b
-    on a.PATID=b.PATID and  0 <= intck('month',b.begin_date, a.begin_date)<=2 and 0< (b.begin_date-a.begin_date) ;
+    on a.exposureID=b.exposureID and  0 <= intck('month',b.begin_date, a.begin_date)<=2 and 0< (b.begin_date-a.begin_date) ;
 quit;
-    proc sort data=def_2_dx_dx; by PATID outcome_date descending outcome_start_date;run;
+    proc sort data=def_2_dx_dx; by exposureID outcome_date descending outcome_start_date;run;
     data def_2;
     set def_2_dx_dx;
     length Def_2 3 ;
-    by PATID outcome_date descending outcome_start_date;
+    by exposureID outcome_date descending outcome_start_date;
     Def_2=1;
     if first.outcome_date;
     run;
 
-data cancer_&current.(keep=PATID outcome_date def: cancer outcome_start_date:);
+data cancer_&current.(keep=exposureID outcome_date def: cancer outcome_start_date:);
 merge 
 def_1a(rename=outcome_start_date=outcome_start_date1a) 
 def_1b(rename=outcome_start_date=outcome_start_date1b) 
@@ -641,7 +656,7 @@ def_1g(rename=outcome_start_date=outcome_start_date1g)
 def_2(rename=outcome_start_date=outcome_start_date2);
 length cancer $20 outcome_start_date 4;
 format outcome_start_date mmddyy10.;
-by PATID outcome_date;
+by exposureID outcome_date;
 outcome_start_date=max(outcome_start_date1a, outcome_start_date1b, outcome_start_date1g, outcome_start_date2, outcome_date);
 cancer="&current.";
 run;
