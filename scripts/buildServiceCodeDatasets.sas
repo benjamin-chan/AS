@@ -88,6 +88,7 @@ Service code data sets for incidence (non-fracture outcomes)
 
 %let select1 = select A.*, 
                       B.dispense_date, B.ndc, B.gnn, B.dispense_sup;
+%let on1 = on (A.patid = B.patid & A.exposureStart <= B.dispense_date <= A.exposureEnd);
 %let select2 = select patid, ndc, gnn, dispense_sup;
 
 %include "lib\buildRx.sas";  /* Call script to query prescription drug codes */
