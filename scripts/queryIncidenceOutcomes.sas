@@ -86,6 +86,11 @@ proc sql;
 quit;
 
 
+/* 
+Process the data sets created by the cancer scripts
+ */
+
+
 proc sql;
 
   create table Work.defOutcomes as
