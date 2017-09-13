@@ -58,20 +58,6 @@ proc sort data=malignancy(where=(code^='')) out=malignancy2 ; by table code anyc
 *these datasets are used to identify subsets of where the datasets are coming from;
 *please adjust to point all PX/DX/RX/etc.;
 
-proc sql;
-  create table UCB.tempIncDxAll as
-    select UCB.tempIncDxMPCD union corr
-    select UCB.tempIncDxUCB  union corr
-    select UCB.tempIncDxSABR ;
-  create table UCB.tempIncPxAll as
-    select UCB.tempIncPxMPCD union corr
-    select UCB.tempIncPxUCB  union corr
-    select UCB.tempIncPxSABR ;
-  create table UCB.tempIncRxAll as
-    select UCB.tempIncRxMPCD union corr
-    select UCB.tempIncRxUCB  union corr
-    select UCB.tempIncRxSABR ;
-quit;
 
 %let indxdat = UCB.tempIncDxAll;
 %let inpxdat = UCB.tempIncPxAll;

@@ -53,5 +53,14 @@ proc sql;
   drop table UCB.temp12;
   drop table UCB.temp13;
   drop table UCB.temp14;
-  
+
+  create table UCB.temp&type.RxAll as
+    select * from UCB.temp&type.RxMPCD union corr
+    select * from UCB.temp&type.RxUCB  union corr
+    select * from UCB.temp&type.RxSABR ;
+  select "UCB.temp&type.RxAll" as table, database, count(*) format = comma20.0 as n from UCB.temp&type.RxAll group by database;
+  drop table UCB.temp&type.RxMPCD;
+  drop table UCB.temp&type.RxUCB ;
+  drop table UCB.temp&type.RxSABR;
+
 quit;
