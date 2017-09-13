@@ -233,7 +233,7 @@ run;
 proc sort data=_cancer_NMSC nodupkey;
 by exposureID outcome_date descending outcome_start_date NMSC_def1 NMSC_def2 NMSC_def3 NMSC_Basal NMSC_Squamous;run;
 
-data Outcome_cancer_nmsc(keep=exposureID NMSC_def1 NMSC_def2 NMSC_def3 begin_date PX px_date outcome_date 
+data DT.Outcome_cancer_nmsc(keep=exposureID NMSC_def1 NMSC_def2 NMSC_def3 begin_date PX px_date outcome_date 
 outcome_start_date NMSC_Basal NMSC_Squamous DX ENC_TYPE Path_date PX_path dx_type px_type);
 set _cancer_NMSC;
 length cancer $10;
@@ -258,6 +258,14 @@ _dat_NMSC_path
 _dat_NMSC_path_dx
 _dat_NMSC_path_dxNMSC
 ;
+quit;
+
+
+proc sql;
+  select B.database, B.exposure, "NMSC" as cancer, count(distinct A.exposureID) as countDistinctExposureID
+    from DT.Outcome_cancer_nmsc A inner join
+         DT.exposureTimeline B on (A.exposureID = B.exposureID)
+    group by B.database, B.exposure;
 quit;
 
 
