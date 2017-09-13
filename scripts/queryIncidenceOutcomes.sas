@@ -53,18 +53,15 @@ If you have question, please let me know.
 Call interstitial lung disease macro
  */
 %include "lib\IPP_2IPSOPplusPX_ILD.sas" / source2;
-%IPP_2IPSOPplusPX_ILD(outdata = Work.outcome_ILD_MPCD,
+%IPP_2IPSOPplusPX_ILD(outdata = Work.outcome_ILD_All,
                       IDS = exposureID,
-                      Dxs = UCB.tempIncDxMPCD,
-                      Pxs = UCB.tempIncPxMPCD);
-%IPP_2IPSOPplusPX_ILD(outdata = Work.outcome_ILD_UCB,
-                      IDS = exposureID,
-                      Dxs = UCB.tempIncDxUCB,
-                      Pxs = UCB.tempIncPxUCB);
-%IPP_2IPSOPplusPX_ILD(outdata = Work.outcome_ILD_SABR,
-                      IDS = exposureID,
-                      Dxs = UCB.tempIncDxSABR,
-                      Pxs = UCB.tempIncPxSABR);
+                      Dxs = UCB.tempIncDxAll,
+                      Pxs = UCB.tempIncPxAll);
+proc sql;
+  select database, exposure, "Interstitial lung disease" as disease, count(distinct exposureID) as n
+    from Work.outcome_ILD_All
+    group by database, exposure;
+quit;
 
 
 /* 
@@ -83,7 +80,15 @@ proc sql;
            fractureEpisodeStart as begin_date
     from DT.fractureEpisodesInc
     where ^missing(fractureType);
+  select database, exposure, disease, count(distinct exposureID) as n
+    from Work.fractures
+    group by database, exposure, disease;
 quit;
+
+
+/* 
+Process the data sets created by the cancer scripts
+ */
 
 
 proc sql;
@@ -109,15 +114,9 @@ proc sql;
            C.outcomeCategory,
            C.disease,
            C.begin_date
-    from (&select1 from UCB.tempIncDxMPCD A &join1 &where1a &where1b union corr
-          &select1 from UCB.tempIncDxUCB  A &join1 &where1a &where1b union corr
-          &select1 from UCB.tempIncDxSABR A &join1 &where1a &where1b union corr
-          &select1 from UCB.tempIncPxMPCD A &join1 &where1a union corr
-          &select1 from UCB.tempIncPxUCB  A &join1 &where1a union corr
-          &select1 from UCB.tempIncPxSABR A &join1 &where1a union corr
-          &select2 from Work.outcome_ILD_MPCD union corr
-          &select2 from Work.outcome_ILD_UCB  union corr
-          &select2 from Work.outcome_ILD_SABR union corr
+    from (&select1 from UCB.tempIncDxAll A &join1 &where1a &where1b union corr
+          &select1 from UCB.tempIncPxAll A &join1 &where1a union corr
+          &select2 from Work.outcome_ILD_All union corr
           select * from Work.fractures) C
     order by C.database, C.exposureID, C.outcomeCategory, C.disease, C.begin_date;
 quit;
