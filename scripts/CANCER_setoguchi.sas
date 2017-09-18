@@ -61,6 +61,33 @@ run;
 data malignancy;set malignancy; code=upcase(code);run;
 proc sort data=malignancy(where=(code^='')) out=malignancy2 ; by table code anycancer; run;
 
+
+/* 
+Subset the malignancy table to include only 
+
+* Hematologic Cancer
+* Solid Cancer
+
+NMSC cancers will be queried in cancer_nmsc.sas
+ */
+proc sql;
+  create table Work.temp as
+    select * from Work.malignancy;
+  create table Work.malignancy as
+    select "" as outcomeCategory, "" as disease, A.* from Work.temp A where ^(A.table = "DX" & A.code_type = "ICD9")
+    union corr
+    select B.outcomeCategory, B.disease, A.*
+    from Work.temp A inner join
+         DT.defOutcomes B on (A.code = B.code)
+    where A.table = "DX" & A.code_type = "ICD9" &
+          B.outcomeCategory = "Cancer" & disease in ("Hematologic Cancer", "Solid Cancer") & B.codeType = "ICD9-DX";
+  drop table Work.temp;
+  select outcomeCategory, disease, table, code_type, count(*) as countRows 
+    from Work.malignancy
+    group by outcomeCategory, disease, table, code_type;
+quit;
+
+
 *these datasets are used to identify subsets of where the datasets are coming from;
 *please adjust to point all PX/DX/RX/etc.;
 
@@ -240,7 +267,7 @@ def_2_dx_dx
     /*Creating a Cancer specific DX/PX table - select benes with ever &current cancer diagnosis */
     /* bene_id for those with this cancer ever */
     data only (drop=&current); 
-        set Cancer_dat_DX(where=(&Current=1) keep= exposureID &current in=a); by exposureID; if first.exposureID;
+        set Cancer_dat_DX(where=(&Current=1) keep= outcomeCategory disease exposureID &current in=a); by exposureID; if first.exposureID;
     run;
     *proc print data=only(obs=15); run;
 
@@ -265,7 +292,7 @@ def_2_dx_dx
         *put rc= ;
     end;
         if 0 then set only;
-        set cancer_dat_DX( ); by exposureID BEGIN_DATE;
+        set cancer_dat_DX( ); by outcomeCategory disease exposureID BEGIN_DATE;
         rc =hexposureID.find(key:exposureID);
         if rc = 0;
     run;
@@ -291,7 +318,7 @@ Note it seems to me that there is not V66.7 Encounter for palliative care in the
 
 */
 
-    Data def_1a_comp(keep = exposureID DATE2 PX DX_COMP);  *any diagnosis or procedure codes related to complications of  cancer or palliative care;
+    Data def_1a_comp(keep = exposureID outcomeCategory disease DATE2 PX DX_COMP);  *any diagnosis or procedure codes related to complications of  cancer or palliative care;
         set refine_PX(rename=(PX_DATE=DATE2) where=(sum(&comp)>=1))
              refine_DX(rename=(BEGIN_DATE=DATE2 DX=DX_COMP) where=(sum(&comp)>=1)); 
     run; 
@@ -329,7 +356,7 @@ if first.DATE1;
 run;
 
 
-    data def_1a_dx_1st_comp_dx(keep=exposureID DX: DATE1 DATE2 DATE3); *followed by another diagnosis of cancer within 12 months.;
+    data def_1a_dx_1st_comp_dx(keep=exposureID outcomeCategory disease DX: DATE1 DATE2 DATE3); *followed by another diagnosis of cancer within 12 months.;
     if _N_=1 then do;
         declare hash hexposureID(dataset: "def_1a_dx_1st(rename=(date1=date3 dx=dx2)) " , multidata:"Y");
         rc = hexposureID.definekey("exposureID");

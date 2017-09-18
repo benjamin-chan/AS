@@ -41,13 +41,24 @@ See the *Compact Outcome Definition* worksheet in `AS Project Cohort Outcome Cod
 proc sql;
   create table Work.defOutcomes as
     select * 
-    from DT.defOutcomes;
+    from DT.defOutcomes 
+    where disease ^in ("Interstitial lung disease");
 quit;
 
 %let select1 = select A.*, B.outcomeCategory, B.disease;
 %let join1 = inner join Work.defOutcomes B on (A.codeType = B.codeType & A.code = B.code);
 %let where1a = where B.disease ^in ("Myocardial infarction", "Hospitalized infection");
 %let where1b = | (B.disease in ("Myocardial infarction", "Hospitalized infection") & A.enc_type = "IP");
+
+
+/* 
+Call interstitial lung disease macro
+ */
+%include "lib\IPP_2IPSOPplusPX_ILD.sas" / source2;
+%IPP_2IPSOPplusPX_ILD(outdata = Work.outcome_ILD_All,
+                      IDS = patid,
+                      Dxs = UCB.tempPrevDxAll,
+                      Pxs = UCB.tempPrevPxAll);
 
 
 /* 
@@ -69,8 +80,9 @@ quit;
 
 proc sql;
 
+  %let select2 = select database, exposure, patid, ASCohortDate, enc_type, "Lung disease" as outcomeCategory, "Interstitial lung disease" as disease, outcome_start_date as begin_date;
   create table DT.comorbiditiesByPatid as
-    select C.database, C.exposure, C.patid, C.ASCohortDate,
+    select C.database, C.patid, C.ASCohortDate,
            C.outcomeCategory,
            C.disease,
            sum(C.begin_date < C.ASCohortDate) > 0 as indPrevPriorToCohortEntry,
@@ -82,8 +94,9 @@ proc sql;
                0 <= C.begin_date - C.ASCohortDate  <= (183 * 5)) > 0 as indPrev36mo
     from (&select1 from UCB.tempPrevDxAll A &join1 &where1a &where1b union corr
           &select1 from UCB.tempPrevPxAll A &join1 &where1a union corr
+          &select2 from Work.outcome_ILD_All union corr
           select * from Work.fractures) C
-    group by C.database, C.exposure, C.patid, C.ASCohortDate,
+    group by C.database, C.patid, C.ASCohortDate,
              C.outcomeCategory,
              C.disease
     having calculated indPrevPriorToCohortEntry > 0 | 
@@ -157,6 +170,16 @@ run;
 
 
 /* 
+Call interstitial lung disease macro
+ */
+%include "lib\IPP_2IPSOPplusPX_ILD.sas" / source2;
+%IPP_2IPSOPplusPX_ILD(outdata = Work.outcome_ILD_All,
+                      IDS = indexID,
+                      Dxs = UCB.tempPrevDxAll,
+                      Pxs = UCB.tempPrevPxAll);
+
+
+/* 
 Process fracture episodes data set
  */
 proc sql;
@@ -178,6 +201,7 @@ quit;
 
 proc sql;
 
+  %let select2 = select database, exposure, patid, ASCohortDate, indexGNN, indexDate, indexID, enc_type, "Lung disease" as outcomeCategory, "Interstitial lung disease" as disease, outcome_start_date as begin_date;
   create table DT.comorbidities as
     select C.database, C.exposure, C.patid, C.ASCohortDate, C.indexGNN, C.indexDate, C.indexID,
            C.outcomeCategory,
@@ -191,6 +215,7 @@ proc sql;
                0 <= C.begin_date - C.indexDate  <= (183 * 5)) > 0 as indPrev36mo
     from (&select1 from UCB.tempPrevDxAll A &join1 &where1a &where1b union corr
           &select1 from UCB.tempPrevPxAll A &join1 &where1a union corr
+          &select2 from Work.outcome_ILD_All union corr
           select * from Work.fractures) C
     group by C.database, C.exposure, C.patid, C.ASCohortDate, C.indexGNN, C.indexDate, C.indexID,
              C.outcomeCategory,
