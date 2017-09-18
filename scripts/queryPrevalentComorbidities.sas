@@ -70,7 +70,7 @@ quit;
 proc sql;
 
   create table DT.comorbiditiesByPatid as
-    select C.database, C.exposure, C.patid, C.ASCohortDate,
+    select C.database, C.patid, C.ASCohortDate,
            C.outcomeCategory,
            C.disease,
            sum(C.begin_date < C.ASCohortDate) > 0 as indPrevPriorToCohortEntry,
@@ -83,7 +83,7 @@ proc sql;
     from (&select1 from UCB.tempPrevDxAll A &join1 &where1a &where1b union corr
           &select1 from UCB.tempPrevPxAll A &join1 &where1a union corr
           select * from Work.fractures) C
-    group by C.database, C.exposure, C.patid, C.ASCohortDate,
+    group by C.database, C.patid, C.ASCohortDate,
              C.outcomeCategory,
              C.disease
     having calculated indPrevPriorToCohortEntry > 0 | 
