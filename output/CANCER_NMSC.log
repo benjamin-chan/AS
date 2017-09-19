@@ -1,0 +1,1574 @@
+1                                                          The SAS System                          06:16 Tuesday, September 19, 2017
+
+NOTE: Copyright (c) 2002-2012 by SAS Institute Inc., Cary, NC, USA. 
+NOTE: SAS (r) Proprietary Software 9.4 (TS1M1) 
+      Licensed to UNIVERSITY OF ALABAMA AT BIRMINGHAM - SFA - T&R, Site 70058223.
+NOTE: This session is executing on the W32_ES08R2  platform.
+
+
+
+NOTE: Updated analytical products:
+      
+      SAS/STAT 13.1
+      SAS/ETS 13.1
+      SAS/OR 13.1
+      SAS/IML 13.1
+      SAS/QC 13.1
+
+NOTE: Additional host information:
+
+ W32_ES08R2 WIN 6.1.7601 Service Pack 1 Server
+
+--- PEER News and Updates ---
+
+: SECURITY REMINDER :
+Please remember not to copy any data files that contain PHI (protected health identifiers) to any of the shared folders.
+
+ 
+
+
+NOTE: SAS initialization used:
+      real time           0.18 seconds
+      cpu time            0.10 seconds
+      
+1          *  University of Alabama at Birmingham                               *
+2          *  AS project                                            *
+3          **********************************************************************;
+4          options pagesize=74 linesize=150 pageno=1 missing=' ' date FORMCHAR="|----|+|---+=|-/\<>*";
+5          * Programmer    : Benjamin Chan <chanb@ohsu.edu>
+6          * Creation date :
+7          * Modify date   :
+8          ;
+9          %let cmt=CANCER_NMSC; * type the name of your program here (without the filename extension);
+10         %let pgm=&cmt..sas;
+11         %include "lib\libname.sas" ;
+NOTE: Libref STDC5P was successfully assigned as follows: 
+      Engine:        SPDE 
+      Physical Name: H:\studies\osteo\data\STD_files\5pct\
+NOTE: Libref STD_SABR was successfully assigned as follows: 
+      Engine:        SPDE 
+      Physical Name: q:\data\std_SABER\
+NOTE: Libref MPSTD was successfully assigned as follows: 
+      Engine:        SPDE 
+      Physical Name: h:\studies\mpcd\data\stddata\
+NOTE: Libref UCBSTD was successfully assigned as follows: 
+      Engine:        SPDE 
+      Physical Name: q:\studies\AS\data\stddata\
+NOTE: Libref UCB was successfully assigned as follows: 
+      Engine:        SPDE 
+      Physical Name: q:\studies\AS\data\UCB\
+NOTE: Libref DT was successfully assigned as follows: 
+      Engine:        V9 
+      Physical Name: V:\studies\AS\data
+92         footnote "&pgm.";
+93         * footnote2 "%sysfunc(datetime(),datetime14.)";
+94         title1 '--- AS project ---';
+95         **********************************************************************;
+96         options macrogen mlogic mprint symbolgen;
+97         options nomacrogen nomlogic nomprint nosymbolgen;
+98         
+99         
+100        ods html
+101          body = "output\&cmt..html"
+102          style = Statistical;
+NOTE: Writing HTML Body file: output\CANCER_NMSC.html
+2                                                                   The SAS System                                   06:16 Tuesday, September 19, 2017
+
+103        
+104        
+105        ****************************************************************************************
+106        
+107        Programmer Lang Chen @UAB
+108        created: 8/24/2016
+109        modiflied :
+110        Project:
+111        Task: define NMSC with PECORI common data model data
+112        Output: Dataset cancer_NMSC
+113        NMSC definition:
+114            1) Surgical PX code and same day NMSC DX(any type 173*)code. or
+115            2) Surgical PX code and NMSC DX(from EM code) code within 90 days (abs(px_date-dx_date)<=90).
+116        
+117        TODO:
+118        ****************************************************************************************;
+119        
+120        *To edit the following two lines only;
+121        %let indxdat = UCB.tempIncDxAll;
+122        %let inpxdat = UCB.tempIncPxAll;
+123        %let inrxdat = UCB.tempIncRxAll;
+124        proc sort data=&indxdat; by exposureID begin_date;run;
+
+NOTE: Input data set is already sorted, no sorting done.
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+      
+
+125        proc sort data=&inpxdat; by exposureID px_date;run;
+
+NOTE: Input data set is already sorted, no sorting done.
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+126        proc sort data=&inrxdat; by exposureID dispense_date;run;
+
+NOTE: Input data set is already sorted, no sorting done.
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+127        
+128        
+129        proc datasets nolist; delete
+130        _dat_NMSC_DX
+131        _dat_NMSC_PX
+132        _cancer_NMSC
+133        _cancer_NMSC12
+134        _cancer_NMSC3
+135        _dat_NMSC_path
+136        _dat_NMSC_path_dx
+137        _dat_NMSC_path_dxNMSC
+138        _dat_NMSC_path:
+139        Outcome_cancer_nmsc;
+140        quit;
+
+NOTE: The file WORK._DAT_NMSC_DX (memtype=DATA) was not found, but appears on a DELETE statement.
+NOTE: The file WORK._DAT_NMSC_PX (memtype=DATA) was not found, but appears on a DELETE statement.
+NOTE: The file WORK._CANCER_NMSC (memtype=DATA) was not found, but appears on a DELETE statement.
+NOTE: The file WORK._CANCER_NMSC12 (memtype=DATA) was not found, but appears on a DELETE statement.
+NOTE: The file WORK._CANCER_NMSC3 (memtype=DATA) was not found, but appears on a DELETE statement.
+NOTE: The file WORK._DAT_NMSC_PATH (memtype=DATA) was not found, but appears on a DELETE statement.
+NOTE: The file WORK._DAT_NMSC_PATH_DX (memtype=DATA) was not found, but appears on a DELETE statement.
+NOTE: The file WORK._DAT_NMSC_PATH_DXNMSC (memtype=DATA) was not found, but appears on a DELETE statement.
+NOTE: The file WORK._DAT_NMSC_PATH: (memtype=DATA) was not found, but appears on a DELETE statement.
+NOTE: The file WORK.OUTCOME_CANCER_NMSC (memtype=DATA) was not found, but appears on a DELETE statement.
+NOTE: PROCEDURE DATASETS used (Total process time):
+      real time           0.01 seconds
+3                                                                   The SAS System                                   06:16 Tuesday, September 19, 2017
+
+      cpu time            0.01 seconds
+      
+
+141        
+142        /* *import the list of CPT/HCPCS/ICD9 code related to NMSC;
+143        PROC IMPORT OUT= NMSC_code DATAFILE= "W:\Users\lchen\lookupdata\cancer\NMSC.xlsx"
+144                    DBMS=xlsx REPLACE;
+145             SHEET="NMSC";
+146             GETNAMES=YES;
+147        RUN; */
+148        libname lookup "W:\Users\lchen\lookupdata" access = readonly;
+NOTE: Libref LOOKUP was successfully assigned as follows: 
+      Engine:        V9 
+      Physical Name: W:\Users\lchen\lookupdata
+149        /* data lookup.NMSC_code ;
+150        set NMSC_code;
+151        code=compress(upcase(code),".", "s" ); * also remove space along with ".";
+152        if Biopsy=. then Biopsy=0;
+153        where code^=" ";
+154        run; */
+155        
+156        data _dat_NMSC_DX;
+157        set &indxdat;
+158        length NMSC_Basal NMSC_Squamous $1;
+159        if compress(DX,".", "s" ) in (
+160        '17301'
+161        '17311'
+162        '17321'
+163        '17331'
+164        '17341'
+165        '17351'
+166        '17361'
+167        '17371'
+168        '17381'
+169        '17391'
+170        ) then NMSC_Basal="Y";
+171        if compress(DX,".", "s" ) in (
+172        '17302'
+173        '17312'
+174        '17322'
+175        '17332'
+176        '17342'
+177        '17352'
+178        '17362'
+179        '17372'
+180        '17382'
+181        '17392'
+182        ) then NMSC_Squamous="Y";
+183        
+184        where substr(compress(DX,".", "s" ),1,3)="173";
+185        run;
+
+NOTE: There were 6107 observations read from the data set UCB.TEMPINCDXALL.
+      WHERE SUBSTR(COMPRESS(DX, '.', 's'), 1, 3)='173';
+NOTE: Parallel WHERE evaluation suppressed due to sort order on table.
+NOTE: The data set WORK._DAT_NMSC_DX has 6107 observations and 21 variables.
+NOTE: DATA statement used (Total process time):
+      real time           9.18 seconds
+      cpu time            9.09 seconds
+      
+
+186        
+187        proc sort data=_dat_NMSC_DX nodupkey; by exposureID begin_date dx ENC_TYPE;run;
+
+NOTE: There were 6107 observations read from the data set WORK._DAT_NMSC_DX.
+NOTE: 1836 observations with duplicate key values were deleted.
+NOTE: The data set WORK._DAT_NMSC_DX has 4271 observations and 21 variables.
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.01 seconds
+      
+
+4                                                                   The SAS System                                   06:16 Tuesday, September 19, 2017
+
+188        data _dat_NMSC_dX ;
+189        set _dat_NMSC_dX ;
+190        by exposureID begin_date dx ENC_TYPE;
+191        if first.dx;
+192        run;
+
+NOTE: There were 4271 observations read from the data set WORK._DAT_NMSC_DX.
+NOTE: The data set WORK._DAT_NMSC_DX has 4271 observations and 21 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.04 seconds
+      cpu time            0.00 seconds
+      
+
+193        
+194        data _dat_NMSC_PX(drop=rc) _dat_NMSC_path(drop=rc code biopsy rename=(PX=PX_PATH PX_date=PATH_DATE));
+195        if _n_=1 then do;
+196          declare hash hpx(dataset:"lookup.NMSC_code(where=(table='PX'))");
+197          rc=hpx.defineKey("code");
+198          rc=hpx.defineData("code", "Biopsy");
+199          rc=hpx.defineDone();
+200        end;
+201        if 0 then set lookup.NMSC_code(keep=code Biopsy);
+202        SET &inpxdat (where = (codeType in ("CPT", "HCPCS")));;
+203        rc=hpx.find(key:PX);
+204        if rc=0 then output _dat_NMSC_PX;
+205        if px in ("88305" "88304") then output _dat_NMSC_path;
+206        run;
+
+WARNING: Multiple lengths were specified for the variable code by input data set(s). This can cause truncation of data.
+NOTE: There were 93 observations read from the data set LOOKUP.NMSC_CODE.
+      WHERE table='PX';
+NOTE: There were 7494898 observations read from the data set UCB.TEMPINCPXALL.
+      WHERE codeType in ('CPT', 'HCPCS');
+NOTE: Parallel WHERE evaluation suppressed due to sort order on table.
+NOTE: The data set WORK._DAT_NMSC_PX has 21399 observations and 19 variables.
+NOTE: The data set WORK._DAT_NMSC_PATH has 38180 observations and 17 variables.
+NOTE: DATA statement used (Total process time):
+      real time           3.21 seconds
+      cpu time            2.66 seconds
+      
+
+207        proc sort data=_dat_NMSC_PX(keep=exposureID px_date px px_type biopsy) nodupkey; by exposureID px_date PX;run;
+
+NOTE: There were 21399 observations read from the data set WORK._DAT_NMSC_PX.
+NOTE: 6 observations with duplicate key values were deleted.
+NOTE: The data set WORK._DAT_NMSC_PX has 21393 observations and 5 variables.
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           0.04 seconds
+      cpu time            0.01 seconds
+      
+
+208        proc sort data= _dat_NMSC_path nodupkey; by exposureID path_date px_path;run;
+
+NOTE: There were 38180 observations read from the data set WORK._DAT_NMSC_PATH.
+NOTE: 244 observations with duplicate key values were deleted.
+NOTE: The data set WORK._DAT_NMSC_PATH has 37936 observations and 17 variables.
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           0.10 seconds
+      cpu time            0.03 seconds
+      
+
+209        proc freq data=_dat_NMSC_path; tables px_path;run;
+
+                                                                  --- AS project ---                             06:16 Tuesday, September 19, 2017   1
+
+                                                                  The FREQ Procedure
+
+                                                                    Procedure Code
+ 
+                                                                                 Cumulative    Cumulative
+                                             PX_PATH    Frequency     Percent     Frequency      Percent
+                                             ------------------------------------------------------------
+                                             88304          4193       11.05          4193        11.05  
+                                             88305         33743       88.95         37936       100.00  
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+                                                                   CANCER_NMSC.sas
+NOTE: There were 37936 observations read from the data set WORK._DAT_NMSC_PATH.
+NOTE: The PROCEDURE FREQ printed page 1.
+NOTE: PROCEDURE FREQ used (Total process time):
+      real time           0.09 seconds
+      cpu time            0.03 seconds
+      
+
+210        data _dat_NMSC_path_dx(drop=rc);
+211        /* dx on the day of pathologist PX code */
+5                                                                   The SAS System                                   06:16 Tuesday, September 19, 2017
+
+212        if _n_=1 then do;
+213          declare hash hpx(dataset:"_dat_NMSC_path");
+214          rc=hpx.defineKey("exposureID", "PATH_date");
+215          rc=hpx.defineData("exposureID", "PATH_date", "PX_PATH");
+216          rc=hpx.defineDone();
+217        end;
+218        if 0 then set _dat_NMSC_path(keep=exposureID PATH_date PX_PATH);
+219        SET &indxdat;;
+220        rc=hpx.find(key:exposureID,key:begin_date);
+221        length NMSC_Basal NMSC_Squamous $1;
+222        if compress(DX,".", "s" ) in (
+223        '17301'
+224        '17311'
+225        '17321'
+226        '17331'
+227        '17341'
+228        '17351'
+229        '17361'
+230        '17371'
+231        '17381'
+232        '17391'
+233        ) then NMSC_Basal="Y";
+234        if compress(DX,".", "s" ) in (
+235        '17302'
+236        '17312'
+237        '17322'
+238        '17332'
+239        '17342'
+240        '17352'
+241        '17362'
+242        '17372'
+243        '17382'
+244        '17392'
+245        ) then NMSC_Squamous="Y";
+246        if rc=0 then output _dat_NMSC_path_dx;
+247        run;
+
+NOTE: There were 37936 observations read from the data set WORK._DAT_NMSC_PATH.
+NOTE: There were 5140611 observations read from the data set UCB.TEMPINCDXALL.
+NOTE: The data set WORK._DAT_NMSC_PATH_DX has 75102 observations and 23 variables.
+NOTE: DATA statement used (Total process time):
+      real time           14.60 seconds
+      cpu time            14.43 seconds
+      
+
+248        proc sort data=_dat_NMSC_path_dx ; by exposureID PATH_date dx pdx;run;
+
+NOTE: There were 75102 observations read from the data set WORK._DAT_NMSC_PATH_DX.
+NOTE: The data set WORK._DAT_NMSC_PATH_DX has 75102 observations and 23 variables.
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           0.15 seconds
+      cpu time            0.10 seconds
+      
+
+249        proc sort data=_dat_NMSC_path_dx nodupkey; by exposureID PATH_date dx;run;
+
+NOTE: There were 75102 observations read from the data set WORK._DAT_NMSC_PATH_DX.
+NOTE: 16340 observations with duplicate key values were deleted.
+NOTE: The data set WORK._DAT_NMSC_PATH_DX has 58762 observations and 23 variables.
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           0.15 seconds
+      cpu time            0.10 seconds
+      
+
+250        
+251        proc freq data=_dat_NMSC_path_dx order=freq;format dx $icd9dx.; table dx;run;
+ERROR: The format $ICD9DX was not found or could not be loaded.
+
+NOTE: The SAS System stopped processing this step because of errors.
+NOTE: PROCEDURE FREQ used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.01 seconds
+6                                                                   The SAS System                                   06:16 Tuesday, September 19, 2017
+
+      
+252        
+
+
+253        proc sort data=_dat_NMSC_path_dx out=_dat_NMSC_path_dxNMSC nodupkey; by exposureID PATH_date dx; where dx in :("173");run;
+
+NOTE: Input data set is already sorted; it has been copied to the output data set.
+NOTE: There were 1306 observations read from the data set WORK._DAT_NMSC_PATH_DX.
+      WHERE dx in: ('173');
+NOTE: The data set WORK._DAT_NMSC_PATH_DXNMSC has 1306 observations and 23 variables.
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           0.06 seconds
+      cpu time            0.01 seconds
+      
+
+254        proc sql outobs=50;
+255        title "pat can have both DX Squamous and Basal on the same day";
+256        select *, count(*) as n from _dat_NMSC_path_dxNMSC(drop=/* PROV_ID PROV_ID_TYPE FACILITY_ID */ ADMIT_DATE DISCHARGE_DATE /*
+256      ! DISCHARGE_STATUS */)
+257        group by exposureID, path_date
+258        having n>1;
+NOTE: The query requires remerging summary statistics back with the original data.
+WARNING: Statement terminated early due to OUTOBS=50 option.
+                                               pat can have both DX Squamous and Basal on the same day           06:16 Tuesday, September 19, 2017   2
+
+                                                                         Date of
+                                                                      the End of
+                                                                             the
+                                                Unique Patient        Continuous     Patient
+ exposure   Procedure  Procedure                Identification        Enrollment     Date of                          exposure    exposure       days
+       ID        Date  Code         database    Number                    Period       Death  exposure                   Start         End    Exposed
+             Beginning      Ending
+ Encounter     Date of     Date of  Diagnosis                      Primary    code                         NMSC_   NMSC_
+ Type          Service     Service  Code Type  Diagnosis Code      Diagnosis  Type     Diagnosis Code      Basal   Squamous          n
+ ----------------------------------------------------------------------------------------------------------------------------------------------------
+     1496  03/04/2010  88305        MPCD        104009188             12/31/2010              TNF                   03/04/2010  12/31/2010        303
+ AV         03/04/2010  03/04/2010  09         1731                O          ICD9-DX  1731                                          6
+
+     1496  03/04/2010  88305        MPCD        104009188             12/31/2010              TNF                   03/04/2010  12/31/2010        303
+ AV         03/04/2010  03/04/2010  09         1733                O          ICD9-DX  1733                                          6
+
+     1496  03/04/2010  88305        MPCD        104009188             12/31/2010              TNF                   03/04/2010  12/31/2010        303
+ AV         03/04/2010  03/04/2010  09         1734                O          ICD9-DX  1734                                          6
+
+     1496  03/04/2010  88305        MPCD        104009188             12/31/2010              TNF                   03/04/2010  12/31/2010        303
+ AV         03/04/2010  03/04/2010  09         1735                O          ICD9-DX  1735                                          6
+
+     1496  03/04/2010  88305        MPCD        104009188             12/31/2010              TNF                   03/04/2010  12/31/2010        303
+ AV         03/04/2010  03/04/2010  09         1736                O          ICD9-DX  1736                                          6
+
+     1496  03/04/2010  88305        MPCD        104009188             12/31/2010              TNF                   03/04/2010  12/31/2010        303
+ AV         03/04/2010  03/04/2010  09         1739                O          ICD9-DX  1739                                          6
+
+     2050  03/24/2010  88305        MPCD        104186848             12/31/2010              NSAID or no exposure  05/08/2008  12/31/2010        968
+ AV         03/24/2010  03/24/2010  09         1732                O          ICD9-DX  1732                                          2
+
+     2050  03/24/2010  88305        MPCD        104186848             12/31/2010              NSAID or no exposure  05/08/2008  12/31/2010        968
+ AV         03/24/2010  03/24/2010  09         1733                O          ICD9-DX  1733                                          2
+
+     2680  03/30/2010  88305        MPCD        104397636             12/31/2010              TNF                   03/26/2010  12/31/2010        281
+ AV         03/30/2010  03/30/2010  09         1731                O          ICD9-DX  1731                                          6
+
+     2680  03/30/2010  88305        MPCD        104397636             12/31/2010              TNF                   03/26/2010  12/31/2010        281
+ AV         03/30/2010  03/30/2010  09         1733                O          ICD9-DX  1733                                          6
+
+     2680  03/30/2010  88305        MPCD        104397636             12/31/2010              TNF                   03/26/2010  12/31/2010        281
+ AV         03/30/2010  03/30/2010  09         1734                O          ICD9-DX  1734                                          6
+
+     2680  03/30/2010  88305        MPCD        104397636             12/31/2010              TNF                   03/26/2010  12/31/2010        281
+ AV         03/30/2010  03/30/2010  09         1735                O          ICD9-DX  1735                                          6
+
+     2680  03/30/2010  88305        MPCD        104397636             12/31/2010              TNF                   03/26/2010  12/31/2010        281
+ AV         03/30/2010  03/30/2010  09         1736                O          ICD9-DX  1736                                          6
+
+     2680  03/30/2010  88305        MPCD        104397636             12/31/2010              TNF                   03/26/2010  12/31/2010        281
+ AV         03/30/2010  03/30/2010  09         1739                O          ICD9-DX  1739                                          6
+
+     2680  03/31/2010  88305        MPCD        104397636             12/31/2010              TNF                   03/26/2010  12/31/2010        281
+ AV         03/31/2010  03/31/2010  09         1731                O          ICD9-DX  1731                                          6
+
+     2680  03/31/2010  88305        MPCD        104397636             12/31/2010              TNF                   03/26/2010  12/31/2010        281
+ AV         03/31/2010  03/31/2010  09         1733                O          ICD9-DX  1733                                          6
+
+     2680  03/31/2010  88305        MPCD        104397636             12/31/2010              TNF                   03/26/2010  12/31/2010        281
+ AV         03/31/2010  03/31/2010  09         1734                O          ICD9-DX  1734                                          6
+
+     2680  03/31/2010  88305        MPCD        104397636             12/31/2010              TNF                   03/26/2010  12/31/2010        281
+ AV         03/31/2010  03/31/2010  09         1735                O          ICD9-DX  1735                                          6
+
+     2680  03/31/2010  88305        MPCD        104397636             12/31/2010              TNF                   03/26/2010  12/31/2010        281
+ AV         03/31/2010  03/31/2010  09         1736                O          ICD9-DX  1736                                          6
+
+     2680  03/31/2010  88305        MPCD        104397636             12/31/2010              TNF                   03/26/2010  12/31/2010        281
+ AV         03/31/2010  03/31/2010  09         1739                O          ICD9-DX  1739                                          6
+ 
+ 
+                                                                   CANCER_NMSC.sas
+                                               pat can have both DX Squamous and Basal on the same day           06:16 Tuesday, September 19, 2017   3
+
+                                                                         Date of
+                                                                      the End of
+                                                                             the
+                                                Unique Patient        Continuous     Patient
+ exposure   Procedure  Procedure                Identification        Enrollment     Date of                          exposure    exposure       days
+       ID        Date  Code         database    Number                    Period       Death  exposure                   Start         End    Exposed
+             Beginning      Ending
+ Encounter     Date of     Date of  Diagnosis                      Primary    code                         NMSC_   NMSC_
+ Type          Service     Service  Code Type  Diagnosis Code      Diagnosis  Type     Diagnosis Code      Basal   Squamous          n
+ ----------------------------------------------------------------------------------------------------------------------------------------------------
+     3911  09/19/2011  88305        Marketscan  1118153201            12/31/2013              NSAID or no exposure  06/07/2011  12/31/2013        939
+ AV         09/19/2011  09/19/2011  09         1733                O          ICD9-DX  1733                                          2
+
+     3911  09/19/2011  88305        Marketscan  1118153201            12/31/2013              NSAID or no exposure  06/07/2011  12/31/2013        939
+ AV         09/19/2011  09/19/2011  09         1735                O          ICD9-DX  1735                                          2
+
+     5547  10/13/2014  88305        Marketscan  1658823201            12/31/2014              TNF                   08/06/2010  12/31/2014       1609
+ AV         10/13/2014  10/13/2014  09         17351               O          ICD9-DX  17351               Y                         3
+
+     5547  10/13/2014  88305        Marketscan  1658823201            12/31/2014              TNF                   08/06/2010  12/31/2014       1609
+ AV         10/13/2014  10/13/2014  09         17362               O          ICD9-DX  17362                       Y                 3
+
+     5547  10/13/2014  88305        Marketscan  1658823201            12/31/2014              TNF                   08/06/2010  12/31/2014       1609
+ AV         10/13/2014  10/13/2014  09         17371               O          ICD9-DX  17371               Y                         3
+
+     6837  09/09/2014  88305        Marketscan  203663701             12/31/2014              NSAID or no exposure  03/27/2013  12/31/2014        645
+ AV         09/09/2014  09/09/2014  09         17341               O          ICD9-DX  17341               Y                         2
+
+     6837  09/09/2014  88305        Marketscan  203663701             12/31/2014              NSAID or no exposure  03/27/2013  12/31/2014        645
+ AV         09/09/2014  09/09/2014  09         17351               O          ICD9-DX  17351               Y                         2
+
+     6837  11/24/2014  88305        Marketscan  203663701             12/31/2014              NSAID or no exposure  03/27/2013  12/31/2014        645
+ AV         11/24/2014  11/24/2014  09         17331               O          ICD9-DX  17331               Y                         2
+
+     6837  11/24/2014  88305        Marketscan  203663701             12/31/2014              NSAID or no exposure  03/27/2013  12/31/2014        645
+ AV         11/24/2014  11/24/2014  09         17361               O          ICD9-DX  17361               Y                         2
+
+    11959  12/15/2014  88305        Marketscan  28320578902           12/31/2014              NSAID or no exposure  06/10/2014  12/31/2014        205
+ AV         12/15/2014  12/15/2014  09         17351               O          ICD9-DX  17351               Y                         2
+
+    11959  12/15/2014  88305        Marketscan  28320578902           12/31/2014              NSAID or no exposure  06/10/2014  12/31/2014        205
+ AV         12/15/2014  12/15/2014  09         17361               O          ICD9-DX  17361               Y                         2
+
+    12116  05/25/2011  88305        Marketscan  28372500701           12/31/2014              NSAID or no exposure  07/19/2010  12/31/2014       1627
+ AV         05/25/2011  05/25/2011  09         1735                O          ICD9-DX  1735                                          2
+
+    12116  05/25/2011  88305        Marketscan  28372500701           12/31/2014              NSAID or no exposure  07/19/2010  12/31/2014       1627
+ AV         05/25/2011  05/25/2011  09         1737                O          ICD9-DX  1737                                          2
+
+    15054  08/12/2014  88305        Marketscan  30742066801           12/31/2014              NSAID or no exposure  06/23/2013  12/31/2014        557
+ AV         08/12/2014  08/12/2014  09         17342               O          ICD9-DX  17342                       Y                 2
+
+    15054  08/12/2014  88305        Marketscan  30742066801           12/31/2014              NSAID or no exposure  06/23/2013  12/31/2014        557
+ AV         08/12/2014  08/12/2014  09         17362               O          ICD9-DX  17362                       Y                 2
+
+    15816  11/12/2012  88305        Marketscan  3132990302            12/31/2014              TNF                   06/20/2012  12/31/2014        925
+ AV         11/12/2012  11/12/2012  09         17342               O          ICD9-DX  17342                       Y                 2
+
+    15816  11/12/2012  88305        Marketscan  3132990302            12/31/2014              TNF                   06/20/2012  12/31/2014        925
+ AV         11/12/2012  11/12/2012  09         17372               O          ICD9-DX  17372                       Y                 2
+
+    18662  06/24/2014  88305        Medicare    4444444348A3A3O       12/31/2014              TNF                   12/20/2011  12/31/2014       1108
+ AV         06/24/2014  06/24/2014  09         17301               O          ICD9-DX  17301               Y                         2
+
+    18662  06/24/2014  88305        Medicare    4444444348A3A3O       12/31/2014              TNF                   12/20/2011  12/31/2014       1108
+ AV         06/24/2014  06/24/2014  09         17361               O          ICD9-DX  17361               Y                         2
+
+    18773  11/06/2014  88305        Medicare    444444434BJA4J5       12/31/2014              NSAID or no exposure  07/03/2014  12/31/2014        182
+ AV         11/06/2014  11/06/2014  09         17331               O          ICD9-DX  17331               Y                         2
+ 
+ 
+                                                                   CANCER_NMSC.sas
+                                               pat can have both DX Squamous and Basal on the same day           06:16 Tuesday, September 19, 2017   4
+
+                                                                         Date of
+                                                                      the End of
+                                                                             the
+                                                Unique Patient        Continuous     Patient
+ exposure   Procedure  Procedure                Identification        Enrollment     Date of                          exposure    exposure       days
+       ID        Date  Code         database    Number                    Period       Death  exposure                   Start         End    Exposed
+             Beginning      Ending
+ Encounter     Date of     Date of  Diagnosis                      Primary    code                         NMSC_   NMSC_
+ Type          Service     Service  Code Type  Diagnosis Code      Diagnosis  Type     Diagnosis Code      Basal   Squamous          n
+ ----------------------------------------------------------------------------------------------------------------------------------------------------
+    18773  11/06/2014  88305        Medicare    444444434BJA4J5       12/31/2014              NSAID or no exposure  07/03/2014  12/31/2014        182
+ AV         11/06/2014  11/06/2014  09         17332               O          ICD9-DX  17332                       Y                 2
+
+    19083  09/04/2014  88305        Medicare    444444438BA5658       12/31/2014              NSAID or no exposure  03/06/2013  12/31/2014        666
+ AV         09/04/2014  09/04/2014  09         17331               O          ICD9-DX  17331               Y                         2
+
+    19083  09/04/2014  88305        Medicare    444444438BA5658       12/31/2014              NSAID or no exposure  03/06/2013  12/31/2014        666
+ AV         09/04/2014  09/04/2014  09         17362               O          ICD9-DX  17362                       Y                 2
+
+    19522  08/25/2014  88305        Medicare    444444443535A4B       12/31/2014              NSAID or no exposure  11/02/2013  12/31/2014        425
+ AV         08/25/2014  08/25/2014  09         17332               O          ICD9-DX  17332                       Y                 2
+
+    19522  08/25/2014  88305        Medicare    444444443535A4B       12/31/2014              NSAID or no exposure  11/02/2013  12/31/2014        425
+ AV         08/25/2014  09/17/2014  09         17349               O          ICD9-DX  17349                                         2
+
+    19776  12/12/2013  88305        Medicare    44444444438B555       12/31/2014              NSAID or no exposure  11/27/2012  12/31/2014        765
+ AV         12/12/2013  12/12/2013  09         17331               O          ICD9-DX  17331               Y                         2
+
+    19776  12/12/2013  88305        Medicare    44444444438B555       12/31/2014              NSAID or no exposure  11/27/2012  12/31/2014        765
+ AV         12/12/2013  12/12/2013  09         17341               O          ICD9-DX  17341               Y                         2
+
+    20049  12/10/2008  88305        Medicare    444444444O33B6J       12/31/2014              NSAID or no exposure  10/31/2006  12/31/2014       2984
+ AV         12/10/2008  12/10/2008  09         1735                O          ICD9-DX  1735                                          2
+
+    20049  12/10/2008  88305        Medicare    444444444O33B6J       12/31/2014              NSAID or no exposure  10/31/2006  12/31/2014       2984
+ AV         12/10/2008  12/10/2008  09         1738                O          ICD9-DX  1738                                          2
+
+    20049  07/13/2010  88305        Medicare    444444444O33B6J       12/31/2014              NSAID or no exposure  10/31/2006  12/31/2014       2984
+ AV         07/13/2010  07/13/2010  09         1733                O          ICD9-DX  1733                                          2
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+                                                                   CANCER_NMSC.sas
+259        title;
+260        quit;
+NOTE: The PROCEDURE SQL printed pages 2-4.
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.17 seconds
+      cpu time            0.10 seconds
+      
+
+261        
+262        proc freq data=_dat_NMSC_path_dxNMSC; tables NMSC_Basal *NMSC_Squamous/missing;run;
+
+                                                                                                                 06:16 Tuesday, September 19, 2017   5
+
+                                                                  The FREQ Procedure
+
+                                                         Table of NMSC_Basal by NMSC_Squamous
+
+                                                         NMSC_Basal     NMSC_Squamous
+
+                                                         Frequency|
+                                                         Percent  |
+                                                         Row Pct  |
+                                                         Col Pct  |        |Y       |  Total
+                                                         ---------+--------+--------+
+                                                                  |    493 |    357 |    850
+                                                                  |  37.75 |  27.34 |  65.08
+                                                                  |  58.00 |  42.00 |
+                                                                  |  51.95 | 100.00 |
+                                                         ---------+--------+--------+
+                                                         Y        |    456 |      0 |    456
+                                                                  |  34.92 |   0.00 |  34.92
+                                                                  | 100.00 |   0.00 |
+                                                                  |  48.05 |   0.00 |
+                                                         ---------+--------+--------+
+                                                         Total         949      357     1306
+                                                                     72.66    27.34   100.00
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+                                                                   CANCER_NMSC.sas
+NOTE: There were 1306 observations read from the data set WORK._DAT_NMSC_PATH_DXNMSC.
+NOTE: The PROCEDURE FREQ printed page 5.
+NOTE: PROCEDURE FREQ used (Total process time):
+      real time           0.12 seconds
+      cpu time            0.01 seconds
+      
+
+263        proc freq data=_dat_NMSC_DX; tables NMSC_Basal*NMSC_Squamous dx/missing;run;
+
+                                                                                                                 06:16 Tuesday, September 19, 2017   6
+
+                                                                  The FREQ Procedure
+
+                                                         Table of NMSC_Basal by NMSC_Squamous
+
+                                                         NMSC_Basal     NMSC_Squamous
+
+                                                         Frequency|
+                                                         Percent  |
+                                                         Row Pct  |
+                                                         Col Pct  |        |Y       |  Total
+                                                         ---------+--------+--------+
+                                                                  |   1861 |   1059 |   2920
+                                                                  |  43.57 |  24.80 |  68.37
+                                                                  |  63.73 |  36.27 |
+                                                                  |  57.94 | 100.00 |
+                                                         ---------+--------+--------+
+                                                         Y        |   1351 |      0 |   1351
+                                                                  |  31.63 |   0.00 |  31.63
+                                                                  | 100.00 |   0.00 |
+                                                                  |  42.06 |   0.00 |
+                                                         ---------+--------+--------+
+                                                         Total        3212     1059     4271
+                                                                     75.20    24.80   100.00
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+                                                                   CANCER_NMSC.sas
+                                                                                                                 06:16 Tuesday, September 19, 2017   7
+
+                                                                  The FREQ Procedure
+
+                                                                    Diagnosis Code
+ 
+                                                                                Cumulative    Cumulative
+                                              DX       Frequency     Percent     Frequency      Percent
+                                              ----------------------------------------------------------
+                                              1730           23        0.54            23         0.54  
+                                              17300           6        0.14            29         0.68  
+                                              17301          23        0.54            52         1.22  
+                                              17302           9        0.21            61         1.43  
+                                              17309           1        0.02            62         1.45  
+                                              1731           41        0.96           103         2.41  
+                                              17310           5        0.12           108         2.53  
+                                              17311          27        0.63           135         3.16  
+                                              17312          13        0.30           148         3.47  
+                                              1732           97        2.27           245         5.74  
+                                              17320          10        0.23           255         5.97  
+                                              17321          60        1.40           315         7.38  
+                                              17322          94        2.20           409         9.58  
+                                              17329           1        0.02           410         9.60  
+                                              1733          566       13.25           976        22.85  
+                                              17330          73        1.71          1049        24.56  
+                                              17331         584       13.67          1633        38.23  
+                                              17332         266        6.23          1899        44.46  
+                                              17339           8        0.19          1907        44.65  
+                                              1734          124        2.90          2031        47.55  
+                                              17340          21        0.49          2052        48.04  
+                                              17341         109        2.55          2161        50.60  
+                                              17342         135        3.16          2296        53.76  
+                                              17349           6        0.14          2302        53.90  
+                                              1735          154        3.61          2456        57.50  
+                                              17350          28        0.66          2484        58.16  
+                                              17351         220        5.15          2704        63.31  
+                                              17352          70        1.64          2774        64.95  
+                                              17359           4        0.09          2778        65.04  
+                                              1736          169        3.96          2947        69.00  
+                                              17360          23        0.54          2970        69.54  
+                                              17361         121        2.83          3091        72.37  
+                                              17362         205        4.80          3296        77.17  
+                                              17369           4        0.09          3300        77.27  
+                                              1737          155        3.63          3455        80.89  
+                                              17370          31        0.73          3486        81.62  
+                                              17371          77        1.80          3563        83.42  
+                                              17372         146        3.42          3709        86.84  
+                                              17379           1        0.02          3710        86.86  
+                                              1738           53        1.24          3763        88.11  
+                                              17380           7        0.16          3770        88.27  
+                                              17381          27        0.63          3797        88.90  
+                                              17382          69        1.62          3866        90.52  
+                                              17389           9        0.21          3875        90.73  
+                                              1739          146        3.42          4021        94.15  
+                                              17390          95        2.22          4116        96.37  
+                                              17391         103        2.41          4219        98.78  
+                                              17392          52        1.22          4271       100.00  
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+                                                                   CANCER_NMSC.sas
+NOTE: There were 4271 observations read from the data set WORK._DAT_NMSC_DX.
+NOTE: The PROCEDURE FREQ printed pages 6-7.
+NOTE: PROCEDURE FREQ used (Total process time):
+      real time           0.14 seconds
+      cpu time            0.04 seconds
+      
+
+264        proc freq data=_dat_NMSC_PX; tables PX_TYPE;run;
+
+                                                                                                                 06:16 Tuesday, September 19, 2017   8
+
+                                                                  The FREQ Procedure
+
+                                                                 Procedure Code Type
+ 
+                                                                                 Cumulative    Cumulative
+                                             PX_TYPE    Frequency     Percent     Frequency      Percent
+                                             ------------------------------------------------------------
+                                             C1            21393      100.00         21393       100.00  
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+                                                                   CANCER_NMSC.sas
+NOTE: There were 21393 observations read from the data set WORK._DAT_NMSC_PX.
+NOTE: The PROCEDURE FREQ printed page 8.
+NOTE: PROCEDURE FREQ used (Total process time):
+      real time           0.06 seconds
+      cpu time            0.00 seconds
+      
+
+265        
+266        data _cancer_NMSC12(keep=exposureID NMSC_def1 NMSC_def2 begin_date DX PX px_type dx_type px_date outcome_date outcome_start_date NMSC_Basal
+266      !  NMSC_Squamous ENC_TYPE);
+267        if _n_=1 then do;
+268          declare hash hpx(dataset:"_dat_NMSC_PX(where=(biopsy^=1))", multidata:"Y");
+269          rc=hpx.defineKey("exposureID");
+270          rc=hpx.defineData("px_date", "PX", "px_type");
+271          rc=hpx.defineDone();
+272        end;
+273        if 0 then set _dat_NMSC_PX(keep=exposureID px_date PX px_type);
+274        set _dat_NMSC_DX;
+275        by exposureID begin_date;
+276        length NMSC_def1 NMSC_def2 $1 outcome_date outcome_start_date 4;
+7                                                                   The SAS System                                   06:16 Tuesday, September 19, 2017
+
+277        format outcome_date outcome_start_date mmddyy10.;
+278                rc =hpx.find(key:exposureID);
+279                 do while (rc = 0);
+280                    if begin_date=px_date then NMSC_def1="Y";
+281                        else NMSC_def1="N";
+282                    if abs(begin_date-px_date)<=90 and ENC_TYPE in ("IP","AV","ER","ED","HH","NH") then NMSC_def2="Y";
+283                        else NMSC_def2="N";
+284                    outcome_date=max(px_date,begin_date);
+285                    outcome_start_date=min(px_date,begin_date);
+286                    if NMSC_def1="Y" or NMSC_def2="Y" then output;
+287                    rc = hpx.find_next();
+288                 end;
+289        run;
+
+NOTE: There were 9351 observations read from the data set WORK._DAT_NMSC_PX.
+      WHERE biopsy not = 1;
+NOTE: There were 4271 observations read from the data set WORK._DAT_NMSC_DX.
+NOTE: The data set WORK._CANCER_NMSC12 has 7219 observations and 14 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.09 seconds
+      cpu time            0.01 seconds
+      
+
+290        proc sql;
+291        create table _cancer_NMSC3 as
+292        select * from _dat_NMSC_PX(where=(biopsy=1)) a
+293        join _dat_NMSC_path_dxNMSC(keep=exposureID Path_date PX_path DX NMSC_Basal
+294            NMSC_Squamous ENC_TYPE dx_type begin_date)  b
+295        on a.exposureID=b.exposureID and a.px_date<=b.path_date<=a.px_date+14;
+WARNING: Variable exposureID already exists on file WORK._CANCER_NMSC3.
+NOTE: Table WORK._CANCER_NMSC3 created, with 901 rows and 13 columns.
+
+296        quit;
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.06 seconds
+      cpu time            0.03 seconds
+      
+
+297        data _cancer_NMSC3(keep=exposureID NMSC_def3 begin_date DX PX px_type dx_type px_date outcome_date outcome_start_date
+298        NMSC_Basal NMSC_Squamous ENC_TYPE path_date px_path);
+299        set _cancer_NMSC3;
+300        length NMSC_def3 $1 outcome_date outcome_start_date 4;
+301        format outcome_date outcome_start_date mmddyy10.;
+302        outcome_date=max(px_date , path_date , begin_date);
+303        outcome_start_date=min(px_date , path_date , begin_date);
+304        NMSC_def3="Y";
+305        outcome="NMSC";
+306        run;
+
+NOTE: There were 901 observations read from the data set WORK._CANCER_NMSC3.
+NOTE: The data set WORK._CANCER_NMSC3 has 901 observations and 15 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.00 seconds
+      
+
+307        proc freq data=_cancer_NMSC3; tables NMSC_def3 NMSC_Basal*NMSC_Squamous/missing;run;
+
+                                                                                                                 06:16 Tuesday, September 19, 2017   9
+
+                                                                  The FREQ Procedure
+
+                                                                                  Cumulative    Cumulative
+                                            NMSC_def3    Frequency     Percent     Frequency      Percent
+                                            --------------------------------------------------------------
+                                            Y                 901      100.00           901       100.00  
+
+
+                                                         Table of NMSC_Basal by NMSC_Squamous
+
+                                                         NMSC_Basal     NMSC_Squamous
+
+                                                         Frequency|
+                                                         Percent  |
+                                                         Row Pct  |
+                                                         Col Pct  |        |Y       |  Total
+                                                         ---------+--------+--------+
+                                                                  |    345 |    231 |    576
+                                                                  |  38.29 |  25.64 |  63.93
+                                                                  |  59.90 |  40.10 |
+                                                                  |  51.49 | 100.00 |
+                                                         ---------+--------+--------+
+                                                         Y        |    325 |      0 |    325
+                                                                  |  36.07 |   0.00 |  36.07
+                                                                  | 100.00 |   0.00 |
+                                                                  |  48.51 |   0.00 |
+                                                         ---------+--------+--------+
+                                                         Total         670      231      901
+                                                                     74.36    25.64   100.00
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+                                                                   CANCER_NMSC.sas
+NOTE: There were 901 observations read from the data set WORK._CANCER_NMSC3.
+NOTE: The PROCEDURE FREQ printed page 9.
+NOTE: PROCEDURE FREQ used (Total process time):
+      real time           0.14 seconds
+      cpu time            0.03 seconds
+      
+
+308        data _cancer_NMSC;
+309        set _cancer_NMSC12 _cancer_NMSC3;
+310        run;
+
+NOTE: There were 7219 observations read from the data set WORK._CANCER_NMSC12.
+NOTE: There were 901 observations read from the data set WORK._CANCER_NMSC3.
+NOTE: The data set WORK._CANCER_NMSC has 8120 observations and 17 variables.
+8                                                                   The SAS System                                   06:16 Tuesday, September 19, 2017
+
+NOTE: DATA statement used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.00 seconds
+      
+
+311        
+312        
+313        proc sort data=_cancer_NMSC nodupkey;
+314        by exposureID outcome_date descending outcome_start_date NMSC_def1 NMSC_def2 NMSC_def3 NMSC_Basal NMSC_Squamous;run;
+
+NOTE: There were 8120 observations read from the data set WORK._CANCER_NMSC.
+NOTE: 3295 observations with duplicate key values were deleted.
+NOTE: The data set WORK._CANCER_NMSC has 4825 observations and 17 variables.
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           0.04 seconds
+      cpu time            0.01 seconds
+      
+
+315        
+316        data DT.Outcome_cancer_nmsc(keep=exposureID NMSC_def1 NMSC_def2 NMSC_def3 begin_date PX px_date outcome_date
+317        outcome_start_date NMSC_Basal NMSC_Squamous DX ENC_TYPE Path_date PX_path dx_type px_type);
+318        set _cancer_NMSC;
+319        length cancer $10;
+320        by exposureID outcome_date descending outcome_start_date;
+321        /*if first.outcome_date;*/
+322        cancer="NMSC";
+323        run;
+
+NOTE: There were 4825 observations read from the data set WORK._CANCER_NMSC.
+NOTE: The data set DT.OUTCOME_CANCER_NMSC has 4825 observations and 17 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.06 seconds
+      cpu time            0.00 seconds
+      
+
+324        
+325        proc sql outobs=50;
+326        select *, count(*) as n from _cancer_NMSC
+327        group by exposureID, outcome_date
+328        having n>1;
+NOTE: The query requires remerging summary statistics back with the original data.
+WARNING: Statement terminated early due to OUTOBS=50 option.
+                                                                                                                 06:16 Tuesday, September 19, 2017  10
+
+                                                          Beginning
+exposure   Procedure  Procedure  Procedure    Encounter     Date of  Diagnosis                      NMSC_  NMSC_                             outcome_
+      ID        Date  Code Type  Code         Type          Service  Code Type  Diagnosis Code      Basal  Squamous  NMSC_def1  NMSC_def2        date
+  outcome_   Procedure  Procedure
+start_date        Date  Code         NMSC_def3         n
+-----------------------------------------------------------------------------------------------------------------------------------------------------
+     674  02/01/2010  C1         11602        AV         02/01/2010  09         1736                                 Y          Y          02/01/2010
+02/01/2010                                             2
+
+     674  02/01/2010  C1         11602        AV         01/22/2010  09         1736                                 N          Y          02/01/2010
+01/22/2010                                             2
+
+    1185  03/25/2008  C1         17262        AV         03/25/2008  09         1735                                 Y          Y          03/25/2008
+03/25/2008                                             2
+
+    1185  03/25/2008  C1         17262        AV         02/27/2008  09         1735                                 N          Y          03/25/2008
+02/27/2008                                             2
+
+    1515  07/14/2008  C1         17280        AV         07/14/2008  09         1733                                 Y          Y          07/14/2008
+07/14/2008                                             2
+
+    1515  07/14/2008  C1         17280        AV         06/30/2008  09         1733                                 N          Y          07/14/2008
+06/30/2008                                             2
+
+    1765  09/13/2010  C1         11100        AV         09/13/2010  09         1735                                                       09/13/2010
+09/13/2010  09/13/2010  88305        Y                 2
+
+    1765  09/13/2010  C1         17261        AV         09/13/2010  09         1735                                 Y          Y          09/13/2010
+09/13/2010                                             2
+
+    2050  03/24/2010  C1         11100        AV         03/24/2010  09         1732                                                       03/24/2010
+03/24/2010  03/24/2010  88305        Y                 2
+
+    2050  02/18/2010  C1         17311        AV         03/24/2010  09         1732                                 N          Y          03/24/2010
+02/18/2010                                             2
+
+    2115  04/21/2010  C1         14060        AV         04/21/2010  09         1733                                 Y          Y          04/21/2010
+04/21/2010                                             2
+
+    2115  04/21/2010  C1         14060        AV         03/16/2010  09         1739                                 N          Y          04/21/2010
+03/16/2010                                             2
+
+    2333  09/25/2007  C1         11603        AV         09/24/2007  09         1733                                 N          Y          09/25/2007
+09/24/2007                                             2
+
+    2333  09/25/2007  C1         11603        AV         09/06/2007  09         1733                                 N          Y          09/25/2007
+09/06/2007                                             2
+
+    2333  09/25/2007  C1         11603        AV         12/05/2007  09         1733                                 N          Y          12/05/2007
+09/25/2007                                             2
+
+    2333  09/06/2007  C1         11641        AV         12/05/2007  09         1733                                 N          Y          12/05/2007
+09/06/2007                                             2
+
+    2680  03/30/2010  C1         11100        AV         03/30/2010  09         1731                                                       03/30/2010
+03/30/2010  03/30/2010  88305        Y                 2
+
+    2680  03/30/2010  C1         11603        AV         03/30/2010  09         1731                                 Y          Y          03/30/2010
+03/30/2010                                             2
+
+    2680  03/30/2010  C1         11100        AV         03/31/2010  09         1731                                                       03/31/2010
+03/30/2010  03/31/2010  88305        Y                 2
+
+    2680  03/30/2010  C1         11603        AV         03/31/2010  09         1731                                 N          Y          03/31/2010
+03/30/2010                                             2
+
+    2680  04/09/2010  C1         17311        AV         04/09/2010  09         1733                                 Y          Y          04/09/2010
+04/09/2010                                             3
+ 
+ 
+                                                                   CANCER_NMSC.sas
+                                                                                                                 06:16 Tuesday, September 19, 2017  11
+
+                                                          Beginning
+exposure   Procedure  Procedure  Procedure    Encounter     Date of  Diagnosis                      NMSC_  NMSC_                             outcome_
+      ID        Date  Code Type  Code         Type          Service  Code Type  Diagnosis Code      Basal  Squamous  NMSC_def1  NMSC_def2        date
+  outcome_   Procedure  Procedure
+start_date        Date  Code         NMSC_def3         n
+-----------------------------------------------------------------------------------------------------------------------------------------------------
+    2680  04/09/2010  C1         17311        AV         03/31/2010  09         1731                                 N          Y          04/09/2010
+03/31/2010                                             3
+
+    2680  04/09/2010  C1         17311        AV         03/30/2010  09         1731                                 N          Y          04/09/2010
+03/30/2010                                             3
+
+    2680  04/09/2010  C1         17311        AV         04/12/2010  09         1733                                 N          Y          04/12/2010
+04/09/2010                                             2
+
+    2680  03/30/2010  C1         11603        AV         04/12/2010  09         1733                                 N          Y          04/12/2010
+03/30/2010                                             2
+
+    2680  04/09/2010  C1         17311        AV         04/21/2010  09         1733                                 N          Y          04/21/2010
+04/09/2010                                             2
+
+    2680  03/30/2010  C1         11603        AV         04/21/2010  09         1733                                 N          Y          04/21/2010
+03/30/2010                                             2
+
+    2680  04/27/2010  C1         17311        AV         04/27/2010  09         1733                                 Y          Y          04/27/2010
+04/27/2010                                             6
+
+    2680  04/27/2010  C1         17311        AV         04/21/2010  09         1733                                 N          Y          04/27/2010
+04/21/2010                                             6
+
+    2680  04/27/2010  C1         17311        AV         04/12/2010  09         1733                                 N          Y          04/27/2010
+04/12/2010                                             6
+
+    2680  04/27/2010  C1         17311        AV         04/09/2010  09         1733                                 N          Y          04/27/2010
+04/09/2010                                             6
+
+    2680  04/27/2010  C1         17311        AV         03/31/2010  09         1731                                 N          Y          04/27/2010
+03/31/2010                                             6
+
+    2680  04/27/2010  C1         17311        AV         03/30/2010  09         1731                                 N          Y          04/27/2010
+03/30/2010                                             6
+
+    2680  05/05/2010  C1         17262        AV         04/27/2010  09         1733                                 N          Y          05/05/2010
+04/27/2010                                             6
+
+    2680  05/05/2010  C1         17262        AV         04/21/2010  09         1733                                 N          Y          05/05/2010
+04/21/2010                                             6
+
+    2680  05/05/2010  C1         17262        AV         04/12/2010  09         1733                                 N          Y          05/05/2010
+04/12/2010                                             6
+
+    2680  05/05/2010  C1         17262        AV         04/09/2010  09         1733                                 N          Y          05/05/2010
+04/09/2010                                             6
+
+    2680  05/05/2010  C1         17262        AV         03/31/2010  09         1731                                 N          Y          05/05/2010
+03/31/2010                                             6
+
+    2680  05/05/2010  C1         17262        AV         03/30/2010  09         1731                                 N          Y          05/05/2010
+03/30/2010                                             6
+
+    2873  04/19/2010  C1         11310        AV         04/19/2010  09         1732                                 Y          Y          04/19/2010
+04/19/2010                                             2
+
+    2873  04/19/2010  C1         11310        AV         04/12/2010  09         1732                                 N          Y          04/19/2010
+04/12/2010                                             2
+
+    2873  04/19/2010  C1         11310        AV         05/24/2010  09         1732                                 N          Y          05/24/2010
+04/19/2010                                             2
+ 
+ 
+                                                                   CANCER_NMSC.sas
+                                                                                                                 06:16 Tuesday, September 19, 2017  12
+
+                                                          Beginning
+exposure   Procedure  Procedure  Procedure    Encounter     Date of  Diagnosis                      NMSC_  NMSC_                             outcome_
+      ID        Date  Code Type  Code         Type          Service  Code Type  Diagnosis Code      Basal  Squamous  NMSC_def1  NMSC_def2        date
+  outcome_   Procedure  Procedure
+start_date        Date  Code         NMSC_def3         n
+-----------------------------------------------------------------------------------------------------------------------------------------------------
+    2873  04/12/2010  C1         11310        AV         05/24/2010  09         1732                                 N          Y          05/24/2010
+04/12/2010                                             2
+
+    3937  10/13/2014  C1         17311        AV         10/13/2014  09         17322                      Y         Y          Y          10/13/2014
+10/13/2014                                             2
+
+    3937  10/13/2014  C1         17311        AV         09/03/2014  09         17322                      Y         N          Y          10/13/2014
+09/03/2014                                             2
+
+    4357  08/06/2014  C1         17311        AV         07/23/2014  09         17331               Y                N          Y          08/06/2014
+07/23/2014                                             2
+
+    4357  08/06/2014  C1         17311        AV         05/13/2014  09         17391               Y                N          Y          08/06/2014
+05/13/2014                                             2
+
+    5140  01/22/2014  C1         11641        AV         12/09/2013  09         17331               Y                N          Y          01/22/2014
+12/09/2013                                             2
+
+    5140  01/22/2014  C1         11641        AV         11/26/2013  09         17391               Y                N          Y          01/22/2014
+11/26/2013                                             2
+
+    5547  03/28/2011  C1         11100        AV         03/28/2011  09         1735                                                       03/28/2011
+03/28/2011  03/28/2011  88305        Y                 2
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+                                                                   CANCER_NMSC.sas
+329        quit;
+NOTE: The PROCEDURE SQL printed pages 10-12.
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.10 seconds
+      cpu time            0.07 seconds
+      
+
+330        
+331        proc datasets nolist; delete
+332        _dat_NMSC_DX
+333        _dat_NMSC_PX
+334        _cancer_NMSC
+335        _cancer_NMSC12
+336        _cancer_NMSC3
+337        _dat_NMSC_path
+338        _dat_NMSC_path_dx
+339        _dat_NMSC_path_dxNMSC
+340        ;
+341        quit;
+
+NOTE: Deleting WORK._DAT_NMSC_DX (memtype=DATA).
+NOTE: Deleting WORK._DAT_NMSC_PX (memtype=DATA).
+NOTE: Deleting WORK._CANCER_NMSC (memtype=DATA).
+NOTE: Deleting WORK._CANCER_NMSC12 (memtype=DATA).
+NOTE: Deleting WORK._CANCER_NMSC3 (memtype=DATA).
+NOTE: Deleting WORK._DAT_NMSC_PATH (memtype=DATA).
+NOTE: Deleting WORK._DAT_NMSC_PATH_DX (memtype=DATA).
+NOTE: Deleting WORK._DAT_NMSC_PATH_DXNMSC (memtype=DATA).
+NOTE: PROCEDURE DATASETS used (Total process time):
+      real time           0.01 seconds
+9                                                                   The SAS System                                   06:16 Tuesday, September 19, 2017
+
+      cpu time            0.01 seconds
+      
+
+342        
+343        
+344        proc sql;
+345          select B.database, B.exposure, "NMSC" as cancer, count(distinct A.exposureID) as countDistinctExposureID
+346            from DT.Outcome_cancer_nmsc A inner join
+347                 DT.exposureTimeline B on (A.exposureID = B.exposureID)
+348            group by B.database, B.exposure;
+                                                                                                                 06:16 Tuesday, September 19, 2017  13
+
+                                                                                                 count
+                                                                                              Distinct
+                                                database    exposure              cancer    ExposureID
+                                                ------------------------------------------------------
+                                                MPCD        DMARD                 NMSC               3
+                                                MPCD        NSAID or no exposure  NMSC              26
+                                                MPCD        TNF                   NMSC              19
+                                                Marketscan  DMARD                 NMSC              12
+                                                Marketscan  NSAID or no exposure  NMSC              72
+                                                Marketscan  TNF                   NMSC              42
+                                                Medicare    DMARD                 NMSC             156
+                                                Medicare    NSAID or no exposure  NMSC             867
+                                                Medicare    TNF                   NMSC             203
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+                                                                   CANCER_NMSC.sas
+349        quit;
+NOTE: The PROCEDURE SQL printed page 13.
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.07 seconds
+      cpu time            0.03 seconds
+      
+
+350        
+351        
+352        ods html close;
+ERROR: Errors printed on page 5.
+
+NOTE: SAS Institute Inc., SAS Campus Drive, Cary, NC USA 27513-2414
+NOTE: The SAS System used:
+      real time           29.53 seconds
+      cpu time            27.29 seconds
+      
