@@ -168,7 +168,7 @@ run;
 proc sort data=_dat_NMSC_path_dx ; by exposureID PATH_date dx pdx;run;
 proc sort data=_dat_NMSC_path_dx nodupkey; by exposureID PATH_date dx;run;
 
-proc freq data=_dat_NMSC_path_dx order=freq;format dx $icd9dx.; table dx;run;
+proc freq data=_dat_NMSC_path_dx order=freq; table dx;run;
 
 proc sort data=_dat_NMSC_path_dx out=_dat_NMSC_path_dxNMSC nodupkey; by exposureID PATH_date dx; where dx in :("173");run;
 proc sql outobs=50;
