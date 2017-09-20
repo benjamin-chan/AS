@@ -87,6 +87,27 @@ quit;
 
 
 /* 
+Query for incident MI
+
+* Requires at least a 1-day inpatient admission
+ */
+proc sql;
+  create table Work.incidentMI as
+    select C.database, C.exposureID, C.patid, C.exposure, C.exposureStart, C.exposureEnd,
+           C.outcomeCategory,
+           C.disease,
+           C.begin_date
+    from (select A.*, B.outcomeCategory, B.disease 
+          from UCB.tempIncDxAll A inner join 
+               Work.defOutcomes B on (A.codeType = B.codeType & A.code = B.code) 
+          where B.disease = "Myocardial infarction"  & 
+                A.enc_type = "IP" &
+                . < A.admit_date < A.discharge_date) C
+    order by C.database, C.exposureID, C.outcomeCategory, C.disease, C.begin_date;
+quit;
+
+
+/* 
 Process the data sets created by the cancer scripts
  */
 
