@@ -87,6 +87,27 @@ quit;
 
 
 /* 
+Query for incident MI
+
+* Requires at least a 1-day inpatient admission
+ */
+proc sql;
+  create table Work.incidentMI as
+    select C.database, C.exposureID, C.patid, C.exposure, C.exposureStart, C.exposureEnd,
+           C.outcomeCategory,
+           C.disease,
+           C.begin_date
+    from (select A.*, B.outcomeCategory, B.disease 
+          from UCB.tempIncDxAll A inner join 
+               (select * from DT.defOutcomes where disease = "Myocardial infarction") B on (A.codeType = B.codeType & A.code = B.code) 
+          where B.disease = "Myocardial infarction"  & 
+                A.enc_type = "IP" &
+                . < A.admit_date < A.discharge_date) C
+    order by C.database, C.exposureID, C.outcomeCategory, C.disease, C.begin_date;
+quit;
+
+
+/* 
 Process the data sets created by the cancer scripts
  */
 
@@ -96,7 +117,7 @@ proc sql;
   create table Work.defOutcomes as
     select * 
     from DT.defOutcomes 
-    where disease ^in ("Interstitial lung disease");
+    where disease ^in ("Interstitial lung disease", "Myocardial infarction");
   create table Work.lookupDisease as
     select distinct outcomeCategory, disease
     from DT.defOutcomes;
@@ -117,6 +138,7 @@ proc sql;
     from (&select1 from UCB.tempIncDxAll A &join1 &where1a &where1b union corr
           &select1 from UCB.tempIncPxAll A &join1 &where1a union corr
           &select2 from Work.outcome_ILD_All union corr
+          select * from Work.incidentMI union corr
           select * from Work.fractures) C
     order by C.database, C.exposureID, C.outcomeCategory, C.disease, C.begin_date;
 quit;
