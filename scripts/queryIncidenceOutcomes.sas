@@ -99,7 +99,7 @@ proc sql;
            C.begin_date
     from (select A.*, B.outcomeCategory, B.disease 
           from UCB.tempIncDxAll A inner join 
-               Work.defOutcomes B on (A.codeType = B.codeType & A.code = B.code) 
+               (select * from DT.defOutcomes where disease = "Myocardial infarction") B on (A.codeType = B.codeType & A.code = B.code) 
           where B.disease = "Myocardial infarction"  & 
                 A.enc_type = "IP" &
                 . < A.admit_date < A.discharge_date) C
