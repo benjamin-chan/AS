@@ -117,7 +117,7 @@ proc sql;
   create table Work.defOutcomes as
     select * 
     from DT.defOutcomes 
-    where disease ^in ("Interstitial lung disease");
+    where disease ^in ("Interstitial lung disease", "Myocardial infarction");
   create table Work.lookupDisease as
     select distinct outcomeCategory, disease
     from DT.defOutcomes;
@@ -138,6 +138,7 @@ proc sql;
     from (&select1 from UCB.tempIncDxAll A &join1 &where1a &where1b union corr
           &select1 from UCB.tempIncPxAll A &join1 &where1a union corr
           &select2 from Work.outcome_ILD_All union corr
+          select * from Work.incidentMI union corr
           select * from Work.fractures) C
     order by C.database, C.exposureID, C.outcomeCategory, C.disease, C.begin_date;
 quit;
