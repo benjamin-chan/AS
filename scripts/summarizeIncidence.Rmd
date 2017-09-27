@@ -33,68 +33,94 @@ Table of **incidence per 100 person-years**
 
 ```{r}
 foo <- function(db, exp) {
-    df1 <- 
-      df %>% 
+    scale <- 100
+    df %>% 
       filter(database == db) %>% 
       filter(exposure == exp) %>%
-      mutate(incidenceRate = incidence / personYears * 100)
-    col <- which(names(df1) %in% c("database", "outcomeCategory", "disease", "incidenceRate"))
-    df1 %>% select(col)
+      mutate(scale = scale) %>% 
+      mutate(incidenceRate = incidence / personYears * scale) %>% 
+      select(-c(n, incidence, personYears, scale))
 }
-df1a <- foo("MPCD", "NSAID or no exposure")
+df1a <- foo("MPCD", "TNF")
 df1b <- foo("MPCD", "DMARD")
-df1c <- foo("MPCD", "TNF")
-df2a <- foo("Marketscan", "NSAID or no exposure")
+df1c <- foo("MPCD", "NSAID")
+df1d <- foo("MPCD", "No exposure")
+df2a <- foo("Marketscan", "TNF")
 df2b <- foo("Marketscan", "DMARD")
-df2c <- foo("Marketscan", "TNF")
-df3a <- foo("Medicare", "NSAID or no exposure")
+df2c <- foo("Marketscan", "NSAID")
+df2d <- foo("Marketscan", "No exposure")
+df3a <- foo("Medicare", "TNF")
 df3b <- foo("Medicare", "DMARD")
-df3c <- foo("Medicare", "TNF")
-foo <- function (a, b, c) {
-    by <- c("database", "outcomeCategory", "disease")
+df3c <- foo("Medicare", "NSAID")
+df3d <- foo("Medicare", "No exposure")
+by <- c("database", "outcomeCategory", "disease")
+foo <- function (a, b, c, d) {
     merge(a, 
           merge(b, 
-                c, 
-                by = by, all = TRUE, suffixes = c("_DMARD", "_TNF")), 
-          by = by, all = TRUE) %>% 
-      rename(incidenceRate_NSAID = incidenceRate) %>% 
-      select(-c(database))
+                merge(c, 
+                      d, 
+                      by = by, all = TRUE, suffixes = c("_NSAID", "_NoExp")),
+                by = by, all = TRUE), 
+          by = by, all = TRUE, suffixes = c("_TNF", "_DMARD")) %>% 
+    select(-c(database))
 }
 incidence <- 
-  merge(foo(df1a, df1b, df1c), 
-        merge(foo(df2a, df2b, df2c),
-              foo(df3a, df3b, df3c),
+  merge(foo(df1a, df1b, df1c, df1d), 
+        merge(foo(df2a, df2b, df2c, df2d),
+              foo(df3a, df3b, df3c, df3d),
               by = c("outcomeCategory", "disease"),
               all = TRUE,
               suffixes = c("_Marketscan", "_Medicare")),
         by = c("outcomeCategory", "disease"),
         all = TRUE) %>% 
-  rename(incidenceRate_NSAID_MPCD = incidenceRate_NSAID,
+  rename(incidenceRate_NoExp_MPCD = incidenceRate_NoExp,
+         incidenceRate_NSAID_MPCD = incidenceRate_NSAID,
          incidenceRate_DMARD_MPCD = incidenceRate_DMARD,
-         incidenceRate_TNF_MPCD = incidenceRate_TNF) %>%
-  select(c(outcomeCategory, disease,
-           incidenceRate_TNF_MPCD, incidenceRate_DMARD_MPCD, incidenceRate_NSAID_MPCD,
-           incidenceRate_TNF_Marketscan, incidenceRate_DMARD_Marketscan, incidenceRate_NSAID_Marketscan,
-           incidenceRate_TNF_Medicare, incidenceRate_DMARD_Medicare, incidenceRate_NSAID_Medicare)) %>% 
-  rename("MPCD NSAID or no exposure" = incidenceRate_NSAID_MPCD,
+         incidenceRate_TNF_MPCD = incidenceRate_TNF,
+  rename("MPCD No exposure" = incidenceRate_NoExp_MPCD,
+         "MPCD NSAID" = incidenceRate_NSAID_MPCD,
          "MPCD DMARD" = incidenceRate_DMARD_MPCD,
          "MPCD TNF" = incidenceRate_TNF_MPCD,
-         "Marketscan NSAID or no exposure" = incidenceRate_NSAID_Marketscan,
+         "Marketscan No exposure" = incidenceRate_NoExp_Marketscan,
+         "Marketscan NSAID" = incidenceRate_NSAID_Marketscan,
          "Marketscan DMARD" = incidenceRate_DMARD_Marketscan,
          "Marketscan TNF" = incidenceRate_TNF_Marketscan,
-         "Medicare NSAID or no exposure" = incidenceRate_NSAID_Medicare,
+         "Medicare No exposure" = incidenceRate_NoExp_Medicare,
+         "Medicare NSAID" = incidenceRate_NSAID_Medicare,
          "Medicare DMARD" = incidenceRate_DMARD_Medicare,
-         "Medicare TNF" = incidenceRate_TNF_Medicare)
-incidence %>% kable(digits = 1)
+         "Medicare TNF" = incidenceRate_TNF_Medicare) %>% 
+incidence %>% kable()
 incidence %>% write.csv(file = "../data/processed/incidence.csv", row.names = FALSE, na = "0")
 ```
 
-## **TNF** versus **NSAID or no exposure**
+## **TNF** versus **No exposure**
 
 **MPCD**
 
 ```{r}
-exp <- c("TNF", "NSAID or no exposure")
+exp <- c("TNF", "No exposure")
+digits <- c(rep(0, 4), 1, 1, 3)
+bindCompare("MPCD", exp) %>% kable(digits = digits)
+```
+
+**Marketscan**
+
+```{r}
+bindCompare("Marketscan", exp) %>% kable(digits = digits)
+```
+
+**Medicare**
+
+```{r}
+bindCompare("Medicare", exp) %>% kable(digits = digits)
+```
+
+## **TNF** versus **NSAID**
+
+**MPCD**
+
+```{r}
+exp <- c("TNF", "NSAID")
 digits <- c(rep(0, 4), 1, 1, 3)
 bindCompare("MPCD", exp) %>% kable(digits = digits)
 ```
