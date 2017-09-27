@@ -36,16 +36,19 @@ Table of **prevalence %**
 
 ```{r}
 foo <- function(db) {
-    col <- which(names(df) %in% c("database", "outcomeCategory", "timeWindow", "disease", "prevPct"))
+    col <- which(names(df) %in% c("database", "outcomeCategory", "timeWindow", "disease", "prevPct", "denomPatid"))
     df %>% 
       filter(timeWindow == "12 months") %>% 
       filter(database == db) %>% 
-      select(col)
+      mutate(lower = prevCI(numer, denomPatid)[, "lower"] * 100,
+             upper = prevCI(numer, denomPatid)[, "upper"] * 100) %>% 
+      select(-c(denomPatid, numer))
 }
 df1a <- foo("MPCD")
 df2a <- foo("Marketscan")
 df3a <- foo("Medicare")
 by <- c("database", "outcomeCategory", "disease", "timeWindow")
+fmt <- "%.01f (%.01f-%.01f)"
 prev <- 
   merge(df1a, 
         merge(df2a,
@@ -55,15 +58,18 @@ prev <-
               suffixes = c("_Marketscan", "_Medicare")),
         by = by[2:length(by)],
         all = TRUE) %>% 
-  rename(prevPct_MPCD = prevPct) %>%
-  select(c(outcomeCategory, disease, timeWindow,
-           prevPct_MPCD,
-           prevPct_Marketscan,
-           prevPct_Medicare)) %>% 
+  rename(prevPct_MPCD = prevPct,
+         lower_MPCD = lower,
+         upper_MPCD = upper) %>%
+  select(matches("outcomeCategory|disease|timeWindow|prevPct|lower|upper")) %>% 
+  mutate(prevPct_MPCD = ifelse(is.na(prevPct_MPCD), "0", sprintf(fmt, prevPct_MPCD, lower_MPCD, upper_MPCD)),
+         prevPct_Marketscan = ifelse(is.na(prevPct_Marketscan), "0", sprintf(fmt, prevPct_Marketscan, lower_Marketscan, upper_Marketscan)),
+         prevPct_Medicare = ifelse(is.na(prevPct_Medicare), "0", sprintf(fmt, prevPct_Medicare, lower_Medicare, upper_Medicare))) %>% 
   rename("MPCD AS cohort" = prevPct_MPCD,
-         "Marketscan AS cohort" = prevPct_Marketscan,
-         "Medicare AS cohort" = prevPct_Medicare)
-prev %>% kable(digits = 1)
+         "Medicare AS cohort" = prevPct_Medicare,
+         "Marketscan AS cohort" = prevPct_Marketscan) %>% 
+  select(-matches("lower|upper"))
+prev %>% kable()
 prev %>% write.csv(file = "../data/processed/prevalenceOverall.csv", row.names = FALSE, na = "0")
 ```
 
@@ -88,12 +94,14 @@ Table of **prevalence %**
 
 ```{r}
 foo <- function(db, exp) {
-    col <- which(names(df) %in% c("database", "outcomeCategory", "timeWindow", "disease", "prevPct"))
+    col <- which(names(df) %in% c("database", "outcomeCategory", "timeWindow", "disease", "prevPct", "denomIndexExp"))
     df %>% 
       filter(timeWindow == "12 months") %>% 
       filter(database == db) %>% 
       filter(exposure == exp) %>% 
-      select(col)
+      mutate(lower = prevCI(numer, denomIndexExp)[, "lower"] * 100,
+             upper = prevCI(numer, denomIndexExp)[, "upper"] * 100) %>% 
+      select(-c(denomIndexExp, numer))
 }
 df1a <- foo("MPCD", "TNF")
 df1b <- foo("MPCD", "DMARD")
@@ -116,7 +124,7 @@ foo <- function (a, b, c, d) {
                       by = by, all = TRUE, suffixes = c("_NSAID", "_NoExp")),
                 by = by, all = TRUE), 
           by = by, all = TRUE, suffixes = c("_TNF", "_DMARD")) %>% 
-      select(-c(database))
+    select(-c(database))
 }
 prev <- 
   merge(foo(df1a, df1b, df1c, df1d), 
@@ -128,12 +136,30 @@ prev <-
         by = by[2:length(by)],
         all = TRUE) %>% 
   rename(prevPct_NoExp_MPCD = prevPct_NoExp,
+         lower_NoExp_MPCD = lower_NoExp,
+         upper_NoExp_MPCD = upper_NoExp,
          prevPct_NSAID_MPCD = prevPct_NSAID,
+         lower_NSAID_MPCD = lower_NSAID,
+         upper_NSAID_MPCD = upper_NSAID,
          prevPct_DMARD_MPCD = prevPct_DMARD,
-  select(c(outcomeCategory, disease, timeWindow,
-           prevPct_TNF_MPCD, prevPct_DMARD_MPCD, prevPct_NSAID_MPCD,
-           prevPct_TNF_Marketscan, prevPct_DMARD_Marketscan, prevPct_NSAID_Marketscan,
-           prevPct_TNF_Medicare, prevPct_DMARD_Medicare, prevPct_NSAID_Medicare)) %>% 
+         lower_DMARD_MPCD = lower_DMARD,
+         upper_DMARD_MPCD = upper_DMARD,
+         prevPct_TNF_MPCD = prevPct_TNF,
+         lower_TNF_MPCD = lower_TNF,
+         upper_TNF_MPCD = upper_TNF) %>%
+  select(matches("outcomeCategory|disease|timeWindow|prevPct|lower|upper")) %>% 
+  mutate(prevPct_NoExp_MPCD = ifelse(is.na(prevPct_NoExp_MPCD), "0", sprintf(fmt, prevPct_NoExp_MPCD, lower_NoExp_MPCD, upper_NoExp_MPCD)),
+         prevPct_NoExp_Marketscan = ifelse(is.na(prevPct_NoExp_Marketscan), "0", sprintf(fmt, prevPct_NoExp_Marketscan, lower_NoExp_Marketscan, upper_NoExp_Marketscan)),
+         prevPct_NoExp_Medicare = ifelse(is.na(prevPct_NoExp_Medicare), "0", sprintf(fmt, prevPct_NoExp_Medicare, lower_NoExp_Medicare, upper_NoExp_Medicare)),
+         prevPct_NSAID_MPCD = ifelse(is.na(prevPct_NSAID_MPCD), "0", sprintf(fmt, prevPct_NSAID_MPCD, lower_NSAID_MPCD, upper_NSAID_MPCD)),
+         prevPct_NSAID_Marketscan = ifelse(is.na(prevPct_NSAID_Marketscan), "0", sprintf(fmt, prevPct_NSAID_Marketscan, lower_NSAID_Marketscan, upper_NSAID_Marketscan)),
+         prevPct_NSAID_Medicare = ifelse(is.na(prevPct_NSAID_Medicare), "0", sprintf(fmt, prevPct_NSAID_Medicare, lower_NSAID_Medicare, upper_NSAID_Medicare)),
+         prevPct_DMARD_MPCD = ifelse(is.na(prevPct_DMARD_MPCD), "0", sprintf(fmt, prevPct_DMARD_MPCD, lower_DMARD_MPCD, upper_DMARD_MPCD)),
+         prevPct_DMARD_Marketscan = ifelse(is.na(prevPct_DMARD_Marketscan), "0", sprintf(fmt, prevPct_DMARD_Marketscan, lower_DMARD_Marketscan, upper_DMARD_Marketscan)),
+         prevPct_DMARD_Medicare = ifelse(is.na(prevPct_DMARD_Medicare), "0", sprintf(fmt, prevPct_DMARD_Medicare, lower_DMARD_Medicare, upper_DMARD_Medicare)),
+         prevPct_TNF_MPCD = ifelse(is.na(prevPct_TNF_MPCD), "0", sprintf(fmt, prevPct_TNF_MPCD, lower_TNF_MPCD, upper_TNF_MPCD)),
+         prevPct_TNF_Marketscan = ifelse(is.na(prevPct_TNF_Marketscan), "0", sprintf(fmt, prevPct_TNF_Marketscan, lower_TNF_Marketscan, upper_TNF_Marketscan)),
+         prevPct_TNF_Medicare = ifelse(is.na(prevPct_TNF_Medicare), "0", sprintf(fmt, prevPct_TNF_Medicare, lower_TNF_Medicare, upper_TNF_Medicare))) %>% 
   rename("MPCD No exposure" = prevPct_NoExp_MPCD,
          "MPCD NSAID" = prevPct_NSAID_MPCD,
          "MPCD DMARD" = prevPct_DMARD_MPCD,
@@ -145,7 +171,8 @@ prev <-
          "Medicare No exposure" = prevPct_NoExp_Medicare,
          "Medicare NSAID" = prevPct_NSAID_Medicare,
          "Medicare DMARD" = prevPct_DMARD_Medicare,
-         "Medicare TNF" = prevPct_TNF_Medicare)
-prev %>% kable(digits = 1)
+         "Medicare TNF" = prevPct_TNF_Medicare) %>% 
+  select(-matches("lower|upper"))
+prev %>% kable()
 prev %>% write.csv(file = "../data/processed/prevalenceByExposure.csv", row.names = FALSE, na = "0")
 ```
