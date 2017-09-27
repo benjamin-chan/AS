@@ -39,6 +39,9 @@ foo <- function(db, exp) {
       filter(exposure == exp) %>%
       mutate(scale = scale) %>% 
       mutate(incidenceRate = incidence / personYears * scale) %>% 
+      mutate(lower = incCI(incidence, personYears)[, "lower"] * scale,
+             upper = incCI(incidence, personYears)[, "upper"] * scale) %>% 
+      select(c(database, exposure, outcomeCategory, disease, n, incidence, personYears, scale, incidenceRate, lower, upper)) %>% 
       select(-c(n, incidence, personYears, scale))
 }
 df1a <- foo("MPCD", "TNF")
@@ -54,6 +57,7 @@ df3b <- foo("Medicare", "DMARD")
 df3c <- foo("Medicare", "NSAID")
 df3d <- foo("Medicare", "No exposure")
 by <- c("database", "outcomeCategory", "disease")
+fmt <- "%.02f (%.02f-%.02f)"
 foo <- function (a, b, c, d) {
     merge(a, 
           merge(b, 
@@ -74,9 +78,30 @@ incidence <-
         by = c("outcomeCategory", "disease"),
         all = TRUE) %>% 
   rename(incidenceRate_NoExp_MPCD = incidenceRate_NoExp,
+         lower_NoExp_MPCD = lower_NoExp,
+         upper_NoExp_MPCD = upper_NoExp,
          incidenceRate_NSAID_MPCD = incidenceRate_NSAID,
+         lower_NSAID_MPCD = lower_NSAID,
+         upper_NSAID_MPCD = upper_NSAID,
          incidenceRate_DMARD_MPCD = incidenceRate_DMARD,
+         lower_DMARD_MPCD = lower_DMARD,
+         upper_DMARD_MPCD = upper_DMARD,
          incidenceRate_TNF_MPCD = incidenceRate_TNF,
+         lower_TNF_MPCD = lower_TNF,
+         upper_TNF_MPCD = upper_TNF) %>%
+  select(matches("outcomeCategory|disease|incidence|lower|upper")) %>% 
+  mutate(incidenceRate_NoExp_MPCD = ifelse(is.na(incidenceRate_NoExp_MPCD), "0", sprintf(fmt, incidenceRate_NoExp_MPCD, lower_NoExp_MPCD, upper_NoExp_MPCD)),
+         incidenceRate_NoExp_Marketscan = ifelse(is.na(incidenceRate_NoExp_Marketscan), "0", sprintf(fmt, incidenceRate_NoExp_Marketscan, lower_NoExp_Marketscan, upper_NoExp_Marketscan)),
+         incidenceRate_NoExp_Medicare = ifelse(is.na(incidenceRate_NoExp_Medicare), "0", sprintf(fmt, incidenceRate_NoExp_Medicare, lower_NoExp_Medicare, upper_NoExp_Medicare)),
+         incidenceRate_NSAID_MPCD = ifelse(is.na(incidenceRate_NSAID_MPCD), "0", sprintf(fmt, incidenceRate_NSAID_MPCD, lower_NSAID_MPCD, upper_NSAID_MPCD)),
+         incidenceRate_NSAID_Marketscan = ifelse(is.na(incidenceRate_NSAID_Marketscan), "0", sprintf(fmt, incidenceRate_NSAID_Marketscan, lower_NSAID_Marketscan, upper_NSAID_Marketscan)),
+         incidenceRate_NSAID_Medicare = ifelse(is.na(incidenceRate_NSAID_Medicare), "0", sprintf(fmt, incidenceRate_NSAID_Medicare, lower_NSAID_Medicare, upper_NSAID_Medicare)),
+         incidenceRate_DMARD_MPCD = ifelse(is.na(incidenceRate_DMARD_MPCD), "0", sprintf(fmt, incidenceRate_DMARD_MPCD, lower_DMARD_MPCD, upper_DMARD_MPCD)),
+         incidenceRate_DMARD_Marketscan = ifelse(is.na(incidenceRate_DMARD_Marketscan), "0", sprintf(fmt, incidenceRate_DMARD_Marketscan, lower_DMARD_Marketscan, upper_DMARD_Marketscan)),
+         incidenceRate_DMARD_Medicare = ifelse(is.na(incidenceRate_DMARD_Medicare), "0", sprintf(fmt, incidenceRate_DMARD_Medicare, lower_DMARD_Medicare, upper_DMARD_Medicare)),
+         incidenceRate_TNF_MPCD = ifelse(is.na(incidenceRate_TNF_MPCD), "0", sprintf(fmt, incidenceRate_TNF_MPCD, lower_TNF_MPCD, upper_TNF_MPCD)),
+         incidenceRate_TNF_Marketscan = ifelse(is.na(incidenceRate_TNF_Marketscan), "0", sprintf(fmt, incidenceRate_TNF_Marketscan, lower_TNF_Marketscan, upper_TNF_Marketscan)),
+         incidenceRate_TNF_Medicare = ifelse(is.na(incidenceRate_TNF_Medicare), "0", sprintf(fmt, incidenceRate_TNF_Medicare, lower_TNF_Medicare, upper_TNF_Medicare))) %>% 
   rename("MPCD No exposure" = incidenceRate_NoExp_MPCD,
          "MPCD NSAID" = incidenceRate_NSAID_MPCD,
          "MPCD DMARD" = incidenceRate_DMARD_MPCD,
@@ -89,6 +114,7 @@ incidence <-
          "Medicare NSAID" = incidenceRate_NSAID_Medicare,
          "Medicare DMARD" = incidenceRate_DMARD_Medicare,
          "Medicare TNF" = incidenceRate_TNF_Medicare) %>% 
+  select(-matches("lower|upper"))
 incidence %>% kable()
 incidence %>% write.csv(file = "../data/processed/incidence.csv", row.names = FALSE, na = "0")
 ```
