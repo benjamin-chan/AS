@@ -95,48 +95,55 @@ foo <- function(db, exp) {
       filter(exposure == exp) %>% 
       select(col)
 }
-df1a <- foo("MPCD", "NSAID or no exposure")
+df1a <- foo("MPCD", "TNF")
 df1b <- foo("MPCD", "DMARD")
-df1c <- foo("MPCD", "TNF")
-df2a <- foo("Marketscan", "NSAID or no exposure")
+df1c <- foo("MPCD", "NSAID")
+df1d <- foo("MPCD", "No exposure")
+df2a <- foo("Marketscan", "TNF")
 df2b <- foo("Marketscan", "DMARD")
-df2c <- foo("Marketscan", "TNF")
-df3a <- foo("Medicare", "NSAID or no exposure")
+df2c <- foo("Marketscan", "NSAID")
+df2d <- foo("Marketscan", "No exposure")
+df3a <- foo("Medicare", "TNF")
 df3b <- foo("Medicare", "DMARD")
-df3c <- foo("Medicare", "TNF")
+df3c <- foo("Medicare", "NSAID")
+df3d <- foo("Medicare", "No exposure")
 by <- c("database", "outcomeCategory", "disease", "timeWindow")
-foo <- function (a, b, c) {
+foo <- function (a, b, c, d) {
     merge(a, 
           merge(b, 
-                c, 
-                by = by, all = TRUE, suffixes = c("_DMARD", "_TNF")), 
-          by = by, all = TRUE) %>% 
-      rename(prevPct_NSAID = prevPct) %>% 
+                merge(c, 
+                      d, 
+                      by = by, all = TRUE, suffixes = c("_NSAID", "_NoExp")),
+                by = by, all = TRUE), 
+          by = by, all = TRUE, suffixes = c("_TNF", "_DMARD")) %>% 
       select(-c(database))
 }
 prev <- 
-  merge(foo(df1a, df1b, df1c), 
-        merge(foo(df2a, df2b, df2c),
-              foo(df3a, df3b, df3c),
+  merge(foo(df1a, df1b, df1c, df1d), 
+        merge(foo(df2a, df2b, df2c, df2d),
+              foo(df3a, df3b, df3c, df3d),
               by = by[2:length(by)],
               all = TRUE,
               suffixes = c("_Marketscan", "_Medicare")),
         by = by[2:length(by)],
         all = TRUE) %>% 
-  rename(prevPct_NSAID_MPCD = prevPct_NSAID,
+  rename(prevPct_NoExp_MPCD = prevPct_NoExp,
+         prevPct_NSAID_MPCD = prevPct_NSAID,
          prevPct_DMARD_MPCD = prevPct_DMARD,
-         prevPct_TNF_MPCD = prevPct_TNF) %>%
   select(c(outcomeCategory, disease, timeWindow,
            prevPct_TNF_MPCD, prevPct_DMARD_MPCD, prevPct_NSAID_MPCD,
            prevPct_TNF_Marketscan, prevPct_DMARD_Marketscan, prevPct_NSAID_Marketscan,
            prevPct_TNF_Medicare, prevPct_DMARD_Medicare, prevPct_NSAID_Medicare)) %>% 
-  rename("MPCD NSAID or no exposure" = prevPct_NSAID_MPCD,
+  rename("MPCD No exposure" = prevPct_NoExp_MPCD,
+         "MPCD NSAID" = prevPct_NSAID_MPCD,
          "MPCD DMARD" = prevPct_DMARD_MPCD,
          "MPCD TNF" = prevPct_TNF_MPCD,
-         "Marketscan NSAID or no exposure" = prevPct_NSAID_Marketscan,
+         "Marketscan No exposure" = prevPct_NoExp_Marketscan,
+         "Marketscan NSAID" = prevPct_NSAID_Marketscan,
          "Marketscan DMARD" = prevPct_DMARD_Marketscan,
          "Marketscan TNF" = prevPct_TNF_Marketscan,
-         "Medicare NSAID or no exposure" = prevPct_NSAID_Medicare,
+         "Medicare No exposure" = prevPct_NoExp_Medicare,
+         "Medicare NSAID" = prevPct_NSAID_Medicare,
          "Medicare DMARD" = prevPct_DMARD_Medicare,
          "Medicare TNF" = prevPct_TNF_Medicare)
 prev %>% kable(digits = 1)
