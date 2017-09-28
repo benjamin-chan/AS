@@ -143,7 +143,7 @@ quit ;
 
 
 proc means data = DT.exposureTimeline n sum mean std min q1 median q3 max maxdec = 1;
-  class database exposure;
+  class database exposureClass exposure;
   var daysExposed;
 run;
 
