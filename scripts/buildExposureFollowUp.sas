@@ -98,7 +98,8 @@ Select the index start date with the earliest end date
 Create exposure segments
  */
   create table Work.tempExposureSegments as
-    select A.database,
+    select distinct
+           A.database,
            A.patid,
            A.enr_end_date,
            A.death_date,
