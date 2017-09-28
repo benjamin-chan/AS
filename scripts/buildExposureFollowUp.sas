@@ -71,10 +71,12 @@ Attach exposure end dates to exposure segments
            A.death_date,
            A.exposureClass as exposureClassA,
            A.exposure as exposureA,
+           A.indexGNN as exposureDrugA,
            A.indexDate format = mmddyy10. as indexStartA,
            min(B.indexDate - 1, A.enr_end_date, A.death_date) format = mmddyy10. as indexEndA,
            B.exposureClass as exposureClassB,
            B.exposure as exposureB,
+           B.indexGNN as exposureDrugB,
            B.indexDate format = mmddyy10. as indexStartB
     from Work.indexLookup A left join
          Work.indexLookup B on (A.database = B.database &
@@ -96,6 +98,7 @@ Attach exposure end dates to exposure segments
            A.death_date,
            A.exposureClassA as exposureClass,
            A.exposureA as exposure,
+           A.exposureDrugA as exposureDrug,
            A.indexStartA as exposureStart,
            A.indexEndA as exposureEnd
     from Work.temp0 A inner join
@@ -117,14 +120,14 @@ http://www2.sas.com/proceedings/sugi29/260-29.pdf
  */
 data DT.exposureTimeline;
   set Work.tempExposureSegments;
-  by database patid exposure notsorted;
+  by database patid exposureClass exposure exposureDrug notsorted;
   format holdPeriodStart mmddyy10.;
   drop holdPeriodStart;
   retain holdPeriodStart;
-  if first.exposure then do;  /* Check the last variable in the BY group */
+  if first.exposureDrug then do;  /* Check the last variable in the BY group */
     holdPeriodStart = exposureStart;
   end;
-  if last.exposure then do;  /* Check the last variable in the BY group */
+  if last.exposureDrug then do;  /* Check the last variable in the BY group */
     exposureStart = holdPeriodStart;
     output;
   end;
