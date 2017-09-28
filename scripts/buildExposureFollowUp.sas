@@ -51,8 +51,16 @@ If you have question, please let me know.
 
 proc sql;
   create table Work.indexLookup as
-    select * from DT.indexLookup 
-    order by database, patid, indexDate;
+    select case
+             when A.exposure = "No exposure" then 0
+             when A.exposure = "NSAID" then 1
+             when A.exposure = "DMARD" then 2
+             when A.exposure = "TNF" then 3
+             else .
+             end as exposureClass,
+           A.* 
+    from DT.indexLookup A
+    order by A.database, A.patid, A.indexDate;
 /* 
 Attach exposure end dates to exposure segments
  */  
@@ -61,9 +69,11 @@ Attach exposure end dates to exposure segments
            A.patid,
            A.enr_end_date,
            A.death_date,
+           A.exposureClass as exposureClassA,
            A.exposure as exposureA,
            A.indexDate format = mmddyy10. as indexStartA,
            min(B.indexDate - 1, A.enr_end_date, A.death_date) format = mmddyy10. as indexEndA,
+           B.exposureClass as exposureClassB,
            B.exposure as exposureB,
            B.indexDate format = mmddyy10. as indexStartB
     from Work.indexLookup A left join
@@ -84,6 +94,7 @@ Attach exposure end dates to exposure segments
            A.patid,
            A.enr_end_date,
            A.death_date,
+           A.exposureClassA as exposureClass,
            A.exposureA as exposure,
            A.indexStartA as exposureStart,
            A.indexEndA as exposureEnd
