@@ -94,6 +94,23 @@ Select the index start date with the earliest end date
     group by database,
              patid,
              indexStartA;
+  create table Work.temp1 as
+    select A.*
+    from Work.temp0 A inner join
+         Work.tempLookup B on (A.database = B.database &
+                               A.patid = B.patid &
+                               A.indexStartA = B.indexStartA &
+                               A.indexEndA = B.earliestIndexEndA)
+    order by A.database,
+             A.patid,
+             A.indexStartA;
+  select "Summary of Work.temp1" as table,
+         exposureClassA, 
+         exposureClassB, 
+         count(*) as n, 
+         count(*) / (select count(*) from Work.temp1) format = percent8.1 as pct
+    from Work.temp1
+    group by exposureClassA, exposureClassB;
 /* 
 Create exposure segments
  */
@@ -108,11 +125,7 @@ Create exposure segments
            A.exposureDrugA as exposureDrug,
            A.indexStartA as exposureStart,
            A.indexEndA as exposureEnd
-    from Work.temp0 A inner join
-         Work.tempLookup B on (A.database = B.database &
-                               A.patid = B.patid &
-                               A.indexStartA = B.indexStartA &
-                               A.indexEndA = B.earliestIndexEndA)
+    from Work.temp1 A
     order by A.database,
              A.patid,
              A.indexStartA;
