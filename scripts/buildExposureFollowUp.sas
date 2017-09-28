@@ -82,6 +82,9 @@ Attach exposure end dates to exposure segments
          Work.indexLookup B on (A.database = B.database &
                                 A.patid = B.patid &
                                 A.indexDate < B.indexDate);
+/* 
+Select the index start date with the earliest end date
+ */
   create table Work.tempLookup as
     select database,
            patid,
@@ -91,6 +94,9 @@ Attach exposure end dates to exposure segments
     group by database,
              patid,
              indexStartA;
+/* 
+Create exposure segments
+ */
   create table Work.tempExposureSegments as
     select A.database,
            A.patid,
