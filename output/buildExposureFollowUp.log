@@ -1,4 +1,4 @@
-1                                                          The SAS System                           10:26 Monday, September 18, 2017
+1                                                          The SAS System                         11:33 Thursday, September 28, 2017
 
 NOTE: Copyright (c) 2002-2012 by SAS Institute Inc., Cary, NC, USA. 
 NOTE: SAS (r) Proprietary Software 9.4 (TS1M1) 
@@ -28,8 +28,8 @@ Please remember not to copy any data files that contain PHI (protected health id
 
 
 NOTE: SAS initialization used:
-      real time           0.25 seconds
-      cpu time            0.12 seconds
+      real time           0.18 seconds
+      cpu time            0.06 seconds
       
 1          *  University of Alabama at Birmingham                               *
 2          *  AS project                                            *
@@ -72,7 +72,7 @@ NOTE: Libref DT was successfully assigned as follows:
 101          body = "output\&cmt..html"
 102          style = Statistical;
 NOTE: Writing HTML Body file: output\buildExposureFollowUp.html
-2                                                                   The SAS System                                    10:26 Monday, September 18, 2017
+2                                                                   The SAS System                                  11:33 Thursday, September 28, 2017
 
 103        
 104        
@@ -105,174 +105,126 @@ NOTE: Writing HTML Body file: output\buildExposureFollowUp.html
 131        
 132        proc sql;
 133          create table Work.indexLookup as
-134            select * from DT.indexLookup
-135            order by database, patid, indexDate;
-NOTE: Table WORK.INDEXLOOKUP created, with 60010 rows and 13 columns.
+134            select case
+135                     when A.exposure = "No exposure" then 0
+136                     when A.exposure = "NSAID" then 1
+137                     when A.exposure = "DMARD" then 2
+138                     when A.exposure = "TNF" then 3
+139                     else .
+140                     end as exposureClass,
+141                   A.*
+142            from DT.indexLookup A
+143            order by A.database, A.patid, A.indexDate;
+NOTE: Table WORK.INDEXLOOKUP created, with 60010 rows and 14 columns.
 
-136        /*
-137        Attach exposure end dates to exposure segments
-138         */
-139          create table Work.temp0 as
-140            select A.database,
-141                   A.patid,
-142                   A.enr_end_date,
-143                   A.death_date,
-144                   A.exposure as exposureA,
-145                   A.indexDate format = mmddyy10. as indexStartA,
-146                   min(B.indexDate - 1, A.enr_end_date, A.death_date) format = mmddyy10. as indexEndA,
-147                   B.exposure as exposureB,
-148                   B.indexDate format = mmddyy10. as indexStartB
-149            from Work.indexLookup A left join
-150                 Work.indexLookup B on (A.database = B.database &
-151                                        A.patid = B.patid &
-152                                        A.indexDate < B.indexDate);
-NOTE: Table WORK.TEMP0 created, with 71797 rows and 9 columns.
+144        /*
+145        Attach exposure end dates to exposure segments
+146         */
+147          create table Work.temp0 as
+148            select A.database,
+149                   A.patid,
+150                   A.enr_end_date,
+151                   A.death_date,
+152                   A.exposureClass as exposureClassA,
+153                   A.exposure as exposureA,
+154                   A.indexGNN as exposureDrugA,
+155                   A.indexDate format = mmddyy10. as indexStartA,
+156                   min(B.indexDate - 1, A.enr_end_date, A.death_date) format = mmddyy10. as indexEndA,
+157                   B.exposureClass as exposureClassB,
+158                   B.exposure as exposureB,
+159                   B.indexGNN as exposureDrugB,
+160                   B.indexDate format = mmddyy10. as indexStartB
+161            from Work.indexLookup A left join
+162                 Work.indexLookup B on (A.database = B.database &
+163                                        A.patid = B.patid &
+164                                        A.indexDate < B.indexDate);
+NOTE: Table WORK.TEMP0 created, with 71797 rows and 13 columns.
 
-153          create table Work.tempLookup as
-154            select database,
-155                   patid,
-156                   indexStartA,
-157                   min(indexEndA) as earliestIndexEndA
-158            from Work.temp0
-159            group by database,
-160                     patid,
-161                     indexStartA;
+165        /*
+166        Select the index start date with the earliest end date
+167         */
+168          create table Work.tempLookup as
+169            select database,
+170                   patid,
+3                                                                   The SAS System                                  11:33 Thursday, September 28, 2017
+
+171                   indexStartA,
+172                   min(indexEndA) as earliestIndexEndA
+173            from Work.temp0
+174            group by database,
+175                     patid,
+176                     indexStartA;
 NOTE: Table WORK.TEMPLOOKUP created, with 59836 rows and 4 columns.
 
-162          create table Work.tempExposureSegments as
-163            select A.database,
-164                   A.patid,
-165                   A.enr_end_date,
-166                   A.death_date,
-167                   A.exposureA as exposure,
-168                   A.indexStartA as exposureStart,
-3                                                                   The SAS System                                    10:26 Monday, September 18, 2017
+177          create table Work.temp1 as
+178            select A.*
+179            from Work.temp0 A inner join
+180                 Work.tempLookup B on (A.database = B.database &
+181                                       A.patid = B.patid &
+182                                       A.indexStartA = B.indexStartA &
+183                                       A.indexEndA = B.earliestIndexEndA)
+184            order by A.database,
+185                     A.patid,
+186                     A.indexStartA;
+NOTE: Table WORK.TEMP1 created, with 60252 rows and 13 columns.
 
-169                   A.indexEndA as exposureEnd
-170            from Work.temp0 A inner join
-171                 Work.tempLookup B on (A.database = B.database &
-172                                       A.patid = B.patid &
-173                                       A.indexStartA = B.indexStartA &
-174                                       A.indexEndA = B.earliestIndexEndA)
-175            order by A.database,
-176                     A.patid,
-177                     A.indexStartA;
-NOTE: Table WORK.TEMPEXPOSURESEGMENTS created, with 60252 rows and 7 columns.
+187          select "Summary of Work.temp1" as table,
+188                 exposureClassA,
+189                 exposureClassB,
+190                 count(*) as n,
+191                 count(*) / (select count(*) from Work.temp1) format = percent8.1 as pct
+192            from Work.temp1
+193            group by exposureClassA, exposureClassB;
+                                                                  --- AS project ---                            11:33 Thursday, September 28, 2017   1
 
-178        quit;
-NOTE: PROCEDURE SQL used (Total process time):
-      real time           0.77 seconds
-      cpu time            0.43 seconds
-      
-
-179        
-180        
-181        /*
-182        Collapse exposure segments
-183        
-184        See *Starts and Stops: Processing Episode Data With Beginning and Ending Dates*
-185        http://www2.sas.com/proceedings/sugi29/260-29.pdf
-186         */
-187        data DT.exposureTimeline;
-188          set Work.tempExposureSegments;
-189          by database patid exposure notsorted;
-190          format holdPeriodStart mmddyy10.;
-191          drop holdPeriodStart;
-192          retain holdPeriodStart;
-193          if first.exposure then do;  /* Check the last variable in the BY group */
-194            holdPeriodStart = exposureStart;
-195          end;
-196          if last.exposure then do;  /* Check the last variable in the BY group */
-197            exposureStart = holdPeriodStart;
-198            output;
-199          end;
-200        run;
-
-NOTE: There were 60252 observations read from the data set WORK.TEMPEXPOSURESEGMENTS.
-NOTE: The data set DT.EXPOSURETIMELINE has 46055 observations and 7 variables.
-NOTE: DATA statement used (Total process time):
-      real time           0.06 seconds
-      cpu time            0.04 seconds
-      
-
-201        proc sql;
-202          alter table DT.exposureTimeline add daysExposed numeric;
-NOTE: Table DT.EXPOSURETIMELINE has been modified, with 8 columns.
-203          update DT.exposureTimeline
-204            set daysExposed = exposureEnd - exposureStart + 1;
-NOTE: 46055 rows were updated in DT.EXPOSURETIMELINE.
-
-205          alter table DT.exposureTimeline add exposureID numeric;
-NOTE: Table DT.EXPOSURETIMELINE has been modified, with 9 columns.
-206          update DT.exposureTimeline
-207            set exposureID = monotonic();
-NOTE: 46055 rows were updated in DT.EXPOSURETIMELINE.
-
-208        quit ;
-NOTE: PROCEDURE SQL used (Total process time):
-      real time           0.34 seconds
-      cpu time            0.18 seconds
-      
-
-209        
-210        
-211        proc means data = DT.exposureTimeline n sum mean std min q1 median q3 max maxdec = 1;
-212          class database exposure;
-213          var daysExposed;
-214        run;
-4                                                                   The SAS System                                    10:26 Monday, September 18, 2017
-
-
-                                                                  --- AS project ---                              10:26 Monday, September 18, 2017   1
-
-                                                                 The MEANS Procedure
-
-                                                           Analysis Variable : daysExposed 
+                                                                   exposure      exposure
+                                        table                        ClassA        ClassB         n       pct
+                                        ---------------------------------------------------------------------
+                                        Summary of Work.temp1             0                   12234    20.3% 
+                                        Summary of Work.temp1             0             1      5225     8.7% 
+                                        Summary of Work.temp1             0             2      1480     2.5% 
+                                        Summary of Work.temp1             0             3      1740     2.9% 
+                                        Summary of Work.temp1             1                   11041    18.3% 
+                                        Summary of Work.temp1             1             1      5499     9.1% 
+                                        Summary of Work.temp1             1             2      1126     1.9% 
+                                        Summary of Work.temp1             1             3      1142     1.9% 
+                                        Summary of Work.temp1             2                    4564     7.6% 
+                                        Summary of Work.temp1             2             1       684     1.1% 
+                                        Summary of Work.temp1             2             2      1096     1.8% 
+                                        Summary of Work.temp1             2             3      1406     2.3% 
+                                        Summary of Work.temp1             3                    9825    16.3% 
+                                        Summary of Work.temp1             3             1       775     1.3% 
+                                        Summary of Work.temp1             3             2       289     0.5% 
+                                        Summary of Work.temp1             3             3      2126     3.5% 
  
-                                                                                                                  Lower                       Upper
-   database    exposure              N Obs      N           Sum          Mean       Std Dev       Minimum      Quartile        Median      Quartile
-   ------------------------------------------------------------------------------------------------------------------------------------------------
-   MPCD        DMARD                   423    423      156022.0         368.8         319.8           1.0         102.0         295.0         551.0
-
-               NSAID or no exposure   2093   2093      969119.0         463.0         385.5           1.0         127.0         375.0         726.0
-
-               TNF                    1108   1108      549883.0         496.3         341.4           1.0         221.0         434.0         742.5
-
-   Marketscan  DMARD                  1813   1813      657448.0         362.6         355.2           1.0          88.0         238.0         527.0
-
-               NSAID or no exposure   8122   8122     3382321.0         416.4         423.8           1.0          85.0         251.0         625.0
-
-               TNF                    4824   4824     2458598.0         509.7         407.4           1.0         169.0         412.0         762.0
-
-   Medicare    DMARD                  4304   4304     3311124.0         769.3         704.8           1.0         207.0         534.0        1146.5
-
-               NSAID or no exposure  18431  18431    14359942.0         779.1         776.9           1.0         182.0         547.0        1127.0
-
-               TNF                    4937   4937     4973067.0        1007.3         785.8           1.0         351.0         805.0        1519.0
-   ------------------------------------------------------------------------------------------------------------------------------------------------
-
-                                                          Analysis Variable : daysExposed 
  
-                                                database    exposure              N Obs       Maximum
-                                                -----------------------------------------------------
-                                                MPCD        DMARD                   423        1227.0
-
-                                                            NSAID or no exposure   2093        1278.0
-
-                                                            TNF                    1108        1276.0
-
-                                                Marketscan  DMARD                  1813        1625.0
-
-                                                            NSAID or no exposure   8122        1643.0
-
-                                                            TNF                    4824        1637.0
-
-                                                Medicare    DMARD                  4304        3101.0
-
-                                                            NSAID or no exposure  18431        3104.0
-
-                                                            TNF                    4937        3095.0
-                                                -----------------------------------------------------
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
  
  
  
@@ -297,18 +249,177 @@ NOTE: PROCEDURE SQL used (Total process time):
  
  
                                                               buildExposureFollowUp.sas
-NOTE: There were 46055 observations read from the data set DT.EXPOSURETIMELINE.
-NOTE: The PROCEDURE MEANS printed page 1.
-NOTE: PROCEDURE MEANS used (Total process time):
-      real time           0.12 seconds
-      cpu time            0.06 seconds
+194        /*
+195        Create exposure segments
+196         */
+197          create table Work.tempExposureSegments as
+198            select distinct
+199                   A.database,
+200                   A.patid,
+201                   A.enr_end_date,
+202                   A.death_date,
+203                   A.exposureClassA as exposureClass,
+204                   A.exposureA as exposure,
+205                   A.exposureDrugA as exposureDrug,
+206                   A.indexStartA as exposureStart,
+207                   A.indexEndA as exposureEnd
+208            from Work.temp1 A
+209            order by A.database,
+210                     A.patid,
+211                     A.indexStartA;
+NOTE: Table WORK.TEMPEXPOSURESEGMENTS created, with 60010 rows and 9 columns.
+
+212        quit;
+NOTE: The PROCEDURE SQL printed page 1.
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.77 seconds
+      cpu time            0.81 seconds
       
 
-215        
-216        
-217        ods html close;
+213        
+214        
+215        /*
+216        Collapse exposure segments
+217        
+218        See *Starts and Stops: Processing Episode Data With Beginning and Ending Dates*
+219        http://www2.sas.com/proceedings/sugi29/260-29.pdf
+220         */
+221        data DT.exposureTimeline;
+222          set Work.tempExposureSegments;
+223          by database patid exposureClass exposure exposureDrug notsorted;
+224          format holdPeriodStart mmddyy10.;
+225          drop holdPeriodStart;
+226          retain holdPeriodStart;
+227          if first.exposureDrug then do;  /* Check the last variable in the BY group */
+228            holdPeriodStart = exposureStart;
+229          end;
+230          if last.exposureDrug then do;  /* Check the last variable in the BY group */
+4                                                                   The SAS System                                  11:33 Thursday, September 28, 2017
+
+231            exposureStart = holdPeriodStart;
+232            output;
+233          end;
+234        run;
+
+NOTE: There were 60010 observations read from the data set WORK.TEMPEXPOSURESEGMENTS.
+NOTE: The data set DT.EXPOSURETIMELINE has 60010 observations and 9 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.06 seconds
+      cpu time            0.04 seconds
+      
+
+235        proc sql;
+236          alter table DT.exposureTimeline add daysExposed numeric;
+NOTE: Table DT.EXPOSURETIMELINE has been modified, with 10 columns.
+237          update DT.exposureTimeline
+238            set daysExposed = exposureEnd - exposureStart + 1;
+NOTE: 60010 rows were updated in DT.EXPOSURETIMELINE.
+
+239          alter table DT.exposureTimeline add exposureID numeric;
+NOTE: Table DT.EXPOSURETIMELINE has been modified, with 11 columns.
+240          update DT.exposureTimeline
+241            set exposureID = monotonic();
+NOTE: 60010 rows were updated in DT.EXPOSURETIMELINE.
+
+242        quit ;
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.37 seconds
+      cpu time            0.31 seconds
+      
+
+243        
+244        
+245        proc means data = DT.exposureTimeline n sum mean std min q1 median q3 max maxdec = 1;
+246          class database exposureClass exposure;
+247          var daysExposed;
+248        run;
+
+                                                                  --- AS project ---                            11:33 Thursday, September 28, 2017   2
+
+                                                                 The MEANS Procedure
+
+                                                          Analysis Variable : daysExposed 
+ 
+                exposure                                                                                            Lower                       Upper
+database           Class  exposure     N Obs      N           Sum          Mean       Std Dev       Minimum      Quartile        Median      Quartile
+-----------------------------------------------------------------------------------------------------------------------------------------------------
+MPCD                   0  No exposure   1593   1593      684266.0         429.5         393.0           1.0          90.0         309.0         694.0
+
+                       1  NSAID         1000   1000      283837.0         283.8         267.6           1.0          72.0         207.5         418.0
+
+                       2  DMARD          481    481      156165.0         324.7         302.1           1.0          71.0         237.0         488.0
+
+                       3  TNF           1279   1279      549149.0         429.4         321.6           1.0         158.0         346.0         626.0
+
+Marketscan             0  No exposure   5696   5696     1800797.0         316.2         367.9           1.0          46.0         182.0         462.0
+
+                       1  NSAID         4893   4893     1572041.0         321.3         328.2           1.0          69.0         202.0         478.0
+
+                       2  DMARD         2045   2045      666031.0         325.7         336.6           1.0          76.0         192.0         475.0
+
+                       3  TNF           5779   5779     2453331.0         424.5         366.9           1.0         135.0         312.0         618.0
+
+Medicare               0  No exposure  13275  13275     6986796.0         526.3         612.5           1.0         104.0         317.0         694.0
+
+                       1  NSAID        12847  12847     7248545.0         564.2         574.8           1.0         134.0         376.0         800.0
+
+                       2  DMARD         5193   5193     3351933.0         645.5         647.4           1.0         153.0         427.0         926.0
+
+                       3  TNF           5929   5929     4955948.0         835.9         725.7           1.0         263.0         609.0        1227.0
+-----------------------------------------------------------------------------------------------------------------------------------------------------
+
+                                                           Analysis Variable : daysExposed 
+ 
+                                                              exposure
+                                              database           Class  exposure     N Obs       Maximum
+                                              ----------------------------------------------------------
+                                              MPCD                   0  No exposure   1593        1278.0
+
+                                                                     1  NSAID         1000        1268.0
+
+                                                                     2  DMARD          481        1227.0
+
+                                                                     3  TNF           1279        1276.0
+
+                                              Marketscan             0  No exposure   5696        1643.0
+
+                                                                     1  NSAID         4893        1638.0
+
+                                                                     2  DMARD         2045        1625.0
+
+                                                                     3  TNF           5779        1637.0
+
+                                              Medicare               0  No exposure  13275        3104.0
+
+                                                                     1  NSAID        12847        3095.0
+
+                                                                     2  DMARD         5193        3101.0
+
+                                                                     3  TNF           5929        3095.0
+                                              ----------------------------------------------------------
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+                                                              buildExposureFollowUp.sas
+NOTE: There were 60010 observations read from the data set DT.EXPOSURETIMELINE.
+NOTE: The PROCEDURE MEANS printed page 2.
+NOTE: PROCEDURE MEANS used (Total process time):
+      real time           0.07 seconds
+      cpu time            0.07 seconds
+      
+
+249        
+250        
+251        ods html close;
 NOTE: SAS Institute Inc., SAS Campus Drive, Cary, NC USA 27513-2414
 NOTE: The SAS System used:
-      real time           1.85 seconds
-      cpu time            1.09 seconds
+      real time           1.77 seconds
+      cpu time            1.54 seconds
       

@@ -1,4 +1,4 @@
-1                                                          The SAS System                           10:26 Monday, September 18, 2017
+1                                                          The SAS System                         11:32 Thursday, September 28, 2017
 
 NOTE: Copyright (c) 2002-2012 by SAS Institute Inc., Cary, NC, USA. 
 NOTE: SAS (r) Proprietary Software 9.4 (TS1M1) 
@@ -29,7 +29,7 @@ Please remember not to copy any data files that contain PHI (protected health id
 
 NOTE: SAS initialization used:
       real time           0.15 seconds
-      cpu time            0.14 seconds
+      cpu time            0.09 seconds
       
 1          *  University of Alabama at Birmingham                               *
 2          *  AS project                                            *
@@ -72,7 +72,7 @@ NOTE: Libref DT was successfully assigned as follows:
 101          body = "output\&cmt..html"
 102          style = Statistical;
 NOTE: Writing HTML Body file: output\buildControlLookup.html
-2                                                                   The SAS System                                    10:26 Monday, September 18, 2017
+2                                                                   The SAS System                                  11:32 Thursday, September 28, 2017
 
 103        
 104        
@@ -91,8 +91,8 @@ NOTE: 2983928 rows were updated in DT.CONTROLLOOKUP.
 
 113        quit;
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           13.10 seconds
-      cpu time            14.35 seconds
+      real time           13.19 seconds
+      cpu time            14.30 seconds
       
 
 114        
@@ -104,27 +104,30 @@ NOTE: There were 2983928 observations read from the data set DT.CONTROLLOOKUP.
 NOTE: 0 observations with duplicate key values were deleted.
 NOTE: The data set DT.CONTROLLOOKUP has 2983928 observations and 9 variables.
 NOTE: PROCEDURE SORT used (Total process time):
-      real time           1.46 seconds
-      cpu time            2.90 seconds
+      real time           1.34 seconds
+      cpu time            2.88 seconds
       
 
 118        
 119        proc sql;
 120          select database,
 121                 cohort,
-122                 count(distinct patid) as countDistinctPatid,
-123                 count(distinct controlID) as countDistinctID,
-124                 count(*) as countRows
-125            from DT.controlLookup
-126            group by database, cohort;
-                                                                  --- AS project ---                              10:26 Monday, September 18, 2017   1
+122                 . < ENR_START_DATE < indexDate as indIndexAfterEnr,
+123                 count(distinct patid) format = comma12.0 as countDistinctPatid,
+124                 count(distinct controlID) format = comma12.0 as countDistinctID,
+125                 count(*) format = comma12.0 as countRows,
+126                 min(indexDate - ENR_START_DATE) as minDaysFromEnrToIndex,
+127                 max(indexDate - ENR_START_DATE) as maxDaysFromEnrToIndex
+128            from DT.controlLookup
+129            group by database, cohort, calculated indIndexAfterEnr;
+                                                                  --- AS project ---                            11:32 Thursday, September 28, 2017   1
 
-                                                                        count
-                                                                     Distinct         count
-                                               database  cohort         Patid    DistinctID  countRows
-                                               -------------------------------------------------------
-                                               MPCD      Non-AS       1139225       1139225    1139225
-                                               Medicare  Non-AS       1844703       1844703    1844703
+                                                                count
+                                               indIndex      Distinct         count                 minDaysFrom   maxDaysFrom
+                         database  cohort      AfterEnr         Patid    DistinctID     countRows    EnrToIndex    EnrToIndex
+                         ----------------------------------------------------------------------------------------------------
+                         MPCD      Non-AS             1     1,139,225     1,139,225     1,139,225           183           183
+                         Medicare  Non-AS             1     1,844,703     1,844,703     1,844,703           183           183
  
  
  
@@ -191,18 +194,18 @@ NOTE: PROCEDURE SORT used (Total process time):
  
  
                                                                 buildControlLookup.sas
-127        quit;
+130        quit;
 NOTE: The PROCEDURE SQL printed page 1.
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           8.64 seconds
-      cpu time            8.54 seconds
+      real time           12.52 seconds
+      cpu time            13.47 seconds
       
 
-128        
-129        
-130        ods html close;
+131        
+132        
+133        ods html close;
 NOTE: SAS Institute Inc., SAS Campus Drive, Cary, NC USA 27513-2414
 NOTE: The SAS System used:
-      real time           23.63 seconds
-      cpu time            26.17 seconds
+      real time           27.50 seconds
+      cpu time            31.01 seconds
       
