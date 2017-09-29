@@ -12,9 +12,9 @@ TODO:
 
 *To edit the following two lines only;
 
-%let indxdat=psa.Subsetdx;
-%let inpxdat=psa.Subsetpx;
-%let inrxdat=psa.Subsetrx;
+%let indxdat=UC.Subsetdx;
+%let inpxdat=UC.Subsetpx;
+%let inrxdat=UC.Subsetrx;
 proc sort data=&indxdat; by patid begin_date;run;
 proc sort data=&inpxdat; by patid px_date;run;
 proc sort data=&inrxdat; by patid dispense_date;run;
@@ -32,9 +32,9 @@ outcome_infection
 ;
 quit;
 
-proc import datafile='W:\Users\lchen\lookupdata\AHRQ_CCS_Infection.xlsx' 
+proc import datafile='W:\Users\lchen\lookupdata\AHRQ_CCS.xlsx' 
     out=icd9_infection replace;
-    sheet="AHRQ_CCS_Infection";
+    sheet="AHRQ_CCS";
 run;
 data icd9_infection;
 set icd9_infection;
@@ -161,7 +161,7 @@ run;
 
 
 
-data outcome_infection(keep=patid outcome_date dx TRT_DATE BEGIN_DATE ADMIT_DATE ENC_TYPE Infection_Category Infection outcome_start_date) ;
+data outcome_infection(keep=patid outcome_date dx TRT_DATE BEGIN_DATE ADMIT_DATE ENC_TYPE Infection_Category Infection outcome_start_date PDX) ;
 if _N_=1 then do;
         declare hash HTRT(dataset:"outcome_infection_trt");
         rc = HTRT.definekey("PATID", "TRT_DATE");
@@ -183,7 +183,7 @@ format outcome_date outcome_start_date mmddyy10.;
         end;
 run;
 
-proc sort data=outcome_infection nodupkey; by patid outcome_date dx;run;
+proc sort data=outcome_infection nodupkey; by patid outcome_date dx pdx;run;
 data outcome_infection ; set outcome_infection; by patid outcome_date dx;format dx $Icd9fmt.;run;
 
 proc sort data=outcome_infection nodupkey; by patid outcome_date ;run;
@@ -199,31 +199,3 @@ outcome_infection_rx
 outcome_infection_trt
 ;
 quit;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
