@@ -51,8 +51,16 @@ If you have question, please let me know.
 
 proc sql;
   create table Work.indexLookup as
-    select * from DT.indexLookup 
-    order by database, patid, indexDate;
+    select case
+             when A.exposure = "No exposure" then 0
+             when A.exposure = "NSAID" then 1
+             when A.exposure = "DMARD" then 2
+             when A.exposure = "TNF" then 3
+             else .
+             end as exposureClass,
+           A.* 
+    from DT.indexLookup A
+    order by A.database, A.patid, A.indexDate;
 /* 
 Attach exposure end dates to exposure segments
  */  
@@ -61,15 +69,22 @@ Attach exposure end dates to exposure segments
            A.patid,
            A.enr_end_date,
            A.death_date,
+           A.exposureClass as exposureClassA,
            A.exposure as exposureA,
+           A.indexGNN as exposureDrugA,
            A.indexDate format = mmddyy10. as indexStartA,
            min(B.indexDate - 1, A.enr_end_date, A.death_date) format = mmddyy10. as indexEndA,
+           B.exposureClass as exposureClassB,
            B.exposure as exposureB,
+           B.indexGNN as exposureDrugB,
            B.indexDate format = mmddyy10. as indexStartB
     from Work.indexLookup A left join
          Work.indexLookup B on (A.database = B.database &
                                 A.patid = B.patid &
                                 A.indexDate < B.indexDate);
+/* 
+Select the index start date with the earliest end date
+ */
   create table Work.tempLookup as
     select database,
            patid,
@@ -79,19 +94,38 @@ Attach exposure end dates to exposure segments
     group by database,
              patid,
              indexStartA;
-  create table Work.tempExposureSegments as
-    select A.database,
-           A.patid,
-           A.enr_end_date,
-           A.death_date,
-           A.exposureA as exposure,
-           A.indexStartA as exposureStart,
-           A.indexEndA as exposureEnd
+  create table Work.temp1 as
+    select A.*
     from Work.temp0 A inner join
          Work.tempLookup B on (A.database = B.database &
                                A.patid = B.patid &
                                A.indexStartA = B.indexStartA &
                                A.indexEndA = B.earliestIndexEndA)
+    order by A.database,
+             A.patid,
+             A.indexStartA;
+  select "Summary of Work.temp1" as table,
+         exposureClassA, 
+         exposureClassB, 
+         count(*) as n, 
+         count(*) / (select count(*) from Work.temp1) format = percent8.1 as pct
+    from Work.temp1
+    group by exposureClassA, exposureClassB;
+/* 
+Create exposure segments
+ */
+  create table Work.tempExposureSegments as
+    select distinct
+           A.database,
+           A.patid,
+           A.enr_end_date,
+           A.death_date,
+           A.exposureClassA as exposureClass,
+           A.exposureA as exposure,
+           A.exposureDrugA as exposureDrug,
+           A.indexStartA as exposureStart,
+           A.indexEndA as exposureEnd
+    from Work.temp1 A
     order by A.database,
              A.patid,
              A.indexStartA;
@@ -106,14 +140,14 @@ http://www2.sas.com/proceedings/sugi29/260-29.pdf
  */
 data DT.exposureTimeline;
   set Work.tempExposureSegments;
-  by database patid exposure notsorted;
+  by database patid exposureClass exposure exposureDrug notsorted;
   format holdPeriodStart mmddyy10.;
   drop holdPeriodStart;
   retain holdPeriodStart;
-  if first.exposure then do;  /* Check the last variable in the BY group */
+  if first.exposureDrug then do;  /* Check the last variable in the BY group */
     holdPeriodStart = exposureStart;
   end;
-  if last.exposure then do;  /* Check the last variable in the BY group */
+  if last.exposureDrug then do;  /* Check the last variable in the BY group */
     exposureStart = holdPeriodStart;
     output;
   end;
@@ -129,7 +163,7 @@ quit ;
 
 
 proc means data = DT.exposureTimeline n sum mean std min q1 median q3 max maxdec = 1;
-  class database exposure;
+  class database exposureClass exposure;
   var daysExposed;
 run;
 

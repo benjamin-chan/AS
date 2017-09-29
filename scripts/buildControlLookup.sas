@@ -39,11 +39,14 @@ run;
 proc sql;
   select database, 
          cohort, 
-         count(distinct patid) as countDistinctPatid, 
-         count(distinct controlID) as countDistinctID, 
-         count(*) as countRows
+         . < ENR_START_DATE < indexDate as indIndexAfterEnr,
+         count(distinct patid) format = comma12.0 as countDistinctPatid, 
+         count(distinct controlID) format = comma12.0 as countDistinctID, 
+         count(*) format = comma12.0 as countRows,
+         min(indexDate - ENR_START_DATE) as minDaysFromEnrToIndex,
+         max(indexDate - ENR_START_DATE) as maxDaysFromEnrToIndex
     from DT.controlLookup
-    group by database, cohort;
+    group by database, cohort, calculated indIndexAfterEnr;
 quit;
 
 
