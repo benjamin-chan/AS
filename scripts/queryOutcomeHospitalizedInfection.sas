@@ -36,11 +36,11 @@ ods html
 %let indxdat = UCB.tempIncDxAll;
 %let inpxdat = UCB.tempIncPxAll;
 %let inrxdat = UCB.tempIncRxAll;
-proc sort data = &indxdat; by database patid begin_date;
+proc sort data = &indxdat; by database exposure patid exposureStart exposureEnd exposureID begin_date;
 run;
-proc sort data = &inpxdat; by database patid px_date;
+proc sort data = &inpxdat; by database exposure patid exposureStart exposureEnd exposureID px_date;
 run;
-proc sort data = &inrxdat; by database patid dispense_date;
+proc sort data = &inrxdat; by database exposure patid exposureStart exposureEnd exposureID dispense_date;
 run;
 
 /* 
@@ -130,14 +130,14 @@ data outcome_infection_dx(drop=rc);
     end;
 if 0 then set icd9_inf;
 set &indxdat. ;
-by database PATID BEGIN_DATE;
+by database exposure patid exposureStart exposureEnd exposureID BEGIN_DATE;
 /*length outcome $20 outcome_date 4;*/
 /*format outcome_date mmddyy10.;*/
         rc =HDX.find(key:DX);
         if rc=0 then output outcome_infection_dx;
 where ENC_TYPE in ('IP' 'ER' 'AV' 'NH' 'HH' 'ED');
 run;
-proc sort data=outcome_infection_dx nodupkey; by database PATID BEGIN_DATE DX ENC_TYPE;run;
+proc sort data=outcome_infection_dx nodupkey; by database exposure patid exposureStart exposureEnd exposureID BEGIN_DATE DX ENC_TYPE;run;
 
 proc freq data=outcome_infection_dx; tables Infection_Category Infection;run;
 
@@ -162,7 +162,7 @@ data outcome_infection_rx(drop=rc:)  outcome_rx_TB(drop=rc:);
     end;
 if 0 then set NDC.Antibiotics_parenteral_ndc(keep=NDC) NDC_PYRAZINAMIDE(keep=code);
 set &inrxdat. ;
-by database PATID DISPENSE_DATE;
+by database exposure patid exposureStart exposureEnd exposureID DISPENSE_DATE;
 /*length outcome $20 outcome_date 4;*/
 /*format outcome_date mmddyy10.;*/
         rc1 =HRX.find(key:NDC);
@@ -182,7 +182,7 @@ data outcome_infection_px(drop=rc:);
     end;
 if 0 then set NDC.Antibiotics_parenteral_hcpcs;
 set &inpxdat. ;
-by database PATID PX_DATE;
+by database exposure patid exposureStart exposureEnd exposureID PX_DATE;
 /*length outcome $20 outcome_date 4;*/
 /*format outcome_date mmddyy10.;*/
         rc1 =HPX.find(key:PX);
@@ -200,18 +200,18 @@ run;
 
 
 
-data outcome_infection(keep=database patid outcome_date dx TRT_DATE BEGIN_DATE ADMIT_DATE ENC_TYPE Infection_Category Infection outcome_start_date PDX) ;
+data outcome_infection(keep=database exposure patid exposureStart exposureEnd exposureID outcome_date dx TRT_DATE BEGIN_DATE ADMIT_DATE ENC_TYPE Infection_Category Infection outcome_start_date PDX) ;
 if _N_=1 then do;
         declare hash HTRT(dataset:"outcome_infection_trt");
-        rc = HTRT.definekey("database", "PATID", "TRT_DATE");
+        rc = HTRT.definekey("database", "exposure", "PATID", "exposureStart", "exposureEnd", "exposureID", "TRT_DATE");
 /*        rc = HTRT.definedata(ALL:"YES");*/
         rc=HTRT.definedone();
     end;
-if 0 then set outcome_infection_trt(keep=database PATID TRT_DATE);
+if 0 then set outcome_infection_trt(keep=database exposure patid exposureStart exposureEnd exposureID TRT_DATE);
 set outcome_infection_dx;
 length outcome_date outcome_start_date 4;
 format outcome_date outcome_start_date mmddyy10.;
-        rc=HTRT.find(key:database, key:patid, key:BEGIN_DATE);
+        rc=HTRT.find(key:database, key:exposure, key:patid, key:exposureStart, key:exposureEnd, key:exposureID, key:BEGIN_DATE);
         outcome_date=BEGIN_DATE;
         outcome_start_date=outcome_date;
         if rc=0  then do;
@@ -222,10 +222,10 @@ format outcome_date outcome_start_date mmddyy10.;
         end;
 run;
 
-proc sort data=outcome_infection nodupkey; by database patid outcome_date dx pdx;run;
-data outcome_infection ; set outcome_infection; by database patid outcome_date dx;  /* format dx $Icd9fmt.; */  run;
+proc sort data=outcome_infection nodupkey; by database exposure patid exposureStart exposureEnd exposureID outcome_date dx pdx;run;
+data outcome_infection ; set outcome_infection; by database exposure patid exposureStart exposureEnd exposureID outcome_date dx;  /* format dx $Icd9fmt.; */  run;
 
-proc sort data=outcome_infection nodupkey; by database patid outcome_date ;run;
+proc sort data=outcome_infection nodupkey; by database exposure patid exposureStart exposureEnd exposureID outcome_date ;run;
 
 proc datasets nolist; delete 
 icd9_infection
