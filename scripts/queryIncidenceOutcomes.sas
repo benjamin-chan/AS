@@ -172,6 +172,7 @@ proc sql;
           &select1 from UCB.tempIncPxAll A &join1 &where1a union corr
           select * from Work.ILD union corr
           select * from Work.incidentMI union corr
+          select * from Work.hospInf union corr
           select * from Work.fractures) C
     order by C.database, C.exposureID, C.outcomeCategory, C.disease, C.begin_date;
 quit;
