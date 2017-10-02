@@ -25,19 +25,23 @@ title1 '--- AS project ---';
 options macrogen mlogic mprint symbolgen;
 options nomacrogen nomlogic nomprint nosymbolgen;
 
-*To edit the following two lines only;
 
-%let indxdat=psa.Subsetdx;
-%let inpxdat=psa.Subsetpx;
-%let inrxdat=psa.Subsetrx;
-proc sort data=&indxdat; by patid begin_date;run;
-proc sort data=&inpxdat; by patid px_date;run;
-proc sort data=&inrxdat; by patid dispense_date;run;
 ods html
   body = "output\&cmt..html"
   style = Statistical;
 
 
+*To edit the following two lines only;
+
+%let indxdat = UCB.tempIncDxAll;
+%let inpxdat = UCB.tempIncPxAll;
+%let inrxdat = UCB.tempIncRxAll;
+proc sort data = &indxdat; by patid begin_date;
+run;
+proc sort data = &inpxdat; by patid px_date;
+run;
+proc sort data = &inrxdat; by patid dispense_date;
+run;
 proc datasets nolist; delete 
 icd9_infection
 icd9_inf
