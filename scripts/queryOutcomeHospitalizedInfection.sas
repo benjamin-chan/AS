@@ -55,7 +55,7 @@ run;
 proc sql;
   select "Check length of px variable in Work.tempIncPxAll" as table,  px_type, length(px) as lengthPx, count(*) as n
   from Work.tempIncPxAll
-  group by px_type, calculated lenPx;
+  group by px_type, calculated lengthPx;
 quit;
 %let inpxdat = Work.tempIncPxAll;
 
