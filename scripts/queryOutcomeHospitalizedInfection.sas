@@ -205,8 +205,8 @@ format outcome_date outcome_start_date mmddyy10.;
         end;
 run;
 
-proc sort data=outcome_infection nodupkey; by patid outcome_date dx;run;
-data outcome_infection ; set outcome_infection; by patid outcome_date dx;format dx $Icd9fmt.;run;
+proc sort data=outcome_infection nodupkey; by patid outcome_date dx pdx;run;
+data outcome_infection ; set outcome_infection; by patid outcome_date dx;  /* format dx $Icd9fmt.; */  run;
 
 proc sort data=outcome_infection nodupkey; by patid outcome_date ;run;
 
