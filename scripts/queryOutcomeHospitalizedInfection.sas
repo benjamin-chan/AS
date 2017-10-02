@@ -183,7 +183,7 @@ run;
 
 
 
-data outcome_infection(keep=patid outcome_date dx TRT_DATE BEGIN_DATE ADMIT_DATE ENC_TYPE Infection_Category Infection outcome_start_date) ;
+data outcome_infection(keep=patid outcome_date dx TRT_DATE BEGIN_DATE ADMIT_DATE ENC_TYPE Infection_Category Infection outcome_start_date PDX) ;
 if _N_=1 then do;
         declare hash HTRT(dataset:"outcome_infection_trt");
         rc = HTRT.definekey("PATID", "TRT_DATE");
