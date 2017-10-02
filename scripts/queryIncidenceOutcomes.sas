@@ -58,9 +58,20 @@ Call interstitial lung disease macro
                       Dxs = UCB.tempIncDxAll,
                       Pxs = UCB.tempIncPxAll);
 proc sql;
-  select database, exposure, "Interstitial lung disease" as disease, count(distinct exposureID) as n
-    from Work.outcome_ILD_All
-    group by database, exposure;
+  create table Work.ILD as
+    select database, 
+           exposure, 
+           patid, 
+           exposureStart,
+           exposureEnd,
+           exposureID,
+           "Lung disease" as outcomeCategory,
+           "Interstitial lung disease" as disease, 
+           outcome_start_date as begin_date
+    from Work.outcome_ILD_All;
+  select database, exposure, disease, count(distinct exposureID) as n
+    from Work.ILD
+    group by database, exposure, disease;
 quit;
 
 
@@ -150,7 +161,6 @@ proc sql;
   %let join1 = inner join Work.defOutcomes B on (A.codeType = B.codeType & A.code = B.code);
   %let where1a = where B.disease ^in ("Myocardial infarction", "Hospitalized infection");
   %let where1b = | (B.disease in ("Myocardial infarction", "Hospitalized infection") & A.enc_type = "IP");
-  %let select2 = select database, exposure, patid, exposureID, exposureStart, exposureEnd, enc_type, "Lung disease" as outcomeCategory, "Interstitial lung disease" as disease, outcome_start_date as begin_date;
   create table Work.incidentDisease as
     select C.database, C.exposureID, C.patid, C.exposure, C.exposureStart, C.exposureEnd,
            C.outcomeCategory,
@@ -158,7 +168,7 @@ proc sql;
            C.begin_date
     from (&select1 from UCB.tempIncDxAll A &join1 &where1a &where1b union corr
           &select1 from UCB.tempIncPxAll A &join1 &where1a union corr
-          &select2 from Work.outcome_ILD_All union corr
+          select * from Work.ILD union corr
           select * from Work.incidentMI union corr
           select * from Work.fractures) C
     order by C.database, C.exposureID, C.outcomeCategory, C.disease, C.begin_date;
