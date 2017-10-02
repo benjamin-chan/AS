@@ -241,6 +241,15 @@ quit;
 
 
 /* 
+Write to permanent SAS library
+ */
+proc sql;
+  create table DT.hospitalizedInfectionEpisodesInc as
+    select * from Work.outcome_infection;
+quit;
+
+
+/* 
 Data checks
  */
 proc contents data = Work.outcome_infection order = varnum;
