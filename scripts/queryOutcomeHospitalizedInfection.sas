@@ -67,7 +67,7 @@ run;
 proc print data=icd9_infection (obs=10);run;
 
 proc print data=icd9_infection ;
-where ICD_9_CM_CODE=:"003";
+  where ICD_9_CM_CODE=:"003";
 run;
 
 proc freq data=icd9_infection; tables Infection_Category Infection_Location;
@@ -211,9 +211,9 @@ data outcome_infection ; set outcome_infection; by patid outcome_date dx;  /* fo
 proc sort data=outcome_infection nodupkey; by patid outcome_date ;run;
 
 proc datasets nolist; delete 
-/*icd9_infection*/
-/*icd9_inf*/
-/*outcome_infection_dx*/
+icd9_infection
+icd9_inf
+outcome_infection_dx
 outcome_rx_TB
 NDC_PYRAZINAMIDE
 outcome_infection_px
