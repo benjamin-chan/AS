@@ -45,11 +45,18 @@ run;
 
 /* 
 Keep only the HCPCS codes
+Re-length the px variable
  */
 data Work.tempIncPxAll;
+  length px $5;
   set &inpxdat.;
   if px_type = "H1" then output;
 run;
+proc sql;
+  select "Check length of px variable in Work.tempIncPxAll" as table,  px_type, length(px) as lengthPx, count(*) as n
+  from Work.tempIncPxAll
+  group by px_type, calculated lenPx;
+quit;
 %let inpxdat = Work.tempIncPxAll;
 
 /* 
