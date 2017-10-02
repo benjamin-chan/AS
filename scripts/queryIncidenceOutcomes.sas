@@ -87,6 +87,27 @@ quit;
 
 
 /* 
+Process hospitalized infection data set
+ */
+proc sql;
+  create table Work.hospInf as
+    select database, 
+           exposure, 
+           patid, 
+           exposureStart,
+           exposureEnd,
+           exposureID,
+           "Infection" as outcomeCategory, 
+           "Hospitalized infection" as disease, 
+           outcome_start_date as begin_date
+    from DT.hospitalizedInfectionEpisodesInc;
+  select database, exposure, disease, count(distinct exposureID) as n
+    from Work.hospInf
+    group by database, exposure, disease;
+quit;
+
+
+/* 
 Query for incident MI
 
 * Requires at least a 1-day inpatient admission
