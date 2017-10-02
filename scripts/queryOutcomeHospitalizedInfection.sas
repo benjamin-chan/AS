@@ -1,4 +1,5 @@
-****************************************************************************************
+*  University of Alabama at Birmingham                               *
+*  AS project                                            *
 
 Programmer Lang Chen @UAB
 created: 8/24/2016
@@ -8,7 +9,21 @@ Task: define outcome for Pfizer Tofacitinib 2016 with PECORI common data model d
 Output: Dataset outcome
 
 TODO: 
-****************************************************************************************;
+**********************************************************************;
+options pagesize=74 linesize=150 pageno=1 missing=' ' date FORMCHAR="|----|+|---+=|-/\<>*";
+* Programmer    : Benjamin Chan <chanb@ohsu.edu>
+* Creation date : 
+* Modify date   :
+;
+%let cmt=queryOutcomeHospitalizedInfection; * type the name of your program here (without the filename extension);
+%let pgm=&cmt..sas;
+%include "lib\libname.sas" ;
+footnote "&pgm.";
+* footnote2 "%sysfunc(datetime(),datetime14.)";
+title1 '--- AS project ---';
+**********************************************************************;
+options macrogen mlogic mprint symbolgen;
+options nomacrogen nomlogic nomprint nosymbolgen;
 
 *To edit the following two lines only;
 
@@ -18,6 +33,10 @@ TODO:
 proc sort data=&indxdat; by patid begin_date;run;
 proc sort data=&inpxdat; by patid px_date;run;
 proc sort data=&inrxdat; by patid dispense_date;run;
+ods html
+  body = "output\&cmt..html"
+  style = Statistical;
+
 
 proc datasets nolist; delete 
 icd9_infection
@@ -203,27 +222,4 @@ quit;
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+ods html close;
