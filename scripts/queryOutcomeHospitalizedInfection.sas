@@ -1,4 +1,5 @@
-****************************************************************************************
+*  University of Alabama at Birmingham                               *
+*  AS project                                            *
 
 Programmer Lang Chen @UAB
 created: 8/24/2016
@@ -8,17 +9,57 @@ Task: define outcome for Pfizer Tofacitinib 2016 with PECORI common data model d
 Output: Dataset outcome
 
 TODO: 
-****************************************************************************************;
+**********************************************************************;
+options pagesize=74 linesize=150 pageno=1 missing=' ' date FORMCHAR="|----|+|---+=|-/\<>*";
+* Programmer    : Benjamin Chan <chanb@ohsu.edu>
+* Creation date : 
+* Modify date   :
+;
+%let cmt=queryOutcomeHospitalizedInfection; * type the name of your program here (without the filename extension);
+%let pgm=&cmt..sas;
+%include "lib\libname.sas" ;
+footnote "&pgm.";
+* footnote2 "%sysfunc(datetime(),datetime14.)";
+title1 '--- AS project ---';
+**********************************************************************;
+options macrogen mlogic mprint symbolgen;
+options nomacrogen nomlogic nomprint nosymbolgen;
+
+
+ods html
+  body = "output\&cmt..html"
+  style = Statistical;
+
 
 *To edit the following two lines only;
 
-%let indxdat=UC.Subsetdx;
-%let inpxdat=UC.Subsetpx;
-%let inrxdat=UC.Subsetrx;
-proc sort data=&indxdat; by patid begin_date;run;
-proc sort data=&inpxdat; by patid px_date;run;
-proc sort data=&inrxdat; by patid dispense_date;run;
+%let indxdat = UCB.tempIncDxAll;
+%let inpxdat = UCB.tempIncPxAll;
+%let inrxdat = UCB.tempIncRxAll;
+proc sort data = &indxdat; by database patid begin_date;
+run;
+proc sort data = &inpxdat; by database patid px_date;
+run;
+proc sort data = &inrxdat; by database patid dispense_date;
+run;
 
+/* 
+Keep only the HCPCS codes
+Re-length the px variable
+ */
+data Work.tempIncPxAll;
+  length px $5;
+  set &inpxdat.;
+  if px_type = "H1" then output;
+run;
+proc sql;
+  select "Check length of px variable in Work.tempIncPxAll" as table,  px_type, length(px) as lengthPx, count(*) as n
+  from Work.tempIncPxAll
+  group by px_type, calculated lenPx;
+quit;
+%let inpxdat = Work.tempIncPxAll;
+
+/* 
 proc datasets nolist; delete 
 icd9_infection
 icd9_inf
@@ -31,7 +72,7 @@ outcome_infection_trt
 outcome_infection
 ;
 quit;
-
+ */
 proc import datafile='W:\Users\lchen\lookupdata\AHRQ_CCS.xlsx' 
     out=icd9_infection replace;
     sheet="AHRQ_CCS";
@@ -43,9 +84,7 @@ run;
 proc print data=icd9_infection (obs=10);run;
 
 proc print data=icd9_infection ;
-var ICD_9_CM_CODE CCS_CATEGORY_DESCRIPTION ICD_9_CM_CODE_DESCRIPTION 
-description Infection UABgroup Infection_Category Infection_Location Infectious_Organism OI Viral Fungal bacterial_infection other_types_of_infection;
-where ICD_9_CM_CODE=:"003";
+  where ICD_9_CM_CODE=:"003";
 run;
 
 proc freq data=icd9_infection; tables Infection_Category Infection_Location;
@@ -91,14 +130,14 @@ data outcome_infection_dx(drop=rc);
     end;
 if 0 then set icd9_inf;
 set &indxdat. ;
-by PATID BEGIN_DATE;
+by database PATID BEGIN_DATE;
 /*length outcome $20 outcome_date 4;*/
 /*format outcome_date mmddyy10.;*/
         rc =HDX.find(key:DX);
         if rc=0 then output outcome_infection_dx;
 where ENC_TYPE in ('IP' 'ER' 'AV' 'NH' 'HH' 'ED');
 run;
-proc sort data=outcome_infection_dx nodupkey; by PATID BEGIN_DATE DX ENC_TYPE;run;
+proc sort data=outcome_infection_dx nodupkey; by database PATID BEGIN_DATE DX ENC_TYPE;run;
 
 proc freq data=outcome_infection_dx; tables Infection_Category Infection;run;
 
@@ -123,7 +162,7 @@ data outcome_infection_rx(drop=rc:)  outcome_rx_TB(drop=rc:);
     end;
 if 0 then set NDC.Antibiotics_parenteral_ndc(keep=NDC) NDC_PYRAZINAMIDE(keep=code);
 set &inrxdat. ;
-by PATID DISPENSE_DATE;
+by database PATID DISPENSE_DATE;
 /*length outcome $20 outcome_date 4;*/
 /*format outcome_date mmddyy10.;*/
         rc1 =HRX.find(key:NDC);
@@ -143,7 +182,7 @@ data outcome_infection_px(drop=rc:);
     end;
 if 0 then set NDC.Antibiotics_parenteral_hcpcs;
 set &inpxdat. ;
-by PATID PX_DATE;
+by database PATID PX_DATE;
 /*length outcome $20 outcome_date 4;*/
 /*format outcome_date mmddyy10.;*/
         rc1 =HPX.find(key:PX);
@@ -161,18 +200,18 @@ run;
 
 
 
-data outcome_infection(keep=patid outcome_date dx TRT_DATE BEGIN_DATE ADMIT_DATE ENC_TYPE Infection_Category Infection outcome_start_date PDX) ;
+data outcome_infection(keep=database patid outcome_date dx TRT_DATE BEGIN_DATE ADMIT_DATE ENC_TYPE Infection_Category Infection outcome_start_date PDX) ;
 if _N_=1 then do;
         declare hash HTRT(dataset:"outcome_infection_trt");
-        rc = HTRT.definekey("PATID", "TRT_DATE");
+        rc = HTRT.definekey("database", "PATID", "TRT_DATE");
 /*        rc = HTRT.definedata(ALL:"YES");*/
         rc=HTRT.definedone();
     end;
-if 0 then set outcome_infection_trt(keep=PATID TRT_DATE);
+if 0 then set outcome_infection_trt(keep=database PATID TRT_DATE);
 set outcome_infection_dx;
 length outcome_date outcome_start_date 4;
 format outcome_date outcome_start_date mmddyy10.;
-        rc=HTRT.find(key:patid,key:BEGIN_DATE);
+        rc=HTRT.find(key:database, key:patid, key:BEGIN_DATE);
         outcome_date=BEGIN_DATE;
         outcome_start_date=outcome_date;
         if rc=0  then do;
@@ -183,15 +222,15 @@ format outcome_date outcome_start_date mmddyy10.;
         end;
 run;
 
-proc sort data=outcome_infection nodupkey; by patid outcome_date dx pdx;run;
-data outcome_infection ; set outcome_infection; by patid outcome_date dx;format dx $Icd9fmt.;run;
+proc sort data=outcome_infection nodupkey; by database patid outcome_date dx pdx;run;
+data outcome_infection ; set outcome_infection; by database patid outcome_date dx;  /* format dx $Icd9fmt.; */  run;
 
-proc sort data=outcome_infection nodupkey; by patid outcome_date ;run;
+proc sort data=outcome_infection nodupkey; by database patid outcome_date ;run;
 
 proc datasets nolist; delete 
-/*icd9_infection*/
-/*icd9_inf*/
-/*outcome_infection_dx*/
+icd9_infection
+icd9_inf
+outcome_infection_dx
 outcome_rx_TB
 NDC_PYRAZINAMIDE
 outcome_infection_px
@@ -199,3 +238,31 @@ outcome_infection_rx
 outcome_infection_trt
 ;
 quit;
+
+
+/* 
+Data checks
+ */
+proc contents data = Work.outcome_infection order = varnum;
+run;
+proc sql;
+  select "Summary of Work.outcome_infection" as table, 
+         database, 
+         count(*) as denom 
+    from Work.outcome_infection 
+    group by database;
+  select "Summary of Work.outcome_infection" as table,
+         A.database,
+         A.infection_category,
+         count(distinct A.patid) as countDistinctPatid,
+         count(*) as countRows,
+         count(*) / denom format = percent8.1 as pctWithinDatabase
+    from Work.outcome_infection A inner join
+         (select database, count(*) as denom from Work.outcome_infection group by database) B  on (A.database = B.database)
+    group by A.database, A.infection_category;
+quit;
+
+
+
+
+ods html close;
