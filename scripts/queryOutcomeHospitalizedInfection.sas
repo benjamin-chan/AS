@@ -42,6 +42,16 @@ proc sort data = &inpxdat; by database patid px_date;
 run;
 proc sort data = &inrxdat; by database patid dispense_date;
 run;
+
+/* 
+Keep only the HCPCS codes
+ */
+data Work.tempIncPxAll;
+  set &inpxdat.;
+  if px_type = "H1" then output;
+run;
+%let inpxdat = Work.tempIncPxAll;
+
 /* 
 proc datasets nolist; delete 
 icd9_infection
