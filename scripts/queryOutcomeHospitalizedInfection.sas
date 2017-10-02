@@ -211,7 +211,7 @@ if 0 then set outcome_infection_trt(keep=database PATID TRT_DATE);
 set outcome_infection_dx;
 length outcome_date outcome_start_date 4;
 format outcome_date outcome_start_date mmddyy10.;
-        rc=HTRT.find(key: database, patid, key:BEGIN_DATE);
+        rc=HTRT.find(key:database, key:patid, key:BEGIN_DATE);
         outcome_date=BEGIN_DATE;
         outcome_start_date=outcome_date;
         if rc=0  then do;
