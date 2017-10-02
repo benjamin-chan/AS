@@ -42,6 +42,7 @@ proc sort data = &inpxdat; by patid px_date;
 run;
 proc sort data = &inrxdat; by patid dispense_date;
 run;
+/* 
 proc datasets nolist; delete 
 icd9_infection
 icd9_inf
@@ -54,10 +55,10 @@ outcome_infection_trt
 outcome_infection
 ;
 quit;
-
-proc import datafile='W:\Users\lchen\lookupdata\AHRQ_CCS_Infection.xlsx' 
+ */
+proc import datafile='W:\Users\lchen\lookupdata\AHRQ_CCS.xlsx' 
     out=icd9_infection replace;
-    sheet="AHRQ_CCS_Infection";
+    sheet="AHRQ_CCS";
 run;
 data icd9_infection;
 set icd9_infection;
