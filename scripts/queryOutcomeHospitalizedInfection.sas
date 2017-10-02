@@ -67,8 +67,6 @@ run;
 proc print data=icd9_infection (obs=10);run;
 
 proc print data=icd9_infection ;
-var ICD_9_CM_CODE CCS_CATEGORY_DESCRIPTION ICD_9_CM_CODE_DESCRIPTION 
-description Infection UABgroup Infection_Category Infection_Location Infectious_Organism OI Viral Fungal bacterial_infection other_types_of_infection;
 where ICD_9_CM_CODE=:"003";
 run;
 
