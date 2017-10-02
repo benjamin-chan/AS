@@ -149,7 +149,9 @@ proc sql;
   create table Work.defOutcomes as
     select * 
     from DT.defOutcomes 
-    where disease ^in ("Interstitial lung disease", "Myocardial infarction");
+    where disease ^in ("Interstitial lung disease", 
+                       "Myocardial infarction", 
+                       "Hospitalized infection");
   create table Work.lookupDisease as
     select distinct outcomeCategory, disease
     from DT.defOutcomes;
