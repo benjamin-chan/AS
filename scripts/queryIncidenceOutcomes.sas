@@ -161,15 +161,13 @@ proc sql;
   
   %let select1 = select A.*, B.outcomeCategory, B.disease;
   %let join1 = inner join Work.defOutcomes B on (A.codeType = B.codeType & A.code = B.code);
-  %let where1a = where B.disease ^in ("Myocardial infarction", "Hospitalized infection");
-  %let where1b = | (B.disease in ("Myocardial infarction", "Hospitalized infection") & A.enc_type = "IP");
   create table Work.incidentDisease as
     select C.database, C.exposureID, C.patid, C.exposure, C.exposureStart, C.exposureEnd,
            C.outcomeCategory,
            C.disease,
            C.begin_date
-    from (&select1 from UCB.tempIncDxAll A &join1 &where1a &where1b union corr
-          &select1 from UCB.tempIncPxAll A &join1 &where1a union corr
+    from (&select1 from UCB.tempIncDxAll A &join1 union corr
+          &select1 from UCB.tempIncPxAll A &join1 union corr
           select * from Work.ILD union corr
           select * from Work.incidentMI union corr
           select * from Work.hospInf union corr
