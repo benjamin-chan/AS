@@ -252,21 +252,21 @@ quit;
 /* 
 Data checks
  */
-proc contents data = Work.outcome_infection order = varnum;
+proc contents data = DT.hospitalizedInfectionEpisodesInc order = varnum;
 run;
 proc sql;
-  select "Summary of Work.outcome_infection" as table, 
+  select "Summary of DT.hospitalizedInfectionEpisodesInc" as table, 
          database, 
          count(*) as denom 
-    from Work.outcome_infection 
+    from DT.hospitalizedInfectionEpisodesInc 
     group by database;
-  select "Summary of Work.outcome_infection" as table,
+  select "Summary of DT.hospitalizedInfectionEpisodesInc" as table,
          A.database,
          A.infection_category,
          count(distinct A.patid) as countDistinctPatid,
          count(*) as countRows,
          count(*) / denom format = percent8.1 as pctWithinDatabase
-    from Work.outcome_infection A inner join
+    from DT.hospitalizedInfectionEpisodesInc A inner join
          (select database, count(*) as denom from Work.outcome_infection group by database) B  on (A.database = B.database)
     group by A.database, A.infection_category;
 quit;
