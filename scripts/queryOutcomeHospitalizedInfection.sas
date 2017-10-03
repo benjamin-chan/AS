@@ -230,9 +230,9 @@ data outcome_infection ; set outcome_infection; by database exposure patid expos
 proc sort data=outcome_infection nodupkey; by database exposure patid exposureStart exposureEnd exposureID outcome_date ;run;
 
 proc datasets nolist; delete 
-icd9_infection
+/* icd9_infection */
 icd9_inf
-outcome_infection_dx
+/* outcome_infection_dx */
 outcome_rx_TB
 NDC_PYRAZINAMIDE
 outcome_infection_px
@@ -272,6 +272,14 @@ proc sql;
          (select database, count(*) as denom from Work.outcome_infection group by database) B  on (A.database = B.database)
     group by A.database, A.infection_category;
 quit;
+
+
+/* 
+Copy data sets to permanent library for use later
+ */
+proc copy out = DT in = Work;
+  select icd9_infection outcome_infection_dx;
+run;
 
 
 
