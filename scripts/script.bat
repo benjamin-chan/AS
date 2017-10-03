@@ -14,6 +14,7 @@ call :execute queryFracturesControl
 call :execute CANCER_setoguchi
 call :execute CANCER_NMSC
 call :execute queryOutcomeHospitalizedInfection
+call :execute queryOutcomeOpportunisticInfection
 call :execute queryPrevalentComorbidities
 call :execute queryPrevalentComorbiditiesControl
 call :execute queryIncidenceOutcomes
