@@ -78,3 +78,38 @@ libname UCB spde "q:\studies\AS\data\UCB"
 Small data library:
  */ 
 libname dt 'V:\studies\AS\data\';
+
+
+/* 
+NDC library
+
+From: Chen, Lang [mailto:langchen@uabmc.edu] 
+Sent: Monday, October 02, 2017 11:36 AM
+To: Benjamin Chan <chanb@ohsu.edu>
+Subject: RE: quick summary of AS call
+
+Sorry for the delay. Here it is
+
+W:\onenote\references\drug ndcs\sas data
+
+Lang
+
+From: Benjamin Chan [mailto:chanb@ohsu.edu] 
+Sent: Monday, October 02, 2017 1:12 PM
+To: Chen, Lang
+Subject: RE: quick summary of AS call
+
+Hi Lang, did you get a chance to take a look at this? Thanks.
+
+From: Benjamin Chan 
+Sent: Friday, September 29, 2017 3:31 PM
+To: 'Chen, Lang' <langchen@uabmc.edu>
+Subject: RE: quick summary of AS call
+
+Lang,
+
+I’m trying to adapt your W:\Users\lchen\pmg\outcome\outcome_infection.sas
+program. It calls a data set in a library that is not defined. Can you tell me
+were the NDC library it uses is? Thanks.
+ */
+libname NDC "W:\onenote\references\drug ndcs\sas data" access = readonly;

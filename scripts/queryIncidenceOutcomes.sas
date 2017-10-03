@@ -58,9 +58,20 @@ Call interstitial lung disease macro
                       Dxs = UCB.tempIncDxAll,
                       Pxs = UCB.tempIncPxAll);
 proc sql;
-  select database, exposure, "Interstitial lung disease" as disease, count(distinct exposureID) as n
-    from Work.outcome_ILD_All
-    group by database, exposure;
+  create table Work.ILD as
+    select database, 
+           exposure, 
+           patid, 
+           exposureStart,
+           exposureEnd,
+           exposureID,
+           "Lung disease" as outcomeCategory,
+           "Interstitial lung disease" as disease, 
+           outcome_start_date as begin_date
+    from Work.outcome_ILD_All;
+  select database, exposure, disease, count(distinct exposureID) as n
+    from Work.ILD
+    group by database, exposure, disease;
 quit;
 
 
@@ -82,6 +93,48 @@ proc sql;
     where ^missing(fractureType);
   select database, exposure, disease, count(distinct exposureID) as n
     from Work.fractures
+    group by database, exposure, disease;
+quit;
+
+
+/* 
+Process hospitalized infection data set
+ */
+proc sql;
+  create table Work.hospInf as
+    select database, 
+           exposure, 
+           patid, 
+           exposureStart,
+           exposureEnd,
+           exposureID,
+           "Infection" as outcomeCategory, 
+           "Hospitalized infection" as disease, 
+           outcome_start_date as begin_date
+    from DT.hospitalizedInfectionEpisodesInc;
+  select database, exposure, disease, count(distinct exposureID) as n
+    from Work.hospInf
+    group by database, exposure, disease;
+quit;
+
+
+/* 
+Process opportunistic infection data set
+ */
+proc sql;
+  create table Work.oppInf as
+    select database, 
+           exposure, 
+           patid, 
+           exposureStart,
+           exposureEnd,
+           exposureID,
+           "Infection" as outcomeCategory, 
+           "Opportunistic infection" as disease, 
+           outcome_start_date as begin_date
+    from DT.opportunInfectionEpisodesInc;
+  select database, exposure, disease, count(distinct exposureID) as n
+    from Work.oppInf
     group by database, exposure, disease;
 quit;
 
@@ -117,7 +170,10 @@ proc sql;
   create table Work.defOutcomes as
     select * 
     from DT.defOutcomes 
-    where disease ^in ("Interstitial lung disease", "Myocardial infarction");
+    where disease ^in ("Interstitial lung disease", 
+                       "Myocardial infarction", 
+                       "Hospitalized infection", 
+                       "Opportunistic infection");
   create table Work.lookupDisease as
     select distinct outcomeCategory, disease
     from DT.defOutcomes;
@@ -127,18 +183,17 @@ proc sql;
   
   %let select1 = select A.*, B.outcomeCategory, B.disease;
   %let join1 = inner join Work.defOutcomes B on (A.codeType = B.codeType & A.code = B.code);
-  %let where1a = where B.disease ^in ("Myocardial infarction", "Hospitalized infection");
-  %let where1b = | (B.disease in ("Myocardial infarction", "Hospitalized infection") & A.enc_type = "IP");
-  %let select2 = select database, exposure, patid, exposureID, exposureStart, exposureEnd, enc_type, "Lung disease" as outcomeCategory, "Interstitial lung disease" as disease, outcome_start_date as begin_date;
   create table Work.incidentDisease as
     select C.database, C.exposureID, C.patid, C.exposure, C.exposureStart, C.exposureEnd,
            C.outcomeCategory,
            C.disease,
            C.begin_date
-    from (&select1 from UCB.tempIncDxAll A &join1 &where1a &where1b union corr
-          &select1 from UCB.tempIncPxAll A &join1 &where1a union corr
-          &select2 from Work.outcome_ILD_All union corr
+    from (&select1 from UCB.tempIncDxAll A &join1 union corr
+          &select1 from UCB.tempIncPxAll A &join1 union corr
+          select * from Work.ILD union corr
           select * from Work.incidentMI union corr
+          select * from Work.hospInf union corr
+          select * from Work.oppInf  union corr
           select * from Work.fractures) C
     order by C.database, C.exposureID, C.outcomeCategory, C.disease, C.begin_date;
 quit;

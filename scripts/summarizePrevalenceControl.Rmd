@@ -27,21 +27,25 @@ foo <- function(db, cohort) {
       filter(timeWindow == "12 months") %>% 
       filter(database == db) %>% 
       filter(cohort == cohort) %>% 
-      select(col)
+      mutate(lower = prevCI(numer, denomPatid)[, "lower"] * 100,
+             upper = prevCI(numer, denomPatid)[, "upper"] * 100) %>% 
+      select(-c(denomPatid, numer))
 }
 df1a <- foo("MPCD", "Non-AS")
 df3a <- foo("Medicare", "Non-AS")
 by <- c("database", "outcomeCategory", "disease", "timeWindow")
+fmt <- "%.01f (%.01f-%.01f)"
 prev <- 
   merge(df1a, df3a,
         by = by[2:length(by)],
         all = TRUE,
         suffixes = c("_MPCD", "_Medicare")) %>% 
-  select(c(outcomeCategory, disease, timeWindow,
-           prevPct_MPCD,
-           prevPct_Medicare)) %>% 
+  select(matches("outcomeCategory|disease|timeWindow|prevPct|lower|upper")) %>% 
+  mutate(prevPct_MPCD = ifelse(is.na(prevPct_MPCD), "0", sprintf(fmt, prevPct_MPCD, lower_MPCD, upper_MPCD)),
+         prevPct_Medicare = ifelse(is.na(prevPct_Medicare), "0", sprintf(fmt, prevPct_Medicare, lower_Medicare, upper_Medicare))) %>% 
   rename("MPCD Non-AS cohort" = prevPct_MPCD,
-         "Medicare Non-AS cohort" = prevPct_Medicare)
+         "Medicare Non-AS cohort" = prevPct_Medicare) %>% 
+  select(-matches("lower|upper"))
 prev %>% kable(digits = 1)
 prev %>% write.csv(file = "../data/processed/prevalenceControl.csv", row.names = FALSE, na = "0")
 ```
