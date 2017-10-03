@@ -34,13 +34,18 @@ ods html
 
 
 *To edit the following two lines only;
-%let indxdat=psa.Subsetdx;
-%let inpxdat=psa.Subsetpx;
-%let inrxdat=psa.Subsetrx;
-proc sort data=&indxdat; by patid begin_date;run;
-proc sort data=&inpxdat; by patid px_date;run;
-proc sort data=&inrxdat; by patid dispense_date;run;
 
+%let indxdat = UCB.tempIncDxAll;
+%let inpxdat = UCB.tempIncPxAll;
+%let inrxdat = UCB.tempIncRxAll;
+proc sort data = &indxdat; by database exposure patid exposureStart exposureEnd exposureID begin_date;
+run;
+proc sort data = &inpxdat; by database exposure patid exposureStart exposureEnd exposureID px_date;
+run;
+proc sort data = &inrxdat; by database exposure patid exposureStart exposureEnd exposureID dispense_date;
+run;
+
+/* 
 proc datasets nolist; delete 
 outcome_OI_dx
 outcome_OI_dx_mycobacteria
