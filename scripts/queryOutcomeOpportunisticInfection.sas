@@ -1,14 +1,37 @@
-****************************************************************************************
+*  University of Alabama at Birmingham                               *
+*  AS project                                            *
 
 Programmer Lang Chen @UAB
-created: 8/30/2016
+created: 8/24/2016
 modiflied :
 Project: 
-Task: define outcome Opportunistic infections for Pfizer Tofacitinib 2016 with PECORI common data model data
+Task: define outcome for Pfizer Tofacitinib 2016 with PECORI common data model data
 Output: Dataset outcome
-Note run outcome_infection.sas first
+
+NOTE RUN queryOutcomeHospitalizedInfection.sas FIRST
+
 TODO: 
-****************************************************************************************;
+**********************************************************************;
+options pagesize=74 linesize=150 pageno=1 missing=' ' date FORMCHAR="|----|+|---+=|-/\<>*";
+* Programmer    : Benjamin Chan <chanb@ohsu.edu>
+* Creation date : 
+* Modify date   :
+;
+%let cmt=queryOutcomeOpportunisticInfection; * type the name of your program here (without the filename extension);
+%let pgm=&cmt..sas;
+%include "lib\libname.sas" ;
+footnote "&pgm.";
+* footnote2 "%sysfunc(datetime(),datetime14.)";
+title1 '--- AS project ---';
+**********************************************************************;
+options macrogen mlogic mprint symbolgen;
+options nomacrogen nomlogic nomprint nosymbolgen;
+
+
+ods html
+  body = "output\&cmt..html"
+  style = Statistical;
+
 
 *To edit the following two lines only;
 %let indxdat=psa.Subsetdx;
@@ -148,7 +171,4 @@ quit;
 
 
 
-
-
-
-
+ods html close;
