@@ -119,6 +119,27 @@ quit;
 
 
 /* 
+Process opportunistic infection data set
+ */
+proc sql;
+  create table Work.oppInf as
+    select database, 
+           exposure, 
+           patid, 
+           exposureStart,
+           exposureEnd,
+           exposureID,
+           "Infection" as outcomeCategory, 
+           "Opportunistic infection" as disease, 
+           outcome_start_date as begin_date
+    from DT.opportunInfectionEpisodesInc;
+  select database, exposure, disease, count(distinct exposureID) as n
+    from Work.oppInf
+    group by database, exposure, disease;
+quit;
+
+
+/* 
 Query for incident MI
 
 * Requires at least a 1-day inpatient admission
@@ -151,7 +172,8 @@ proc sql;
     from DT.defOutcomes 
     where disease ^in ("Interstitial lung disease", 
                        "Myocardial infarction", 
-                       "Hospitalized infection");
+                       "Hospitalized infection", 
+                       "Opportunistic infection");
   create table Work.lookupDisease as
     select distinct outcomeCategory, disease
     from DT.defOutcomes;
@@ -171,6 +193,7 @@ proc sql;
           select * from Work.ILD union corr
           select * from Work.incidentMI union corr
           select * from Work.hospInf union corr
+          select * from Work.oppInf  union corr
           select * from Work.fractures) C
     order by C.database, C.exposureID, C.outcomeCategory, C.disease, C.begin_date;
 quit;
