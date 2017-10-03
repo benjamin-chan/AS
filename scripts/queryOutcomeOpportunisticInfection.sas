@@ -59,6 +59,15 @@ outcome_OI_dx_rx
 outcome_OI
 ;
 quit;
+ */
+
+/* 
+Copy data sets from permanent library
+ */
+proc copy out = Work in = DT;
+  select icd9_infection outcome_infection_dx;
+run;
+
 
 proc freq data=icd9_infection; tables Infection_Category Infection_Location OI ;
 tables Infection_Category*description/missing list;
