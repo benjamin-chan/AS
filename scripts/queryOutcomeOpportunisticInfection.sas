@@ -192,6 +192,29 @@ proc sql;
 quit;
 
 
+/* 
+Data checks
+ */
+proc contents data = DT.opportunInfectionEpisodesInc order = varnum;
+run;
+proc sql;
+  select "Summary of DT.opportunInfectionEpisodesInc" as table, 
+         database, 
+         count(*) as denom 
+    from DT.opportunInfectionEpisodesInc 
+    group by database;
+  select "Summary of DT.opportunInfectionEpisodesInc" as table,
+         A.database,
+         A.infection_category,
+         count(distinct A.patid) as countDistinctPatid,
+         count(*) as countRows,
+         count(*) / denom format = percent8.1 as pctWithinDatabase
+    from DT.opportunInfectionEpisodesInc A inner join
+         (select database, count(*) as denom from Work.outcome_OI group by database) B  on (A.database = B.database)
+    group by A.database, A.infection_category;
+quit;
+
+
 
 
 ods html close;
