@@ -8,6 +8,8 @@ Project:
 Task: define outcome for Pfizer Tofacitinib 2016 with PECORI common data model data
 Output: Dataset outcome
 
+NOTE RUN queryOutcomeOpportunisticInfection.sas AFTER
+
 TODO: 
 **********************************************************************;
 options pagesize=74 linesize=150 pageno=1 missing=' ' date FORMCHAR="|----|+|---+=|-/\<>*";
