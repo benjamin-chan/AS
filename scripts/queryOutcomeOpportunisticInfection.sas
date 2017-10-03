@@ -183,6 +183,15 @@ outcome_OI_dx_rx
 quit;
 
 
+/* 
+Write to permanent SAS library
+ */
+proc sql;
+  create table DT.opportunInfectionEpisodesInc as
+    select * from Work.outcome_OI;
+quit;
+
+
 
 
 ods html close;
