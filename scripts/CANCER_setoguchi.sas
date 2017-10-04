@@ -751,8 +751,8 @@ proc sql;
 Group cancers
  */
   create table Work.cancerSetoguchiEpisodesInc as
-           cancer as site,
     select A.database, A.exposure, A.patid, A.exposureStart, A.exposureEnd, A.exposureID,
+           B.cancer as site,
            case
              when site = "all" then "Hematologic Cancer"
              when site = "cll" then "Hematologic Cancer"
