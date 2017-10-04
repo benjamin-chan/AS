@@ -46,7 +46,7 @@ proc sort data=&inpxdat; by exposureID px_date;run;
 proc sort data=&inrxdat; by exposureID dispense_date;run;
 
 
-proc datasets nolist; delete 
+/* proc datasets nolist; delete 
 _dat_NMSC_DX
 _dat_NMSC_PX
 _cancer_NMSC
@@ -58,6 +58,7 @@ _dat_NMSC_path_dxNMSC
 _dat_NMSC_path:
 Outcome_cancer_nmsc;
 quit;
+ */
 
 /* *import the list of CPT/HCPCS/ICD9 code related to NMSC;
 PROC IMPORT OUT= NMSC_code DATAFILE= "W:\Users\lchen\lookupdata\cancer\NMSC.xlsx" 
@@ -276,6 +277,10 @@ proc sql;
     from DT.cancerNMSCEpisodesInc A
     group by A.database, A.exposure;
 quit;
+proc contents data = DT.cancerNMSCEpisodesInc order = varnum;
+run;
+
+
 
 
 ods html close;

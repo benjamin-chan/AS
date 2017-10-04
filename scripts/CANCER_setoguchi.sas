@@ -775,6 +775,10 @@ Per protocol, keep only the FIRST cancer for each patient ID
     from DT.cancerNMSCEpisodesInc A
     group by A.cancer, A.database, A.exposure;
 quit;
+proc contents data = DT.cancerSetoguchiEpisodesInc order = varnum;
+run;
+
+
 
 
 ods html close;
