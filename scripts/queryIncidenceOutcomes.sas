@@ -226,6 +226,30 @@ proc sort data = Work.incidentDisease nodupkey;
 run;
 
 /* 
+For all but NMSC and infection (hospitalized and opportunistic),
+keep first incident outcome within patient ID
+ */
+data Work.incidentDiseaseSubsetA Work.incidentDiseaseSubsetB;
+  set Work.incidentDisease;
+  if disease in ("Non Melanoma Skin Cancer", 
+                 "Hospitalized infection", 
+                 "Opportunistic infection") then output Work.incidentDiseaseSubsetA;
+  else output Work.incidentDiseaseSubsetB;
+run;
+proc sort data = Work.incidentDiseaseSubsetB;
+  by database patid outcomeCategory disease begin_date;
+run;
+proc sort data = Work.incidentDiseaseSubsetB nodupkey;
+  by database patid outcomeCategory disease;
+run;
+proc sql;
+  create table Work.incidentDisease as
+    select * from Work.incidentDiseaseSubsetA union corr
+    select * from Work.incidentDiseaseSubsetB ;
+quit;
+
+
+/* 
 Join incident disease outcomes to exposure timelines
 Summarize
  */
