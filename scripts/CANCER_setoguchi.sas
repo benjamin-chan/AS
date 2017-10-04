@@ -748,17 +748,77 @@ proc sql;
 Group cancers
  */
   create table Work.cancerSetoguchiEpisodesInc as
-    select A.database, A.exposure, A.patid, A.exposureStart, A.exposureEnd, A.exposureID,
+    select A.database, A.exposure, A.patid, A.exposureStart, A.exposureEnd,
+           cancer as site,
            case
-             when ??? then "Hematologic Cancer"
-             when ??? then "Solid Cancer"
+             when site = "all" then "Hematologic Cancer"
+             when site = "cll" then "Hematologic Cancer"
+             when site = "oth_ll" then "Hematologic Cancer"
+             when site = "aml" then "Hematologic Cancer"
+             when site = "cml" then "Hematologic Cancer"
+             when site = "oth_ml" then "Hematologic Cancer"
+             when site = "mono_leuk" then "Hematologic Cancer"
+             when site = "oth_leuk" then "Hematologic Cancer"
+             when site = "nhl_nos" then "Hematologic Cancer"
+             when site = "hodgkin" then "Hematologic Cancer"
+             when site = "nodnhl" then "Hematologic Cancer"
+             when site = "mycoses" then "Hematologic Cancer"
+             when site = "histiocyt" then "Hematologic Cancer"
+             when site = "hcl" then "Hematologic Cancer"
+             when site = "letterer" then "Hematologic Cancer"
+             when site = "mastcell" then "Hematologic Cancer"
+             when site = "periph_tcell" then "Hematologic Cancer"
+             when site = "lymphoma_nos" then "Hematologic Cancer"
+             when site = "otherlymphhisto" then "Hematologic Cancer"
+             when site = "mm" then "Hematologic Cancer"
+             when site = "plasma" then "Hematologic Cancer"
+             when site = "wald" then "Hematologic Cancer"
+             when site = "head_neck" then "Solid Cancer"
+             when site = "esophagus" then "Solid Cancer"
+             when site = "stomach" then "Solid Cancer"
+             when site = "sm_intest" then "Solid Cancer"
+             when site = "colon" then "Solid Cancer"
+             when site = "rectum" then "Solid Cancer"
+             when site = "anus" then "Solid Cancer"
+             when site = "liver" then "Solid Cancer"
+             when site = "gall" then "Solid Cancer"
+             when site = "pancreas" then "Solid Cancer"
+             when site = "perit" then "Solid Cancer"
+             when site = "digest" then "Solid Cancer"
+             when site = "lung" then "Solid Cancer"
+             when site = "thoracic" then "Solid Cancer"
+             when site = "bone" then "Solid Cancer"
+             when site = "connect" then "Solid Cancer"
+             when site = "malmel" then "Solid Cancer"
+             when site = "female_breast" then "Solid Cancer"
+             when site = "male_breast" then "Solid Cancer"
+             when site = "ks" then "Solid Cancer"
+             when site = "uterus" then "Solid Cancer"
+             when site = "cervix" then "Solid Cancer"
+             when site = "placenta" then "Solid Cancer"
+             when site = "ovary" then "Solid Cancer"
+             when site = "oth_fem" then "Solid Cancer"
+             when site = "prostate" then "Solid Cancer"
+             when site = "testis" then "Solid Cancer"
+             when site = "penis" then "Solid Cancer"
+             when site = "bladder" then "Solid Cancer"
+             when site = "kidney" then "Solid Cancer"
+             when site = "oth_urin" then "Solid Cancer"
+             when site = "eye" then "Solid Cancer"
+             when site = "brain" then "Solid Cancer"
+             when site = "oth_nerv" then "Solid Cancer"
+             when site = "thyroid" then "Solid Cancer"
+             when site = "oth_endo" then "Solid Cancer"
              else ""
              end as cancer,
            B.*
     from DT.exposureTimeline A inner join
          Work.outcome_cancer B on (A.exposureID = B.exposureID);
+  select cancer, site, count(*) as n
+    from Work.cancerSetoguchiEpisodesInc
+    group by cancer, site;
 /* 
-Per protocol, keep only the FIRST cancer for each patient ID
+Per protocol, keep only the FIRST cancer type for each patient ID
  */
   create table Work.cancerLookup as
     select patid, cancer, min(outcome_start_date) format = mmddyy10. as earliestCancer
