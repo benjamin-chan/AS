@@ -675,6 +675,19 @@ proc sql;
            B.*
     from DT.exposureTimeline A inner join
          Work.outcome_cancer B on (A.exposureID = B.exposureID);
+/* 
+Per protocol, keep only the FIRST cancer for each patient ID
+ */
+  create table Work.cancerLookup as
+    select patid, cancer, min(outcome_start_date) format = mmddyy10. as earliestCancer
+    from Work.cancerSetoguchiEpisodesInc
+    group by patid, cancer;
+  create table DT.cancerSetoguchiEpisodesInc as
+    select A.earliestCancer, B.*
+    from Work.cancerLookup A inner join
+         Work.cancerSetoguchiEpisodesInc B on (A.patid = B.patid &
+                                               A.cancer = B.cancer &
+                                               A.earliestCancer = B.outcome_start_date);
   select A.cancer, A.database, A.exposure, 
          count(distinct A.exposureID) as countDistinctExposureID
     from DT.cancerNMSCEpisodesInc A
