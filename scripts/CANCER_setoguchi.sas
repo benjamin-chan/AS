@@ -40,6 +40,8 @@ TODO:
 2) find kaiser date, merge into the master data
 ****************************************************************************************;
 
+
+/* 
 proc datasets nolist; 
 delete  
 malignancy 
@@ -51,6 +53,7 @@ outcome_cancer
 cancer_:
 ; 
 quit;
+ */
 /*bring in the malignancy table where code clean doen't have the x in it*/
 proc import datafile='q:\shared\users\wsmith\malignancy_code_list_20131019.xlsx' out=malignancy replace; run;
 proc import datafile='W:\Users\lchen\lookupdata\cancer\Updated SABER2_Cancer_Codes - 10-30-2015 LC 2016.xlsx' 
@@ -657,7 +660,7 @@ proc freq data=cancer_&current.; tables def_:;run;
 %mend cancer_loop;
 %cancer_loop;
 
-data DT.outcome_cancer;
+data Work.outcome_cancer;
 set  cancer_all cancer_cll cancer_oth_ll cancer_aml cancer_cml cancer_oth_ml cancer_mono_leuk cancer_oth_leuk
  cancer_nhl_nos cancer_hodgkin cancer_nodnhl cancer_mycoses cancer_histiocyt cancer_hcl cancer_letterer cancer_mastcell cancer_periph_tcell cancer_lymphoma_nos
  cancer_otherlymphhisto cancer_mm cancer_plasma cancer_wald cancer_head_neck cancer_esophagus
@@ -669,13 +672,178 @@ outcome="cancer";
 run;
 
 
+/* 
+Group cancer categories
+
+From: Atul Deodhar 
+Sent: Monday, September 18, 2017 10:49 PM
+To: Benjamin Chan <chanb@ohsu.edu>
+Subject: Re: AS Comorbitidies Study - Analysis 
+
+Hi Ben,
+
+Yes, #1 through 22 are hematologic malignancies.  #60 is non-melanoma skin
+cancer, and #23 to #58 are solid tumors.  I would disregard # 59
+
+1 (ALL) ACUTE LYMPHOID LEUKEMIA
+2 (CLL) CHR LYMPHOID LEUKEMIA
+3 (OTH_LL) OTHER LYMPHOID LEUKEMIA
+4 (AML) ACUTE MYELOID LEUKEMIA
+5 (CML) CHRONIC MYELOID LEUKEMIA
+6 (OTH_ML) OTHER MYELOID LEUKEMIA
+7 (MONO_LEUK) MONOCYTIC LEUKEMIA
+8 (OTH_LEUK) OTHER LEUKEMIA
+9 (NHL_NOS) LYMPHOSARCOMA/LYMPHOMA
+10 (HODGKIN) HODGKINS LYMPHOMA
+11 (NODNHL) NODULAR LYMPHOMA
+12 (MYCOSES) MYCOSIS FUNGOIDES
+13 (HISTIOCYT) MALIGNANT HISTIOCYTOSIS
+14 (HCL) HAIRY-CELL LEUKEMIA
+15 (LETTERER) LETTERER-SIWE DISEASE
+16 (MASTCELL) MALIGNANT MAST CELL TUMORS
+17 (PERIPH_TCELL) PERIPHERAL T-CELL LYMPHOMA
+18 (LYMPHOMA_NOS) LYMPHOMA NOS
+19 (OTHERLYMPHHISTO) OTHER LYMPHOID MALIGNANCY
+20 (MM) MULTIPLE MYELOMA
+21 (PLASMA) PLASMACYTOMA
+22 (WALD) MACROGLOBULINEMIA
+23 (HEAD_NECK) HEAD NECK CANCERS
+24 (ESOPHAGUS) MALIGNANT NEOPLASM ESOPHAGUS
+25 (STOMACH) MALIGNANT NEOPLASM STOMACH
+26 (SM_INTEST) SMALL INTESTINES
+27 (COLON) COLON
+28 (RECTUM) RECTUM
+29 (ANUS) ANUS
+30 (LIVER) LIVER
+31 (GALL) GALL BLADDER
+32 (PANCREAS) PANCREAS
+33 (PERIT) PERITONEUM
+34 (DIGEST) DIGESTIVE SYSTEM
+35 (LUNG) LUNG
+36 (THORACIC) THORACIC
+37 (BONE) BONE
+38 (CONNECT) SOFT TISSUE
+39 (MALMEL) MALIGNANT MELANOMA
+40 (FEMALE_BREAST) FEMALE BREAST
+41 (MALE_BREAST) MALE BREAST
+42 (KS) KAPOSI SARCOMA
+43 (UTERUS) UTERUS
+44 (CERVIX) CERVIX
+45 (PLACENTA) PLACENTA
+46 (OVARY) OVARY
+47 (OTH_FEM) OTHER FEMALE GENITALIA
+48 (PROSTATE) PROSTATE
+49 (TESTIS) TESTIS
+50 (PENIS) PENIS
+51 (BLADDER) BLADDER
+52 (KIDNEY) KIDNEY
+53 (OTH_URIN) OTHER URINARY
+54 (EYE) EYE
+55 (BRAIN) BRAIN
+56 (OTH_NERV) OTHER NERVOUS SYSTEM
+57 (THYROID) THYROID
+58 (OTH_ENDO) OTHER ENDROCRINE
+59 (OTH_DEF) OTHER ILL DEFINED SITES
+60 (NMSC) NON-MELANOMA SKIN CANCER
+ */
 proc sql;
-  select B.database, B.exposure, A.cancer, count(distinct A.exposureID) as countDistinctExposureID
-    from DT.outcome_cancer A inner join
-         DT.exposureTimeline B on (A.exposureID = B.exposureID)
-    where A.cancer = "all"
-    group by B.database, B.exposure, A.cancer;
+/* 
+Group cancers
+ */
+  create table Work.cancerSetoguchiEpisodesInc as
+    select A.database, A.exposure, A.patid, A.exposureStart, A.exposureEnd, A.exposureID,
+           B.cancer as site,
+           case
+             when site = "all" then "Hematologic Cancer"
+             when site = "cll" then "Hematologic Cancer"
+             when site = "oth_ll" then "Hematologic Cancer"
+             when site = "aml" then "Hematologic Cancer"
+             when site = "cml" then "Hematologic Cancer"
+             when site = "oth_ml" then "Hematologic Cancer"
+             when site = "mono_leuk" then "Hematologic Cancer"
+             when site = "oth_leuk" then "Hematologic Cancer"
+             when site = "nhl_nos" then "Hematologic Cancer"
+             when site = "hodgkin" then "Hematologic Cancer"
+             when site = "nodnhl" then "Hematologic Cancer"
+             when site = "mycoses" then "Hematologic Cancer"
+             when site = "histiocyt" then "Hematologic Cancer"
+             when site = "hcl" then "Hematologic Cancer"
+             when site = "letterer" then "Hematologic Cancer"
+             when site = "mastcell" then "Hematologic Cancer"
+             when site = "periph_tcell" then "Hematologic Cancer"
+             when site = "lymphoma_nos" then "Hematologic Cancer"
+             when site = "otherlymphhisto" then "Hematologic Cancer"
+             when site = "mm" then "Hematologic Cancer"
+             when site = "plasma" then "Hematologic Cancer"
+             when site = "wald" then "Hematologic Cancer"
+             when site = "head_neck" then "Solid Cancer"
+             when site = "esophagus" then "Solid Cancer"
+             when site = "stomach" then "Solid Cancer"
+             when site = "sm_intest" then "Solid Cancer"
+             when site = "colon" then "Solid Cancer"
+             when site = "rectum" then "Solid Cancer"
+             when site = "anus" then "Solid Cancer"
+             when site = "liver" then "Solid Cancer"
+             when site = "gall" then "Solid Cancer"
+             when site = "pancreas" then "Solid Cancer"
+             when site = "perit" then "Solid Cancer"
+             when site = "digest" then "Solid Cancer"
+             when site = "lung" then "Solid Cancer"
+             when site = "thoracic" then "Solid Cancer"
+             when site = "bone" then "Solid Cancer"
+             when site = "connect" then "Solid Cancer"
+             when site = "malmel" then "Solid Cancer"
+             when site = "female_breast" then "Solid Cancer"
+             when site = "male_breast" then "Solid Cancer"
+             when site = "ks" then "Solid Cancer"
+             when site = "uterus" then "Solid Cancer"
+             when site = "cervix" then "Solid Cancer"
+             when site = "placenta" then "Solid Cancer"
+             when site = "ovary" then "Solid Cancer"
+             when site = "oth_fem" then "Solid Cancer"
+             when site = "prostate" then "Solid Cancer"
+             when site = "testis" then "Solid Cancer"
+             when site = "penis" then "Solid Cancer"
+             when site = "bladder" then "Solid Cancer"
+             when site = "kidney" then "Solid Cancer"
+             when site = "oth_urin" then "Solid Cancer"
+             when site = "eye" then "Solid Cancer"
+             when site = "brain" then "Solid Cancer"
+             when site = "oth_nerv" then "Solid Cancer"
+             when site = "thyroid" then "Solid Cancer"
+             when site = "oth_endo" then "Solid Cancer"
+             else ""
+             end as cancer,
+           B.outcome_start_date
+    from DT.exposureTimeline A inner join
+         Work.outcome_cancer B on (A.exposureID = B.exposureID);
+  select cancer, site, count(*) as n
+    from Work.cancerSetoguchiEpisodesInc
+    group by cancer, site;
+/* 
+Per protocol, keep only the FIRST cancer type for each patient ID
+ */
+  create table Work.cancerLookup as
+    select patid, cancer, min(outcome_start_date) format = mmddyy10. as earliestCancer
+    from Work.cancerSetoguchiEpisodesInc
+    where ^missing(cancer)
+    group by patid, cancer;
+  create table DT.cancerSetoguchiEpisodesInc as
+    select A.earliestCancer, B.*
+    from Work.cancerLookup A inner join
+         Work.cancerSetoguchiEpisodesInc B on (A.patid = B.patid &
+                                               A.cancer = B.cancer &
+                                               A.earliestCancer = B.outcome_start_date);
+  select A.cancer, A.database, A.exposure, 
+         count(distinct A.patid) as countDistinctPatid,
+         count(distinct A.exposureID) as countDistinctExposureID
+    from DT.cancerSetoguchiEpisodesInc A
+    group by A.cancer, A.database, A.exposure;
 quit;
+proc contents data = DT.cancerSetoguchiEpisodesInc order = varnum;
+run;
+
+
 
 
 ods html close;
