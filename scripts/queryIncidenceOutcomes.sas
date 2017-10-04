@@ -163,6 +163,25 @@ quit;
 /* 
 Process the data sets created by the cancer scripts
  */
+proc sql;
+  create table Work.cancer as
+    select database, 
+           exposure, 
+           patid, 
+           exposureStart,
+           exposureEnd,
+           exposureID,
+           "Cancer" as outcomeCategory, 
+           cancer as disease, 
+           outcome_start_date as begin_date
+    from (select * from DT.cancerSetoguchiEpisodesInc union corr
+          select * from DT.cancerNMSCEpisodesInc );
+  select database, exposure, disease, 
+         count(distinct patid) as countDistinctPatid, 
+         count(distinct exposureID) as countDistinctEpisodes
+    from Work.cancer
+    group by database, exposure, disease;
+quit;
 
 
 proc sql;
@@ -190,6 +209,7 @@ proc sql;
            C.begin_date
     from (&select1 from UCB.tempIncDxAll A &join1 union corr
           &select1 from UCB.tempIncPxAll A &join1 union corr
+          select * from Work.cancer union corr
           select * from Work.ILD union corr
           select * from Work.incidentMI union corr
           select * from Work.hospInf union corr
@@ -206,35 +226,80 @@ proc sort data = Work.incidentDisease nodupkey;
 run;
 
 /* 
+For all but NMSC and infection (hospitalized and opportunistic),
+keep first incident outcome within patient ID
+ */
+data Work.incidentDiseaseSubsetA Work.incidentDiseaseSubsetB;
+  set Work.incidentDisease;
+  if disease in ("Non Melanoma Skin Cancer", 
+                 "Hospitalized infection") then output Work.incidentDiseaseSubsetA;
+  else output Work.incidentDiseaseSubsetB;
+run;
+proc sort data = Work.incidentDiseaseSubsetB;
+  by database patid outcomeCategory disease begin_date;
+run;
+proc sort data = Work.incidentDiseaseSubsetB nodupkey;
+  by database patid outcomeCategory disease;
+run;
+proc sql;
+  create table Work.incidentDisease as
+    select * from Work.incidentDiseaseSubsetA union corr
+    select * from Work.incidentDiseaseSubsetB ;
+quit;
+
+
+/* 
 Join incident disease outcomes to exposure timelines
 Summarize
  */
 proc sql;
   create table DT.incidentDiseaseTimelines as
     select A.*, 
-           B.begin_date format = mmddyy10. as outcomeDate,
-           missing(B.begin_date) as censor,
+           D.begin_date format = mmddyy10. as outcomeDate,
+           F.earliestOutcome,
            case
-             when missing(B.begin_date) then daysExposed
-             when ^missing(B.begin_date) then B.begin_date - A.exposureStart + 1
+             when ^missing(D.begin_date) & missing(F.earliestOutcome) then 0
+             when ^missing(D.begin_date) & A.exposureStart <= F.earliestOutcome <= A.exposureEnd then 0
+             when . < F.earliestOutcome < A.exposureStart then 1
+             when missing(D.begin_date) then 1
              else .
-             end as daysToOutcome
-    from (select A.*, B.*
-          from DT.exposureTimeline A, 
-               Work.lookupDisease B) A left join
-         Work.incidentDisease B on (A.exposureID = B.exposureID & 
-                                    A.outcomeCategory = B.outcomeCategory & 
-                                    A.disease = B.disease);
+             end as censor,
+           case
+             when ^missing(D.begin_date) & missing(F.earliestOutcome) then D.begin_date - A.exposureStart + 1
+             when ^missing(D.begin_date) & A.exposureStart <= F.earliestOutcome <= A.exposureEnd then D.begin_date - A.exposureStart + 1
+             when . < F.earliestOutcome < A.exposureStart then 0
+             when missing(D.begin_date) then daysExposed
+             else .
+             end as daysAtRisk
+    from (select B.*, C.*
+          from DT.exposureTimeline B, 
+               Work.lookupDisease C) A left join
+         Work.incidentDisease D on (A.database = D.database & 
+                                    A.patid = D.patid & 
+                                    A.exposure = D.exposure & 
+                                    A.exposureStart = D.exposureStart & 
+                                    A.outcomeCategory = D.outcomeCategory & 
+                                    A.disease = D.disease) left join
+         (select E.database, E.patid, E.outcomeCategory, E.disease,
+                 min(E.begin_date) format = mmddyy10. as earliestOutcome
+          from Work.incidentDisease E
+          where E.disease ^in ("Non Melanoma Skin Cancer", 
+                               "Hospitalized infection")
+          group by E.database, E.patid, E.outcomeCategory, E.disease) F on (A.database = F.database &
+                                                                            A.patid = F.patid &
+                                                                            A.outcomeCategory = F.outcomeCategory &
+                                                                            A.disease = F.disease)
+    order by A.database, A.patid, A.outcomeCategory, A.disease, A.exposureStart;
   create table Work.incidence as
     select database, exposure, outcomeCategory, disease,
            count(distinct exposureID) as n,
            sum(censor = 0) as incidence,
-           sum(daysToOutcome) / 365.25 as personYears,
-           sum(censor = 0) / (sum(daysToOutcome) / 365.25) * 1000 as incidencePer1000PY
+           sum(daysAtRisk) / 365.25 as personYears,
+           100 as scale,
+           sum(censor = 0) / (sum(daysAtRisk) / 365.25) * calculated scale as incidenceRate
     from DT.incidentDiseaseTimelines
     group by database, exposure, outcomeCategory, disease;
   select * from Work.incidence;
-
 quit;
 
 
