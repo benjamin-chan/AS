@@ -823,6 +823,7 @@ Per protocol, keep only the FIRST cancer type for each patient ID
   create table Work.cancerLookup as
     select patid, cancer, min(outcome_start_date) format = mmddyy10. as earliestCancer
     from Work.cancerSetoguchiEpisodesInc
+    where ^missing(cancer)
     group by patid, cancer;
   create table DT.cancerSetoguchiEpisodesInc as
     select A.earliestCancer, B.*
@@ -831,8 +832,9 @@ Per protocol, keep only the FIRST cancer type for each patient ID
                                                A.cancer = B.cancer &
                                                A.earliestCancer = B.outcome_start_date);
   select A.cancer, A.database, A.exposure, 
+         count(distinct A.patid) as countDistinctPatid,
          count(distinct A.exposureID) as countDistinctExposureID
-    from DT.cancerNMSCEpisodesInc A
+    from DT.cancerSetoguchiEpisodesInc A
     group by A.cancer, A.database, A.exposure;
 quit;
 proc contents data = DT.cancerSetoguchiEpisodesInc order = varnum;
