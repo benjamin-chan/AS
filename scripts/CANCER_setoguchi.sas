@@ -657,7 +657,7 @@ proc freq data=cancer_&current.; tables def_:;run;
 %mend cancer_loop;
 %cancer_loop;
 
-data DT.outcome_cancer;
+data Work.outcome_cancer;
 set  cancer_all cancer_cll cancer_oth_ll cancer_aml cancer_cml cancer_oth_ml cancer_mono_leuk cancer_oth_leuk
  cancer_nhl_nos cancer_hodgkin cancer_nodnhl cancer_mycoses cancer_histiocyt cancer_hcl cancer_letterer cancer_mastcell cancer_periph_tcell cancer_lymphoma_nos
  cancer_otherlymphhisto cancer_mm cancer_plasma cancer_wald cancer_head_neck cancer_esophagus
@@ -670,11 +670,15 @@ run;
 
 
 proc sql;
-  select B.database, B.exposure, A.cancer, count(distinct A.exposureID) as countDistinctExposureID
-    from DT.outcome_cancer A inner join
-         DT.exposureTimeline B on (A.exposureID = B.exposureID)
-    where A.cancer = "all"
-    group by B.database, B.exposure, A.cancer;
+  create table DT.cancerSetoguchiEpisodesInc as
+    select A.database, A.exposure, A.patid, A.exposureStart, A.exposureEnd, A.exposureID,
+           B.*
+    from DT.exposureTimeline A inner join
+         Work.outcome_cancer B on (A.exposureID = B.exposureID);
+  select A.cancer, A.database, A.exposure, 
+         count(distinct A.exposureID) as countDistinctExposureID
+    from DT.cancerNMSCEpisodesInc A
+    group by A.cancer, A.database, A.exposure;
 quit;
 
 
