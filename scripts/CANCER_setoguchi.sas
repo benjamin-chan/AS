@@ -40,6 +40,8 @@ TODO:
 2) find kaiser date, merge into the master data
 ****************************************************************************************;
 
+
+/* 
 proc datasets nolist; 
 delete  
 malignancy 
@@ -51,6 +53,7 @@ outcome_cancer
 cancer_:
 ; 
 quit;
+ */
 /*bring in the malignancy table where code clean doen't have the x in it*/
 proc import datafile='q:\shared\users\wsmith\malignancy_code_list_20131019.xlsx' out=malignancy replace; run;
 proc import datafile='W:\Users\lchen\lookupdata\cancer\Updated SABER2_Cancer_Codes - 10-30-2015 LC 2016.xlsx' 
