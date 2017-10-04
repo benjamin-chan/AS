@@ -163,6 +163,25 @@ quit;
 /* 
 Process the data sets created by the cancer scripts
  */
+proc sql;
+  create table Work.cancer as
+    select database, 
+           exposure, 
+           patid, 
+           exposureStart,
+           exposureEnd,
+           exposureID,
+           "Cancer" as outcomeCategory, 
+           cancer as disease, 
+           outcome_start_date as begin_date
+    from (select * from DT.cancerSetoguchiEpisodesInc union corr
+          select * from DT.cancerNMSCEpisodesInc );
+  select database, exposure, disease, 
+         count(distinct patid) as countDistinctPatid, 
+         count(distinct exposureID) as countDistinctEpisodes
+    from Work.cancer
+    group by database, exposure, disease;
+quit;
 
 
 proc sql;
@@ -190,6 +209,7 @@ proc sql;
            C.begin_date
     from (&select1 from UCB.tempIncDxAll A &join1 union corr
           &select1 from UCB.tempIncPxAll A &join1 union corr
+          select * from Work.cancer union corr
           select * from Work.ILD union corr
           select * from Work.incidentMI union corr
           select * from Work.hospInf union corr
