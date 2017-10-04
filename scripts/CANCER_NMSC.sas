@@ -272,10 +272,11 @@ proc sql;
            B.outcome_start_date
     from DT.exposureTimeline A inner join
          Work.Outcome_cancer_nmsc B on (A.exposureID = B.exposureID);
-  select A.database, A.exposure, 
+  select A.database, A.exposure, A.cancer, 
+         count(distinct A.patid) as countDistinctPatid,
          count(distinct A.exposureID) as countDistinctExposureID
     from DT.cancerNMSCEpisodesInc A
-    group by A.database, A.exposure;
+    group by A.database, A.exposure, A.cancer;
 quit;
 proc contents data = DT.cancerNMSCEpisodesInc order = varnum;
 run;
