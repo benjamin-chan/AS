@@ -232,8 +232,7 @@ keep first incident outcome within patient ID
 data Work.incidentDiseaseSubsetA Work.incidentDiseaseSubsetB;
   set Work.incidentDisease;
   if disease in ("Non Melanoma Skin Cancer", 
-                 "Hospitalized infection", 
-                 "Opportunistic infection") then output Work.incidentDiseaseSubsetA;
+                 "Hospitalized infection") then output Work.incidentDiseaseSubsetA;
   else output Work.incidentDiseaseSubsetB;
 run;
 proc sort data = Work.incidentDiseaseSubsetB;
