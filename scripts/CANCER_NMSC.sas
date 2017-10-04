@@ -268,8 +268,8 @@ Per protocol, keep all incident NMSC cancers
 proc sql;
   create table DT.cancerNMSCEpisodesInc as
     select A.database, A.exposure, A.patid, A.exposureStart, A.exposureEnd, A.exposureID,
-           B.*
            "Non Melanoma Skin Cancer" as cancer, 
+           B.outcome_start_date
     from DT.exposureTimeline A inner join
          Work.Outcome_cancer_nmsc B on (A.exposureID = B.exposureID);
   select A.database, A.exposure, 

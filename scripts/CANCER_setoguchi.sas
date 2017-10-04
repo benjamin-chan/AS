@@ -751,8 +751,8 @@ proc sql;
 Group cancers
  */
   create table Work.cancerSetoguchiEpisodesInc as
-    select A.database, A.exposure, A.patid, A.exposureStart, A.exposureEnd,
            cancer as site,
+    select A.database, A.exposure, A.patid, A.exposureStart, A.exposureEnd, A.exposureID,
            case
              when site = "all" then "Hematologic Cancer"
              when site = "cll" then "Hematologic Cancer"
@@ -814,7 +814,7 @@ Group cancers
              when site = "oth_endo" then "Solid Cancer"
              else ""
              end as cancer,
-           B.*
+           B.outcome_start_date
     from DT.exposureTimeline A inner join
          Work.outcome_cancer B on (A.exposureID = B.exposureID);
   select cancer, site, count(*) as n
