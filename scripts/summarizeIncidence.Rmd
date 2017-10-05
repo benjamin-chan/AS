@@ -131,17 +131,33 @@ incidence %>% write.csv(file = "../data/processed/incidence.csv", row.names = FA
 
 ```{r}
 dfLong <- bind_rows(df1a, df1c, df2a, df2c, df3a, df3c)
-set1 <- c("Cancer", "Cardiac disease", "Infection")
-set2 <- c("Inflammatory bowel disease", "Kidney disease", "Lung disease")
-set3 <- c("Neurological Disease", "Osteoporotic fracture", "PsO/PsA", "Uveitis")
+set1 <- c("Disease manifestation")
+set2 <- c("Hematologic Cancer",
+          "Non Melanoma Skin Cancer",
+          "Solid Cancer",
+          "Aortic Insufficiency/Aortic Regurgitation",
+          "Conduction Block",
+          "Myocardial infarction",
+          "Hospitalized infection",
+          "Opportunistic infection",
+          "Amyloidosis")
+set3 <-c("IgA nephropathy",
+         "Nephrotic syndrome",
+         "Apical Pulmonary fibrosis",
+         "Interstitial lung disease",
+         "Restrictive lung disease",
+         "Cauda Equina syndrome",
+         "Spinal Cord compression",
+         "Clinical vertebral fracture",
+         "Non-vertebral osteoporotic fracture")
 dfLong %>% 
-  filter(outcomeCategory %in% set1) %>% 
+  filter(type == set1) %>% 
   plotIncidence(filename = "incidenceTNFvsNSAID_1")
 dfLong %>% 
-  filter(outcomeCategory %in% set2) %>% 
+  filter(disease %in% set2) %>% 
   plotIncidence(filename = "incidenceTNFvsNSAID_2")
 dfLong %>% 
-  filter(outcomeCategory %in% set3) %>% 
+  filter(disease %in% set3 | outcomeCategory == "Lung disease") %>% 
   plotIncidence(filename = "incidenceTNFvsNSAID_3")
 ```
 
