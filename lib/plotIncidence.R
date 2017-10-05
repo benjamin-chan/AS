@@ -12,7 +12,7 @@ plotIncidence <- function(df, filename) {
     scale_x_discrete("") +
     scale_y_log10("Incidence rate (per 100 person-years)", 
                   breaks = c(0.01, 0.1, 1, 10), 
-                  limits = c(1e-4, 20)) +
+                  limits = c(1e-3, 16)) +
     scale_color_brewer("Exposure", palette = "Set1") +
     facet_wrap( ~ facet) +
     theme(legend.position = "top",
