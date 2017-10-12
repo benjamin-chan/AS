@@ -23,13 +23,32 @@ ods html
 
 
 proc sort data = DT.indexLookup out = Work.patidCharacteristics nodupkey;
+  by database patid;
+run;
+proc sort data = DT.controlLookup out = Work.controlCharacteristics nodupkey;
+  by database patid;
+run;
+proc sql;
+  select cohort,
+         database,
+         count(*) format = comma9.0 as denom,
+         strip(put(mean(age), 8.1)) || " (" || strip(put(std(age), 8.1)) || ")" as age,
+         strip(put(sum(sex = "F") / count(*), percent9.1) || "(n = " || put(sum(sex = "F"), comma9.0) || ")") as female
+    from (select "AS" as cohort, database, patid, age, sex from Work.patidCharacteristics union corr
+          select         cohort, database, patid, age, sex from Work.controlCharacteristics )
+  group by cohort, database;
+quit;
+
+
+proc sort data = DT.indexLookup out = Work.patidCharacteristics nodupkey;
   by database exposure patid;
 run;
 proc sql;
   select database,
          exposure,
-         strip(put(mean(age), 8.0)) || " (" || strip(put(std(age), 8.0)) || ")" as age,
-         strip(put(sum(sex = "F") / count(*), percent9.2)) as female
+         count(*) format = comma9.0 as denom,
+         strip(put(mean(age), 8.1)) || " (" || strip(put(std(age), 8.1)) || ")" as age,
+         strip(put(sum(sex = "F") / count(*), percent9.1) || "(n = " || put(sum(sex = "F"), comma9.0) || ")") as female
     from Work.patidCharacteristics
   group by database, exposure;
 quit;
