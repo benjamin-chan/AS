@@ -1,12 +1,5 @@
-1                                                          The SAS System                           13:29 Wednesday, October 4, 2017
+1                                                          The SAS System                            07:37 Tuesday, November 7, 2017
 
-NOTE: Unable to open SASUSER.REGSTRY. WORK.REGSTRY will be opened instead.
-NOTE: All registry changes will be lost at the end of the session.
-
-WARNING: Unable to copy SASUSER registry to WORK registry. Because of this, you will not see registry customizations during this 
-         session.
-NOTE: Unable to open SASUSER.PROFILE. WORK.PROFILE will be opened instead.
-NOTE: All profile changes will be lost at the end of the session.
 NOTE: Copyright (c) 2002-2012 by SAS Institute Inc., Cary, NC, USA. 
 NOTE: SAS (r) Proprietary Software 9.4 (TS1M1) 
       Licensed to UNIVERSITY OF ALABAMA AT BIRMINGHAM - SFA - T&R, Site 70058223.
@@ -35,8 +28,8 @@ Please remember not to copy any data files that contain PHI (protected health id
 
 
 NOTE: SAS initialization used:
-      real time           0.17 seconds
-      cpu time            0.14 seconds
+      real time           0.20 seconds
+      cpu time            0.07 seconds
       
 1          *  University of Alabama at Birmingham                               *
 2          *  AS project                                            *
@@ -72,8 +65,6 @@ NOTE: Libref NDC was successfully assigned as follows:
       Physical Name: W:\onenote\references\drug ndcs\sas data
 127        footnote "&pgm.";
 128        * footnote2 "%sysfunc(datetime(),datetime14.)";
-2                                                                   The SAS System                                    13:29 Wednesday, October 4, 2017
-
 129        title1 '--- AS project ---';
 130        **********************************************************************;
 131        options macrogen mlogic mprint symbolgen;
@@ -81,6 +72,8 @@ NOTE: Libref NDC was successfully assigned as follows:
 133        
 134        
 135        ods html
+2                                                                   The SAS System                                     07:37 Tuesday, November 7, 2017
+
 136          body = "output\&cmt..html"
 137          style = Statistical;
 NOTE: Writing HTML Body file: output\queryFracturesControl.html
@@ -146,8 +139,6 @@ NOTE: Writing HTML Body file: output\queryFracturesControl.html
 196                    if strip(DX) in: ('826') then                                           do; fx_site='(826) foot_phalanges'; output; end;
 197                    if strip(DX) in: ('827') then                                           do; fx_site='(827) lower_limb'; output; end;
 198                    if strip(DX) in: ('828') then                                           do; fx_site='(828) legs+arm/rib'; output; end;
-3                                                                   The SAS System                                    13:29 Wednesday, October 4, 2017
-
 199                    if strip(DX) in: ('829') then                                           do; fx_site='(829) fx_nos'; output; end;
 200                    if strip(DX) in ('73310' '73319' '7331') then                 do; fx_site='(7331) pathologic nos/nec'; output; end;
 201            data fx_excare;
@@ -155,6 +146,8 @@ NOTE: Writing HTML Body file: output\queryFracturesControl.html
 203                    length fx_site $30 ;
 204                    fx_site = '';
 205                    /*Expanded Diagnosis Codes - Fracture Aftercare Codes*/
+3                                                                   The SAS System                                     07:37 Tuesday, November 7, 2017
+
 206                    if strip(DX) in ('V5410' 'V5420') then                          do; fx_site='(812, 73311) humerus'; output;
 207                                                                                                     fx_site='(813, 73312) radius_ulna'; output;
 207      ! end;
@@ -187,8 +180,8 @@ NOTE: There were 0 observations read from the data set UCB.TEMPFRACDXALLCONTROL.
       WHERE diagCodeType='Fracture code';
 NOTE: The data set WORK.FX_DGNS has 0 observations and 22 variables.
 NOTE: DATA statement used (Total process time):
-      real time           0.09 seconds
-      cpu time            0.00 seconds
+      real time           0.06 seconds
+      cpu time            0.01 seconds
       
 
 
@@ -196,8 +189,8 @@ NOTE: There were 0 observations read from the data set UCB.TEMPFRACDXALLCONTROL.
       WHERE diagCodeType='Extended care code';
 NOTE: The data set WORK.FX_EXCARE has 0 observations and 22 variables.
 NOTE: DATA statement used (Total process time):
-      real time           0.07 seconds
-      cpu time            0.03 seconds
+      real time           0.06 seconds
+      cpu time            0.01 seconds
       
 
 232        
@@ -220,8 +213,6 @@ NOTE: DATA statement used (Total process time):
 248                        site = 'spine_oth';
 249                end;
 250        
-4                                                                   The SAS System                                    13:29 Wednesday, October 4, 2017
-
 251            *Pelvis-closed and Pelvis-other... No V Codes;
 252            if fx_site='(808) pelvis' then
 253                do;
@@ -229,6 +220,8 @@ NOTE: DATA statement used (Total process time):
 255                    if substr(strip(DX),1,3)='808' and substr(strip(DX),1,4) ^in ('8080', '8082', '8084', '8088') then
 256                        site = 'pelvis_oth';
 257                end;
+4                                                                   The SAS System                                     07:37 Tuesday, November 7, 2017
+
 258        
 259            *Clavicle-closed and Clavicle-other.... No V Codes;
 260            if fx_site='(810) clavicle' then
@@ -294,8 +287,6 @@ NOTE: DATA statement used (Total process time):
 320            if site = "" then do;
 321                site = fx_site;
 322            end;
-5                                                                   The SAS System                                    13:29 Wednesday, October 4, 2017
-
 323        
 324            label site = 'CQ Algorithm Fracture Site (Specific)';
 325        
@@ -303,9 +294,11 @@ NOTE: DATA statement used (Total process time):
 
 NOTE: There were 0 observations read from the data set WORK.FX_DGNS.
 NOTE: The data set WORK.FX_DGNS_2 has 0 observations and 23 variables.
+5                                                                   The SAS System                                     07:37 Tuesday, November 7, 2017
+
 NOTE: DATA statement used (Total process time):
       real time           0.04 seconds
-      cpu time            0.00 seconds
+      cpu time            0.01 seconds
       
 
 327        
@@ -321,7 +314,7 @@ NOTE: DATA statement used (Total process time):
 NOTE: There were 0 observations read from the data set WORK.FX_DGNS_2.
 NOTE: The data set WORK.FX_DGNS_3 has 0 observations and 23 variables.
 NOTE: DATA statement used (Total process time):
-      real time           0.04 seconds
+      real time           0.06 seconds
       cpu time            0.00 seconds
       
 
@@ -344,7 +337,7 @@ NOTE: PROCEDURE FREQ used (Total process time):
 NOTE: Input data set is empty.
 NOTE: The data set WORK.FX_DGNS_3 has 0 observations and 23 variables.
 NOTE: PROCEDURE SORT used (Total process time):
-      real time           0.07 seconds
+      real time           0.06 seconds
       cpu time            0.01 seconds
       
 
@@ -368,8 +361,6 @@ NOTE: PROCEDURE SORT used (Total process time):
 360        
 361                    if strip(px) in ('21300' '21310' '21315' '21320' '21325' '21330' '21335' '21336' '21337' '21338' '21339' '21340' '21343'
 361      ! '21344' '21345' '21346' '21347' '21348'
-6                                                                   The SAS System                                    13:29 Wednesday, October 4, 2017
-
 362                                         '21355' '21356' '21360' '21365' '21366' '21385' '21386' '21387' '21390' '21395' '21400' '21401' '21406'
 362      ! '21407' '21408' '21421' '21422' '21423'
 363                                         '21431' '21432' '21433' '21435' '21436' '21440' '21445' '21450' '21451' '21452' '21453' '21454' '21461'
@@ -377,6 +368,8 @@ NOTE: PROCEDURE SORT used (Total process time):
 364                                         '62000' '62005' '62010')  and lengthn(strip(px)) = 5 then do;
 365                        tx_site='(800-804) skull/face'; output fx_prcd; end;
 366        
+6                                                                   The SAS System                                     07:37 Tuesday, November 7, 2017
+
 367                    if strip(px) in ('22305' '22310' '22315' '22318' '22319' '22325' '22326' '22327' '22328' '22520' '22521' '22522' '22523'
 367      ! '22524' '22525' '76012' '76013'
 368                                         'S2360' 'S2361' 'S2362' 'S2363' '72291' '72292')  and lengthn(strip(px)) = 5 then do;
@@ -442,8 +435,6 @@ NOTE: PROCEDURE SORT used (Total process time):
 421                    /*Hip*/
 422                    if strip(px) in ('27130' '27125') and lengthn(strip(px)) = 5  then do;
 423                        HLAT='1'; tx_site = '(820, 73314) hip'; output fx_prcd; end;
-7                                                                   The SAS System                                    13:29 Wednesday, October 4, 2017
-
 424        
 425                    /*Codes below are the only ICD9 Procedure Codes that we are using for "repair"*/
 426                    if strip(px) in ('8151' '8152') and lengthn(strip(px)) = 4 then do;
@@ -451,6 +442,8 @@ NOTE: PROCEDURE SORT used (Total process time):
 428        
 429                    /*Femur repair codes, assigned to both Hip and Femur treatment sites... CHECK - MAYBE WE NEED TO DO THIS THE OTHER WAY AS
 429      ! WELL*/
+7                                                                   The SAS System                                     07:37 Tuesday, November 7, 2017
+
 430                    /*Hip*/
 431                    if strip(px) in ('7855' '7905' '7915' '7925' '7935' '7965') and lengthn(strip(px)) = 4 then do;
 432                        HLAT = '1'; tx_site = '(820, 73314) hip'; output fx_prcd; end;
@@ -493,32 +486,13 @@ NOTE: There were 0 observations read from the data set UCB.TEMPFRACPXALLCONTROL.
 NOTE: The data set WORK.FX_PRCD has 0 observations and 21 variables.
 NOTE: The data set WORK.SPINE_XRAY has 0 observations and 21 variables.
 NOTE: DATA statement used (Total process time):
-      real time           0.14 seconds
-      cpu time            0.00 seconds
+      real time           0.10 seconds
+      cpu time            0.01 seconds
       
 
 
 NOTE: There were 0 observations read from the data set WORK.FX_PRCD.
 NOTE: The data set WORK.FX_PRCD has 0 observations and 23 variables.
-NOTE: DATA statement used (Total process time):
-      real time           0.06 seconds
-      cpu time            0.01 seconds
-      
-
-
-NOTE: Input data set is empty.
-NOTE: 0 observations with duplicate key values were deleted.
-NOTE: The data set WORK.FX_PRCD has 0 observations and 23 variables.
-NOTE: PROCEDURE SORT used (Total process time):
-      real time           0.06 seconds
-      cpu time            0.00 seconds
-      
-
-
-NOTE: There were 0 observations read from the data set WORK.SPINE_XRAY.
-8                                                                   The SAS System                                    13:29 Wednesday, October 4, 2017
-
-NOTE: The data set WORK.SPINE_XRAY has 0 observations and 5 variables.
 NOTE: DATA statement used (Total process time):
       real time           0.04 seconds
       cpu time            0.00 seconds
@@ -527,9 +501,28 @@ NOTE: DATA statement used (Total process time):
 
 NOTE: Input data set is empty.
 NOTE: 0 observations with duplicate key values were deleted.
+NOTE: The data set WORK.FX_PRCD has 0 observations and 23 variables.
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           0.04 seconds
+      cpu time            0.00 seconds
+      
+
+
+NOTE: There were 0 observations read from the data set WORK.SPINE_XRAY.
+NOTE: The data set WORK.SPINE_XRAY has 0 observations and 5 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.04 seconds
+      cpu time            0.00 seconds
+      
+
+
+8                                                                   The SAS System                                     07:37 Tuesday, November 7, 2017
+
+NOTE: Input data set is empty.
+NOTE: 0 observations with duplicate key values were deleted.
 NOTE: The data set WORK.SPINE_XRAY has 0 observations and 5 variables.
 NOTE: PROCEDURE SORT used (Total process time):
-      real time           0.06 seconds
+      real time           0.04 seconds
       cpu time            0.00 seconds
       
 
@@ -545,7 +538,7 @@ NOTE: There were 0 observations read from the data set UCB.TEMPFRACDXALLCONTROL.
 NOTE: The data set WORK.TRAUMA has 0 observations and 21 variables.
 NOTE: DATA statement used (Total process time):
       real time           0.06 seconds
-      cpu time            0.00 seconds
+      cpu time            0.01 seconds
       
 
 472        proc sort data= trauma(keep=patid trauma_dt) nodupkey; by patid trauma_dt;run;
@@ -554,8 +547,8 @@ NOTE: Input data set is empty.
 NOTE: 0 observations with duplicate key values were deleted.
 NOTE: The data set WORK.TRAUMA has 0 observations and 2 variables.
 NOTE: PROCEDURE SORT used (Total process time):
-      real time           0.06 seconds
-      cpu time            0.01 seconds
+      real time           0.04 seconds
+      cpu time            0.00 seconds
       
 
 473        
@@ -578,7 +571,7 @@ NOTE: There were 0 observations read from the data set WORK.FX_DGNS_3.
 NOTE: There were 0 observations read from the data set WORK.SPINE_XRAY.
 NOTE: The data set WORK.FX_SPINE_XRAY has 0 observations and 5 variables.
 NOTE: DATA statement used (Total process time):
-      real time           0.06 seconds
+      real time           0.07 seconds
       cpu time            0.01 seconds
       
 
@@ -590,8 +583,6 @@ NOTE: DATA statement used (Total process time):
 492          rc=hid.defineKey("patid");
 493          rc=hid.defineDone();
 494        end;
-9                                                                   The SAS System                                    13:29 Wednesday, October 4, 2017
-
 495        set trauma;
 496        rc=hid.find();
 497        if rc=0;
@@ -599,9 +590,11 @@ NOTE: DATA statement used (Total process time):
 
 NOTE: There were 0 observations read from the data set WORK.FX_DGNS_3.
 NOTE: There were 0 observations read from the data set WORK.TRAUMA.
+9                                                                   The SAS System                                     07:37 Tuesday, November 7, 2017
+
 NOTE: The data set WORK.FX_TRAUMA has 0 observations and 2 variables.
 NOTE: DATA statement used (Total process time):
-      real time           0.04 seconds
+      real time           0.07 seconds
       cpu time            0.01 seconds
       
 
@@ -664,8 +657,6 @@ NOTE: DATA statement used (Total process time):
 554           end ;
 555           rc2=htrauma.find_next(key:patid) ;
 556        end;
-10                                                                  The SAS System                                    13:29 Wednesday, October 4, 2017
-
 557        
 558        run;
 
@@ -673,6 +664,8 @@ NOTE: There were 0 observations read from the data set WORK.FX_PRCD.
 NOTE: There were 0 observations read from the data set WORK.FX_SPINE_XRAY.
 NOTE: There were 0 observations read from the data set WORK.FX_TRAUMA.
 NOTE: There were 0 observations read from the data set WORK.FX_DGNS_3.
+10                                                                  The SAS System                                     07:37 Tuesday, November 7, 2017
+
 NOTE: The data set WORK.FX_DGNS_4 has 0 observations and 27 variables.
 NOTE: DATA statement used (Total process time):
       real time           0.09 seconds
@@ -709,8 +702,8 @@ NOTE: There were 0 observations read from the data set WORK.FX_EXCARE.
 NOTE: There were 0 observations read from the data set WORK.FX_PRCD.
 NOTE: The data set WORK._DAT0 has 0 observations and 18 variables.
 NOTE: DATA statement used (Total process time):
-      real time           0.06 seconds
-      cpu time            0.00 seconds
+      real time           0.04 seconds
+      cpu time            0.01 seconds
       
 
 576        proc sort data=_dat0; by PATID fx_site BEGIN_DATE END_DATE; run;
@@ -718,7 +711,7 @@ NOTE: DATA statement used (Total process time):
 NOTE: Input data set is empty.
 NOTE: The data set WORK._DAT0 has 0 observations and 18 variables.
 NOTE: PROCEDURE SORT used (Total process time):
-      real time           0.03 seconds
+      real time           0.04 seconds
       cpu time            0.00 seconds
       
 
@@ -736,17 +729,17 @@ NOTE: There were 0 observations read from the data set WORK._DAT0.
 NOTE: The data set WORK._DAT1 has 0 observations and 19 variables.
 NOTE: DATA statement used (Total process time):
       real time           0.04 seconds
-      cpu time            0.01 seconds
+      cpu time            0.00 seconds
       
-11                                                                  The SAS System                                    13:29 Wednesday, October 4, 2017
-
 
 586        proc sort data=_dat1; by PATID fx_site start_date end_date; run;
 
 NOTE: Input data set is empty.
 NOTE: The data set WORK._DAT1 has 0 observations and 19 variables.
 NOTE: PROCEDURE SORT used (Total process time):
-      real time           0.03 seconds
+      real time           0.04 seconds
+11                                                                  The SAS System                                     07:37 Tuesday, November 7, 2017
+
       cpu time            0.00 seconds
       
 
@@ -780,7 +773,7 @@ NOTE: There were 0 observations read from the data set WORK._DAT1.
 NOTE: The data set WORK._DAT2 has 0 observations and 20 variables.
 NOTE: DATA statement used (Total process time):
       real time           0.04 seconds
-      cpu time            0.01 seconds
+      cpu time            0.00 seconds
       
 
 612        proc sort data=_dat2; by seq;run;
@@ -788,8 +781,8 @@ NOTE: DATA statement used (Total process time):
 NOTE: Input data set is empty.
 NOTE: The data set WORK._DAT2 has 0 observations and 20 variables.
 NOTE: PROCEDURE SORT used (Total process time):
-      real time           0.04 seconds
-      cpu time            0.00 seconds
+      real time           0.06 seconds
+      cpu time            0.01 seconds
       
 
 613        proc sql;
@@ -812,15 +805,15 @@ NOTE: Table WORK.SEQ_END created, with 0 rows and 3 columns.
 
 627        quit;
 NOTE: PROCEDURE SQL used (Total process time):
-12                                                                  The SAS System                                    13:29 Wednesday, October 4, 2017
-
-      real time           0.10 seconds
-      cpu time            0.04 seconds
+      real time           0.12 seconds
+      cpu time            0.03 seconds
       
 
 628        /*episode sequence case qualifier indicator and trauma*/
 629        data seq_cq(keep=patid seq seq_cq seq_trauma fx_site);
 630        set _dat2;
+12                                                                  The SAS System                                     07:37 Tuesday, November 7, 2017
+
 631        by patid seq;
 632        length seq_cq $4 seq_trauma $1;
 633        retain seq_cq seq_trauma;
@@ -838,8 +831,8 @@ NOTE: PROCEDURE SQL used (Total process time):
 NOTE: There were 0 observations read from the data set WORK._DAT2.
 NOTE: The data set WORK.SEQ_CQ has 0 observations and 5 variables.
 NOTE: DATA statement used (Total process time):
-      real time           0.03 seconds
-      cpu time            0.01 seconds
+      real time           0.04 seconds
+      cpu time            0.00 seconds
       
 
 644        proc freq data=seq_cq; tables seq_cq seq_trauma fx_site; run;
@@ -871,8 +864,8 @@ NOTE: There were 0 observations read from the data set WORK.SEQ_START.
 NOTE: There were 0 observations read from the data set WORK.SEQ_END.
 NOTE: The data set WORK.SEQ_CQ_DATE has 0 observations and 8 variables.
 NOTE: DATA statement used (Total process time):
-      real time           0.06 seconds
-      cpu time            0.01 seconds
+      real time           0.04 seconds
+      cpu time            0.00 seconds
       
 
 660        
@@ -885,9 +878,7 @@ NOTE: There were 0 observations read from the data set WORK.SEQ_CQ_DATE.
       WHERE (site_order not = ' ') and seq_cq not in (' ', '0000');
 NOTE: The data set WORK._TMP_COMBO has 0 observations and 8 variables.
 NOTE: DATA statement used (Total process time):
-      real time           0.04 seconds
-13                                                                  The SAS System                                    13:29 Wednesday, October 4, 2017
-
+      real time           0.03 seconds
       cpu time            0.00 seconds
       
 
@@ -895,6 +886,8 @@ NOTE: DATA statement used (Total process time):
 666        * define combo or alone fx;
 667        data seq_COMBO(
 668        keep=patid seq seq_cq seq_start_date alone_combo fx_site site_order)
+13                                                                  The SAS System                                     07:37 Tuesday, November 7, 2017
+
 669        ;
 670        if _n_=1 then do;
 671            declare hash hpid(dataset:"_tmp_combo(where=(seq_cq^='0000' and seq_cq^=' ')
@@ -930,7 +923,7 @@ NOTE: There were 0 observations read from the data set WORK._TMP_COMBO.
 NOTE: The data set WORK.SEQ_COMBO has 0 observations and 7 variables.
 NOTE: DATA statement used (Total process time):
       real time           0.06 seconds
-      cpu time            0.01 seconds
+      cpu time            0.03 seconds
       
 
 696        proc freq data=seq_COMBO; tables alone_combo; run;
@@ -949,7 +942,7 @@ NOTE: PROCEDURE FREQ used (Total process time):
 NOTE: Input data set is empty.
 NOTE: The data set WORK.SEQ_COMBO has 0 observations and 7 variables.
 NOTE: PROCEDURE SORT used (Total process time):
-      real time           0.04 seconds
+      real time           0.03 seconds
       cpu time            0.00 seconds
       
 
@@ -960,8 +953,6 @@ NOTE: PROCEDURE SORT used (Total process time):
 705        length combo_fx_site $30. combo_seq 4;
 706        retain combo_seq 0 combo_fx_site;
 707        if first.patid or seq_start_date-lag(seq_start_date) then combo_seq=1+combo_seq;
-14                                                                  The SAS System                                    13:29 Wednesday, October 4, 2017
-
 708        where seq_cq^='0000' and seq_cq^=' ';
 709        if combo_fx_site=" " or ""<site_order<lag(site_order) then combo_fx_site=fx_site;
 710        run;
@@ -969,9 +960,11 @@ NOTE: PROCEDURE SORT used (Total process time):
 NOTE: There were 0 observations read from the data set WORK.SEQ_COMBO.
       WHERE seq_cq not in (' ', '0000');
 NOTE: The data set WORK.COMBO_SEQ has 0 observations and 9 variables.
+14                                                                  The SAS System                                     07:37 Tuesday, November 7, 2017
+
 NOTE: DATA statement used (Total process time):
       real time           0.04 seconds
-      cpu time            0.00 seconds
+      cpu time            0.01 seconds
       
 
 711        
@@ -982,8 +975,8 @@ NOTE: DATA statement used (Total process time):
 NOTE: Input data set is empty.
 NOTE: The data set WORK.SEQ_COMBO has 0 observations and 7 variables.
 NOTE: PROCEDURE SORT used (Total process time):
-      real time           0.04 seconds
-      cpu time            0.00 seconds
+      real time           0.07 seconds
+      cpu time            0.01 seconds
       
 
 715        
@@ -999,14 +992,14 @@ NOTE: There were 0 observations read from the data set WORK.SEQ_CQ.
 NOTE: There were 0 observations read from the data set WORK.SEQ_COMBO.
 NOTE: The data set WORK.FX_CLM_DB has 0 observations and 25 variables.
 NOTE: DATA statement used (Total process time):
-      real time           0.04 seconds
-      cpu time            0.01 seconds
+      real time           0.06 seconds
+      cpu time            0.00 seconds
       
 
 720        
 721        proc sql;
 722        select count(distinct seq) from FX_CLM_DB;
-                                                                  --- AS project ---                              13:29 Wednesday, October 4, 2017   1
+                                                                  --- AS project ---                               07:37 Tuesday, November 7, 2017   1
 
                                                                                
                                                                        --------
@@ -1084,7 +1077,7 @@ NOTE: DATA statement used (Total process time):
 NOTE: The PROCEDURE SQL printed page 1.
 NOTE: PROCEDURE SQL used (Total process time):
       real time           0.04 seconds
-      cpu time            0.00 seconds
+      cpu time            0.01 seconds
       
 
 724        
@@ -1108,15 +1101,15 @@ NOTE: PROCEDURE SQL used (Total process time):
 
 NOTE: Input data set is empty.
 NOTE: 0 observations with duplicate key values were deleted.
-15                                                                  The SAS System                                    13:29 Wednesday, October 4, 2017
-
 NOTE: The data set WORK.FRACTUREEPISODES has 0 observations and 24 variables.
 NOTE: PROCEDURE SORT used (Total process time):
-      real time           0.01 seconds
+      real time           0.04 seconds
       cpu time            0.00 seconds
       
 
 742        
+15                                                                  The SAS System                                     07:37 Tuesday, November 7, 2017
+
 743        proc sql;
 744          create table DT.fractureEpisodesPrevControl as
 745            select A.database,
@@ -1150,7 +1143,7 @@ NOTE: No rows were selected.
 768                 sum(countDistinctPatid) as sumDistinctPatid,
 769                 sum(countFractureEpisodes) as sumFractureEpisodes
 770            from Work.summaryFractureEpisodesPrev;
-                                                                  --- AS project ---                              13:29 Wednesday, October 4, 2017   2
+                                                                  --- AS project ---                               07:37 Tuesday, November 7, 2017   2
 
                                                                                sumDistinct   sumFracture
                                               table                                  Patid      Episodes
@@ -1227,8 +1220,8 @@ NOTE: No rows were selected.
 771        quit;
 NOTE: The PROCEDURE SQL printed page 2.
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           0.40 seconds
-      cpu time            0.12 seconds
+      real time           0.26 seconds
+      cpu time            0.09 seconds
       
 
 772        
@@ -1249,15 +1242,13 @@ NOTE: Data set has 0 observations.
 784         *   PRODUCT:   SAS
 785         *   VERSION:   9.4
 786         *   CREATOR:   External File Interface
-787         *   DATE:      04OCT17
+787         *   DATE:      07NOV17
 788         *   DESC:      Generated SAS Datastep Code
 789         *   TEMPLATE SOURCE:  (None Specified.)
 790         ***********************************************************************/
 791            data _null_;
 792            %let _EFIERR_ = 0; /* set the ERROR detection macro variable */
 793            %let _EFIREC_ = 0;     /* clear export record count macro variable */
-16                                                                  The SAS System                                    13:29 Wednesday, October 4, 2017
-
 794            file 'data\processed\queryFracturesControl.csv' delimiter='09'x DSD DROPOVER lrecl=32767;
 795            if _n_ = 1 then        /* write column names or labels */
 796             do;
@@ -1265,6 +1256,8 @@ NOTE: Data set has 0 observations.
 798                  "table"
 799               '09'x
 800                  "fractureType"
+16                                                                  The SAS System                                     07:37 Tuesday, November 7, 2017
+
 801               '09'x
 802                  "fractureSite"
 803               '09'x
@@ -1295,8 +1288,8 @@ NOTE: Data set has 0 observations.
 NOTE: The file 'data\processed\queryFracturesControl.csv' is:
       Filename=U:\studies\AS\pgms\bchan\data\processed\queryFracturesControl.csv,
       RECFM=V,LRECL=32767,File Size (bytes)=0,
-      Last Modified=04Oct2017:13:29:36,
-      Create Time=04Oct2017:13:29:36
+      Last Modified=07Nov2017:07:37:25,
+      Create Time=07Nov2017:07:37:25
 
 NOTE: 1 record was written to the file 'data\processed\queryFracturesControl.csv'.
       The minimum record length was 72.
@@ -1312,8 +1305,8 @@ NOTE: DATA statement used (Total process time):
   
 NOTE: "data\processed\queryFracturesControl.csv" file was successfully created.
 NOTE: PROCEDURE EXPORT used (Total process time):
-      real time           0.26 seconds
-      cpu time            0.03 seconds
+      real time           0.09 seconds
+      cpu time            0.07 seconds
       
 
 827        
@@ -1321,6 +1314,6 @@ NOTE: PROCEDURE EXPORT used (Total process time):
 829        ods html close;
 NOTE: SAS Institute Inc., SAS Campus Drive, Cary, NC USA 27513-2414
 NOTE: The SAS System used:
-      real time           3.15 seconds
-      cpu time            0.85 seconds
+      real time           2.83 seconds
+      cpu time            0.84 seconds
       

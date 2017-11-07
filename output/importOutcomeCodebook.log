@@ -1,4 +1,4 @@
-1                                                          The SAS System                         11:32 Thursday, September 28, 2017
+1                                                          The SAS System                             11:24 Monday, November 6, 2017
 
 NOTE: Copyright (c) 2002-2012 by SAS Institute Inc., Cary, NC, USA. 
 NOTE: SAS (r) Proprietary Software 9.4 (TS1M1) 
@@ -28,8 +28,8 @@ Please remember not to copy any data files that contain PHI (protected health id
 
 
 NOTE: SAS initialization used:
-      real time           0.17 seconds
-      cpu time            0.12 seconds
+      real time           0.18 seconds
+      cpu time            0.09 seconds
       
 1          *  University of Alabama at Birmingham                               *
 2          *  AS project                                            *
@@ -60,115 +60,118 @@ NOTE: Libref UCB was successfully assigned as follows:
 NOTE: Libref DT was successfully assigned as follows: 
       Engine:        V9 
       Physical Name: V:\studies\AS\data
-92         footnote "&pgm.";
-93         * footnote2 "%sysfunc(datetime(),datetime14.)";
-94         title1 '--- AS project ---';
-95         **********************************************************************;
-96         options macrogen mlogic mprint symbolgen;
-97         options nomacrogen nomlogic nomprint nosymbolgen;
-98         
-99         
-100        /*
-101        NEED TO OPERATIONALIZE
-102        
-103        The outcome definition for osteoporotic fracture is complex.
-2                                                                   The SAS System                                  11:32 Thursday, September 28, 2017
+NOTE: Libref NDC was successfully assigned as follows: 
+      Engine:        V9 
+      Physical Name: W:\onenote\references\drug ndcs\sas data
+127        footnote "&pgm.";
+128        * footnote2 "%sysfunc(datetime(),datetime14.)";
+129        title1 '--- AS project ---';
+130        **********************************************************************;
+131        options macrogen mlogic mprint symbolgen;
+132        options nomacrogen nomlogic nomprint nosymbolgen;
+133        
+134        
+135        /*
+2                                                                   The SAS System                                      11:24 Monday, November 6, 2017
 
-104        See *ALGORITHMS TO ENHANCE SPECIFICITY OF FRACTURE IDENTIFICATION_ 100316.docx*
-105        
-106        Osteoporotic fracture Clinical vertebral fracture
-107        Non-vertebral osteoporotic fracture (hip, pelvis, femur, humerus, distal radius/ulna)
-108         */
-109        
-110        
-111        ods html
-112          body = "output\&cmt..html"
-113          style = Statistical;
+136        NEED TO OPERATIONALIZE
+137        
+138        The outcome definition for osteoporotic fracture is complex.
+139        See *ALGORITHMS TO ENHANCE SPECIFICITY OF FRACTURE IDENTIFICATION_ 100316.docx*
+140        
+141        Osteoporotic fracture Clinical vertebral fracture
+142        Non-vertebral osteoporotic fracture (hip, pelvis, femur, humerus, distal radius/ulna)
+143         */
+144        
+145        
+146        ods html
+147          body = "output\&cmt..html"
+148          style = Statistical;
 NOTE: Writing HTML Body file: output\importOutcomeCodebook.html
-114        
-115        
-116        filename f "data\raw\AS Project Codebooks - 20170410\AS Project Cohort Outcome Codebook-20170410.xlsx";
-117        
-118        proc sql;
-119          create table Work.worksheets (worksheet varchar(40), outfile varchar(20));
+149        
+150        
+151        filename f "data\raw\AS Project Codebooks - 20170410\AS Project Cohort Outcome Codebook-20170410.xlsx";
+152        
+153        proc sql;
+154          create table Work.worksheets (worksheet varchar(40), outfile varchar(20));
 NOTE: Table WORK.WORKSHEETS created, with 0 rows and 2 columns.
-120          insert into Work.worksheets
-121            values ("Detail Outcome-Cardiac", "defCardiac")
-122            values ("Detail Outcome-Cancer", "defCancer")
-123            values ("Detail Outcome-Hospit Infection", "defHospInf")
-124            values ("Detail Outcome-OI", "defOI")
-125            values ("Detail Outcome-Spondyloarthri", "defSpondy")
-126            values ("Detail Outcome-Lung-Neur-Kidn", "defLNK");
+155          insert into Work.worksheets
+156            values ("Detail Outcome-Cardiac", "defCardiac")
+157            values ("Detail Outcome-Cancer", "defCancer")
+158            values ("Detail Outcome-Hospit Infection", "defHospInf")
+159            values ("Detail Outcome-OI", "defOI")
+160            values ("Detail Outcome-Spondyloarthri", "defSpondy")
+161            values ("Detail Outcome-Lung-Neur-Kidn", "defLNK");
 NOTE: 6 rows were inserted into WORK.WORKSHEETS.
 
-127        quit;
+162        quit;
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           0.01 seconds
+      real time           0.04 seconds
       cpu time            0.01 seconds
       
 
-128        
-129        %macro import;
-130          %do i = 1 %to 6;
-131            data _null_;
-132              set Work.worksheets;
-133              if _n_ = &i then do;
-134                call symput ("worksheet", strip(worksheet));
-135                call symput ("outfile", strip(outfile));
-136              end;
-137            run;
-138            proc import datafile = f dbms = xlsx out = Work.&outfile;
-139              sheet = "&worksheet";
-140            run;
-141          %end;
-142        %mend;
-143        
-144        %import;
+163        
+164        %macro import;
+165          %do i = 1 %to 6;
+166            data _null_;
+167              set Work.worksheets;
+168              if _n_ = &i then do;
+169                call symput ("worksheet", strip(worksheet));
+170                call symput ("outfile", strip(outfile));
+171              end;
+172            run;
+173            proc import datafile = f dbms = xlsx out = Work.&outfile;
+174              sheet = "&worksheet";
+175            run;
+176          %end;
+177        %mend;
+178        
+179        %import;
 
 NOTE: There were 6 observations read from the data set WORK.WORKSHEETS.
 NOTE: DATA statement used (Total process time):
       real time           0.00 seconds
-      cpu time            0.00 seconds
+      cpu time            0.01 seconds
       
 
 
 NOTE: The import data set has 30 observations and 3 variables.
 NOTE: WORK.DEFCARDIAC data set was successfully created.
 NOTE: PROCEDURE IMPORT used (Total process time):
-      real time           0.21 seconds
-      cpu time            0.01 seconds
+      real time           0.17 seconds
+      cpu time            0.03 seconds
       
 
 
 NOTE: There were 6 observations read from the data set WORK.WORKSHEETS.
 NOTE: DATA statement used (Total process time):
       real time           0.00 seconds
+3                                                                   The SAS System                                      11:24 Monday, November 6, 2017
+
       cpu time            0.00 seconds
       
-
-3                                                                   The SAS System                                  11:32 Thursday, September 28, 2017
 
 
 NOTE: The import data set has 698 observations and 3 variables.
 NOTE: WORK.DEFCANCER data set was successfully created.
 NOTE: PROCEDURE IMPORT used (Total process time):
-      real time           0.09 seconds
-      cpu time            0.06 seconds
+      real time           0.14 seconds
+      cpu time            0.07 seconds
       
 
 
 NOTE: There were 6 observations read from the data set WORK.WORKSHEETS.
 NOTE: DATA statement used (Total process time):
-      real time           0.00 seconds
-      cpu time            0.00 seconds
+      real time           0.01 seconds
+      cpu time            0.01 seconds
       
 
 
 NOTE: The import data set has 1400 observations and 5 variables.
 NOTE: WORK.DEFHOSPINF data set was successfully created.
 NOTE: PROCEDURE IMPORT used (Total process time):
-      real time           0.14 seconds
-      cpu time            0.09 seconds
+      real time           0.18 seconds
+      cpu time            0.14 seconds
       
 
 
@@ -182,8 +185,8 @@ NOTE: DATA statement used (Total process time):
 NOTE: The import data set has 504 observations and 3 variables.
 NOTE: WORK.DEFOI data set was successfully created.
 NOTE: PROCEDURE IMPORT used (Total process time):
-      real time           0.07 seconds
-      cpu time            0.06 seconds
+      real time           0.21 seconds
+      cpu time            0.07 seconds
       
 
 
@@ -197,7 +200,7 @@ NOTE: DATA statement used (Total process time):
 NOTE: The import data set has 25 observations and 3 variables.
 NOTE: WORK.DEFSPONDY data set was successfully created.
 NOTE: PROCEDURE IMPORT used (Total process time):
-      real time           0.04 seconds
+      real time           0.09 seconds
       cpu time            0.04 seconds
       
 
@@ -214,63 +217,63 @@ NOTE:    Variable Name Change.  Code Type -> Code_Type
 NOTE: The import data set has 47 observations and 5 variables.
 NOTE: WORK.DEFLNK data set was successfully created.
 NOTE: PROCEDURE IMPORT used (Total process time):
-      real time           0.06 seconds
+      real time           0.09 seconds
       cpu time            0.04 seconds
       
+4                                                                   The SAS System                                      11:24 Monday, November 6, 2017
 
-145        
-146        
-4                                                                   The SAS System                                  11:32 Thursday, September 28, 2017
 
-147        proc sql;
-148          create table Work.defOutcomesICD9 as
-149            select "Cardiac disease" as outcomeCategory, disease, icd9_list, description from Work.defCardiac union corr
-150            select "Cancer" as outcomeCategory, disease, icd9_list, description from Work.defCancer union corr
-151            select "Infection" as outcomeCategory, "Hospitalized infection" as disease, icd9_list, Descriptions as description from Work.defHospInf
-151      !  union corr
-152            select "Infection" as outcomeCategory, "Opportunistic infection" as disease, icd9_list, Descriptions as description from Work.defOI
-152      ! union corr
-153            select case
-154                     when disease in ("Psoriasis", "Psoriatic arthritis") then "PsO/PsA"
-155                     when disease in ("Crohn’s Disease", "Ulcerative Colitis") then "Inflammatory bowel disease"
-156                     when prxmatch("/Crohn.s Disease/", disease) then "Inflammatory bowel disease"
-157                     when disease in ("Uveitis") then "Uveitis"
-158                     else ""
-159                     end as outcomeCategory,
-160                   A.disease,
-161                   A.icd9_list,
-162                   A.description
-163              from Work.defSpondy A;
+180        
+181        
+182        proc sql;
+183          create table Work.defOutcomesICD9 as
+184            select "Cardiac disease" as outcomeCategory, disease, icd9_list, description from Work.defCardiac union corr
+185            select "Cancer" as outcomeCategory, disease, icd9_list, description from Work.defCancer union corr
+186            select "Infection" as outcomeCategory, "Hospitalized infection" as disease, icd9_list, Descriptions as description from Work.defHospInf
+186      !  union corr
+187            select "Infection" as outcomeCategory, "Opportunistic infection" as disease, icd9_list, Descriptions as description from Work.defOI
+187      ! union corr
+188            select case
+189                     when disease in ("Psoriasis", "Psoriatic arthritis") then "PsO/PsA"
+190                     when disease in ("Crohn’s Disease", "Ulcerative Colitis") then "Inflammatory bowel disease"
+191                     when prxmatch("/Crohn.s Disease/", disease) then "Inflammatory bowel disease"
+192                     when disease in ("Uveitis") then "Uveitis"
+193                     else ""
+194                     end as outcomeCategory,
+195                   A.disease,
+196                   A.icd9_list,
+197                   A.description
+198              from Work.defSpondy A;
 NOTE: Table WORK.DEFOUTCOMESICD9 created, with 2657 rows and 4 columns.
 
-164          alter table Work.defOutcomesICD9 add codeType varchar(7), code varchar(5), enc_type varchar(2);
+199          alter table Work.defOutcomesICD9 add codeType varchar(7), code varchar(5), enc_type varchar(2);
 NOTE: Table WORK.DEFOUTCOMESICD9 has been modified, with 7 columns.
-165          update Work.defOutcomesICD9
-166            set codeType = "ICD9-DX";
+200          update Work.defOutcomesICD9
+201            set codeType = "ICD9-DX";
 NOTE: 2657 rows were updated in WORK.DEFOUTCOMESICD9.
 
-167          update Work.defOutcomesICD9
-168            set code = dequote(icd9_list);
+202          update Work.defOutcomesICD9
+203            set code = dequote(icd9_list);
 WARNING: Character expression will be truncated when assigned to character column code.
 NOTE: 2657 rows were updated in WORK.DEFOUTCOMESICD9.
 
-169          update Work.defOutcomesICD9
-170            set enc_type = case when disease = "Myocardial infarction" then "IP" else "" end;
+204          update Work.defOutcomesICD9
+205            set enc_type = case when disease = "Myocardial infarction" then "IP" else "" end;
 NOTE: 2657 rows were updated in WORK.DEFOUTCOMESICD9.
 
-171          alter table Work.defOutcomesICD9 drop icd9_list;
+206          alter table Work.defOutcomesICD9 drop icd9_list;
 NOTE: Table WORK.DEFOUTCOMESICD9 has been modified, with 6 columns.
-172          create table DT.defOutcomes as
-173            select * from Work.defOutcomesICD9 union corr
-174            select disease_category as outcomeCategory, disease, code_type as codeType, dequote(codes) as code, "" as enc_type, description
-175              from Work.defLNK;
+207          create table DT.defOutcomes as
+208            select * from Work.defOutcomesICD9 union corr
+209            select disease_category as outcomeCategory, disease, code_type as codeType, dequote(codes) as code, "" as enc_type, description
+210              from Work.defLNK;
 NOTE: Table DT.DEFOUTCOMES created, with 2704 rows and 6 columns.
 
-176          select outcomeCategory, disease, count(distinct codeType) as countCodeTypes, count(distinct code) as countCodes
-177            from DT.defOutcomes
-178            where outcomeCategory ^in ("Hospitalized infection", "Opportunistic infection")
-179            group by outcomeCategory, disease;
-                                                                  --- AS project ---                            11:32 Thursday, September 28, 2017   1
+211          select outcomeCategory, disease, count(distinct codeType) as countCodeTypes, count(distinct code) as countCodes
+212            from DT.defOutcomes
+213            where outcomeCategory ^in ("Hospitalized infection", "Opportunistic infection")
+214            group by outcomeCategory, disease;
+                                                                  --- AS project ---                                11:24 Monday, November 6, 2017   1
 
                                                                                                      countCode
                            Disease Category            Disease                                           Types  countCodes
@@ -344,18 +347,18 @@ NOTE: Table DT.DEFOUTCOMES created, with 2704 rows and 6 columns.
  
  
                                                               importOutcomeCodebook.sas
-180        quit;
+215        quit;
 NOTE: The PROCEDURE SQL printed page 1.
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           0.23 seconds
-      cpu time            0.14 seconds
+      real time           0.48 seconds
+      cpu time            0.17 seconds
       
 
-181        
-182        
-183        ods html close;
+216        
+217        
+218        ods html close;
 NOTE: SAS Institute Inc., SAS Campus Drive, Cary, NC USA 27513-2414
 NOTE: The SAS System used:
-      real time           1.42 seconds
-      cpu time            0.87 seconds
+      real time           1.98 seconds
+      cpu time            0.95 seconds
       

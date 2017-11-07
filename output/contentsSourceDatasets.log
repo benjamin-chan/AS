@@ -1,4 +1,4 @@
-1                                                          The SAS System                         11:30 Thursday, September 28, 2017
+1                                                          The SAS System                             11:21 Monday, November 6, 2017
 
 NOTE: Copyright (c) 2002-2012 by SAS Institute Inc., Cary, NC, USA. 
 NOTE: SAS (r) Proprietary Software 9.4 (TS1M1) 
@@ -28,8 +28,8 @@ Please remember not to copy any data files that contain PHI (protected health id
 
 
 NOTE: SAS initialization used:
-      real time           0.18 seconds
-      cpu time            0.17 seconds
+      real time           0.99 seconds
+      cpu time            0.12 seconds
       
 1          *  University of Alabama at Birmingham                               *
 2          *  AS project                                            *
@@ -60,69 +60,72 @@ NOTE: Libref UCB was successfully assigned as follows:
 NOTE: Libref DT was successfully assigned as follows: 
       Engine:        V9 
       Physical Name: V:\studies\AS\data
-92         footnote "&pgm.";
-93         * footnote2 "%sysfunc(datetime(),datetime14.)";
-94         title1 '--- AS project ---';
-95         **********************************************************************;
-96         options macrogen mlogic mprint symbolgen;
-97         options nomacrogen nomlogic nomprint nosymbolgen;
-98         
-99         
-100        
-101        ods html
-102          body = "output\&cmt..html"
-103          style = Statistical;
-2                                                                   The SAS System                                  11:30 Thursday, September 28, 2017
+NOTE: Libref NDC was successfully assigned as follows: 
+      Engine:        V9 
+      Physical Name: W:\onenote\references\drug ndcs\sas data
+127        footnote "&pgm.";
+128        * footnote2 "%sysfunc(datetime(),datetime14.)";
+129        title1 '--- AS project ---';
+130        **********************************************************************;
+131        options macrogen mlogic mprint symbolgen;
+132        options nomacrogen nomlogic nomprint nosymbolgen;
+133        
+134        
+135        
+2                                                                   The SAS System                                      11:21 Monday, November 6, 2017
 
+136        ods html
+137          body = "output\&cmt..html"
+138          style = Statistical;
 NOTE: Writing HTML Body file: output\contentsSourceDatasets.html
-104        
-105        
-106        %macro exportContents;
-107          proc sql;
-108            create table Work.libs (libname varchar(8), desc varchar(20), yearRange varchar(9), note varchar(80));
-109            insert into Work.libs
-110              values ("stdc5p", "Medicare 5% Sample", "2006-2014", "Data can track back to 1999, but only use from 2006 in this project")
-111              values ("std_SABR", "Medicare SABER2", "2006-2014", "Standardization data are in server 1 in SAS lib Std_sabr")
-112              values ("MPSTD", "MPCD", "2007-2010", "Only RA(SP) & Healthy(CP2) population from 'Commercial' (eg. not Medicaid) coverage
-112      ! included)")
-113              values ("UCBSTD", "MarketScan", "2010-2014", "");
-114          quit;
-115          %do i = 1 %to 4;
-116            data _null_;
-117              set Work.libs;
-118              if _n_ = &i then call symput ("lib", strip(libname));
-119            run;
-120            proc contents data = &lib.._all_ order = varnum out = Work.contents_&lib;
-121            run;
-122            proc export
-123              data = Work.contents_&lib
-124              outfile = "data\processed\contentsSourceDatasets_&lib..csv"
-125              dbms = csv
-126              replace;
-127              delimiter = ",";
-128            run;
-129          %end;
-130        %mend;
-131        
-132        %exportContents;
+139        
+140        
+141        %macro exportContents;
+142          proc sql;
+143            create table Work.libs (libname varchar(8), desc varchar(20), yearRange varchar(9), note varchar(80));
+144            insert into Work.libs
+145              values ("stdc5p", "Medicare 5% Sample", "2006-2014", "Data can track back to 1999, but only use from 2006 in this project")
+146              values ("std_SABR", "Medicare SABER2", "2006-2014", "Standardization data are in server 1 in SAS lib Std_sabr")
+147              values ("MPSTD", "MPCD", "2007-2010", "Only RA(SP) & Healthy(CP2) population from 'Commercial' (eg. not Medicaid) coverage
+147      ! included)")
+148              values ("UCBSTD", "MarketScan", "2010-2014", "");
+149          quit;
+150          %do i = 1 %to 4;
+151            data _null_;
+152              set Work.libs;
+153              if _n_ = &i then call symput ("lib", strip(libname));
+154            run;
+155            proc contents data = &lib.._all_ order = varnum out = Work.contents_&lib;
+156            run;
+157            proc export
+158              data = Work.contents_&lib
+159              outfile = "data\processed\contentsSourceDatasets_&lib..csv"
+160              dbms = csv
+161              replace;
+162              delimiter = ",";
+163            run;
+164          %end;
+165        %mend;
+166        
+167        %exportContents;
 NOTE: Table WORK.LIBS created, with 0 rows and 4 columns.
 WARNING: Character expression will be truncated when assigned to character column note.
 NOTE: 4 rows were inserted into WORK.LIBS.
 
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           0.01 seconds
-      cpu time            0.00 seconds
+      real time           0.17 seconds
+      cpu time            0.01 seconds
       
 
 
 NOTE: There were 4 observations read from the data set WORK.LIBS.
 NOTE: DATA statement used (Total process time):
       real time           0.01 seconds
-      cpu time            0.00 seconds
+      cpu time            0.01 seconds
       
 
 
-                                                                  --- AS project ---                            11:30 Thursday, September 28, 2017   1
+                                                                  --- AS project ---                                11:21 Monday, November 6, 2017   1
 
                                                                 The CONTENTS Procedure
 
@@ -131,7 +134,7 @@ NOTE: DATA statement used (Total process time):
 Libref               STDC5P                                                                                                                           
 Engine               SPDE                                                                                                                             
 Physical Name        H:\studies\osteo\data\STD_files\5pct\                                                                                            
-Free Space (Kbytes)  7472214449                                                                                                                       
+Free Space (Kbytes)  7284663721                                                                                                                       
 Metapath             'H:\studies\osteo\data\STD_files\5pct\'                                                                                          
 Indexpath            'I:\studies\osteo\data\STD_files\5pct\' 'M:\studies\osteo\data\STD_files\5pct\'                                                  
 Datapath             'J:\studies\osteo\data\STD_files\5pct\' 'K:\studies\osteo\data\STD_files\5pct\' 'L:\studies\osteo\data\STD_files\5pct\'          
@@ -196,7 +199,7 @@ Datapath             'J:\studies\osteo\data\STD_files\5pct\' 'K:\studies\osteo\d
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                            11:30 Thursday, September 28, 2017   2
+                                                                  --- AS project ---                                11:21 Monday, November 6, 2017   2
 
                                                                 The CONTENTS Procedure
 
@@ -270,7 +273,7 @@ Datapath             'J:\studies\osteo\data\STD_files\5pct\' 'K:\studies\osteo\d
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                            11:30 Thursday, September 28, 2017   3
+                                                                  --- AS project ---                                11:21 Monday, November 6, 2017   3
 
                                                                 The CONTENTS Procedure
 
@@ -344,7 +347,7 @@ Datapath             'J:\studies\osteo\data\STD_files\5pct\' 'K:\studies\osteo\d
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                            11:30 Thursday, September 28, 2017   4
+                                                                  --- AS project ---                                11:21 Monday, November 6, 2017   4
 
                                                                 The CONTENTS Procedure
 
@@ -418,7 +421,7 @@ Datapath             'J:\studies\osteo\data\STD_files\5pct\' 'K:\studies\osteo\d
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                            11:30 Thursday, September 28, 2017   5
+                                                                  --- AS project ---                                11:21 Monday, November 6, 2017   5
 
                                                                 The CONTENTS Procedure
 
@@ -492,7 +495,7 @@ Datapath             'J:\studies\osteo\data\STD_files\5pct\' 'K:\studies\osteo\d
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                            11:30 Thursday, September 28, 2017   6
+                                                                  --- AS project ---                                11:21 Monday, November 6, 2017   6
 
                                                                 The CONTENTS Procedure
 
@@ -566,7 +569,7 @@ Datapath             'J:\studies\osteo\data\STD_files\5pct\' 'K:\studies\osteo\d
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                            11:30 Thursday, September 28, 2017   7
+                                                                  --- AS project ---                                11:21 Monday, November 6, 2017   7
 
                                                                 The CONTENTS Procedure
 
@@ -640,7 +643,7 @@ Datapath             'J:\studies\osteo\data\STD_files\5pct\' 'K:\studies\osteo\d
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                            11:30 Thursday, September 28, 2017   8
+                                                                  --- AS project ---                                11:21 Monday, November 6, 2017   8
 
                                                                 The CONTENTS Procedure
 
@@ -714,7 +717,7 @@ Datapath             'J:\studies\osteo\data\STD_files\5pct\' 'K:\studies\osteo\d
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                            11:30 Thursday, September 28, 2017   9
+                                                                  --- AS project ---                                11:21 Monday, November 6, 2017   9
 
                                                                 The CONTENTS Procedure
 
@@ -788,7 +791,7 @@ Datapath             'J:\studies\osteo\data\STD_files\5pct\' 'K:\studies\osteo\d
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                            11:30 Thursday, September 28, 2017  10
+                                                                  --- AS project ---                                11:21 Monday, November 6, 2017  10
 
                                                                 The CONTENTS Procedure
 
@@ -862,7 +865,7 @@ Datapath             'J:\studies\osteo\data\STD_files\5pct\' 'K:\studies\osteo\d
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                            11:30 Thursday, September 28, 2017  11
+                                                                  --- AS project ---                                11:21 Monday, November 6, 2017  11
 
                                                                 The CONTENTS Procedure
 
@@ -936,7 +939,7 @@ Datapath             'J:\studies\osteo\data\STD_files\5pct\' 'K:\studies\osteo\d
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                            11:30 Thursday, September 28, 2017  12
+                                                                  --- AS project ---                                11:21 Monday, November 6, 2017  12
 
                                                                 The CONTENTS Procedure
 
@@ -1010,7 +1013,7 @@ Datapath             'J:\studies\osteo\data\STD_files\5pct\' 'K:\studies\osteo\d
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                            11:30 Thursday, September 28, 2017  13
+                                                                  --- AS project ---                                11:21 Monday, November 6, 2017  13
 
                                                                 The CONTENTS Procedure
 
@@ -1084,7 +1087,7 @@ Datapath             'J:\studies\osteo\data\STD_files\5pct\' 'K:\studies\osteo\d
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                            11:30 Thursday, September 28, 2017  14
+                                                                  --- AS project ---                                11:21 Monday, November 6, 2017  14
 
                                                                 The CONTENTS Procedure
 
@@ -1158,7 +1161,7 @@ Datapath             'J:\studies\osteo\data\STD_files\5pct\' 'K:\studies\osteo\d
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                            11:30 Thursday, September 28, 2017  15
+                                                                  --- AS project ---                                11:21 Monday, November 6, 2017  15
 
                                                                 The CONTENTS Procedure
 
@@ -1232,7 +1235,7 @@ Datapath             'J:\studies\osteo\data\STD_files\5pct\' 'K:\studies\osteo\d
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                            11:30 Thursday, September 28, 2017  16
+                                                                  --- AS project ---                                11:21 Monday, November 6, 2017  16
 
                                                                 The CONTENTS Procedure
 
@@ -1306,7 +1309,7 @@ Datapath             'J:\studies\osteo\data\STD_files\5pct\' 'K:\studies\osteo\d
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                            11:30 Thursday, September 28, 2017  17
+                                                                  --- AS project ---                                11:21 Monday, November 6, 2017  17
 
                                                                 The CONTENTS Procedure
 
@@ -1380,7 +1383,7 @@ Datapath             'J:\studies\osteo\data\STD_files\5pct\' 'K:\studies\osteo\d
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                            11:30 Thursday, September 28, 2017  18
+                                                                  --- AS project ---                                11:21 Monday, November 6, 2017  18
 
                                                                 The CONTENTS Procedure
 
@@ -1454,7 +1457,7 @@ Datapath             'J:\studies\osteo\data\STD_files\5pct\' 'K:\studies\osteo\d
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                            11:30 Thursday, September 28, 2017  19
+                                                                  --- AS project ---                                11:21 Monday, November 6, 2017  19
 
                                                                 The CONTENTS Procedure
 
@@ -1528,7 +1531,7 @@ Datapath             'J:\studies\osteo\data\STD_files\5pct\' 'K:\studies\osteo\d
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                            11:30 Thursday, September 28, 2017  20
+                                                                  --- AS project ---                                11:21 Monday, November 6, 2017  20
 
                                                                 The CONTENTS Procedure
 
@@ -1602,7 +1605,7 @@ Datapath             'J:\studies\osteo\data\STD_files\5pct\' 'K:\studies\osteo\d
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                            11:30 Thursday, September 28, 2017  21
+                                                                  --- AS project ---                                11:21 Monday, November 6, 2017  21
 
                                                                 The CONTENTS Procedure
 
@@ -1676,7 +1679,7 @@ Datapath             'J:\studies\osteo\data\STD_files\5pct\' 'K:\studies\osteo\d
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                            11:30 Thursday, September 28, 2017  22
+                                                                  --- AS project ---                                11:21 Monday, November 6, 2017  22
 
                                                                 The CONTENTS Procedure
 
@@ -1750,7 +1753,7 @@ Datapath             'J:\studies\osteo\data\STD_files\5pct\' 'K:\studies\osteo\d
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                            11:30 Thursday, September 28, 2017  23
+                                                                  --- AS project ---                                11:21 Monday, November 6, 2017  23
 
                                                                 The CONTENTS Procedure
 
@@ -1824,7 +1827,7 @@ Datapath             'J:\studies\osteo\data\STD_files\5pct\' 'K:\studies\osteo\d
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                            11:30 Thursday, September 28, 2017  24
+                                                                  --- AS project ---                                11:21 Monday, November 6, 2017  24
 
                                                                 The CONTENTS Procedure
 
@@ -1898,7 +1901,7 @@ Datapath             'J:\studies\osteo\data\STD_files\5pct\' 'K:\studies\osteo\d
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                            11:30 Thursday, September 28, 2017  25
+                                                                  --- AS project ---                                11:21 Monday, November 6, 2017  25
 
                                                                 The CONTENTS Procedure
 
@@ -1972,7 +1975,7 @@ Datapath             'J:\studies\osteo\data\STD_files\5pct\' 'K:\studies\osteo\d
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                            11:30 Thursday, September 28, 2017  26
+                                                                  --- AS project ---                                11:21 Monday, November 6, 2017  26
 
                                                                 The CONTENTS Procedure
 
@@ -2046,7 +2049,7 @@ Datapath             'J:\studies\osteo\data\STD_files\5pct\' 'K:\studies\osteo\d
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                            11:30 Thursday, September 28, 2017  27
+                                                                  --- AS project ---                                11:21 Monday, November 6, 2017  27
 
                                                                 The CONTENTS Procedure
 
@@ -2120,7 +2123,7 @@ Datapath             'J:\studies\osteo\data\STD_files\5pct\' 'K:\studies\osteo\d
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                            11:30 Thursday, September 28, 2017  28
+                                                                  --- AS project ---                                11:21 Monday, November 6, 2017  28
 
                                                                 The CONTENTS Procedure
 
@@ -2194,7 +2197,7 @@ Datapath             'J:\studies\osteo\data\STD_files\5pct\' 'K:\studies\osteo\d
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                            11:30 Thursday, September 28, 2017  29
+                                                                  --- AS project ---                                11:21 Monday, November 6, 2017  29
 
                                                                 The CONTENTS Procedure
 
@@ -2268,7 +2271,7 @@ Datapath             'J:\studies\osteo\data\STD_files\5pct\' 'K:\studies\osteo\d
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                            11:30 Thursday, September 28, 2017  30
+                                                                  --- AS project ---                                11:21 Monday, November 6, 2017  30
 
                                                                 The CONTENTS Procedure
 
@@ -2344,212 +2347,212 @@ NOTE: The data set WORK.CONTENTS_STDC5P has 428 observations and 41 variables.
  
                                                               contentsSourceDatasets.sas
 NOTE: PROCEDURE CONTENTS used (Total process time):
-      real time           1:52.48
-      cpu time            4.99 seconds
+      real time           1:52.93
+      cpu time            3.16 seconds
       
 NOTE: The PROCEDURE CONTENTS printed pages 1-30.
 
 
-133         /**********************************************************************
-134         *   PRODUCT:   SAS
-135         *   VERSION:   9.4
-136         *   CREATOR:   External File Interface
-137         *   DATE:      28SEP17
-138         *   DESC:      Generated SAS Datastep Code
-139         *   TEMPLATE SOURCE:  (None Specified.)
-140         ***********************************************************************/
-141            data _null_;
-142            %let _EFIERR_ = 0; /* set the ERROR detection macro variable */
-143            %let _EFIREC_ = 0;     /* clear export record count macro variable */
-144            file 'data\processed\contentsSourceDatasets_stdc5p.csv' delimiter=',' DSD DROPOVER lrecl=32767;
-145            if _n_ = 1 then        /* write column names or labels */
-146             do;
-147               put
-148                  "LIBNAME"
-3                                                                   The SAS System                                  11:30 Thursday, September 28, 2017
+168         /**********************************************************************
+169         *   PRODUCT:   SAS
+170         *   VERSION:   9.4
+171         *   CREATOR:   External File Interface
+172         *   DATE:      06NOV17
+173         *   DESC:      Generated SAS Datastep Code
+174         *   TEMPLATE SOURCE:  (None Specified.)
+175         ***********************************************************************/
+176            data _null_;
+177            %let _EFIERR_ = 0; /* set the ERROR detection macro variable */
+178            %let _EFIREC_ = 0;     /* clear export record count macro variable */
+179            file 'data\processed\contentsSourceDatasets_stdc5p.csv' delimiter=',' DSD DROPOVER lrecl=32767;
+180            if _n_ = 1 then        /* write column names or labels */
+3                                                                   The SAS System                                      11:21 Monday, November 6, 2017
 
-149               ','
-150                  "MEMNAME"
-151               ','
-152                  "MEMLABEL"
-153               ','
-154                  "TYPEMEM"
-155               ','
-156                  "NAME"
-157               ','
-158                  "TYPE"
-159               ','
-160                  "LENGTH"
-161               ','
-162                  "VARNUM"
-163               ','
-164                  "LABEL"
-165               ','
-166                  "FORMAT"
-167               ','
-168                  "FORMATL"
-169               ','
-170                  "FORMATD"
-171               ','
-172                  "INFORMAT"
-173               ','
-174                  "INFORML"
-175               ','
-176                  "INFORMD"
-177               ','
-178                  "JUST"
-179               ','
-180                  "NPOS"
-181               ','
-182                  "NOBS"
-183               ','
-184                  "ENGINE"
-185               ','
-186                  "CRDATE"
-187               ','
-188                  "MODATE"
-189               ','
-190                  "DELOBS"
-191               ','
-192                  "IDXUSAGE"
-193               ','
-194                  "MEMTYPE"
-195               ','
-196                  "IDXCOUNT"
-197               ','
-198                  "PROTECT"
-199               ','
-200                  "FLAGS"
-201               ','
-202                  "COMPRESS"
-203               ','
-204                  "REUSE"
-205               ','
-206                  "SORTED"
-207               ','
-208                  "SORTEDBY"
-209               ','
-210                  "CHARSET"
-211               ','
-212                  "COLLATE"
-213               ','
-214                  "NODUPKEY"
-215               ','
-216                  "NODUPREC"
-217               ','
-218                  "ENCRYPT"
-219               ','
-220                  "POINTOBS"
-4                                                                   The SAS System                                  11:30 Thursday, September 28, 2017
+181             do;
+182               put
+183                  "LIBNAME"
+184               ','
+185                  "MEMNAME"
+186               ','
+187                  "MEMLABEL"
+188               ','
+189                  "TYPEMEM"
+190               ','
+191                  "NAME"
+192               ','
+193                  "TYPE"
+194               ','
+195                  "LENGTH"
+196               ','
+197                  "VARNUM"
+198               ','
+199                  "LABEL"
+200               ','
+201                  "FORMAT"
+202               ','
+203                  "FORMATL"
+204               ','
+205                  "FORMATD"
+206               ','
+207                  "INFORMAT"
+208               ','
+209                  "INFORML"
+210               ','
+211                  "INFORMD"
+212               ','
+213                  "JUST"
+214               ','
+215                  "NPOS"
+216               ','
+217                  "NOBS"
+218               ','
+219                  "ENGINE"
+220               ','
+221                  "CRDATE"
+222               ','
+223                  "MODATE"
+224               ','
+225                  "DELOBS"
+226               ','
+227                  "IDXUSAGE"
+228               ','
+229                  "MEMTYPE"
+230               ','
+231                  "IDXCOUNT"
+232               ','
+233                  "PROTECT"
+234               ','
+235                  "FLAGS"
+236               ','
+237                  "COMPRESS"
+238               ','
+239                  "REUSE"
+240               ','
+241                  "SORTED"
+242               ','
+243                  "SORTEDBY"
+244               ','
+245                  "CHARSET"
+246               ','
+247                  "COLLATE"
+248               ','
+249                  "NODUPKEY"
+250               ','
+251                  "NODUPREC"
+252               ','
+4                                                                   The SAS System                                      11:21 Monday, November 6, 2017
 
-221               ','
-222                  "GENMAX"
-223               ','
-224                  "GENNUM"
-225               ','
-226                  "GENNEXT"
-227               ','
-228                  "TRANSCOD"
-229               ;
-230             end;
-231           set  WORK.CONTENTS_STDC5P   end=EFIEOD;
-232               format LIBNAME $8. ;
-233               format MEMNAME $32. ;
-234               format MEMLABEL $256. ;
-235               format TYPEMEM $8. ;
-236               format NAME $32. ;
-237               format TYPE best12. ;
-238               format LENGTH best12. ;
-239               format VARNUM best12. ;
-240               format LABEL $256. ;
-241               format FORMAT $32. ;
-242               format FORMATL best12. ;
-243               format FORMATD best12. ;
-244               format INFORMAT $32. ;
-245               format INFORML best12. ;
-246               format INFORMD best12. ;
-247               format JUST best12. ;
-248               format NPOS best12. ;
-249               format NOBS best12. ;
-250               format ENGINE $8. ;
-251               format CRDATE datetime16. ;
-252               format MODATE datetime16. ;
-253               format DELOBS best12. ;
-254               format IDXUSAGE $9. ;
-255               format MEMTYPE $8. ;
-256               format IDXCOUNT best12. ;
-257               format PROTECT $3. ;
-258               format FLAGS $3. ;
-259               format COMPRESS $8. ;
-260               format REUSE $3. ;
-261               format SORTED best12. ;
-262               format SORTEDBY best12. ;
-263               format CHARSET $8. ;
-264               format COLLATE $8. ;
-265               format NODUPKEY $3. ;
-266               format NODUPREC $3. ;
-267               format ENCRYPT $8. ;
-268               format POINTOBS $3. ;
-269               format GENMAX best12. ;
-270               format GENNUM best12. ;
-271               format GENNEXT best12. ;
-272               format TRANSCOD $3. ;
-273             do;
-274               EFIOUT + 1;
-275               put LIBNAME $ @;
-276               put MEMNAME $ @;
-277               put MEMLABEL $ @;
-278               put TYPEMEM $ @;
-279               put NAME $ @;
-280               put TYPE @;
-281               put LENGTH @;
-282               put VARNUM @;
-283               put LABEL $ @;
-284               put FORMAT $ @;
-285               put FORMATL @;
-286               put FORMATD @;
-287               put INFORMAT $ @;
-288               put INFORML @;
-289               put INFORMD @;
-290               put JUST @;
-291               put NPOS @;
-292               put NOBS @;
-5                                                                   The SAS System                                  11:30 Thursday, September 28, 2017
+253                  "ENCRYPT"
+254               ','
+255                  "POINTOBS"
+256               ','
+257                  "GENMAX"
+258               ','
+259                  "GENNUM"
+260               ','
+261                  "GENNEXT"
+262               ','
+263                  "TRANSCOD"
+264               ;
+265             end;
+266           set  WORK.CONTENTS_STDC5P   end=EFIEOD;
+267               format LIBNAME $8. ;
+268               format MEMNAME $32. ;
+269               format MEMLABEL $256. ;
+270               format TYPEMEM $8. ;
+271               format NAME $32. ;
+272               format TYPE best12. ;
+273               format LENGTH best12. ;
+274               format VARNUM best12. ;
+275               format LABEL $256. ;
+276               format FORMAT $32. ;
+277               format FORMATL best12. ;
+278               format FORMATD best12. ;
+279               format INFORMAT $32. ;
+280               format INFORML best12. ;
+281               format INFORMD best12. ;
+282               format JUST best12. ;
+283               format NPOS best12. ;
+284               format NOBS best12. ;
+285               format ENGINE $8. ;
+286               format CRDATE datetime16. ;
+287               format MODATE datetime16. ;
+288               format DELOBS best12. ;
+289               format IDXUSAGE $9. ;
+290               format MEMTYPE $8. ;
+291               format IDXCOUNT best12. ;
+292               format PROTECT $3. ;
+293               format FLAGS $3. ;
+294               format COMPRESS $8. ;
+295               format REUSE $3. ;
+296               format SORTED best12. ;
+297               format SORTEDBY best12. ;
+298               format CHARSET $8. ;
+299               format COLLATE $8. ;
+300               format NODUPKEY $3. ;
+301               format NODUPREC $3. ;
+302               format ENCRYPT $8. ;
+303               format POINTOBS $3. ;
+304               format GENMAX best12. ;
+305               format GENNUM best12. ;
+306               format GENNEXT best12. ;
+307               format TRANSCOD $3. ;
+308             do;
+309               EFIOUT + 1;
+310               put LIBNAME $ @;
+311               put MEMNAME $ @;
+312               put MEMLABEL $ @;
+313               put TYPEMEM $ @;
+314               put NAME $ @;
+315               put TYPE @;
+316               put LENGTH @;
+317               put VARNUM @;
+318               put LABEL $ @;
+319               put FORMAT $ @;
+320               put FORMATL @;
+321               put FORMATD @;
+322               put INFORMAT $ @;
+323               put INFORML @;
+324               put INFORMD @;
+5                                                                   The SAS System                                      11:21 Monday, November 6, 2017
 
-293               put ENGINE $ @;
-294               put CRDATE @;
-295               put MODATE @;
-296               put DELOBS @;
-297               put IDXUSAGE $ @;
-298               put MEMTYPE $ @;
-299               put IDXCOUNT @;
-300               put PROTECT $ @;
-301               put FLAGS $ @;
-302               put COMPRESS $ @;
-303               put REUSE $ @;
-304               put SORTED @;
-305               put SORTEDBY @;
-306               put CHARSET $ @;
-307               put COLLATE $ @;
-308               put NODUPKEY $ @;
-309               put NODUPREC $ @;
-310               put ENCRYPT $ @;
-311               put POINTOBS $ @;
-312               put GENMAX @;
-313               put GENNUM @;
-314               put GENNEXT @;
-315               put TRANSCOD $ ;
-316               ;
-317             end;
-318            if _ERROR_ then call symputx('_EFIERR_',1);  /* set ERROR detection macro variable */
-319            if EFIEOD then call symputx('_EFIREC_',EFIOUT);
-320            run;
+325               put JUST @;
+326               put NPOS @;
+327               put NOBS @;
+328               put ENGINE $ @;
+329               put CRDATE @;
+330               put MODATE @;
+331               put DELOBS @;
+332               put IDXUSAGE $ @;
+333               put MEMTYPE $ @;
+334               put IDXCOUNT @;
+335               put PROTECT $ @;
+336               put FLAGS $ @;
+337               put COMPRESS $ @;
+338               put REUSE $ @;
+339               put SORTED @;
+340               put SORTEDBY @;
+341               put CHARSET $ @;
+342               put COLLATE $ @;
+343               put NODUPKEY $ @;
+344               put NODUPREC $ @;
+345               put ENCRYPT $ @;
+346               put POINTOBS $ @;
+347               put GENMAX @;
+348               put GENNUM @;
+349               put GENNEXT @;
+350               put TRANSCOD $ ;
+351               ;
+352             end;
+353            if _ERROR_ then call symputx('_EFIERR_',1);  /* set ERROR detection macro variable */
+354            if EFIEOD then call symputx('_EFIREC_',EFIOUT);
+355            run;
 
 NOTE: The file 'data\processed\contentsSourceDatasets_stdc5p.csv' is:
       Filename=U:\studies\AS\pgms\bchan\data\processed\contentsSourceDatasets_stdc5p.csv,
       RECFM=V,LRECL=32767,File Size (bytes)=0,
-      Last Modified=28Sep2017:11:32:22,
-      Create Time=28Sep2017:11:32:22
+      Last Modified=06Nov2017:11:23:42,
+      Create Time=06Nov2017:11:23:42
 
 NOTE: 429 records were written to the file 'data\processed\contentsSourceDatasets_stdc5p.csv'.
       The minimum record length was 153.
@@ -2565,8 +2568,8 @@ NOTE: DATA statement used (Total process time):
   
 NOTE: "data\processed\contentsSourceDatasets_stdc5p.csv" file was successfully created.
 NOTE: PROCEDURE EXPORT used (Total process time):
-      real time           0.65 seconds
-      cpu time            0.10 seconds
+      real time           0.62 seconds
+      cpu time            0.07 seconds
       
 
 
@@ -2577,7 +2580,7 @@ NOTE: DATA statement used (Total process time):
       
 
 
-                                                                  --- AS project ---                            11:30 Thursday, September 28, 2017  31
+                                                                  --- AS project ---                                11:21 Monday, November 6, 2017  31
 
                                                                 The CONTENTS Procedure
 
@@ -2586,7 +2589,7 @@ NOTE: DATA statement used (Total process time):
      Libref               STD_SABR                                                                                                               
      Engine               SPDE                                                                                                                   
      Physical Name        q:\data\std_SABER\                                                                                                     
-     Free Space (Kbytes)  4269840513                                                                                                             
+     Free Space (Kbytes)  3939342465                                                                                                             
      Metapath             'q:\data\std_SABER\'                                                                                                   
      Indexpath            'q:\data\aetna\' 't:\data\aetna\'                                                                                      
      Datapath             'q:\data\std_SABER\' 'r:\data\std_SABER\' 's:\data\std_SABER\' 't:\data\std_SABER\' 'u:\studies\SABER2\data\std_SABER\'
@@ -2599,51 +2602,51 @@ NOTE: DATA statement used (Total process time):
                                    2  DEMOG0614                   DATA        59392544  01/26/2017 12:15:09        
                                    3  ENROLL                      DATA        38332306  09/08/2017 14:32:00        
                                    4  ENROLL0614                  DATA        30696738  01/26/2017 12:15:24        
-                                   5  ENROLL_ABCD_WIDE            DATA       267627797  09/08/2017 14:32:02        
-                                   6  NONSPECIFIC_JCODE_BIOLOGIC  DATA          330992  08/23/2017 10:30:21        
-                                   7  PROVIDER_SPECIALTY          DATA        89389142  03/14/2017 09:44:08        
-                                   8  RESIDENT                    DATA       746608826  09/08/2017 15:00:30        
-                                   9  RESIDENT0614                DATA       196631325  01/26/2017 12:15:41        
-                                  10  STD_DX_2006                 DATA      5432453173  07/28/2017 09:52:53        
-                                  11  STD_DX_2007                 DATA      6068218388  07/28/2017 10:02:14        
-                                  12  STD_DX_2008_V2              DATA      6256687853  07/31/2017 12:41:42        
-                                  13  STD_DX_2009                 DATA      6283510992  07/28/2017 10:29:41        
-                                  14  STD_DX_2010                 DATA      7181092356  07/28/2017 10:40:21        
-                                  15  STD_DX_2011                 DATA      8891166500  07/28/2017 10:52:22        
-                                  16  STD_DX_2012                 DATA      8467926974  07/28/2017 11:07:05        
-                                  17  STD_DX_2013                 DATA     15789588492  07/28/2017 11:22:35        
-                                  18  STD_DX_2014                 DATA     18265993706  07/28/2017 11:53:17        
-                                  19  STD_DX_2015                 DATA     94301127622  09/08/2017 18:04:54        
-                                  20  STD_PX_2006                 DATA      3809134311  09/05/2017 14:22:43        
-                                  21  STD_PX_2007                 DATA      4150945959  09/05/2017 14:25:17        
-                                  22  STD_PX_2008                 DATA      4329004377  09/05/2017 14:28:32        
-                                  23  STD_PX_2009                 DATA      4393784881  09/05/2017 14:31:53        
-                                  24  STD_PX_2010                 DATA      4962251617  09/05/2017 14:35:18        
-                                  25  STD_PX_2011                 DATA      5464653924  09/05/2017 14:39:15        
-                                  26  STD_PX_2012                 DATA      6774083190  09/05/2017 14:43:35        
-                                  27  STD_PX_2013                 DATA     16503987779  09/05/2017 14:48:52        
-                                  28  STD_PX_2014                 DATA     17800012354  09/05/2017 15:00:18        
-                                  29  STD_PX_2015                 DATA     50519829021  09/07/2017 17:01:31        
-                                  30  STD_RX_2006                 DATA      1418742112  05/15/2017 11:05:03        
+                                   5  ENROLLABC                   DATA        48668625  10/06/2017 10:45:11        
+                                   6  ENROLL_ABCD_WIDE            DATA       267627797  09/08/2017 14:32:02        
+                                   7  NONSPECIFIC_JCODE_BIOLOGIC  DATA          330992  08/23/2017 10:30:21        
+                                   8  PROVIDER_SPECIALTY          DATA        89389142  03/14/2017 09:44:08        
+                                   9  RESIDENT                    DATA       746608826  09/08/2017 15:00:30        
+                                  10  RESIDENT0614                DATA       196631325  01/26/2017 12:15:41        
+                                  11  STD_DX_2006                 DATA      5432453173  07/28/2017 09:52:53        
+                                  12  STD_DX_2007                 DATA      6068218388  07/28/2017 10:02:14        
+                                  13  STD_DX_2008_V2              DATA      6256687853  07/31/2017 12:41:42        
+                                  14  STD_DX_2009                 DATA      6283510992  07/28/2017 10:29:41        
+                                  15  STD_DX_2010                 DATA      7181092356  07/28/2017 10:40:21        
+                                  16  STD_DX_2011                 DATA      8891166500  07/28/2017 10:52:22        
+                                  17  STD_DX_2012                 DATA      8467926974  07/28/2017 11:07:05        
+                                  18  STD_DX_2013                 DATA     15789588492  07/28/2017 11:22:35        
+                                  19  STD_DX_2014                 DATA     18265993706  07/28/2017 11:53:17        
+                                  20  STD_DX_2015                 DATA     94301127622  09/08/2017 18:04:54        
+                                  21  STD_PX_2006                 DATA      3809134311  09/05/2017 14:22:43        
+                                  22  STD_PX_2007                 DATA      4150945959  09/05/2017 14:25:17        
+                                  23  STD_PX_2008                 DATA      4329004377  09/05/2017 14:28:32        
+                                  24  STD_PX_2009                 DATA      4393784881  09/05/2017 14:31:53        
+                                  25  STD_PX_2010                 DATA      4962251617  09/05/2017 14:35:18        
+                                  26  STD_PX_2011                 DATA      5464653924  09/05/2017 14:39:15        
+                                  27  STD_PX_2012                 DATA      6774083190  09/05/2017 14:43:35        
+                                  28  STD_PX_2013                 DATA     16503987779  09/05/2017 14:48:52        
+                                  29  STD_PX_2014                 DATA     17800012354  09/05/2017 15:00:18        
+                                  30  STD_PX_2015                 DATA     50519829021  09/07/2017 17:01:31        
+                                  31  STD_RX_2006                 DATA      1418742112  05/15/2017 11:05:03        
                                       STD_RX_2006                 INDEX     1743126528  05/15/2017 11:05:03        
-                                  31  STD_RX_2007                 DATA      1768664121  05/15/2017 11:05:04        
+                                  32  STD_RX_2007                 DATA      1768664121  05/15/2017 11:05:04        
                                       STD_RX_2007                 INDEX     2164293632  05/15/2017 11:05:04        
-                                  32  STD_RX_2008                 DATA      1931182094  05/15/2017 11:05:05        
+                                  33  STD_RX_2008                 DATA      1931182094  05/15/2017 11:05:05        
                                       STD_RX_2008                 INDEX     2325766144  05/15/2017 11:05:05        
-                                  33  STD_RX_2009                 DATA      1983697794  05/15/2017 11:05:06        
+                                  34  STD_RX_2009                 DATA      1983697794  05/15/2017 11:05:06        
                                       STD_RX_2009                 INDEX     2379317248  05/15/2017 11:05:06        
-                                  34  STD_RX_2010                 DATA      2247488955  05/15/2017 11:05:07        
+                                  35  STD_RX_2010                 DATA      2247488955  05/15/2017 11:05:07        
                                       STD_RX_2010                 INDEX     2711240704  05/15/2017 11:05:07        
-                                  35  STD_RX_2011                 DATA      2393150156  05/15/2017 11:05:08        
+                                  36  STD_RX_2011                 DATA      2393150156  05/15/2017 11:05:08        
                                       STD_RX_2011                 INDEX     3069419520  05/15/2017 11:05:08        
-                                  36  STD_RX_2012                 DATA      2974862738  05/15/2017 11:05:09        
+                                  37  STD_RX_2012                 DATA      2974862738  05/15/2017 11:05:09        
                                       STD_RX_2012                 INDEX     3840925696  05/15/2017 11:05:09        
-                                  37  STD_RX_2013                 DATA      8782826250  05/15/2017 11:05:10        
+                                  38  STD_RX_2013                 DATA      8782826250  05/15/2017 11:05:10        
                                       STD_RX_2013                 INDEX     7593238528  05/15/2017 11:05:10        
-                                  38  STD_RX_2014                 DATA      9493275777  05/15/2017 11:05:11        
+                                  39  STD_RX_2014                 DATA      9493275777  05/15/2017 11:05:11        
                                       STD_RX_2014                 INDEX     8863981568  05/15/2017 11:05:11        
-                                  39  STD_RX_2015                 DATA     16175209821  09/07/2017 18:18:48        
- 
+                                  40  STD_RX_2015                 DATA     16175209821  09/07/2017 18:18:48        
  
  
  
@@ -2651,7 +2654,7 @@ NOTE: DATA statement used (Total process time):
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                            11:30 Thursday, September 28, 2017  32
+                                                                  --- AS project ---                                11:21 Monday, November 6, 2017  32
 
                                                                 The CONTENTS Procedure
 
@@ -2725,7 +2728,7 @@ NOTE: DATA statement used (Total process time):
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                            11:30 Thursday, September 28, 2017  33
+                                                                  --- AS project ---                                11:21 Monday, November 6, 2017  33
 
                                                                 The CONTENTS Procedure
 
@@ -2799,7 +2802,7 @@ NOTE: DATA statement used (Total process time):
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                            11:30 Thursday, September 28, 2017  34
+                                                                  --- AS project ---                                11:21 Monday, November 6, 2017  34
 
                                                                 The CONTENTS Procedure
 
@@ -2873,7 +2876,7 @@ NOTE: DATA statement used (Total process time):
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                            11:30 Thursday, September 28, 2017  35
+                                                                  --- AS project ---                                11:21 Monday, November 6, 2017  35
 
                                                                 The CONTENTS Procedure
 
@@ -2947,7 +2950,81 @@ NOTE: DATA statement used (Total process time):
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                            11:30 Thursday, September 28, 2017  36
+                                                                  --- AS project ---                                11:21 Monday, November 6, 2017  36
+
+                                                                The CONTENTS Procedure
+
+                                  Data Set Name        STD_SABR.ENROLLABC            Observations           6206607
+                                  Member Type          DATA                          Variables              5      
+                                  Engine               SPDE                          Indexes                0      
+                                  Created              10/06/2017 10:45:11           Observation Length     32     
+                                  Last Modified        10/06/2017 10:45:11           Deleted Observations   0      
+                                  Protection                                         Compressed             BINARY 
+                                  Data Set Type                                      Point to Observations  YES    
+                                  Label                                              Sorted                 NO     
+                                  Data Representation  WINDOWS_32                                                  
+                                  Encoding             wlatin1  Western (Windows)                                  
+
+
+                                                          Engine/Host Dependent Information
+
+                                                      Blocking Factor (obs/block)     2048     
+                                                      Disk Compression Name           SPDSRDC  
+                                                      Data Partsize                   134250336
+                                                      -          Compressed Info      -        
+                                                      Number of compressed blocks     6068     
+                                                      Raw data blocksize              32736    
+                                                      Number of blocks with overflow  0        
+                                                      Max overflow chain length       0        
+                                                      Block number for max chain      0        
+                                                      Min overflow area               0        
+                                                      Max overflow area               0        
+
+
+                                                             Variables in Creation Order
+ 
+                                                   #    Variable          Type    Len    Format
+
+                                                   1    PATID             Char     20             
+                                                   2    ENR_START_DATE    Num       4    MMDDYY10.
+                                                   3    ENR_END_DATE      Num       4    MMDDYY10.
+                                                   4    MEDICAL           Char      1             
+                                                   5    PHARMACY          Char      1             
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+                                                              contentsSourceDatasets.sas
+                                                                  --- AS project ---                                11:21 Monday, November 6, 2017  37
 
                                                                 The CONTENTS Procedure
 
@@ -3021,7 +3098,7 @@ NOTE: DATA statement used (Total process time):
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                            11:30 Thursday, September 28, 2017  37
+                                                                  --- AS project ---                                11:21 Monday, November 6, 2017  38
 
                                                                 The CONTENTS Procedure
 
@@ -3095,7 +3172,7 @@ NOTE: DATA statement used (Total process time):
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                            11:30 Thursday, September 28, 2017  38
+                                                                  --- AS project ---                                11:21 Monday, November 6, 2017  39
 
                                                                 The CONTENTS Procedure
 
@@ -3169,7 +3246,7 @@ NOTE: DATA statement used (Total process time):
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                            11:30 Thursday, September 28, 2017  39
+                                                                  --- AS project ---                                11:21 Monday, November 6, 2017  40
 
                                                                 The CONTENTS Procedure
 
@@ -3243,7 +3320,7 @@ NOTE: DATA statement used (Total process time):
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                            11:30 Thursday, September 28, 2017  40
+                                                                  --- AS project ---                                11:21 Monday, November 6, 2017  41
 
                                                                 The CONTENTS Procedure
 
@@ -3317,7 +3394,7 @@ NOTE: DATA statement used (Total process time):
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                            11:30 Thursday, September 28, 2017  41
+                                                                  --- AS project ---                                11:21 Monday, November 6, 2017  42
 
                                                                 The CONTENTS Procedure
 
@@ -3391,7 +3468,7 @@ NOTE: DATA statement used (Total process time):
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                            11:30 Thursday, September 28, 2017  42
+                                                                  --- AS project ---                                11:21 Monday, November 6, 2017  43
 
                                                                 The CONTENTS Procedure
 
@@ -3465,7 +3542,7 @@ NOTE: DATA statement used (Total process time):
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                            11:30 Thursday, September 28, 2017  43
+                                                                  --- AS project ---                                11:21 Monday, November 6, 2017  44
 
                                                                 The CONTENTS Procedure
 
@@ -3539,7 +3616,7 @@ NOTE: DATA statement used (Total process time):
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                            11:30 Thursday, September 28, 2017  44
+                                                                  --- AS project ---                                11:21 Monday, November 6, 2017  45
 
                                                                 The CONTENTS Procedure
 
@@ -3613,7 +3690,7 @@ NOTE: DATA statement used (Total process time):
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                            11:30 Thursday, September 28, 2017  45
+                                                                  --- AS project ---                                11:21 Monday, November 6, 2017  46
 
                                                                 The CONTENTS Procedure
 
@@ -3687,7 +3764,7 @@ NOTE: DATA statement used (Total process time):
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                            11:30 Thursday, September 28, 2017  46
+                                                                  --- AS project ---                                11:21 Monday, November 6, 2017  47
 
                                                                 The CONTENTS Procedure
 
@@ -3761,7 +3838,7 @@ NOTE: DATA statement used (Total process time):
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                            11:30 Thursday, September 28, 2017  47
+                                                                  --- AS project ---                                11:21 Monday, November 6, 2017  48
 
                                                                 The CONTENTS Procedure
 
@@ -3835,7 +3912,7 @@ NOTE: DATA statement used (Total process time):
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                            11:30 Thursday, September 28, 2017  48
+                                                                  --- AS project ---                                11:21 Monday, November 6, 2017  49
 
                                                                 The CONTENTS Procedure
 
@@ -3909,7 +3986,7 @@ NOTE: DATA statement used (Total process time):
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                            11:30 Thursday, September 28, 2017  49
+                                                                  --- AS project ---                                11:21 Monday, November 6, 2017  50
 
                                                                 The CONTENTS Procedure
 
@@ -3983,7 +4060,7 @@ NOTE: DATA statement used (Total process time):
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                            11:30 Thursday, September 28, 2017  50
+                                                                  --- AS project ---                                11:21 Monday, November 6, 2017  51
 
                                                                 The CONTENTS Procedure
 
@@ -4057,7 +4134,7 @@ NOTE: DATA statement used (Total process time):
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                            11:30 Thursday, September 28, 2017  51
+                                                                  --- AS project ---                                11:21 Monday, November 6, 2017  52
 
                                                                 The CONTENTS Procedure
 
@@ -4131,7 +4208,7 @@ NOTE: DATA statement used (Total process time):
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                            11:30 Thursday, September 28, 2017  52
+                                                                  --- AS project ---                                11:21 Monday, November 6, 2017  53
 
                                                                 The CONTENTS Procedure
 
@@ -4205,7 +4282,7 @@ NOTE: DATA statement used (Total process time):
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                            11:30 Thursday, September 28, 2017  53
+                                                                  --- AS project ---                                11:21 Monday, November 6, 2017  54
 
                                                                 The CONTENTS Procedure
 
@@ -4279,7 +4356,7 @@ NOTE: DATA statement used (Total process time):
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                            11:30 Thursday, September 28, 2017  54
+                                                                  --- AS project ---                                11:21 Monday, November 6, 2017  55
 
                                                                 The CONTENTS Procedure
 
@@ -4353,7 +4430,7 @@ NOTE: DATA statement used (Total process time):
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                            11:30 Thursday, September 28, 2017  55
+                                                                  --- AS project ---                                11:21 Monday, November 6, 2017  56
 
                                                                 The CONTENTS Procedure
 
@@ -4427,7 +4504,7 @@ NOTE: DATA statement used (Total process time):
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                            11:30 Thursday, September 28, 2017  56
+                                                                  --- AS project ---                                11:21 Monday, November 6, 2017  57
 
                                                                 The CONTENTS Procedure
 
@@ -4501,7 +4578,7 @@ NOTE: DATA statement used (Total process time):
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                            11:30 Thursday, September 28, 2017  57
+                                                                  --- AS project ---                                11:21 Monday, November 6, 2017  58
 
                                                                 The CONTENTS Procedure
 
@@ -4575,7 +4652,7 @@ NOTE: DATA statement used (Total process time):
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                            11:30 Thursday, September 28, 2017  58
+                                                                  --- AS project ---                                11:21 Monday, November 6, 2017  59
 
                                                                 The CONTENTS Procedure
 
@@ -4649,7 +4726,7 @@ NOTE: DATA statement used (Total process time):
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                            11:30 Thursday, September 28, 2017  59
+                                                                  --- AS project ---                                11:21 Monday, November 6, 2017  60
 
                                                                 The CONTENTS Procedure
 
@@ -4723,7 +4800,7 @@ NOTE: DATA statement used (Total process time):
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                            11:30 Thursday, September 28, 2017  60
+                                                                  --- AS project ---                                11:21 Monday, November 6, 2017  61
 
                                                                 The CONTENTS Procedure
 
@@ -4797,7 +4874,7 @@ NOTE: DATA statement used (Total process time):
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                            11:30 Thursday, September 28, 2017  61
+                                                                  --- AS project ---                                11:21 Monday, November 6, 2017  62
 
                                                                 The CONTENTS Procedure
 
@@ -4871,7 +4948,7 @@ NOTE: DATA statement used (Total process time):
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                            11:30 Thursday, September 28, 2017  62
+                                                                  --- AS project ---                                11:21 Monday, November 6, 2017  63
 
                                                                 The CONTENTS Procedure
 
@@ -4945,7 +5022,7 @@ NOTE: DATA statement used (Total process time):
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                            11:30 Thursday, September 28, 2017  63
+                                                                  --- AS project ---                                11:21 Monday, November 6, 2017  64
 
                                                                 The CONTENTS Procedure
 
@@ -5019,7 +5096,7 @@ NOTE: DATA statement used (Total process time):
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                            11:30 Thursday, September 28, 2017  64
+                                                                  --- AS project ---                                11:21 Monday, November 6, 2017  65
 
                                                                 The CONTENTS Procedure
 
@@ -5093,7 +5170,7 @@ NOTE: DATA statement used (Total process time):
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                            11:30 Thursday, September 28, 2017  65
+                                                                  --- AS project ---                                11:21 Monday, November 6, 2017  66
 
                                                                 The CONTENTS Procedure
 
@@ -5167,7 +5244,7 @@ NOTE: DATA statement used (Total process time):
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                            11:30 Thursday, September 28, 2017  66
+                                                                  --- AS project ---                                11:21 Monday, November 6, 2017  67
 
                                                                 The CONTENTS Procedure
 
@@ -5241,7 +5318,7 @@ NOTE: DATA statement used (Total process time):
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                            11:30 Thursday, September 28, 2017  67
+                                                                  --- AS project ---                                11:21 Monday, November 6, 2017  68
 
                                                                 The CONTENTS Procedure
 
@@ -5315,7 +5392,7 @@ NOTE: DATA statement used (Total process time):
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                            11:30 Thursday, September 28, 2017  68
+                                                                  --- AS project ---                                11:21 Monday, November 6, 2017  69
 
                                                                 The CONTENTS Procedure
 
@@ -5389,7 +5466,7 @@ NOTE: DATA statement used (Total process time):
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                            11:30 Thursday, September 28, 2017  69
+                                                                  --- AS project ---                                11:21 Monday, November 6, 2017  70
 
                                                                 The CONTENTS Procedure
 
@@ -5463,7 +5540,7 @@ NOTE: DATA statement used (Total process time):
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                            11:30 Thursday, September 28, 2017  70
+                                                                  --- AS project ---                                11:21 Monday, November 6, 2017  71
 
                                                                 The CONTENTS Procedure
 
@@ -5510,7 +5587,7 @@ NOTE: DATA statement used (Total process time):
                                                  10    PRESCRBER_ID         Char     20             
                                                  11    PRESCRBER_ID_TYPE    Char      4             
                                                  12    Phamacy_ID           Char     15             
-NOTE: The data set WORK.CONTENTS_STD_SABR has 520 observations and 41 variables.
+NOTE: The data set WORK.CONTENTS_STD_SABR has 525 observations and 41 variables.
  
  
  
@@ -5539,242 +5616,242 @@ NOTE: The data set WORK.CONTENTS_STD_SABR has 520 observations and 41 variables.
  
                                                               contentsSourceDatasets.sas
 NOTE: PROCEDURE CONTENTS used (Total process time):
-      real time           7.22 seconds
-      cpu time            3.12 seconds
+      real time           7.33 seconds
+      cpu time            3.13 seconds
       
-NOTE: The PROCEDURE CONTENTS printed pages 31-70.
+NOTE: The PROCEDURE CONTENTS printed pages 31-71.
 
 
-321         /**********************************************************************
-322         *   PRODUCT:   SAS
-323         *   VERSION:   9.4
-6                                                                   The SAS System                                  11:30 Thursday, September 28, 2017
+6                                                                   The SAS System                                      11:21 Monday, November 6, 2017
 
-324         *   CREATOR:   External File Interface
-325         *   DATE:      28SEP17
-326         *   DESC:      Generated SAS Datastep Code
-327         *   TEMPLATE SOURCE:  (None Specified.)
-328         ***********************************************************************/
-329            data _null_;
-330            %let _EFIERR_ = 0; /* set the ERROR detection macro variable */
-331            %let _EFIREC_ = 0;     /* clear export record count macro variable */
-332            file 'data\processed\contentsSourceDatasets_std_SABR.csv' delimiter=',' DSD DROPOVER lrecl=32767;
-333            if _n_ = 1 then        /* write column names or labels */
-334             do;
-335               put
-336                  "LIBNAME"
-337               ','
-338                  "MEMNAME"
-339               ','
-340                  "MEMLABEL"
-341               ','
-342                  "TYPEMEM"
-343               ','
-344                  "NAME"
-345               ','
-346                  "TYPE"
-347               ','
-348                  "LENGTH"
-349               ','
-350                  "VARNUM"
-351               ','
-352                  "LABEL"
-353               ','
-354                  "FORMAT"
-355               ','
-356                  "FORMATL"
-357               ','
-358                  "FORMATD"
-359               ','
-360                  "INFORMAT"
-361               ','
-362                  "INFORML"
-363               ','
-364                  "INFORMD"
-365               ','
-366                  "JUST"
-367               ','
-368                  "NPOS"
-369               ','
-370                  "NOBS"
-371               ','
-372                  "ENGINE"
-373               ','
-374                  "CRDATE"
-375               ','
-376                  "MODATE"
-377               ','
-378                  "DELOBS"
-379               ','
-380                  "IDXUSAGE"
-381               ','
-382                  "MEMTYPE"
-383               ','
-384                  "IDXCOUNT"
-385               ','
-386                  "PROTECT"
-387               ','
-388                  "FLAGS"
-389               ','
-390                  "COMPRESS"
-391               ','
-392                  "REUSE"
-393               ','
-394                  "SORTED"
-395               ','
-7                                                                   The SAS System                                  11:30 Thursday, September 28, 2017
+356         /**********************************************************************
+357         *   PRODUCT:   SAS
+358         *   VERSION:   9.4
+359         *   CREATOR:   External File Interface
+360         *   DATE:      06NOV17
+361         *   DESC:      Generated SAS Datastep Code
+362         *   TEMPLATE SOURCE:  (None Specified.)
+363         ***********************************************************************/
+364            data _null_;
+365            %let _EFIERR_ = 0; /* set the ERROR detection macro variable */
+366            %let _EFIREC_ = 0;     /* clear export record count macro variable */
+367            file 'data\processed\contentsSourceDatasets_std_SABR.csv' delimiter=',' DSD DROPOVER lrecl=32767;
+368            if _n_ = 1 then        /* write column names or labels */
+369             do;
+370               put
+371                  "LIBNAME"
+372               ','
+373                  "MEMNAME"
+374               ','
+375                  "MEMLABEL"
+376               ','
+377                  "TYPEMEM"
+378               ','
+379                  "NAME"
+380               ','
+381                  "TYPE"
+382               ','
+383                  "LENGTH"
+384               ','
+385                  "VARNUM"
+386               ','
+387                  "LABEL"
+388               ','
+389                  "FORMAT"
+390               ','
+391                  "FORMATL"
+392               ','
+393                  "FORMATD"
+394               ','
+395                  "INFORMAT"
+396               ','
+397                  "INFORML"
+398               ','
+399                  "INFORMD"
+400               ','
+401                  "JUST"
+402               ','
+403                  "NPOS"
+404               ','
+405                  "NOBS"
+406               ','
+407                  "ENGINE"
+408               ','
+409                  "CRDATE"
+410               ','
+411                  "MODATE"
+412               ','
+413                  "DELOBS"
+414               ','
+415                  "IDXUSAGE"
+416               ','
+417                  "MEMTYPE"
+418               ','
+419                  "IDXCOUNT"
+420               ','
+421                  "PROTECT"
+422               ','
+423                  "FLAGS"
+424               ','
+425                  "COMPRESS"
+426               ','
+427                  "REUSE"
+7                                                                   The SAS System                                      11:21 Monday, November 6, 2017
 
-396                  "SORTEDBY"
-397               ','
-398                  "CHARSET"
-399               ','
-400                  "COLLATE"
-401               ','
-402                  "NODUPKEY"
-403               ','
-404                  "NODUPREC"
-405               ','
-406                  "ENCRYPT"
-407               ','
-408                  "POINTOBS"
-409               ','
-410                  "GENMAX"
-411               ','
-412                  "GENNUM"
-413               ','
-414                  "GENNEXT"
-415               ','
-416                  "TRANSCOD"
-417               ;
-418             end;
-419           set  WORK.CONTENTS_STD_SABR   end=EFIEOD;
-420               format LIBNAME $8. ;
-421               format MEMNAME $32. ;
-422               format MEMLABEL $256. ;
-423               format TYPEMEM $8. ;
-424               format NAME $32. ;
-425               format TYPE best12. ;
-426               format LENGTH best12. ;
-427               format VARNUM best12. ;
-428               format LABEL $256. ;
-429               format FORMAT $32. ;
-430               format FORMATL best12. ;
-431               format FORMATD best12. ;
-432               format INFORMAT $32. ;
-433               format INFORML best12. ;
-434               format INFORMD best12. ;
-435               format JUST best12. ;
-436               format NPOS best12. ;
-437               format NOBS best12. ;
-438               format ENGINE $8. ;
-439               format CRDATE datetime16. ;
-440               format MODATE datetime16. ;
-441               format DELOBS best12. ;
-442               format IDXUSAGE $9. ;
-443               format MEMTYPE $8. ;
-444               format IDXCOUNT best12. ;
-445               format PROTECT $3. ;
-446               format FLAGS $3. ;
-447               format COMPRESS $8. ;
-448               format REUSE $3. ;
-449               format SORTED best12. ;
-450               format SORTEDBY best12. ;
-451               format CHARSET $8. ;
-452               format COLLATE $8. ;
-453               format NODUPKEY $3. ;
-454               format NODUPREC $3. ;
-455               format ENCRYPT $8. ;
-456               format POINTOBS $3. ;
-457               format GENMAX best12. ;
-458               format GENNUM best12. ;
-459               format GENNEXT best12. ;
-460               format TRANSCOD $3. ;
-461             do;
-462               EFIOUT + 1;
-463               put LIBNAME $ @;
-464               put MEMNAME $ @;
-465               put MEMLABEL $ @;
-466               put TYPEMEM $ @;
-467               put NAME $ @;
-8                                                                   The SAS System                                  11:30 Thursday, September 28, 2017
+428               ','
+429                  "SORTED"
+430               ','
+431                  "SORTEDBY"
+432               ','
+433                  "CHARSET"
+434               ','
+435                  "COLLATE"
+436               ','
+437                  "NODUPKEY"
+438               ','
+439                  "NODUPREC"
+440               ','
+441                  "ENCRYPT"
+442               ','
+443                  "POINTOBS"
+444               ','
+445                  "GENMAX"
+446               ','
+447                  "GENNUM"
+448               ','
+449                  "GENNEXT"
+450               ','
+451                  "TRANSCOD"
+452               ;
+453             end;
+454           set  WORK.CONTENTS_STD_SABR   end=EFIEOD;
+455               format LIBNAME $8. ;
+456               format MEMNAME $32. ;
+457               format MEMLABEL $256. ;
+458               format TYPEMEM $8. ;
+459               format NAME $32. ;
+460               format TYPE best12. ;
+461               format LENGTH best12. ;
+462               format VARNUM best12. ;
+463               format LABEL $256. ;
+464               format FORMAT $32. ;
+465               format FORMATL best12. ;
+466               format FORMATD best12. ;
+467               format INFORMAT $32. ;
+468               format INFORML best12. ;
+469               format INFORMD best12. ;
+470               format JUST best12. ;
+471               format NPOS best12. ;
+472               format NOBS best12. ;
+473               format ENGINE $8. ;
+474               format CRDATE datetime16. ;
+475               format MODATE datetime16. ;
+476               format DELOBS best12. ;
+477               format IDXUSAGE $9. ;
+478               format MEMTYPE $8. ;
+479               format IDXCOUNT best12. ;
+480               format PROTECT $3. ;
+481               format FLAGS $3. ;
+482               format COMPRESS $8. ;
+483               format REUSE $3. ;
+484               format SORTED best12. ;
+485               format SORTEDBY best12. ;
+486               format CHARSET $8. ;
+487               format COLLATE $8. ;
+488               format NODUPKEY $3. ;
+489               format NODUPREC $3. ;
+490               format ENCRYPT $8. ;
+491               format POINTOBS $3. ;
+492               format GENMAX best12. ;
+493               format GENNUM best12. ;
+494               format GENNEXT best12. ;
+495               format TRANSCOD $3. ;
+496             do;
+497               EFIOUT + 1;
+498               put LIBNAME $ @;
+499               put MEMNAME $ @;
+8                                                                   The SAS System                                      11:21 Monday, November 6, 2017
 
-468               put TYPE @;
-469               put LENGTH @;
-470               put VARNUM @;
-471               put LABEL $ @;
-472               put FORMAT $ @;
-473               put FORMATL @;
-474               put FORMATD @;
-475               put INFORMAT $ @;
-476               put INFORML @;
-477               put INFORMD @;
-478               put JUST @;
-479               put NPOS @;
-480               put NOBS @;
-481               put ENGINE $ @;
-482               put CRDATE @;
-483               put MODATE @;
-484               put DELOBS @;
-485               put IDXUSAGE $ @;
-486               put MEMTYPE $ @;
-487               put IDXCOUNT @;
-488               put PROTECT $ @;
-489               put FLAGS $ @;
-490               put COMPRESS $ @;
-491               put REUSE $ @;
-492               put SORTED @;
-493               put SORTEDBY @;
-494               put CHARSET $ @;
-495               put COLLATE $ @;
-496               put NODUPKEY $ @;
-497               put NODUPREC $ @;
-498               put ENCRYPT $ @;
-499               put POINTOBS $ @;
-500               put GENMAX @;
-501               put GENNUM @;
-502               put GENNEXT @;
-503               put TRANSCOD $ ;
-504               ;
-505             end;
-506            if _ERROR_ then call symputx('_EFIERR_',1);  /* set ERROR detection macro variable */
-507            if EFIEOD then call symputx('_EFIREC_',EFIOUT);
-508            run;
+500               put MEMLABEL $ @;
+501               put TYPEMEM $ @;
+502               put NAME $ @;
+503               put TYPE @;
+504               put LENGTH @;
+505               put VARNUM @;
+506               put LABEL $ @;
+507               put FORMAT $ @;
+508               put FORMATL @;
+509               put FORMATD @;
+510               put INFORMAT $ @;
+511               put INFORML @;
+512               put INFORMD @;
+513               put JUST @;
+514               put NPOS @;
+515               put NOBS @;
+516               put ENGINE $ @;
+517               put CRDATE @;
+518               put MODATE @;
+519               put DELOBS @;
+520               put IDXUSAGE $ @;
+521               put MEMTYPE $ @;
+522               put IDXCOUNT @;
+523               put PROTECT $ @;
+524               put FLAGS $ @;
+525               put COMPRESS $ @;
+526               put REUSE $ @;
+527               put SORTED @;
+528               put SORTEDBY @;
+529               put CHARSET $ @;
+530               put COLLATE $ @;
+531               put NODUPKEY $ @;
+532               put NODUPREC $ @;
+533               put ENCRYPT $ @;
+534               put POINTOBS $ @;
+535               put GENMAX @;
+536               put GENNUM @;
+537               put GENNEXT @;
+538               put TRANSCOD $ ;
+539               ;
+540             end;
+541            if _ERROR_ then call symputx('_EFIERR_',1);  /* set ERROR detection macro variable */
+542            if EFIEOD then call symputx('_EFIREC_',EFIOUT);
+543            run;
 
 NOTE: The file 'data\processed\contentsSourceDatasets_std_SABR.csv' is:
       Filename=U:\studies\AS\pgms\bchan\data\processed\contentsSourceDatasets_std_SABR.csv,
       RECFM=V,LRECL=32767,File Size (bytes)=0,
-      Last Modified=28Sep2017:11:32:29,
-      Create Time=28Sep2017:11:32:29
+      Last Modified=06Nov2017:11:23:49,
+      Create Time=06Nov2017:11:23:49
 
-NOTE: 521 records were written to the file 'data\processed\contentsSourceDatasets_std_SABR.csv'.
+NOTE: 526 records were written to the file 'data\processed\contentsSourceDatasets_std_SABR.csv'.
       The minimum record length was 144.
       The maximum record length was 306.
-NOTE: There were 520 observations read from the data set WORK.CONTENTS_STD_SABR.
+NOTE: There were 525 observations read from the data set WORK.CONTENTS_STD_SABR.
 NOTE: DATA statement used (Total process time):
       real time           0.01 seconds
       cpu time            0.01 seconds
       
 
-520 records created in data\processed\contentsSourceDatasets_std_SABR.csv from WORK.CONTENTS_STD_SABR.
+525 records created in data\processed\contentsSourceDatasets_std_SABR.csv from WORK.CONTENTS_STD_SABR.
   
   
 NOTE: "data\processed\contentsSourceDatasets_std_SABR.csv" file was successfully created.
 NOTE: PROCEDURE EXPORT used (Total process time):
-      real time           0.09 seconds
+      real time           0.07 seconds
       cpu time            0.06 seconds
       
 
 
 NOTE: There were 4 observations read from the data set WORK.LIBS.
 NOTE: DATA statement used (Total process time):
-      real time           0.01 seconds
-      cpu time            0.00 seconds
+9                                                                   The SAS System                                      11:21 Monday, November 6, 2017
+
+      real time           0.03 seconds
+      cpu time            0.01 seconds
       
-9                                                                   The SAS System                                  11:30 Thursday, September 28, 2017
 
 
-
-                                                                  --- AS project ---                            11:30 Thursday, September 28, 2017  71
+                                                                  --- AS project ---                                11:21 Monday, November 6, 2017  72
 
                                                                 The CONTENTS Procedure
 
@@ -5783,7 +5860,7 @@ NOTE: DATA statement used (Total process time):
 Libref               MPSTD                                                                                                                            
 Engine               SPDE                                                                                                                             
 Physical Name        h:\studies\mpcd\data\stddata\                                                                                                    
-Free Space (Kbytes)  6596750401                                                                                                                       
+Free Space (Kbytes)  6471952193                                                                                                                       
 Metapath             'h:\studies\mpcd\data\stddata\'                                                                                                  
 Indexpath            'l:\studies\mpcd\data\stddata\' 'm:\studies\mpcd\data\stddata\'                                                                  
 Datapath             'p:\studies\mpcd\data\stddata\' 'i:\studies\mpcd\data\stddata\' 'j:\studies\mpcd\data\stddata\'                                  
@@ -5848,7 +5925,7 @@ Datapath             'p:\studies\mpcd\data\stddata\' 'i:\studies\mpcd\data\stdda
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                            11:30 Thursday, September 28, 2017  72
+                                                                  --- AS project ---                                11:21 Monday, November 6, 2017  73
 
                                                                 The CONTENTS Procedure
 
@@ -5922,7 +5999,7 @@ Datapath             'p:\studies\mpcd\data\stddata\' 'i:\studies\mpcd\data\stdda
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                            11:30 Thursday, September 28, 2017  73
+                                                                  --- AS project ---                                11:21 Monday, November 6, 2017  74
 
                                                                 The CONTENTS Procedure
 
@@ -5996,7 +6073,7 @@ Datapath             'p:\studies\mpcd\data\stddata\' 'i:\studies\mpcd\data\stdda
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                            11:30 Thursday, September 28, 2017  74
+                                                                  --- AS project ---                                11:21 Monday, November 6, 2017  75
 
                                                                 The CONTENTS Procedure
 
@@ -6070,7 +6147,7 @@ Datapath             'p:\studies\mpcd\data\stddata\' 'i:\studies\mpcd\data\stdda
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                            11:30 Thursday, September 28, 2017  75
+                                                                  --- AS project ---                                11:21 Monday, November 6, 2017  76
 
                                                                 The CONTENTS Procedure
 
@@ -6144,7 +6221,7 @@ Sort Option    NODUPREC
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                            11:30 Thursday, September 28, 2017  76
+                                                                  --- AS project ---                                11:21 Monday, November 6, 2017  77
 
                                                                 The CONTENTS Procedure
 
@@ -6218,7 +6295,7 @@ Sort Option    NODUPREC
                                                               2    PATID         2148967
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                            11:30 Thursday, September 28, 2017  77
+                                                                  --- AS project ---                                11:21 Monday, November 6, 2017  78
 
                                                                 The CONTENTS Procedure
 
@@ -6292,7 +6369,7 @@ Sort Option    NODUPKEY
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                            11:30 Thursday, September 28, 2017  78
+                                                                  --- AS project ---                                11:21 Monday, November 6, 2017  79
 
                                                                 The CONTENTS Procedure
 
@@ -6366,7 +6443,7 @@ Sort Option    NODUPKEY
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                            11:30 Thursday, September 28, 2017  79
+                                                                  --- AS project ---                                11:21 Monday, November 6, 2017  80
 
                                                                 The CONTENTS Procedure
 
@@ -6440,7 +6517,7 @@ Sort Option    NODUPKEY
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                            11:30 Thursday, September 28, 2017  80
+                                                                  --- AS project ---                                11:21 Monday, November 6, 2017  81
 
                                                                 The CONTENTS Procedure
 
@@ -6514,7 +6591,7 @@ Sort Option    NODUPKEY
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                            11:30 Thursday, September 28, 2017  81
+                                                                  --- AS project ---                                11:21 Monday, November 6, 2017  82
 
                                                                 The CONTENTS Procedure
 
@@ -6588,7 +6665,7 @@ Sort Option    NODUPKEY
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                            11:30 Thursday, September 28, 2017  82
+                                                                  --- AS project ---                                11:21 Monday, November 6, 2017  83
 
                                                                 The CONTENTS Procedure
 
@@ -6662,7 +6739,7 @@ Sort Option    NODUPKEY
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                            11:30 Thursday, September 28, 2017  83
+                                                                  --- AS project ---                                11:21 Monday, November 6, 2017  84
 
                                                                 The CONTENTS Procedure
 
@@ -6736,7 +6813,7 @@ Sort Option    NODUPKEY
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                            11:30 Thursday, September 28, 2017  84
+                                                                  --- AS project ---                                11:21 Monday, November 6, 2017  85
 
                                                                 The CONTENTS Procedure
 
@@ -6812,210 +6889,210 @@ NOTE: The data set WORK.CONTENTS_MPSTD has 157 observations and 41 variables.
  
                                                               contentsSourceDatasets.sas
 NOTE: PROCEDURE CONTENTS used (Total process time):
-      real time           8.65 seconds
-      cpu time            0.48 seconds
+      real time           8.28 seconds
+      cpu time            0.37 seconds
       
-NOTE: The PROCEDURE CONTENTS printed pages 71-84.
+NOTE: The PROCEDURE CONTENTS printed pages 72-85.
 
 
-509         /**********************************************************************
-510         *   PRODUCT:   SAS
-511         *   VERSION:   9.4
-512         *   CREATOR:   External File Interface
-513         *   DATE:      28SEP17
-514         *   DESC:      Generated SAS Datastep Code
-515         *   TEMPLATE SOURCE:  (None Specified.)
-516         ***********************************************************************/
-517            data _null_;
-518            %let _EFIERR_ = 0; /* set the ERROR detection macro variable */
-519            %let _EFIREC_ = 0;     /* clear export record count macro variable */
-520            file 'data\processed\contentsSourceDatasets_MPSTD.csv' delimiter=',' DSD DROPOVER lrecl=32767;
-521            if _n_ = 1 then        /* write column names or labels */
-522             do;
-523               put
-524                  "LIBNAME"
-525               ','
-526                  "MEMNAME"
-527               ','
-528                  "MEMLABEL"
-529               ','
-530                  "TYPEMEM"
-531               ','
-532                  "NAME"
-533               ','
-534                  "TYPE"
-535               ','
-536                  "LENGTH"
-537               ','
-538                  "VARNUM"
-539               ','
-540                  "LABEL"
-541               ','
-542                  "FORMAT"
-543               ','
-544                  "FORMATL"
-545               ','
-546                  "FORMATD"
-547               ','
-548                  "INFORMAT"
-549               ','
-550                  "INFORML"
-551               ','
-552                  "INFORMD"
-553               ','
-554                  "JUST"
-555               ','
-556                  "NPOS"
-557               ','
-558                  "NOBS"
-559               ','
-560                  "ENGINE"
-561               ','
-562                  "CRDATE"
-563               ','
-564                  "MODATE"
-565               ','
-566                  "DELOBS"
-567               ','
-568                  "IDXUSAGE"
-569               ','
-570                  "MEMTYPE"
-10                                                                  The SAS System                                  11:30 Thursday, September 28, 2017
+544         /**********************************************************************
+545         *   PRODUCT:   SAS
+546         *   VERSION:   9.4
+547         *   CREATOR:   External File Interface
+548         *   DATE:      06NOV17
+549         *   DESC:      Generated SAS Datastep Code
+550         *   TEMPLATE SOURCE:  (None Specified.)
+551         ***********************************************************************/
+552            data _null_;
+553            %let _EFIERR_ = 0; /* set the ERROR detection macro variable */
+554            %let _EFIREC_ = 0;     /* clear export record count macro variable */
+555            file 'data\processed\contentsSourceDatasets_MPSTD.csv' delimiter=',' DSD DROPOVER lrecl=32767;
+556            if _n_ = 1 then        /* write column names or labels */
+557             do;
+558               put
+559                  "LIBNAME"
+560               ','
+561                  "MEMNAME"
+562               ','
+563                  "MEMLABEL"
+564               ','
+565                  "TYPEMEM"
+566               ','
+567                  "NAME"
+568               ','
+569                  "TYPE"
+570               ','
+571                  "LENGTH"
+572               ','
+573                  "VARNUM"
+574               ','
+575                  "LABEL"
+576               ','
+577                  "FORMAT"
+578               ','
+579                  "FORMATL"
+580               ','
+581                  "FORMATD"
+582               ','
+583                  "INFORMAT"
+584               ','
+585                  "INFORML"
+586               ','
+587                  "INFORMD"
+588               ','
+589                  "JUST"
+590               ','
+591                  "NPOS"
+592               ','
+593                  "NOBS"
+594               ','
+595                  "ENGINE"
+596               ','
+597                  "CRDATE"
+598               ','
+599                  "MODATE"
+600               ','
+601                  "DELOBS"
+602               ','
+10                                                                  The SAS System                                      11:21 Monday, November 6, 2017
 
-571               ','
-572                  "IDXCOUNT"
-573               ','
-574                  "PROTECT"
-575               ','
-576                  "FLAGS"
-577               ','
-578                  "COMPRESS"
-579               ','
-580                  "REUSE"
-581               ','
-582                  "SORTED"
-583               ','
-584                  "SORTEDBY"
-585               ','
-586                  "CHARSET"
-587               ','
-588                  "COLLATE"
-589               ','
-590                  "NODUPKEY"
-591               ','
-592                  "NODUPREC"
-593               ','
-594                  "ENCRYPT"
-595               ','
-596                  "POINTOBS"
-597               ','
-598                  "GENMAX"
-599               ','
-600                  "GENNUM"
-601               ','
-602                  "GENNEXT"
-603               ','
-604                  "TRANSCOD"
-605               ;
-606             end;
-607           set  WORK.CONTENTS_MPSTD   end=EFIEOD;
-608               format LIBNAME $8. ;
-609               format MEMNAME $32. ;
-610               format MEMLABEL $256. ;
-611               format TYPEMEM $8. ;
-612               format NAME $32. ;
-613               format TYPE best12. ;
-614               format LENGTH best12. ;
-615               format VARNUM best12. ;
-616               format LABEL $256. ;
-617               format FORMAT $32. ;
-618               format FORMATL best12. ;
-619               format FORMATD best12. ;
-620               format INFORMAT $32. ;
-621               format INFORML best12. ;
-622               format INFORMD best12. ;
-623               format JUST best12. ;
-624               format NPOS best12. ;
-625               format NOBS best12. ;
-626               format ENGINE $8. ;
-627               format CRDATE datetime16. ;
-628               format MODATE datetime16. ;
-629               format DELOBS best12. ;
-630               format IDXUSAGE $9. ;
-631               format MEMTYPE $8. ;
-632               format IDXCOUNT best12. ;
-633               format PROTECT $3. ;
-634               format FLAGS $3. ;
-635               format COMPRESS $8. ;
-636               format REUSE $3. ;
-637               format SORTED best12. ;
-638               format SORTEDBY best12. ;
-639               format CHARSET $8. ;
-640               format COLLATE $8. ;
-641               format NODUPKEY $3. ;
-642               format NODUPREC $3. ;
-11                                                                  The SAS System                                  11:30 Thursday, September 28, 2017
+603                  "IDXUSAGE"
+604               ','
+605                  "MEMTYPE"
+606               ','
+607                  "IDXCOUNT"
+608               ','
+609                  "PROTECT"
+610               ','
+611                  "FLAGS"
+612               ','
+613                  "COMPRESS"
+614               ','
+615                  "REUSE"
+616               ','
+617                  "SORTED"
+618               ','
+619                  "SORTEDBY"
+620               ','
+621                  "CHARSET"
+622               ','
+623                  "COLLATE"
+624               ','
+625                  "NODUPKEY"
+626               ','
+627                  "NODUPREC"
+628               ','
+629                  "ENCRYPT"
+630               ','
+631                  "POINTOBS"
+632               ','
+633                  "GENMAX"
+634               ','
+635                  "GENNUM"
+636               ','
+637                  "GENNEXT"
+638               ','
+639                  "TRANSCOD"
+640               ;
+641             end;
+642           set  WORK.CONTENTS_MPSTD   end=EFIEOD;
+643               format LIBNAME $8. ;
+644               format MEMNAME $32. ;
+645               format MEMLABEL $256. ;
+646               format TYPEMEM $8. ;
+647               format NAME $32. ;
+648               format TYPE best12. ;
+649               format LENGTH best12. ;
+650               format VARNUM best12. ;
+651               format LABEL $256. ;
+652               format FORMAT $32. ;
+653               format FORMATL best12. ;
+654               format FORMATD best12. ;
+655               format INFORMAT $32. ;
+656               format INFORML best12. ;
+657               format INFORMD best12. ;
+658               format JUST best12. ;
+659               format NPOS best12. ;
+660               format NOBS best12. ;
+661               format ENGINE $8. ;
+662               format CRDATE datetime16. ;
+663               format MODATE datetime16. ;
+664               format DELOBS best12. ;
+665               format IDXUSAGE $9. ;
+666               format MEMTYPE $8. ;
+667               format IDXCOUNT best12. ;
+668               format PROTECT $3. ;
+669               format FLAGS $3. ;
+670               format COMPRESS $8. ;
+671               format REUSE $3. ;
+672               format SORTED best12. ;
+673               format SORTEDBY best12. ;
+674               format CHARSET $8. ;
+11                                                                  The SAS System                                      11:21 Monday, November 6, 2017
 
-643               format ENCRYPT $8. ;
-644               format POINTOBS $3. ;
-645               format GENMAX best12. ;
-646               format GENNUM best12. ;
-647               format GENNEXT best12. ;
-648               format TRANSCOD $3. ;
-649             do;
-650               EFIOUT + 1;
-651               put LIBNAME $ @;
-652               put MEMNAME $ @;
-653               put MEMLABEL $ @;
-654               put TYPEMEM $ @;
-655               put NAME $ @;
-656               put TYPE @;
-657               put LENGTH @;
-658               put VARNUM @;
-659               put LABEL $ @;
-660               put FORMAT $ @;
-661               put FORMATL @;
-662               put FORMATD @;
-663               put INFORMAT $ @;
-664               put INFORML @;
-665               put INFORMD @;
-666               put JUST @;
-667               put NPOS @;
-668               put NOBS @;
-669               put ENGINE $ @;
-670               put CRDATE @;
-671               put MODATE @;
-672               put DELOBS @;
-673               put IDXUSAGE $ @;
-674               put MEMTYPE $ @;
-675               put IDXCOUNT @;
-676               put PROTECT $ @;
-677               put FLAGS $ @;
-678               put COMPRESS $ @;
-679               put REUSE $ @;
-680               put SORTED @;
-681               put SORTEDBY @;
-682               put CHARSET $ @;
-683               put COLLATE $ @;
-684               put NODUPKEY $ @;
-685               put NODUPREC $ @;
-686               put ENCRYPT $ @;
-687               put POINTOBS $ @;
-688               put GENMAX @;
-689               put GENNUM @;
-690               put GENNEXT @;
-691               put TRANSCOD $ ;
-692               ;
-693             end;
-694            if _ERROR_ then call symputx('_EFIERR_',1);  /* set ERROR detection macro variable */
-695            if EFIEOD then call symputx('_EFIREC_',EFIOUT);
-696            run;
+675               format COLLATE $8. ;
+676               format NODUPKEY $3. ;
+677               format NODUPREC $3. ;
+678               format ENCRYPT $8. ;
+679               format POINTOBS $3. ;
+680               format GENMAX best12. ;
+681               format GENNUM best12. ;
+682               format GENNEXT best12. ;
+683               format TRANSCOD $3. ;
+684             do;
+685               EFIOUT + 1;
+686               put LIBNAME $ @;
+687               put MEMNAME $ @;
+688               put MEMLABEL $ @;
+689               put TYPEMEM $ @;
+690               put NAME $ @;
+691               put TYPE @;
+692               put LENGTH @;
+693               put VARNUM @;
+694               put LABEL $ @;
+695               put FORMAT $ @;
+696               put FORMATL @;
+697               put FORMATD @;
+698               put INFORMAT $ @;
+699               put INFORML @;
+700               put INFORMD @;
+701               put JUST @;
+702               put NPOS @;
+703               put NOBS @;
+704               put ENGINE $ @;
+705               put CRDATE @;
+706               put MODATE @;
+707               put DELOBS @;
+708               put IDXUSAGE $ @;
+709               put MEMTYPE $ @;
+710               put IDXCOUNT @;
+711               put PROTECT $ @;
+712               put FLAGS $ @;
+713               put COMPRESS $ @;
+714               put REUSE $ @;
+715               put SORTED @;
+716               put SORTEDBY @;
+717               put CHARSET $ @;
+718               put COLLATE $ @;
+719               put NODUPKEY $ @;
+720               put NODUPREC $ @;
+721               put ENCRYPT $ @;
+722               put POINTOBS $ @;
+723               put GENMAX @;
+724               put GENNUM @;
+725               put GENNEXT @;
+726               put TRANSCOD $ ;
+727               ;
+728             end;
+729            if _ERROR_ then call symputx('_EFIERR_',1);  /* set ERROR detection macro variable */
+730            if EFIEOD then call symputx('_EFIREC_',EFIOUT);
+731            run;
 
 NOTE: The file 'data\processed\contentsSourceDatasets_MPSTD.csv' is:
       Filename=U:\studies\AS\pgms\bchan\data\processed\contentsSourceDatasets_MPSTD.csv,
       RECFM=V,LRECL=32767,File Size (bytes)=0,
-      Last Modified=28Sep2017:11:32:38,
-      Create Time=28Sep2017:11:32:38
+      Last Modified=06Nov2017:11:23:58,
+      Create Time=06Nov2017:11:23:58
 
 NOTE: 158 records were written to the file 'data\processed\contentsSourceDatasets_MPSTD.csv'.
       The minimum record length was 150.
@@ -7025,11 +7102,11 @@ NOTE: DATA statement used (Total process time):
       real time           0.01 seconds
       cpu time            0.01 seconds
       
+12                                                                  The SAS System                                      11:21 Monday, November 6, 2017
+
 
 157 records created in data\processed\contentsSourceDatasets_MPSTD.csv from WORK.CONTENTS_MPSTD.
   
-12                                                                  The SAS System                                  11:30 Thursday, September 28, 2017
-
   
 NOTE: "data\processed\contentsSourceDatasets_MPSTD.csv" file was successfully created.
 NOTE: PROCEDURE EXPORT used (Total process time):
@@ -7045,7 +7122,7 @@ NOTE: DATA statement used (Total process time):
       
 
 
-                                                                  --- AS project ---                            11:30 Thursday, September 28, 2017  85
+                                                                  --- AS project ---                                11:21 Monday, November 6, 2017  86
 
                                                                 The CONTENTS Procedure
 
@@ -7054,7 +7131,7 @@ NOTE: DATA statement used (Total process time):
 Libref               UCBSTD                                                                                                                           
 Engine               SPDE                                                                                                                             
 Physical Name        q:\studies\AS\data\stddata\                                                                                                      
-Free Space (Kbytes)  5039542913                                                                                                                       
+Free Space (Kbytes)  4677831809                                                                                                                       
 Metapath             'q:\studies\AS\data\stddata\'                                                                                                    
 Indexpath            't:\studies\AS\data\stddata\' 'u:\studies\AS\data\stddata\' 'v:\studies\AS\data\stddata\'                                        
 Datapath             'q:\studies\AS\data\stddata\' 'r:\studies\AS\data\stddata\' 's:\studies\AS\data\stddata\'                                        
@@ -7119,7 +7196,7 @@ Datapath             'q:\studies\AS\data\stddata\' 'r:\studies\AS\data\stddata\'
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                            11:30 Thursday, September 28, 2017  86
+                                                                  --- AS project ---                                11:21 Monday, November 6, 2017  87
 
                                                                 The CONTENTS Procedure
 
@@ -7193,7 +7270,7 @@ Datapath             'q:\studies\AS\data\stddata\' 'r:\studies\AS\data\stddata\'
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                            11:30 Thursday, September 28, 2017  87
+                                                                  --- AS project ---                                11:21 Monday, November 6, 2017  88
 
                                                                 The CONTENTS Procedure
 
@@ -7267,7 +7344,7 @@ Datapath             'q:\studies\AS\data\stddata\' 'r:\studies\AS\data\stddata\'
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                            11:30 Thursday, September 28, 2017  88
+                                                                  --- AS project ---                                11:21 Monday, November 6, 2017  89
 
                                                                 The CONTENTS Procedure
 
@@ -7341,7 +7418,7 @@ Sort Option    NODUPREC
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                            11:30 Thursday, September 28, 2017  89
+                                                                  --- AS project ---                                11:21 Monday, November 6, 2017  90
 
                                                                 The CONTENTS Procedure
 
@@ -7415,7 +7492,7 @@ Sort Option    NODUPREC
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                            11:30 Thursday, September 28, 2017  90
+                                                                  --- AS project ---                                11:21 Monday, November 6, 2017  91
 
                                                                 The CONTENTS Procedure
 
@@ -7489,7 +7566,7 @@ Sort Option    NODUPREC
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                            11:30 Thursday, September 28, 2017  91
+                                                                  --- AS project ---                                11:21 Monday, November 6, 2017  92
 
                                                                 The CONTENTS Procedure
 
@@ -7563,7 +7640,7 @@ Sort Option    NODUPREC
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                            11:30 Thursday, September 28, 2017  92
+                                                                  --- AS project ---                                11:21 Monday, November 6, 2017  93
 
                                                                 The CONTENTS Procedure
 
@@ -7637,7 +7714,7 @@ Sort Option    NODUPREC
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                            11:30 Thursday, September 28, 2017  93
+                                                                  --- AS project ---                                11:21 Monday, November 6, 2017  94
 
                                                                 The CONTENTS Procedure
 
@@ -7711,7 +7788,7 @@ Sort Option    NODUPREC
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                            11:30 Thursday, September 28, 2017  94
+                                                                  --- AS project ---                                11:21 Monday, November 6, 2017  95
 
                                                                 The CONTENTS Procedure
 
@@ -7785,7 +7862,7 @@ Sort Option    NODUPREC
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                            11:30 Thursday, September 28, 2017  95
+                                                                  --- AS project ---                                11:21 Monday, November 6, 2017  96
 
                                                                 The CONTENTS Procedure
 
@@ -7859,7 +7936,7 @@ Sort Option    NODUPREC
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                            11:30 Thursday, September 28, 2017  96
+                                                                  --- AS project ---                                11:21 Monday, November 6, 2017  97
 
                                                                 The CONTENTS Procedure
 
@@ -7933,7 +8010,7 @@ Sort Option    NODUPREC
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                            11:30 Thursday, September 28, 2017  97
+                                                                  --- AS project ---                                11:21 Monday, November 6, 2017  98
 
                                                                 The CONTENTS Procedure
 
@@ -8007,7 +8084,7 @@ Sort Option    NODUPREC
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                            11:30 Thursday, September 28, 2017  98
+                                                                  --- AS project ---                                11:21 Monday, November 6, 2017  99
 
                                                                 The CONTENTS Procedure
 
@@ -8081,7 +8158,7 @@ Sort Option    NODUPREC
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                            11:30 Thursday, September 28, 2017  99
+                                                                  --- AS project ---                                11:21 Monday, November 6, 2017 100
 
                                                                 The CONTENTS Procedure
 
@@ -8155,7 +8232,7 @@ Sort Option    NODUPREC
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                            11:30 Thursday, September 28, 2017 100
+                                                                  --- AS project ---                                11:21 Monday, November 6, 2017 101
 
                                                                 The CONTENTS Procedure
 
@@ -8229,7 +8306,7 @@ Sort Option    NODUPREC
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                            11:30 Thursday, September 28, 2017 101
+                                                                  --- AS project ---                                11:21 Monday, November 6, 2017 102
 
                                                                 The CONTENTS Procedure
 
@@ -8303,7 +8380,7 @@ Sort Option    NODUPREC
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                            11:30 Thursday, September 28, 2017 102
+                                                                  --- AS project ---                                11:21 Monday, November 6, 2017 103
 
                                                                 The CONTENTS Procedure
 
@@ -8377,7 +8454,7 @@ Sort Option    NODUPREC
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                            11:30 Thursday, September 28, 2017 103
+                                                                  --- AS project ---                                11:21 Monday, November 6, 2017 104
 
                                                                 The CONTENTS Procedure
 
@@ -8451,7 +8528,7 @@ Sort Option    NODUPREC
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                            11:30 Thursday, September 28, 2017 104
+                                                                  --- AS project ---                                11:21 Monday, November 6, 2017 105
 
                                                                 The CONTENTS Procedure
 
@@ -8525,7 +8602,7 @@ Sort Option    NODUPREC
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                            11:30 Thursday, September 28, 2017 105
+                                                                  --- AS project ---                                11:21 Monday, November 6, 2017 106
 
                                                                 The CONTENTS Procedure
 
@@ -8599,7 +8676,7 @@ Sort Option    NODUPREC
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                            11:30 Thursday, September 28, 2017 106
+                                                                  --- AS project ---                                11:21 Monday, November 6, 2017 107
 
                                                                 The CONTENTS Procedure
 
@@ -8673,7 +8750,7 @@ Sort Option    NODUPREC
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                            11:30 Thursday, September 28, 2017 107
+                                                                  --- AS project ---                                11:21 Monday, November 6, 2017 108
 
                                                                 The CONTENTS Procedure
 
@@ -8747,7 +8824,7 @@ Sort Option    NODUPREC
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                            11:30 Thursday, September 28, 2017 108
+                                                                  --- AS project ---                                11:21 Monday, November 6, 2017 109
 
                                                                 The CONTENTS Procedure
 
@@ -8821,7 +8898,7 @@ Sort Option    NODUPREC
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                            11:30 Thursday, September 28, 2017 109
+                                                                  --- AS project ---                                11:21 Monday, November 6, 2017 110
 
                                                                 The CONTENTS Procedure
 
@@ -8895,7 +8972,7 @@ Sort Option    NODUPREC
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                            11:30 Thursday, September 28, 2017 110
+                                                                  --- AS project ---                                11:21 Monday, November 6, 2017 111
 
                                                                 The CONTENTS Procedure
 
@@ -8969,7 +9046,7 @@ Sort Option    NODUPREC
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                            11:30 Thursday, September 28, 2017 111
+                                                                  --- AS project ---                                11:21 Monday, November 6, 2017 112
 
                                                                 The CONTENTS Procedure
 
@@ -9043,7 +9120,7 @@ Sort Option    NODUPREC
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                            11:30 Thursday, September 28, 2017 112
+                                                                  --- AS project ---                                11:21 Monday, November 6, 2017 113
 
                                                                 The CONTENTS Procedure
 
@@ -9117,7 +9194,7 @@ Sort Option    NODUPREC
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                            11:30 Thursday, September 28, 2017 113
+                                                                  --- AS project ---                                11:21 Monday, November 6, 2017 114
 
                                                                 The CONTENTS Procedure
 
@@ -9191,7 +9268,7 @@ Sort Option    NODUPREC
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                            11:30 Thursday, September 28, 2017 114
+                                                                  --- AS project ---                                11:21 Monday, November 6, 2017 115
 
                                                                 The CONTENTS Procedure
 
@@ -9265,7 +9342,7 @@ Sort Option    NODUPREC
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                            11:30 Thursday, September 28, 2017 115
+                                                                  --- AS project ---                                11:21 Monday, November 6, 2017 116
 
                                                                 The CONTENTS Procedure
 
@@ -9339,7 +9416,7 @@ Sort Option    NODUPREC
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                            11:30 Thursday, September 28, 2017 116
+                                                                  --- AS project ---                                11:21 Monday, November 6, 2017 117
 
                                                                 The CONTENTS Procedure
 
@@ -9413,7 +9490,7 @@ Sort Option    NODUPREC
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                            11:30 Thursday, September 28, 2017 117
+                                                                  --- AS project ---                                11:21 Monday, November 6, 2017 118
 
                                                                 The CONTENTS Procedure
 
@@ -9487,7 +9564,7 @@ Sort Option    NODUPREC
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                            11:30 Thursday, September 28, 2017 118
+                                                                  --- AS project ---                                11:21 Monday, November 6, 2017 119
 
                                                                 The CONTENTS Procedure
 
@@ -9561,7 +9638,7 @@ Sort Option    NODUPREC
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                            11:30 Thursday, September 28, 2017 119
+                                                                  --- AS project ---                                11:21 Monday, November 6, 2017 120
 
                                                                 The CONTENTS Procedure
 
@@ -9637,212 +9714,212 @@ NOTE: The data set WORK.CONTENTS_UCBSTD has 291 observations and 41 variables.
  
                                                               contentsSourceDatasets.sas
 NOTE: PROCEDURE CONTENTS used (Total process time):
-      real time           4.78 seconds
-      cpu time            2.09 seconds
+      real time           5.22 seconds
+      cpu time            1.93 seconds
       
-NOTE: The PROCEDURE CONTENTS printed pages 85-119.
+NOTE: The PROCEDURE CONTENTS printed pages 86-120.
 
 
-697         /**********************************************************************
-698         *   PRODUCT:   SAS
-699         *   VERSION:   9.4
-700         *   CREATOR:   External File Interface
-701         *   DATE:      28SEP17
-702         *   DESC:      Generated SAS Datastep Code
-703         *   TEMPLATE SOURCE:  (None Specified.)
-704         ***********************************************************************/
-705            data _null_;
-706            %let _EFIERR_ = 0; /* set the ERROR detection macro variable */
-707            %let _EFIREC_ = 0;     /* clear export record count macro variable */
-708            file 'data\processed\contentsSourceDatasets_UCBSTD.csv' delimiter=',' DSD DROPOVER lrecl=32767;
-709            if _n_ = 1 then        /* write column names or labels */
-710             do;
-711               put
-712                  "LIBNAME"
-713               ','
-714                  "MEMNAME"
-715               ','
-716                  "MEMLABEL"
-717               ','
-718                  "TYPEMEM"
-719               ','
-720                  "NAME"
-721               ','
-722                  "TYPE"
-723               ','
-724                  "LENGTH"
-725               ','
-726                  "VARNUM"
-727               ','
-728                  "LABEL"
-729               ','
-730                  "FORMAT"
-731               ','
-732                  "FORMATL"
-733               ','
-734                  "FORMATD"
-735               ','
-736                  "INFORMAT"
-737               ','
-738                  "INFORML"
-739               ','
-740                  "INFORMD"
-741               ','
-742                  "JUST"
-743               ','
-744                  "NPOS"
-745               ','
-13                                                                  The SAS System                                  11:30 Thursday, September 28, 2017
+732         /**********************************************************************
+733         *   PRODUCT:   SAS
+734         *   VERSION:   9.4
+735         *   CREATOR:   External File Interface
+736         *   DATE:      06NOV17
+737         *   DESC:      Generated SAS Datastep Code
+738         *   TEMPLATE SOURCE:  (None Specified.)
+739         ***********************************************************************/
+740            data _null_;
+741            %let _EFIERR_ = 0; /* set the ERROR detection macro variable */
+742            %let _EFIREC_ = 0;     /* clear export record count macro variable */
+743            file 'data\processed\contentsSourceDatasets_UCBSTD.csv' delimiter=',' DSD DROPOVER lrecl=32767;
+744            if _n_ = 1 then        /* write column names or labels */
+745             do;
+746               put
+747                  "LIBNAME"
+748               ','
+749                  "MEMNAME"
+750               ','
+751                  "MEMLABEL"
+752               ','
+753                  "TYPEMEM"
+754               ','
+755                  "NAME"
+756               ','
+757                  "TYPE"
+758               ','
+759                  "LENGTH"
+760               ','
+761                  "VARNUM"
+762               ','
+763                  "LABEL"
+764               ','
+765                  "FORMAT"
+766               ','
+767                  "FORMATL"
+768               ','
+769                  "FORMATD"
+770               ','
+771                  "INFORMAT"
+772               ','
+773                  "INFORML"
+774               ','
+775                  "INFORMD"
+776               ','
+777                  "JUST"
+13                                                                  The SAS System                                      11:21 Monday, November 6, 2017
 
-746                  "NOBS"
-747               ','
-748                  "ENGINE"
-749               ','
-750                  "CRDATE"
-751               ','
-752                  "MODATE"
-753               ','
-754                  "DELOBS"
-755               ','
-756                  "IDXUSAGE"
-757               ','
-758                  "MEMTYPE"
-759               ','
-760                  "IDXCOUNT"
-761               ','
-762                  "PROTECT"
-763               ','
-764                  "FLAGS"
-765               ','
-766                  "COMPRESS"
-767               ','
-768                  "REUSE"
-769               ','
-770                  "SORTED"
-771               ','
-772                  "SORTEDBY"
-773               ','
-774                  "CHARSET"
-775               ','
-776                  "COLLATE"
-777               ','
-778                  "NODUPKEY"
-779               ','
-780                  "NODUPREC"
-781               ','
-782                  "ENCRYPT"
-783               ','
-784                  "POINTOBS"
-785               ','
-786                  "GENMAX"
-787               ','
-788                  "GENNUM"
-789               ','
-790                  "GENNEXT"
-791               ','
-792                  "TRANSCOD"
-793               ;
-794             end;
-795           set  WORK.CONTENTS_UCBSTD   end=EFIEOD;
-796               format LIBNAME $8. ;
-797               format MEMNAME $32. ;
-798               format MEMLABEL $256. ;
-799               format TYPEMEM $8. ;
-800               format NAME $32. ;
-801               format TYPE best12. ;
-802               format LENGTH best12. ;
-803               format VARNUM best12. ;
-804               format LABEL $256. ;
-805               format FORMAT $32. ;
-806               format FORMATL best12. ;
-807               format FORMATD best12. ;
-808               format INFORMAT $32. ;
-809               format INFORML best12. ;
-810               format INFORMD best12. ;
-811               format JUST best12. ;
-812               format NPOS best12. ;
-813               format NOBS best12. ;
-814               format ENGINE $8. ;
-815               format CRDATE datetime16. ;
-816               format MODATE datetime16. ;
-817               format DELOBS best12. ;
-14                                                                  The SAS System                                  11:30 Thursday, September 28, 2017
+778               ','
+779                  "NPOS"
+780               ','
+781                  "NOBS"
+782               ','
+783                  "ENGINE"
+784               ','
+785                  "CRDATE"
+786               ','
+787                  "MODATE"
+788               ','
+789                  "DELOBS"
+790               ','
+791                  "IDXUSAGE"
+792               ','
+793                  "MEMTYPE"
+794               ','
+795                  "IDXCOUNT"
+796               ','
+797                  "PROTECT"
+798               ','
+799                  "FLAGS"
+800               ','
+801                  "COMPRESS"
+802               ','
+803                  "REUSE"
+804               ','
+805                  "SORTED"
+806               ','
+807                  "SORTEDBY"
+808               ','
+809                  "CHARSET"
+810               ','
+811                  "COLLATE"
+812               ','
+813                  "NODUPKEY"
+814               ','
+815                  "NODUPREC"
+816               ','
+817                  "ENCRYPT"
+818               ','
+819                  "POINTOBS"
+820               ','
+821                  "GENMAX"
+822               ','
+823                  "GENNUM"
+824               ','
+825                  "GENNEXT"
+826               ','
+827                  "TRANSCOD"
+828               ;
+829             end;
+830           set  WORK.CONTENTS_UCBSTD   end=EFIEOD;
+831               format LIBNAME $8. ;
+832               format MEMNAME $32. ;
+833               format MEMLABEL $256. ;
+834               format TYPEMEM $8. ;
+835               format NAME $32. ;
+836               format TYPE best12. ;
+837               format LENGTH best12. ;
+838               format VARNUM best12. ;
+839               format LABEL $256. ;
+840               format FORMAT $32. ;
+841               format FORMATL best12. ;
+842               format FORMATD best12. ;
+843               format INFORMAT $32. ;
+844               format INFORML best12. ;
+845               format INFORMD best12. ;
+846               format JUST best12. ;
+847               format NPOS best12. ;
+848               format NOBS best12. ;
+849               format ENGINE $8. ;
+14                                                                  The SAS System                                      11:21 Monday, November 6, 2017
 
-818               format IDXUSAGE $9. ;
-819               format MEMTYPE $8. ;
-820               format IDXCOUNT best12. ;
-821               format PROTECT $3. ;
-822               format FLAGS $3. ;
-823               format COMPRESS $8. ;
-824               format REUSE $3. ;
-825               format SORTED best12. ;
-826               format SORTEDBY best12. ;
-827               format CHARSET $8. ;
-828               format COLLATE $8. ;
-829               format NODUPKEY $3. ;
-830               format NODUPREC $3. ;
-831               format ENCRYPT $8. ;
-832               format POINTOBS $3. ;
-833               format GENMAX best12. ;
-834               format GENNUM best12. ;
-835               format GENNEXT best12. ;
-836               format TRANSCOD $3. ;
-837             do;
-838               EFIOUT + 1;
-839               put LIBNAME $ @;
-840               put MEMNAME $ @;
-841               put MEMLABEL $ @;
-842               put TYPEMEM $ @;
-843               put NAME $ @;
-844               put TYPE @;
-845               put LENGTH @;
-846               put VARNUM @;
-847               put LABEL $ @;
-848               put FORMAT $ @;
-849               put FORMATL @;
-850               put FORMATD @;
-851               put INFORMAT $ @;
-852               put INFORML @;
-853               put INFORMD @;
-854               put JUST @;
-855               put NPOS @;
-856               put NOBS @;
-857               put ENGINE $ @;
-858               put CRDATE @;
-859               put MODATE @;
-860               put DELOBS @;
-861               put IDXUSAGE $ @;
-862               put MEMTYPE $ @;
-863               put IDXCOUNT @;
-864               put PROTECT $ @;
-865               put FLAGS $ @;
-866               put COMPRESS $ @;
-867               put REUSE $ @;
-868               put SORTED @;
-869               put SORTEDBY @;
-870               put CHARSET $ @;
-871               put COLLATE $ @;
-872               put NODUPKEY $ @;
-873               put NODUPREC $ @;
-874               put ENCRYPT $ @;
-875               put POINTOBS $ @;
-876               put GENMAX @;
-877               put GENNUM @;
-878               put GENNEXT @;
-879               put TRANSCOD $ ;
-880               ;
-881             end;
-882            if _ERROR_ then call symputx('_EFIERR_',1);  /* set ERROR detection macro variable */
-883            if EFIEOD then call symputx('_EFIREC_',EFIOUT);
-884            run;
+850               format CRDATE datetime16. ;
+851               format MODATE datetime16. ;
+852               format DELOBS best12. ;
+853               format IDXUSAGE $9. ;
+854               format MEMTYPE $8. ;
+855               format IDXCOUNT best12. ;
+856               format PROTECT $3. ;
+857               format FLAGS $3. ;
+858               format COMPRESS $8. ;
+859               format REUSE $3. ;
+860               format SORTED best12. ;
+861               format SORTEDBY best12. ;
+862               format CHARSET $8. ;
+863               format COLLATE $8. ;
+864               format NODUPKEY $3. ;
+865               format NODUPREC $3. ;
+866               format ENCRYPT $8. ;
+867               format POINTOBS $3. ;
+868               format GENMAX best12. ;
+869               format GENNUM best12. ;
+870               format GENNEXT best12. ;
+871               format TRANSCOD $3. ;
+872             do;
+873               EFIOUT + 1;
+874               put LIBNAME $ @;
+875               put MEMNAME $ @;
+876               put MEMLABEL $ @;
+877               put TYPEMEM $ @;
+878               put NAME $ @;
+879               put TYPE @;
+880               put LENGTH @;
+881               put VARNUM @;
+882               put LABEL $ @;
+883               put FORMAT $ @;
+884               put FORMATL @;
+885               put FORMATD @;
+886               put INFORMAT $ @;
+887               put INFORML @;
+888               put INFORMD @;
+889               put JUST @;
+890               put NPOS @;
+891               put NOBS @;
+892               put ENGINE $ @;
+893               put CRDATE @;
+894               put MODATE @;
+895               put DELOBS @;
+896               put IDXUSAGE $ @;
+897               put MEMTYPE $ @;
+898               put IDXCOUNT @;
+899               put PROTECT $ @;
+900               put FLAGS $ @;
+901               put COMPRESS $ @;
+902               put REUSE $ @;
+903               put SORTED @;
+904               put SORTEDBY @;
+905               put CHARSET $ @;
+906               put COLLATE $ @;
+907               put NODUPKEY $ @;
+908               put NODUPREC $ @;
+909               put ENCRYPT $ @;
+910               put POINTOBS $ @;
+911               put GENMAX @;
+912               put GENNUM @;
+913               put GENNEXT @;
+914               put TRANSCOD $ ;
+915               ;
+916             end;
+917            if _ERROR_ then call symputx('_EFIERR_',1);  /* set ERROR detection macro variable */
+918            if EFIEOD then call symputx('_EFIREC_',EFIOUT);
+919            run;
 
 NOTE: The file 'data\processed\contentsSourceDatasets_UCBSTD.csv' is:
+15                                                                  The SAS System                                      11:21 Monday, November 6, 2017
+
       Filename=U:\studies\AS\pgms\bchan\data\processed\contentsSourceDatasets_UCBSTD.csv,
       RECFM=V,LRECL=32767,File Size (bytes)=0,
-      Last Modified=28Sep2017:11:32:43,
-15                                                                  The SAS System                                  11:30 Thursday, September 28, 2017
-
-      Create Time=28Sep2017:11:32:43
+      Last Modified=06Nov2017:11:24:03,
+      Create Time=06Nov2017:11:24:03
 
 NOTE: 292 records were written to the file 'data\processed\contentsSourceDatasets_UCBSTD.csv'.
       The minimum record length was 163.
@@ -9850,7 +9927,7 @@ NOTE: 292 records were written to the file 'data\processed\contentsSourceDataset
 NOTE: There were 291 observations read from the data set WORK.CONTENTS_UCBSTD.
 NOTE: DATA statement used (Total process time):
       real time           0.01 seconds
-      cpu time            0.01 seconds
+      cpu time            0.00 seconds
       
 
 291 records created in data\processed\contentsSourceDatasets_UCBSTD.csv from WORK.CONTENTS_UCBSTD.
@@ -9858,68 +9935,68 @@ NOTE: DATA statement used (Total process time):
   
 NOTE: "data\processed\contentsSourceDatasets_UCBSTD.csv" file was successfully created.
 NOTE: PROCEDURE EXPORT used (Total process time):
-      real time           0.07 seconds
-      cpu time            0.07 seconds
+      real time           0.10 seconds
+      cpu time            0.06 seconds
       
 
-885        
-886        
-887        proc export
-888          data = Work.libs
-889          outfile = "data\processed\contentsSourceDatasets.csv"
-890          dbms = csv
-891          replace;
-892          delimiter = ",";
-893        run;
+920        
+921        
+922        proc export
+923          data = Work.libs
+924          outfile = "data\processed\contentsSourceDatasets.csv"
+925          dbms = csv
+926          replace;
+927          delimiter = ",";
+928        run;
 
-894         /**********************************************************************
-895         *   PRODUCT:   SAS
-896         *   VERSION:   9.4
-897         *   CREATOR:   External File Interface
-898         *   DATE:      28SEP17
-899         *   DESC:      Generated SAS Datastep Code
-900         *   TEMPLATE SOURCE:  (None Specified.)
-901         ***********************************************************************/
-902            data _null_;
-903            %let _EFIERR_ = 0; /* set the ERROR detection macro variable */
-904            %let _EFIREC_ = 0;     /* clear export record count macro variable */
-905            file 'data\processed\contentsSourceDatasets.csv' delimiter=',' DSD DROPOVER lrecl=32767;
-906            if _n_ = 1 then        /* write column names or labels */
-907             do;
-908               put
-909                  "libname"
-910               ','
-911                  "desc"
-912               ','
-913                  "yearRange"
-914               ','
-915                  "note"
-916               ;
-917             end;
-918           set  WORK.LIBS   end=EFIEOD;
-919               format libname $8. ;
-920               format desc $20. ;
-921               format yearRange $9. ;
-922               format note $80. ;
-923             do;
-924               EFIOUT + 1;
-925               put libname $ @;
-926               put desc $ @;
-927               put yearRange $ @;
-928               put note $ ;
-929               ;
-930             end;
-931            if _ERROR_ then call symputx('_EFIERR_',1);  /* set ERROR detection macro variable */
-932            if EFIEOD then call symputx('_EFIREC_',EFIOUT);
-933            run;
+929         /**********************************************************************
+930         *   PRODUCT:   SAS
+931         *   VERSION:   9.4
+932         *   CREATOR:   External File Interface
+933         *   DATE:      06NOV17
+934         *   DESC:      Generated SAS Datastep Code
+935         *   TEMPLATE SOURCE:  (None Specified.)
+936         ***********************************************************************/
+937            data _null_;
+938            %let _EFIERR_ = 0; /* set the ERROR detection macro variable */
+939            %let _EFIREC_ = 0;     /* clear export record count macro variable */
+940            file 'data\processed\contentsSourceDatasets.csv' delimiter=',' DSD DROPOVER lrecl=32767;
+941            if _n_ = 1 then        /* write column names or labels */
+942             do;
+943               put
+944                  "libname"
+945               ','
+946                  "desc"
+947               ','
+948                  "yearRange"
+949               ','
+950                  "note"
+951               ;
+952             end;
+953           set  WORK.LIBS   end=EFIEOD;
+954               format libname $8. ;
+955               format desc $20. ;
+956               format yearRange $9. ;
+957               format note $80. ;
+958             do;
+959               EFIOUT + 1;
+960               put libname $ @;
+961               put desc $ @;
+962               put yearRange $ @;
+963               put note $ ;
+964               ;
+965             end;
+966            if _ERROR_ then call symputx('_EFIERR_',1);  /* set ERROR detection macro variable */
+967            if EFIEOD then call symputx('_EFIREC_',EFIOUT);
+16                                                                  The SAS System                                      11:21 Monday, November 6, 2017
+
+968            run;
 
 NOTE: The file 'data\processed\contentsSourceDatasets.csv' is:
-16                                                                  The SAS System                                  11:30 Thursday, September 28, 2017
-
       Filename=U:\studies\AS\pgms\bchan\data\processed\contentsSourceDatasets.csv,
       RECFM=V,LRECL=32767,File Size (bytes)=0,
-      Last Modified=28Sep2017:11:32:43,
-      Create Time=28Sep2017:11:32:43
+      Last Modified=06Nov2017:11:24:03,
+      Create Time=06Nov2017:11:24:03
 
 NOTE: 5 records were written to the file 'data\processed\contentsSourceDatasets.csv'.
       The minimum record length was 27.
@@ -9935,16 +10012,16 @@ NOTE: DATA statement used (Total process time):
   
 NOTE: "data\processed\contentsSourceDatasets.csv" file was successfully created.
 NOTE: PROCEDURE EXPORT used (Total process time):
-      real time           0.07 seconds
-      cpu time            0.04 seconds
+      real time           0.06 seconds
+      cpu time            0.01 seconds
       
 
-934        
-935        
-936        
-937        ods html close;
+969        
+970        
+971        
+972        ods html close;
 NOTE: SAS Institute Inc., SAS Campus Drive, Cary, NC USA 27513-2414
 NOTE: The SAS System used:
-      real time           2:14.72
-      cpu time            11.45 seconds
+      real time           2:18.65
+      cpu time            9.31 seconds
       

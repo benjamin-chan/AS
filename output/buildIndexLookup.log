@@ -1,4 +1,4 @@
-1                                                          The SAS System                         11:32 Thursday, September 28, 2017
+1                                                          The SAS System                             11:24 Monday, November 6, 2017
 
 NOTE: Copyright (c) 2002-2012 by SAS Institute Inc., Cary, NC, USA. 
 NOTE: SAS (r) Proprietary Software 9.4 (TS1M1) 
@@ -28,8 +28,8 @@ Please remember not to copy any data files that contain PHI (protected health id
 
 
 NOTE: SAS initialization used:
-      real time           0.21 seconds
-      cpu time            0.10 seconds
+      real time           0.15 seconds
+      cpu time            0.12 seconds
       
 1          *  University of Alabama at Birmingham                               *
 2          *  AS project                                            *
@@ -60,74 +60,77 @@ NOTE: Libref UCB was successfully assigned as follows:
 NOTE: Libref DT was successfully assigned as follows: 
       Engine:        V9 
       Physical Name: V:\studies\AS\data
-92         footnote "&pgm.";
-93         * footnote2 "%sysfunc(datetime(),datetime14.)";
-94         title1 '--- AS project ---';
-95         **********************************************************************;
-96         options macrogen mlogic mprint symbolgen;
-97         options nomacrogen nomlogic nomprint nosymbolgen;
-98         
-99         
-100        ods html
-101          body = "output\&cmt..html"
-102          style = Statistical;
-NOTE: Writing HTML Body file: output\buildIndexLookup.html
-2                                                                   The SAS System                                  11:32 Thursday, September 28, 2017
+NOTE: Libref NDC was successfully assigned as follows: 
+      Engine:        V9 
+      Physical Name: W:\onenote\references\drug ndcs\sas data
+127        footnote "&pgm.";
+128        * footnote2 "%sysfunc(datetime(),datetime14.)";
+129        title1 '--- AS project ---';
+130        **********************************************************************;
+131        options macrogen mlogic mprint symbolgen;
+132        options nomacrogen nomlogic nomprint nosymbolgen;
+133        
+134        
+135        ods html
+2                                                                   The SAS System                                      11:24 Monday, November 6, 2017
 
-103        
-104        
-105        %let var = patid, indexGNN, indexDate, age, sex, asDate, enr_start_date, enr_end_date, asCohortDate, death_date;
-106        proc sql;
-107          create table DT.indexLookup AS
-108            select "Marketscan" as database, "TNF"   as exposure, &var from UCB.ASTNFCohortStdUCB_ex1     union corr
-109            select "Marketscan" as database, "DMARD" as exposure, &var from UCB.ASDMARDCohortStdUCB_ex2   union corr
-110            select "Marketscan" as database, "NSAID" as exposure, &var from UCB.ASNSAIDCohortStdUCB_ex2   union corr
-111            select "Marketscan" as database, "No exposure" as exposure, &var from UCB.ASNoExpCohortStdUCB_ex2   union corr
-112            select "MPCD"       as database, "TNF"   as exposure, &var from UCB.ASTNFCohortStdMPCD_ex1    union corr
-113            select "MPCD"       as database, "DMARD" as exposure, &var from UCB.ASDMARDCohortStdMPCD_ex2  union corr
-114            select "MPCD"       as database, "NSAID" as exposure, &var from UCB.ASNSAIDCohortStdMPCD_ex2  union corr
-115            select "MPCD"       as database, "No exposure" as exposure, &var from UCB.ASNoExpCohortStdMPCD_ex2  union corr
-116            select "Medicare"   as database, "TNF"   as exposure, &var from UCB.ASTNFCohortStd_SABR_ex1   union corr
-117            select "Medicare"   as database, "DMARD" as exposure, &var from UCB.ASDMARDCohortStd_SABR_ex2 union corr
-118            select "Medicare"   as database, "NSAID" as exposure, &var from UCB.ASNSAIDCohortStd_SABR_ex2 union corr
-119            select "Medicare"   as database, "No exposure" as exposure, &var from UCB.ASNoExpCohortStd_SABR_ex2 ;
+136          body = "output\&cmt..html"
+137          style = Statistical;
+NOTE: Writing HTML Body file: output\buildIndexLookup.html
+138        
+139        
+140        %let var = patid, indexGNN, indexDate, age, sex, asDate, enr_start_date, enr_end_date, asCohortDate, death_date;
+141        proc sql;
+142          create table DT.indexLookup AS
+143            select "Marketscan" as database, "TNF"   as exposure, &var from UCB.ASTNFCohortStdUCB_ex1     union corr
+144            select "Marketscan" as database, "DMARD" as exposure, &var from UCB.ASDMARDCohortStdUCB_ex2   union corr
+145            select "Marketscan" as database, "NSAID" as exposure, &var from UCB.ASNSAIDCohortStdUCB_ex2   union corr
+146            select "Marketscan" as database, "No exposure" as exposure, &var from UCB.ASNoExpCohortStdUCB_ex2   union corr
+147            select "MPCD"       as database, "TNF"   as exposure, &var from UCB.ASTNFCohortStdMPCD_ex1    union corr
+148            select "MPCD"       as database, "DMARD" as exposure, &var from UCB.ASDMARDCohortStdMPCD_ex2  union corr
+149            select "MPCD"       as database, "NSAID" as exposure, &var from UCB.ASNSAIDCohortStdMPCD_ex2  union corr
+150            select "MPCD"       as database, "No exposure" as exposure, &var from UCB.ASNoExpCohortStdMPCD_ex2  union corr
+151            select "Medicare"   as database, "TNF"   as exposure, &var from UCB.ASTNFCohortStd_SABR_ex1   union corr
+152            select "Medicare"   as database, "DMARD" as exposure, &var from UCB.ASDMARDCohortStd_SABR_ex2 union corr
+153            select "Medicare"   as database, "NSAID" as exposure, &var from UCB.ASNSAIDCohortStd_SABR_ex2 union corr
+154            select "Medicare"   as database, "No exposure" as exposure, &var from UCB.ASNoExpCohortStd_SABR_ex2 ;
 NOTE: Table DT.INDEXLOOKUP created, with 63511 rows and 12 columns.
 
-120          alter table DT.indexLookup add indexID numeric;
+155          alter table DT.indexLookup add indexID numeric;
 NOTE: Table DT.INDEXLOOKUP has been modified, with 13 columns.
-121          update DT.indexLookup
-122            set indexID = monotonic();
+156          update DT.indexLookup
+157            set indexID = monotonic();
 NOTE: 63511 rows were updated in DT.INDEXLOOKUP.
 
-123        quit;
+158        quit;
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           1.43 seconds
-      cpu time            0.79 seconds
+      real time           1.40 seconds
+      cpu time            0.64 seconds
       
 
-124        
-125        proc sort data = DT.indexLookup nodupkey;
-126          by database exposure patid indexGNN indexDate;
-127        run;
+159        
+160        proc sort data = DT.indexLookup nodupkey;
+161          by database exposure patid indexGNN indexDate;
+162        run;
 
 NOTE: There were 63511 observations read from the data set DT.INDEXLOOKUP.
 NOTE: 3501 observations with duplicate key values were deleted.
 NOTE: The data set DT.INDEXLOOKUP has 60010 observations and 13 variables.
 NOTE: PROCEDURE SORT used (Total process time):
-      real time           0.12 seconds
-      cpu time            0.10 seconds
+      real time           0.10 seconds
+      cpu time            0.07 seconds
       
 
-128        
-129        proc sql;
-130          select database,
-131                 exposure,
-132                 count(distinct patid) as countDistinctPatid,
-133                 count(distinct indexID) as countDistinctIndexes,
-134                 count(*) as countRows
-135            from DT.indexLookup
-136            group by database, exposure;
-                                                                  --- AS project ---                            11:32 Thursday, September 28, 2017   1
+163        
+164        proc sql;
+165          select database,
+166                 exposure,
+167                 count(distinct patid) as countDistinctPatid,
+168                 count(distinct indexID) as countDistinctIndexes,
+169                 count(*) as countRows
+170            from DT.indexLookup
+171            group by database, exposure;
+                                                                  --- AS project ---                                11:24 Monday, November 6, 2017   1
 
                                                                             count         count
                                                                          Distinct      Distinct
@@ -201,40 +204,40 @@ NOTE: PROCEDURE SORT used (Total process time):
  
  
                                                                  buildIndexLookup.sas
-137        quit;
+172        quit;
 NOTE: The PROCEDURE SQL printed page 1.
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           0.18 seconds
-      cpu time            0.15 seconds
+      real time           0.20 seconds
+      cpu time            0.17 seconds
       
 
-138        /*
-139        Check sequence of dates
-140        
-141        * In a small number of instances, AS cohort date is BEFORE enrollment start date
-142        * Index date is always at least 183 days BEFORE enrollment start
-143        * Index date is always at least 0 days BEFORE AS cohort date
-144         */
-145        proc sql;
-146          select database,
-147                 exposure,
-148                 . < ENR_START_DATE <= asCohortDate as indASOnOrAfterEnr,
-149                 . < ENR_START_DATE < indexDate as indIndexAfterEnr,
-3                                                                   The SAS System                                  11:32 Thursday, September 28, 2017
+173        /*
+174        Check sequence of dates
+175        
+176        * In a small number of instances, AS cohort date is BEFORE enrollment start date
+177        * Index date is always at least 183 days BEFORE enrollment start
+178        * Index date is always at least 0 days BEFORE AS cohort date
+179         */
+180        proc sql;
+181          select database,
+3                                                                   The SAS System                                      11:24 Monday, November 6, 2017
 
-150                 . < asCohortDate <= indexDate as indIndexOnOrAfterAS,
-151                 count(distinct patid) format = comma12.0 as countDistinctPatid,
-152                 count(distinct indexID) format = comma12.0 as countDistinctID,
-153                 count(*) format = comma12.0 as countRows,
-154                 min(asCohortDate - ENR_START_DATE) as minDaysFromEnrToAS,
-155                 max(asCohortDate - ENR_START_DATE) as maxDaysFromEnrToAS,
-156                 min(indexDate - ENR_START_DATE) as minDaysFromEnrToIndex,
-157                 max(indexDate - ENR_START_DATE) as maxDaysFromEnrToIndex,
-158                 min(indexDate - asCohortDate) as minDaysFromASToIndex,
-159                 max(indexDate - asCohortDate) as maxDaysFromASToIndex
-160            from DT.indexLookup
-161            group by database, exposure, calculated indASOnOrAfterEnr, calculated indIndexAfterEnr, calculated indIndexOnOrAfterAS;
-                                                                  --- AS project ---                            11:32 Thursday, September 28, 2017   2
+182                 exposure,
+183                 . < ENR_START_DATE <= asCohortDate as indASOnOrAfterEnr,
+184                 . < ENR_START_DATE < indexDate as indIndexAfterEnr,
+185                 . < asCohortDate <= indexDate as indIndexOnOrAfterAS,
+186                 count(distinct patid) format = comma12.0 as countDistinctPatid,
+187                 count(distinct indexID) format = comma12.0 as countDistinctID,
+188                 count(*) format = comma12.0 as countRows,
+189                 min(asCohortDate - ENR_START_DATE) as minDaysFromEnrToAS,
+190                 max(asCohortDate - ENR_START_DATE) as maxDaysFromEnrToAS,
+191                 min(indexDate - ENR_START_DATE) as minDaysFromEnrToIndex,
+192                 max(indexDate - ENR_START_DATE) as maxDaysFromEnrToIndex,
+193                 min(indexDate - asCohortDate) as minDaysFromASToIndex,
+194                 max(indexDate - asCohortDate) as maxDaysFromASToIndex
+195            from DT.indexLookup
+196            group by database, exposure, calculated indASOnOrAfterEnr, calculated indIndexAfterEnr, calculated indIndexOnOrAfterAS;
+                                                                  --- AS project ---                                11:24 Monday, November 6, 2017   2
 
                                                     ind                                                                                     minDays
                             indASOn       ind   IndexOn         count                               minDays   maxDays   minDays   maxDays      From
@@ -308,32 +311,32 @@ NOTE: PROCEDURE SQL used (Total process time):
  
  
                                                                  buildIndexLookup.sas
-162        quit;
+197        quit;
 NOTE: The PROCEDURE SQL printed page 2.
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           0.28 seconds
+      real time           0.29 seconds
       cpu time            0.29 seconds
       
 
-163        /*
-164        database exposure indASOnOrAfterEnr indIndexAfterEnr indIndexOnOrAfterAS countDistinctPatid countDistinctID countRows minDaysFromEnrToAS
-164      ! maxDaysFromEnrToAS minDaysFromEnrToIndex maxDaysFromEnrToIndex minDaysFromASToIndex maxDaysFromASToIndex
-165        MPCD DMARD 1 1 1 421 481 481 183 1449 184 1450 0 1230
-166        MPCD NSAID or no exposure 1 1 1 2,083 2,593 2,593 183 1457 183 1457 0 1268
-167        MPCD TNF 0 1 1 7 8 8 -972 -177 218 917 568 1235
-168        MPCD TNF 1 1 1 1,101 1,271 1,271 183 1417 183 1460 0 1201
-169        Marketscan DMARD 1 1 1 1,799 2,045 2,045 183 1811 183 1825 0 1627
-170        Marketscan NSAID or no exposure 1 1 1 8,025 10,589 10,589 183 1825 183 1825 0 1642
-171        Marketscan TNF 0 1 1 30 31 31 -1278 -90 197 920 359 1616
-172        Marketscan TNF 1 1 1 4,776 5,748 5,748 183 1810 183 1825 0 1634
-173        Medicare DMARD 1 1 1 4,231 5,193 5,193 183 3215 183 3281 0 3088
-174        Medicare NSAID or no exposure 1 1 1 17,983 26,122 26,122 183 3278 183 3284 0 3088
-175        Medicare TNF 0 1 1 140 162 162 -2638 -32 184 2463 287 3101
-176        Medicare TNF 1 1 1 4,754 5,767 5,767 183 3158 183 3278 0 3080
-177         */
-178        proc sql;
-179          select * from DT.indexLookup where database = "MPCD" & (. < ENR_START_DATE <= asCohortDate) = 0;
-                                                                  --- AS project ---                            11:32 Thursday, September 28, 2017   3
+198        /*
+199        database exposure indASOnOrAfterEnr indIndexAfterEnr indIndexOnOrAfterAS countDistinctPatid countDistinctID countRows minDaysFromEnrToAS
+199      ! maxDaysFromEnrToAS minDaysFromEnrToIndex maxDaysFromEnrToIndex minDaysFromASToIndex maxDaysFromASToIndex
+200        MPCD DMARD 1 1 1 421 481 481 183 1449 184 1450 0 1230
+201        MPCD NSAID or no exposure 1 1 1 2,083 2,593 2,593 183 1457 183 1457 0 1268
+202        MPCD TNF 0 1 1 7 8 8 -972 -177 218 917 568 1235
+203        MPCD TNF 1 1 1 1,101 1,271 1,271 183 1417 183 1460 0 1201
+204        Marketscan DMARD 1 1 1 1,799 2,045 2,045 183 1811 183 1825 0 1627
+205        Marketscan NSAID or no exposure 1 1 1 8,025 10,589 10,589 183 1825 183 1825 0 1642
+206        Marketscan TNF 0 1 1 30 31 31 -1278 -90 197 920 359 1616
+207        Marketscan TNF 1 1 1 4,776 5,748 5,748 183 1810 183 1825 0 1634
+208        Medicare DMARD 1 1 1 4,231 5,193 5,193 183 3215 183 3281 0 3088
+209        Medicare NSAID or no exposure 1 1 1 17,983 26,122 26,122 183 3278 183 3284 0 3088
+210        Medicare TNF 0 1 1 140 162 162 -2638 -32 184 2463 287 3101
+211        Medicare TNF 1 1 1 4,754 5,767 5,767 183 3158 183 3278 0 3080
+212         */
+213        proc sql;
+214          select * from DT.indexLookup where database = "MPCD" & (. < ENR_START_DATE <= asCohortDate) = 0;
+                                                                  --- AS project ---                                11:24 Monday, November 6, 2017   3
 
                                                                                                                                          Date of
                                                                                                                                              the
@@ -407,18 +410,18 @@ NOTE: PROCEDURE SQL used (Total process time):
  
  
                                                                  buildIndexLookup.sas
-180        quit;
+215        quit;
 NOTE: The PROCEDURE SQL printed page 3.
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           0.04 seconds
+      real time           0.06 seconds
       cpu time            0.03 seconds
       
 
-181        
-182        
-183        ods html close;
+216        
+217        
+218        ods html close;
 NOTE: SAS Institute Inc., SAS Campus Drive, Cary, NC USA 27513-2414
 NOTE: The SAS System used:
-      real time           2.58 seconds
-      cpu time            1.76 seconds
+      real time           2.54 seconds
+      cpu time            1.55 seconds
       

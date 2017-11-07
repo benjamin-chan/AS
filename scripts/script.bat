@@ -1,14 +1,14 @@
 del ..\output\* /q
 del ..\data\processed\* /q
 
-rem call :execute contentsSourceDatasets
-rem call :execute importOutcomeCodebook
-rem call :execute buildIndexLookup
-rem call :execute buildControlLookup
-rem call :execute buildExposureFollowUp
-rem call :execute reproduceTables2
-rem call :execute buildServiceCodeDatasets
-rem call :execute buildServiceCodeDatasetsControl
+call :execute contentsSourceDatasets
+call :execute importOutcomeCodebook
+call :execute buildIndexLookup
+call :execute buildControlLookup
+call :execute buildExposureFollowUp
+call :execute reproduceTables2
+call :execute buildServiceCodeDatasets
+call :execute buildServiceCodeDatasetsControl
 call :execute queryFractures
 call :execute queryFracturesControl
 call :execute CANCER_setoguchi

@@ -1,4 +1,4 @@
-1                                                          The SAS System                           06:58 Friday, September 29, 2017
+1                                                          The SAS System                            07:42 Tuesday, November 7, 2017
 
 NOTE: Copyright (c) 2002-2012 by SAS Institute Inc., Cary, NC, USA. 
 NOTE: SAS (r) Proprietary Software 9.4 (TS1M1) 
@@ -28,8 +28,8 @@ Please remember not to copy any data files that contain PHI (protected health id
 
 
 NOTE: SAS initialization used:
-      real time           0.20 seconds
-      cpu time            0.10 seconds
+      real time           0.26 seconds
+      cpu time            0.12 seconds
       
 1          *  University of Alabama at Birmingham                               *
 2          *  AS project                                            *
@@ -60,42 +60,45 @@ NOTE: Libref UCB was successfully assigned as follows:
 NOTE: Libref DT was successfully assigned as follows: 
       Engine:        V9 
       Physical Name: V:\studies\AS\data
-92         footnote "&pgm.";
-93         * footnote2 "%sysfunc(datetime(),datetime14.)";
-94         title1 '--- AS project ---';
-95         **********************************************************************;
-96         options macrogen mlogic mprint symbolgen;
-97         options nomacrogen nomlogic nomprint nosymbolgen;
-98         
-99         
-100        ods html
-101          body = "output\&cmt..html"
-102          style = Statistical;
-NOTE: Writing HTML Body file: output\CANCER_NMSC.html
-2                                                                   The SAS System                                    06:58 Friday, September 29, 2017
+NOTE: Libref NDC was successfully assigned as follows: 
+      Engine:        V9 
+      Physical Name: W:\onenote\references\drug ndcs\sas data
+127        footnote "&pgm.";
+128        * footnote2 "%sysfunc(datetime(),datetime14.)";
+129        title1 '--- AS project ---';
+130        **********************************************************************;
+131        options macrogen mlogic mprint symbolgen;
+132        options nomacrogen nomlogic nomprint nosymbolgen;
+133        
+134        
+135        ods html
+2                                                                   The SAS System                                     07:42 Tuesday, November 7, 2017
 
-103        
-104        
-105        ****************************************************************************************
-106        
-107        Programmer Lang Chen @UAB
-108        created: 8/24/2016
-109        modiflied :
-110        Project:
-111        Task: define NMSC with PECORI common data model data
-112        Output: Dataset cancer_NMSC
-113        NMSC definition:
-114            1) Surgical PX code and same day NMSC DX(any type 173*)code. or
-115            2) Surgical PX code and NMSC DX(from EM code) code within 90 days (abs(px_date-dx_date)<=90).
-116        
-117        TODO:
-118        ****************************************************************************************;
-119        
-120        *To edit the following two lines only;
-121        %let indxdat = UCB.tempIncDxAll;
-122        %let inpxdat = UCB.tempIncPxAll;
-123        %let inrxdat = UCB.tempIncRxAll;
-124        proc sort data=&indxdat; by exposureID begin_date;run;
+136          body = "output\&cmt..html"
+137          style = Statistical;
+NOTE: Writing HTML Body file: output\CANCER_NMSC.html
+138        
+139        
+140        ****************************************************************************************
+141        
+142        Programmer Lang Chen @UAB
+143        created: 8/24/2016
+144        modiflied :
+145        Project:
+146        Task: define NMSC with PECORI common data model data
+147        Output: Dataset cancer_NMSC
+148        NMSC definition:
+149            1) Surgical PX code and same day NMSC DX(any type 173*)code. or
+150            2) Surgical PX code and NMSC DX(from EM code) code within 90 days (abs(px_date-dx_date)<=90).
+151        
+152        TODO:
+153        ****************************************************************************************;
+154        
+155        *To edit the following two lines only;
+156        %let indxdat = UCB.tempIncDxAll;
+157        %let inpxdat = UCB.tempIncPxAll;
+158        %let inrxdat = UCB.tempIncRxAll;
+159        proc sort data=&indxdat; by exposureID begin_date;run;
 
 NOTE: Input data set is already sorted, no sorting done.
 NOTE: PROCEDURE SORT used (Total process time):
@@ -103,7 +106,7 @@ NOTE: PROCEDURE SORT used (Total process time):
       cpu time            0.01 seconds
       
 
-125        proc sort data=&inpxdat; by exposureID px_date;run;
+160        proc sort data=&inpxdat; by exposureID px_date;run;
 
 NOTE: Input data set is already sorted, no sorting done.
 NOTE: PROCEDURE SORT used (Total process time):
@@ -111,144 +114,129 @@ NOTE: PROCEDURE SORT used (Total process time):
       cpu time            0.00 seconds
       
 
-126        proc sort data=&inrxdat; by exposureID dispense_date;run;
+161        proc sort data=&inrxdat; by exposureID dispense_date;run;
 
 NOTE: Input data set is already sorted, no sorting done.
 NOTE: PROCEDURE SORT used (Total process time):
-      real time           0.00 seconds
-      cpu time            0.00 seconds
-      
-
-127        
-128        
-129        proc datasets nolist; delete
-130        _dat_NMSC_DX
-131        _dat_NMSC_PX
-132        _cancer_NMSC
-133        _cancer_NMSC12
-134        _cancer_NMSC3
-135        _dat_NMSC_path
-136        _dat_NMSC_path_dx
-137        _dat_NMSC_path_dxNMSC
-138        _dat_NMSC_path:
-139        Outcome_cancer_nmsc;
-140        quit;
-
-NOTE: The file WORK._DAT_NMSC_DX (memtype=DATA) was not found, but appears on a DELETE statement.
-NOTE: The file WORK._DAT_NMSC_PX (memtype=DATA) was not found, but appears on a DELETE statement.
-NOTE: The file WORK._CANCER_NMSC (memtype=DATA) was not found, but appears on a DELETE statement.
-NOTE: The file WORK._CANCER_NMSC12 (memtype=DATA) was not found, but appears on a DELETE statement.
-NOTE: The file WORK._CANCER_NMSC3 (memtype=DATA) was not found, but appears on a DELETE statement.
-NOTE: The file WORK._DAT_NMSC_PATH (memtype=DATA) was not found, but appears on a DELETE statement.
-NOTE: The file WORK._DAT_NMSC_PATH_DX (memtype=DATA) was not found, but appears on a DELETE statement.
-NOTE: The file WORK._DAT_NMSC_PATH_DXNMSC (memtype=DATA) was not found, but appears on a DELETE statement.
-NOTE: The file WORK._DAT_NMSC_PATH: (memtype=DATA) was not found, but appears on a DELETE statement.
-NOTE: The file WORK.OUTCOME_CANCER_NMSC (memtype=DATA) was not found, but appears on a DELETE statement.
-NOTE: PROCEDURE DATASETS used (Total process time):
-      real time           0.03 seconds
-3                                                                   The SAS System                                    06:58 Friday, September 29, 2017
-
+      real time           0.01 seconds
       cpu time            0.01 seconds
       
 
-141        
-142        /* *import the list of CPT/HCPCS/ICD9 code related to NMSC;
-143        PROC IMPORT OUT= NMSC_code DATAFILE= "W:\Users\lchen\lookupdata\cancer\NMSC.xlsx"
-144                    DBMS=xlsx REPLACE;
-145             SHEET="NMSC";
-146             GETNAMES=YES;
-147        RUN; */
-148        libname lookup "W:\Users\lchen\lookupdata" access = readonly;
+162        
+163        
+164        /* proc datasets nolist; delete
+165        _dat_NMSC_DX
+166        _dat_NMSC_PX
+167        _cancer_NMSC
+168        _cancer_NMSC12
+169        _cancer_NMSC3
+170        _dat_NMSC_path
+171        _dat_NMSC_path_dx
+172        _dat_NMSC_path_dxNMSC
+173        _dat_NMSC_path:
+174        Outcome_cancer_nmsc;
+175        quit;
+176         */
+177        
+178        /* *import the list of CPT/HCPCS/ICD9 code related to NMSC;
+179        PROC IMPORT OUT= NMSC_code DATAFILE= "W:\Users\lchen\lookupdata\cancer\NMSC.xlsx"
+180                    DBMS=xlsx REPLACE;
+181             SHEET="NMSC";
+182             GETNAMES=YES;
+183        RUN; */
+184        libname lookup "W:\Users\lchen\lookupdata" access = readonly;
 NOTE: Libref LOOKUP was successfully assigned as follows: 
+3                                                                   The SAS System                                     07:42 Tuesday, November 7, 2017
+
       Engine:        V9 
       Physical Name: W:\Users\lchen\lookupdata
-149        /* data lookup.NMSC_code ;
-150        set NMSC_code;
-151        code=compress(upcase(code),".", "s" ); * also remove space along with ".";
-152        if Biopsy=. then Biopsy=0;
-153        where code^=" ";
-154        run; */
-155        
-156        data _dat_NMSC_DX;
-157        set &indxdat;
-158        length NMSC_Basal NMSC_Squamous $1;
-159        if compress(DX,".", "s" ) in (
-160        '17301'
-161        '17311'
-162        '17321'
-163        '17331'
-164        '17341'
-165        '17351'
-166        '17361'
-167        '17371'
-168        '17381'
-169        '17391'
-170        ) then NMSC_Basal="Y";
-171        if compress(DX,".", "s" ) in (
-172        '17302'
-173        '17312'
-174        '17322'
-175        '17332'
-176        '17342'
-177        '17352'
-178        '17362'
-179        '17372'
-180        '17382'
-181        '17392'
-182        ) then NMSC_Squamous="Y";
-183        
-184        where substr(compress(DX,".", "s" ),1,3)="173";
-185        run;
+185        /* data lookup.NMSC_code ;
+186        set NMSC_code;
+187        code=compress(upcase(code),".", "s" ); * also remove space along with ".";
+188        if Biopsy=. then Biopsy=0;
+189        where code^=" ";
+190        run; */
+191        
+192        data _dat_NMSC_DX;
+193        set &indxdat;
+194        length NMSC_Basal NMSC_Squamous $1;
+195        if compress(DX,".", "s" ) in (
+196        '17301'
+197        '17311'
+198        '17321'
+199        '17331'
+200        '17341'
+201        '17351'
+202        '17361'
+203        '17371'
+204        '17381'
+205        '17391'
+206        ) then NMSC_Basal="Y";
+207        if compress(DX,".", "s" ) in (
+208        '17302'
+209        '17312'
+210        '17322'
+211        '17332'
+212        '17342'
+213        '17352'
+214        '17362'
+215        '17372'
+216        '17382'
+217        '17392'
+218        ) then NMSC_Squamous="Y";
+219        
+220        where substr(compress(DX,".", "s" ),1,3)="173";
+221        run;
 
 NOTE: There were 6095 observations read from the data set UCB.TEMPINCDXALL.
       WHERE SUBSTR(COMPRESS(DX, '.', 's'), 1, 3)='173';
 NOTE: Parallel WHERE evaluation suppressed due to sort order on table.
 NOTE: The data set WORK._DAT_NMSC_DX has 6095 observations and 23 variables.
 NOTE: DATA statement used (Total process time):
-      real time           9.45 seconds
-      cpu time            9.43 seconds
+      real time           9.22 seconds
+      cpu time            9.07 seconds
       
 
-186        
-187        proc sort data=_dat_NMSC_DX nodupkey; by exposureID begin_date dx ENC_TYPE;run;
+222        
+223        proc sort data=_dat_NMSC_DX nodupkey; by exposureID begin_date dx ENC_TYPE;run;
 
 NOTE: There were 6095 observations read from the data set WORK._DAT_NMSC_DX.
 NOTE: 1828 observations with duplicate key values were deleted.
 NOTE: The data set WORK._DAT_NMSC_DX has 4267 observations and 23 variables.
 NOTE: PROCEDURE SORT used (Total process time):
-      real time           0.01 seconds
-      cpu time            0.01 seconds
+      real time           0.06 seconds
+      cpu time            0.00 seconds
       
 
-4                                                                   The SAS System                                    06:58 Friday, September 29, 2017
-
-188        data _dat_NMSC_dX ;
-189        set _dat_NMSC_dX ;
-190        by exposureID begin_date dx ENC_TYPE;
-191        if first.dx;
-192        run;
+224        data _dat_NMSC_dX ;
+225        set _dat_NMSC_dX ;
+226        by exposureID begin_date dx ENC_TYPE;
+227        if first.dx;
+228        run;
 
 NOTE: There were 4267 observations read from the data set WORK._DAT_NMSC_DX.
 NOTE: The data set WORK._DAT_NMSC_DX has 4267 observations and 23 variables.
 NOTE: DATA statement used (Total process time):
-      real time           0.00 seconds
-      cpu time            0.00 seconds
+      real time           0.06 seconds
+      cpu time            0.01 seconds
       
+4                                                                   The SAS System                                     07:42 Tuesday, November 7, 2017
 
-193        
-194        data _dat_NMSC_PX(drop=rc) _dat_NMSC_path(drop=rc code biopsy rename=(PX=PX_PATH PX_date=PATH_DATE));
-195        if _n_=1 then do;
-196          declare hash hpx(dataset:"lookup.NMSC_code(where=(table='PX'))");
-197          rc=hpx.defineKey("code");
-198          rc=hpx.defineData("code", "Biopsy");
-199          rc=hpx.defineDone();
-200        end;
-201        if 0 then set lookup.NMSC_code(keep=code Biopsy);
-202        SET &inpxdat (where = (codeType in ("CPT", "HCPCS")));;
-203        rc=hpx.find(key:PX);
-204        if rc=0 then output _dat_NMSC_PX;
-205        if px in ("88305" "88304") then output _dat_NMSC_path;
-206        run;
+
+229        
+230        data _dat_NMSC_PX(drop=rc) _dat_NMSC_path(drop=rc code biopsy rename=(PX=PX_PATH PX_date=PATH_DATE));
+231        if _n_=1 then do;
+232          declare hash hpx(dataset:"lookup.NMSC_code(where=(table='PX'))");
+233          rc=hpx.defineKey("code");
+234          rc=hpx.defineData("code", "Biopsy");
+235          rc=hpx.defineDone();
+236        end;
+237        if 0 then set lookup.NMSC_code(keep=code Biopsy);
+238        SET &inpxdat (where = (codeType in ("CPT", "HCPCS")));;
+239        rc=hpx.find(key:PX);
+240        if rc=0 then output _dat_NMSC_PX;
+241        if px in ("88305" "88304") then output _dat_NMSC_path;
+242        run;
 
 WARNING: Multiple lengths were specified for the variable code by input data set(s). This can cause truncation of data.
 NOTE: There were 93 observations read from the data set LOOKUP.NMSC_CODE.
@@ -260,32 +248,32 @@ NOTE: The data set WORK._DAT_NMSC_PX has 21417 observations and 21 variables.
 NOTE: The data set WORK._DAT_NMSC_PATH has 38132 observations and 19 variables.
 NOTE: DATA statement used (Total process time):
       real time           3.27 seconds
-      cpu time            3.80 seconds
+      cpu time            3.94 seconds
       
 
-207        proc sort data=_dat_NMSC_PX(keep=exposureID px_date px px_type biopsy) nodupkey; by exposureID px_date PX;run;
+243        proc sort data=_dat_NMSC_PX(keep=exposureID px_date px px_type biopsy) nodupkey; by exposureID px_date PX;run;
 
 NOTE: There were 21417 observations read from the data set WORK._DAT_NMSC_PX.
 NOTE: 6 observations with duplicate key values were deleted.
 NOTE: The data set WORK._DAT_NMSC_PX has 21411 observations and 5 variables.
 NOTE: PROCEDURE SORT used (Total process time):
-      real time           0.01 seconds
-      cpu time            0.01 seconds
+      real time           0.07 seconds
+      cpu time            0.03 seconds
       
 
-208        proc sort data= _dat_NMSC_path nodupkey; by exposureID path_date px_path;run;
+244        proc sort data= _dat_NMSC_path nodupkey; by exposureID path_date px_path;run;
 
 NOTE: There were 38132 observations read from the data set WORK._DAT_NMSC_PATH.
 NOTE: 244 observations with duplicate key values were deleted.
 NOTE: The data set WORK._DAT_NMSC_PATH has 37888 observations and 19 variables.
 NOTE: PROCEDURE SORT used (Total process time):
-      real time           0.06 seconds
-      cpu time            0.06 seconds
+      real time           0.12 seconds
+      cpu time            0.04 seconds
       
 
-209        proc freq data=_dat_NMSC_path; tables px_path;run;
+245        proc freq data=_dat_NMSC_path; tables px_path;run;
 
-                                                                  --- AS project ---                              06:58 Friday, September 29, 2017   1
+                                                                  --- AS project ---                               07:42 Tuesday, November 7, 2017   1
 
                                                                   The FREQ Procedure
 
@@ -363,81 +351,81 @@ NOTE: There were 37888 observations read from the data set WORK._DAT_NMSC_PATH.
 NOTE: The PROCEDURE FREQ printed page 1.
 NOTE: PROCEDURE FREQ used (Total process time):
       real time           0.09 seconds
-      cpu time            0.00 seconds
+      cpu time            0.04 seconds
       
 
-210        data _dat_NMSC_path_dx(drop=rc);
-211        /* dx on the day of pathologist PX code */
-5                                                                   The SAS System                                    06:58 Friday, September 29, 2017
+246        data _dat_NMSC_path_dx(drop=rc);
+247        /* dx on the day of pathologist PX code */
+248        if _n_=1 then do;
+249          declare hash hpx(dataset:"_dat_NMSC_path");
+250          rc=hpx.defineKey("exposureID", "PATH_date");
+251          rc=hpx.defineData("exposureID", "PATH_date", "PX_PATH");
+252          rc=hpx.defineDone();
+253        end;
+254        if 0 then set _dat_NMSC_path(keep=exposureID PATH_date PX_PATH);
+255        SET &indxdat;;
+256        rc=hpx.find(key:exposureID,key:begin_date);
+257        length NMSC_Basal NMSC_Squamous $1;
+258        if compress(DX,".", "s" ) in (
+259        '17301'
+5                                                                   The SAS System                                     07:42 Tuesday, November 7, 2017
 
-212        if _n_=1 then do;
-213          declare hash hpx(dataset:"_dat_NMSC_path");
-214          rc=hpx.defineKey("exposureID", "PATH_date");
-215          rc=hpx.defineData("exposureID", "PATH_date", "PX_PATH");
-216          rc=hpx.defineDone();
-217        end;
-218        if 0 then set _dat_NMSC_path(keep=exposureID PATH_date PX_PATH);
-219        SET &indxdat;;
-220        rc=hpx.find(key:exposureID,key:begin_date);
-221        length NMSC_Basal NMSC_Squamous $1;
-222        if compress(DX,".", "s" ) in (
-223        '17301'
-224        '17311'
-225        '17321'
-226        '17331'
-227        '17341'
-228        '17351'
-229        '17361'
-230        '17371'
-231        '17381'
-232        '17391'
-233        ) then NMSC_Basal="Y";
-234        if compress(DX,".", "s" ) in (
-235        '17302'
-236        '17312'
-237        '17322'
-238        '17332'
-239        '17342'
-240        '17352'
-241        '17362'
-242        '17372'
-243        '17382'
-244        '17392'
-245        ) then NMSC_Squamous="Y";
-246        if rc=0 then output _dat_NMSC_path_dx;
-247        run;
+260        '17311'
+261        '17321'
+262        '17331'
+263        '17341'
+264        '17351'
+265        '17361'
+266        '17371'
+267        '17381'
+268        '17391'
+269        ) then NMSC_Basal="Y";
+270        if compress(DX,".", "s" ) in (
+271        '17302'
+272        '17312'
+273        '17322'
+274        '17332'
+275        '17342'
+276        '17352'
+277        '17362'
+278        '17372'
+279        '17382'
+280        '17392'
+281        ) then NMSC_Squamous="Y";
+282        if rc=0 then output _dat_NMSC_path_dx;
+283        run;
 
 NOTE: There were 37888 observations read from the data set WORK._DAT_NMSC_PATH.
 NOTE: There were 5129437 observations read from the data set UCB.TEMPINCDXALL.
 NOTE: The data set WORK._DAT_NMSC_PATH_DX has 75060 observations and 25 variables.
 NOTE: DATA statement used (Total process time):
-      real time           15.02 seconds
-      cpu time            15.00 seconds
+      real time           14.54 seconds
+      cpu time            14.43 seconds
       
 
-248        proc sort data=_dat_NMSC_path_dx ; by exposureID PATH_date dx pdx;run;
+284        proc sort data=_dat_NMSC_path_dx ; by exposureID PATH_date dx pdx;run;
 
 NOTE: There were 75060 observations read from the data set WORK._DAT_NMSC_PATH_DX.
 NOTE: The data set WORK._DAT_NMSC_PATH_DX has 75060 observations and 25 variables.
 NOTE: PROCEDURE SORT used (Total process time):
-      real time           0.07 seconds
-      cpu time            0.10 seconds
+      real time           0.15 seconds
+      cpu time            0.15 seconds
       
 
-249        proc sort data=_dat_NMSC_path_dx nodupkey; by exposureID PATH_date dx;run;
+285        proc sort data=_dat_NMSC_path_dx nodupkey; by exposureID PATH_date dx;run;
 
 NOTE: There were 75060 observations read from the data set WORK._DAT_NMSC_PATH_DX.
 NOTE: 16334 observations with duplicate key values were deleted.
 NOTE: The data set WORK._DAT_NMSC_PATH_DX has 58726 observations and 25 variables.
 NOTE: PROCEDURE SORT used (Total process time):
-      real time           0.09 seconds
-      cpu time            0.14 seconds
+      real time           0.14 seconds
+      cpu time            0.11 seconds
       
 
-250        
-251        proc freq data=_dat_NMSC_path_dx order=freq; table dx;run;
+286        
+287        proc freq data=_dat_NMSC_path_dx order=freq; table dx;run;
 
-                                                                  --- AS project ---                              06:58 Friday, September 29, 2017   2
+                                                                  --- AS project ---                               07:42 Tuesday, November 7, 2017   2
 
                                                                   The FREQ Procedure
 
@@ -511,7 +499,7 @@ NOTE: PROCEDURE SORT used (Total process time):
                                               7295          142        0.24         29951        51.00  
  
                                                                    CANCER_NMSC.sas
-                                                                  --- AS project ---                              06:58 Friday, September 29, 2017   3
+                                                                  --- AS project ---                               07:42 Tuesday, November 7, 2017   3
 
                                                                   The FREQ Procedure
 
@@ -585,7 +573,7 @@ NOTE: PROCEDURE SORT used (Total process time):
                                               5789           72        0.12         35999        61.30  
  
                                                                    CANCER_NMSC.sas
-                                                                  --- AS project ---                              06:58 Friday, September 29, 2017   4
+                                                                  --- AS project ---                               07:42 Tuesday, November 7, 2017   4
 
                                                                   The FREQ Procedure
 
@@ -659,7 +647,7 @@ NOTE: PROCEDURE SORT used (Total process time):
                                               78609          49        0.08         39818        67.80  
  
                                                                    CANCER_NMSC.sas
-                                                                  --- AS project ---                              06:58 Friday, September 29, 2017   5
+                                                                  --- AS project ---                               07:42 Tuesday, November 7, 2017   5
 
                                                                   The FREQ Procedure
 
@@ -733,7 +721,7 @@ NOTE: PROCEDURE SORT used (Total process time):
                                               53085          35        0.06         42454        72.29  
  
                                                                    CANCER_NMSC.sas
-                                                                  --- AS project ---                              06:58 Friday, September 29, 2017   6
+                                                                  --- AS project ---                               07:42 Tuesday, November 7, 2017   6
 
                                                                   The FREQ Procedure
 
@@ -807,7 +795,7 @@ NOTE: PROCEDURE SORT used (Total process time):
                                               3320           28        0.05         44417        75.63  
  
                                                                    CANCER_NMSC.sas
-                                                                  --- AS project ---                              06:58 Friday, September 29, 2017   7
+                                                                  --- AS project ---                               07:42 Tuesday, November 7, 2017   7
 
                                                                   The FREQ Procedure
 
@@ -881,7 +869,7 @@ NOTE: PROCEDURE SORT used (Total process time):
                                               V1005          22        0.04         45981        78.30  
  
                                                                    CANCER_NMSC.sas
-                                                                  --- AS project ---                              06:58 Friday, September 29, 2017   8
+                                                                  --- AS project ---                               07:42 Tuesday, November 7, 2017   8
 
                                                                   The FREQ Procedure
 
@@ -955,7 +943,7 @@ NOTE: PROCEDURE SORT used (Total process time):
                                               2111           18        0.03         47236        80.43  
  
                                                                    CANCER_NMSC.sas
-                                                                  --- AS project ---                              06:58 Friday, September 29, 2017   9
+                                                                  --- AS project ---                               07:42 Tuesday, November 7, 2017   9
 
                                                                   The FREQ Procedure
 
@@ -1029,7 +1017,7 @@ NOTE: PROCEDURE SORT used (Total process time):
                                               7873           16        0.03         48315        82.27  
  
                                                                    CANCER_NMSC.sas
-                                                                  --- AS project ---                              06:58 Friday, September 29, 2017  10
+                                                                  --- AS project ---                               07:42 Tuesday, November 7, 2017  10
 
                                                                   The FREQ Procedure
 
@@ -1103,7 +1091,7 @@ NOTE: PROCEDURE SORT used (Total process time):
                                               7246           14        0.02         49235        83.84  
  
                                                                    CANCER_NMSC.sas
-                                                                  --- AS project ---                              06:58 Friday, September 29, 2017  11
+                                                                  --- AS project ---                               07:42 Tuesday, November 7, 2017  11
 
                                                                   The FREQ Procedure
 
@@ -1177,7 +1165,7 @@ NOTE: PROCEDURE SORT used (Total process time):
                                               43491          12        0.02         50053        85.23  
  
                                                                    CANCER_NMSC.sas
-                                                                  --- AS project ---                              06:58 Friday, September 29, 2017  12
+                                                                  --- AS project ---                               07:42 Tuesday, November 7, 2017  12
 
                                                                   The FREQ Procedure
 
@@ -1251,7 +1239,7 @@ NOTE: PROCEDURE SORT used (Total process time):
                                               73382          11        0.02         50771        86.45  
  
                                                                    CANCER_NMSC.sas
-                                                                  --- AS project ---                              06:58 Friday, September 29, 2017  13
+                                                                  --- AS project ---                               07:42 Tuesday, November 7, 2017  13
 
                                                                   The FREQ Procedure
 
@@ -1325,7 +1313,7 @@ NOTE: PROCEDURE SORT used (Total process time):
                                               7241           10        0.02         51419        87.56  
  
                                                                    CANCER_NMSC.sas
-                                                                  --- AS project ---                              06:58 Friday, September 29, 2017  14
+                                                                  --- AS project ---                               07:42 Tuesday, November 7, 2017  14
 
                                                                   The FREQ Procedure
 
@@ -1399,7 +1387,7 @@ NOTE: PROCEDURE SORT used (Total process time):
                                               71695           9        0.02         52004        88.55  
  
                                                                    CANCER_NMSC.sas
-                                                                  --- AS project ---                              06:58 Friday, September 29, 2017  15
+                                                                  --- AS project ---                               07:42 Tuesday, November 7, 2017  15
 
                                                                   The FREQ Procedure
 
@@ -1473,7 +1461,7 @@ NOTE: PROCEDURE SORT used (Total process time):
                                               5362            8        0.01         52540        89.47  
  
                                                                    CANCER_NMSC.sas
-                                                                  --- AS project ---                              06:58 Friday, September 29, 2017  16
+                                                                  --- AS project ---                               07:42 Tuesday, November 7, 2017  16
 
                                                                   The FREQ Procedure
 
@@ -1547,7 +1535,7 @@ NOTE: PROCEDURE SORT used (Total process time):
                                               29632           7        0.01         53029        90.30  
  
                                                                    CANCER_NMSC.sas
-                                                                  --- AS project ---                              06:58 Friday, September 29, 2017  17
+                                                                  --- AS project ---                               07:42 Tuesday, November 7, 2017  17
 
                                                                   The FREQ Procedure
 
@@ -1621,7 +1609,7 @@ NOTE: PROCEDURE SORT used (Total process time):
                                               V4972           7        0.01         53470        91.05  
  
                                                                    CANCER_NMSC.sas
-                                                                  --- AS project ---                              06:58 Friday, September 29, 2017  18
+                                                                  --- AS project ---                               07:42 Tuesday, November 7, 2017  18
 
                                                                   The FREQ Procedure
 
@@ -1695,7 +1683,7 @@ NOTE: PROCEDURE SORT used (Total process time):
                                               6981            6        0.01         53853        91.70  
  
                                                                    CANCER_NMSC.sas
-                                                                  --- AS project ---                              06:58 Friday, September 29, 2017  19
+                                                                  --- AS project ---                               07:42 Tuesday, November 7, 2017  19
 
                                                                   The FREQ Procedure
 
@@ -1769,7 +1757,7 @@ NOTE: PROCEDURE SORT used (Total process time):
                                               2252            5        0.01         54215        92.32  
  
                                                                    CANCER_NMSC.sas
-                                                                  --- AS project ---                              06:58 Friday, September 29, 2017  20
+                                                                  --- AS project ---                               07:42 Tuesday, November 7, 2017  20
 
                                                                   The FREQ Procedure
 
@@ -1843,7 +1831,7 @@ NOTE: PROCEDURE SORT used (Total process time):
                                               7091            5        0.01         54530        92.85  
  
                                                                    CANCER_NMSC.sas
-                                                                  --- AS project ---                              06:58 Friday, September 29, 2017  21
+                                                                  --- AS project ---                               07:42 Tuesday, November 7, 2017  21
 
                                                                   The FREQ Procedure
 
@@ -1917,7 +1905,7 @@ NOTE: PROCEDURE SORT used (Total process time):
                                               V7791           5        0.01         54845        93.39  
  
                                                                    CANCER_NMSC.sas
-                                                                  --- AS project ---                              06:58 Friday, September 29, 2017  22
+                                                                  --- AS project ---                               07:42 Tuesday, November 7, 2017  22
 
                                                                   The FREQ Procedure
 
@@ -1991,7 +1979,7 @@ NOTE: PROCEDURE SORT used (Total process time):
                                               36900           4        0.01         55099        93.82  
  
                                                                    CANCER_NMSC.sas
-                                                                  --- AS project ---                              06:58 Friday, September 29, 2017  23
+                                                                  --- AS project ---                               07:42 Tuesday, November 7, 2017  23
 
                                                                   The FREQ Procedure
 
@@ -2065,7 +2053,7 @@ NOTE: PROCEDURE SORT used (Total process time):
                                               6267            4        0.01         55351        94.25  
  
                                                                    CANCER_NMSC.sas
-                                                                  --- AS project ---                              06:58 Friday, September 29, 2017  24
+                                                                  --- AS project ---                               07:42 Tuesday, November 7, 2017  24
 
                                                                   The FREQ Procedure
 
@@ -2139,7 +2127,7 @@ NOTE: PROCEDURE SORT used (Total process time):
                                               9596            4        0.01         55603        94.68  
  
                                                                    CANCER_NMSC.sas
-                                                                  --- AS project ---                              06:58 Friday, September 29, 2017  25
+                                                                  --- AS project ---                               07:42 Tuesday, November 7, 2017  25
 
                                                                   The FREQ Procedure
 
@@ -2213,7 +2201,7 @@ NOTE: PROCEDURE SORT used (Total process time):
                                               17320           3        0.01         55840        95.09  
  
                                                                    CANCER_NMSC.sas
-                                                                  --- AS project ---                              06:58 Friday, September 29, 2017  26
+                                                                  --- AS project ---                               07:42 Tuesday, November 7, 2017  26
 
                                                                   The FREQ Procedure
 
@@ -2287,7 +2275,7 @@ NOTE: PROCEDURE SORT used (Total process time):
                                               34600           3        0.01         56029        95.41  
  
                                                                    CANCER_NMSC.sas
-                                                                  --- AS project ---                              06:58 Friday, September 29, 2017  27
+                                                                  --- AS project ---                               07:42 Tuesday, November 7, 2017  27
 
                                                                   The FREQ Procedure
 
@@ -2361,7 +2349,7 @@ NOTE: PROCEDURE SORT used (Total process time):
                                               542             3        0.01         56218        95.73  
  
                                                                    CANCER_NMSC.sas
-                                                                  --- AS project ---                              06:58 Friday, September 29, 2017  28
+                                                                  --- AS project ---                               07:42 Tuesday, November 7, 2017  28
 
                                                                   The FREQ Procedure
 
@@ -2435,7 +2423,7 @@ NOTE: PROCEDURE SORT used (Total process time):
                                               72280           3        0.01         56407        96.05  
  
                                                                    CANCER_NMSC.sas
-                                                                  --- AS project ---                              06:58 Friday, September 29, 2017  29
+                                                                  --- AS project ---                               07:42 Tuesday, November 7, 2017  29
 
                                                                   The FREQ Procedure
 
@@ -2509,7 +2497,7 @@ NOTE: PROCEDURE SORT used (Total process time):
                                               8738            3        0.01         56596        96.37  
  
                                                                    CANCER_NMSC.sas
-                                                                  --- AS project ---                              06:58 Friday, September 29, 2017  30
+                                                                  --- AS project ---                               07:42 Tuesday, November 7, 2017  30
 
                                                                   The FREQ Procedure
 
@@ -2583,7 +2571,7 @@ NOTE: PROCEDURE SORT used (Total process time):
                                               V4282           3        0.01         56785        96.69  
  
                                                                    CANCER_NMSC.sas
-                                                                  --- AS project ---                              06:58 Friday, September 29, 2017  31
+                                                                  --- AS project ---                               07:42 Tuesday, November 7, 2017  31
 
                                                                   The FREQ Procedure
 
@@ -2657,7 +2645,7 @@ NOTE: PROCEDURE SORT used (Total process time):
                                               1719            2        0.00         56946        96.97  
  
                                                                    CANCER_NMSC.sas
-                                                                  --- AS project ---                              06:58 Friday, September 29, 2017  32
+                                                                  --- AS project ---                               07:42 Tuesday, November 7, 2017  32
 
                                                                   The FREQ Procedure
 
@@ -2731,7 +2719,7 @@ NOTE: PROCEDURE SORT used (Total process time):
                                               28489           2        0.00         57072        97.18  
  
                                                                    CANCER_NMSC.sas
-                                                                  --- AS project ---                              06:58 Friday, September 29, 2017  33
+                                                                  --- AS project ---                               07:42 Tuesday, November 7, 2017  33
 
                                                                   The FREQ Procedure
 
@@ -2805,7 +2793,7 @@ NOTE: PROCEDURE SORT used (Total process time):
                                               43813           2        0.00         57198        97.40  
  
                                                                    CANCER_NMSC.sas
-                                                                  --- AS project ---                              06:58 Friday, September 29, 2017  34
+                                                                  --- AS project ---                               07:42 Tuesday, November 7, 2017  34
 
                                                                   The FREQ Procedure
 
@@ -2879,7 +2867,7 @@ NOTE: PROCEDURE SORT used (Total process time):
                                               5691            2        0.00         57324        97.61  
  
                                                                    CANCER_NMSC.sas
-                                                                  --- AS project ---                              06:58 Friday, September 29, 2017  35
+                                                                  --- AS project ---                               07:42 Tuesday, November 7, 2017  35
 
                                                                   The FREQ Procedure
 
@@ -2953,7 +2941,7 @@ NOTE: PROCEDURE SORT used (Total process time):
                                               7271            2        0.00         57450        97.83  
  
                                                                    CANCER_NMSC.sas
-                                                                  --- AS project ---                              06:58 Friday, September 29, 2017  36
+                                                                  --- AS project ---                               07:42 Tuesday, November 7, 2017  36
 
                                                                   The FREQ Procedure
 
@@ -3027,7 +3015,7 @@ NOTE: PROCEDURE SORT used (Total process time):
                                               9330            2        0.00         57576        98.04  
  
                                                                    CANCER_NMSC.sas
-                                                                  --- AS project ---                              06:58 Friday, September 29, 2017  37
+                                                                  --- AS project ---                               07:42 Tuesday, November 7, 2017  37
 
                                                                   The FREQ Procedure
 
@@ -3101,7 +3089,7 @@ NOTE: PROCEDURE SORT used (Total process time):
                                               0030            1        0.00         57701        98.25  
  
                                                                    CANCER_NMSC.sas
-                                                                  --- AS project ---                              06:58 Friday, September 29, 2017  38
+                                                                  --- AS project ---                               07:42 Tuesday, November 7, 2017  38
 
                                                                   The FREQ Procedure
 
@@ -3175,7 +3163,7 @@ NOTE: PROCEDURE SORT used (Total process time):
                                               17369           1        0.00         57764        98.36  
  
                                                                    CANCER_NMSC.sas
-                                                                  --- AS project ---                              06:58 Friday, September 29, 2017  39
+                                                                  --- AS project ---                               07:42 Tuesday, November 7, 2017  39
 
                                                                   The FREQ Procedure
 
@@ -3249,7 +3237,7 @@ NOTE: PROCEDURE SORT used (Total process time):
                                               2233            1        0.00         57827        98.47  
  
                                                                    CANCER_NMSC.sas
-                                                                  --- AS project ---                              06:58 Friday, September 29, 2017  40
+                                                                  --- AS project ---                               07:42 Tuesday, November 7, 2017  40
 
                                                                   The FREQ Procedure
 
@@ -3323,7 +3311,7 @@ NOTE: PROCEDURE SORT used (Total process time):
                                               2829            1        0.00         57890        98.58  
  
                                                                    CANCER_NMSC.sas
-                                                                  --- AS project ---                              06:58 Friday, September 29, 2017  41
+                                                                  --- AS project ---                               07:42 Tuesday, November 7, 2017  41
 
                                                                   The FREQ Procedure
 
@@ -3397,7 +3385,7 @@ NOTE: PROCEDURE SORT used (Total process time):
                                               316             1        0.00         57953        98.68  
  
                                                                    CANCER_NMSC.sas
-                                                                  --- AS project ---                              06:58 Friday, September 29, 2017  42
+                                                                  --- AS project ---                               07:42 Tuesday, November 7, 2017  42
 
                                                                   The FREQ Procedure
 
@@ -3471,7 +3459,7 @@ NOTE: PROCEDURE SORT used (Total process time):
                                               36847           1        0.00         58016        98.79  
  
                                                                    CANCER_NMSC.sas
-                                                                  --- AS project ---                              06:58 Friday, September 29, 2017  43
+                                                                  --- AS project ---                               07:42 Tuesday, November 7, 2017  43
 
                                                                   The FREQ Procedure
 
@@ -3545,7 +3533,7 @@ NOTE: PROCEDURE SORT used (Total process time):
                                               41513           1        0.00         58079        98.90  
  
                                                                    CANCER_NMSC.sas
-                                                                  --- AS project ---                              06:58 Friday, September 29, 2017  44
+                                                                  --- AS project ---                               07:42 Tuesday, November 7, 2017  44
 
                                                                   The FREQ Procedure
 
@@ -3619,7 +3607,7 @@ NOTE: PROCEDURE SORT used (Total process time):
                                               47825           1        0.00         58142        99.01  
  
                                                                    CANCER_NMSC.sas
-                                                                  --- AS project ---                              06:58 Friday, September 29, 2017  45
+                                                                  --- AS project ---                               07:42 Tuesday, November 7, 2017  45
 
                                                                   The FREQ Procedure
 
@@ -3693,7 +3681,7 @@ NOTE: PROCEDURE SORT used (Total process time):
                                               56944           1        0.00         58205        99.11  
  
                                                                    CANCER_NMSC.sas
-                                                                  --- AS project ---                              06:58 Friday, September 29, 2017  46
+                                                                  --- AS project ---                               07:42 Tuesday, November 7, 2017  46
 
                                                                   The FREQ Procedure
 
@@ -3767,7 +3755,7 @@ NOTE: PROCEDURE SORT used (Total process time):
                                               6212            1        0.00         58268        99.22  
  
                                                                    CANCER_NMSC.sas
-                                                                  --- AS project ---                              06:58 Friday, September 29, 2017  47
+                                                                  --- AS project ---                               07:42 Tuesday, November 7, 2017  47
 
                                                                   The FREQ Procedure
 
@@ -3841,7 +3829,7 @@ NOTE: PROCEDURE SORT used (Total process time):
                                               71191           1        0.00         58331        99.33  
  
                                                                    CANCER_NMSC.sas
-                                                                  --- AS project ---                              06:58 Friday, September 29, 2017  48
+                                                                  --- AS project ---                               07:42 Tuesday, November 7, 2017  48
 
                                                                   The FREQ Procedure
 
@@ -3915,7 +3903,7 @@ NOTE: PROCEDURE SORT used (Total process time):
                                               72972           1        0.00         58394        99.43  
  
                                                                    CANCER_NMSC.sas
-                                                                  --- AS project ---                              06:58 Friday, September 29, 2017  49
+                                                                  --- AS project ---                               07:42 Tuesday, November 7, 2017  49
 
                                                                   The FREQ Procedure
 
@@ -3989,7 +3977,7 @@ NOTE: PROCEDURE SORT used (Total process time):
                                               78192           1        0.00         58457        99.54  
  
                                                                    CANCER_NMSC.sas
-                                                                  --- AS project ---                              06:58 Friday, September 29, 2017  50
+                                                                  --- AS project ---                               07:42 Tuesday, November 7, 2017  50
 
                                                                   The FREQ Procedure
 
@@ -4063,7 +4051,7 @@ NOTE: PROCEDURE SORT used (Total process time):
                                               84500           1        0.00         58520        99.65  
  
                                                                    CANCER_NMSC.sas
-                                                                  --- AS project ---                              06:58 Friday, September 29, 2017  51
+                                                                  --- AS project ---                               07:42 Tuesday, November 7, 2017  51
 
                                                                   The FREQ Procedure
 
@@ -4137,7 +4125,7 @@ NOTE: PROCEDURE SORT used (Total process time):
                                               9694            1        0.00         58583        99.76  
  
                                                                    CANCER_NMSC.sas
-                                                                  --- AS project ---                              06:58 Friday, September 29, 2017  52
+                                                                  --- AS project ---                               07:42 Tuesday, November 7, 2017  52
 
                                                                   The FREQ Procedure
 
@@ -4211,7 +4199,7 @@ NOTE: PROCEDURE SORT used (Total process time):
                                               V1007           1        0.00         58646        99.86  
  
                                                                    CANCER_NMSC.sas
-                                                                  --- AS project ---                              06:58 Friday, September 29, 2017  53
+                                                                  --- AS project ---                               07:42 Tuesday, November 7, 2017  53
 
                                                                   The FREQ Procedure
 
@@ -4285,7 +4273,7 @@ NOTE: PROCEDURE SORT used (Total process time):
                                               V6409           1        0.00         58709        99.97  
  
                                                                    CANCER_NMSC.sas
-                                                                  --- AS project ---                              06:58 Friday, September 29, 2017  54
+                                                                  --- AS project ---                               07:42 Tuesday, November 7, 2017  54
 
                                                                   The FREQ Procedure
 
@@ -4362,33 +4350,33 @@ NOTE: PROCEDURE SORT used (Total process time):
 NOTE: There were 58726 observations read from the data set WORK._DAT_NMSC_PATH_DX.
 NOTE: The PROCEDURE FREQ printed pages 2-54.
 NOTE: PROCEDURE FREQ used (Total process time):
-      real time           1.66 seconds
-      cpu time            1.60 seconds
-6                                                                   The SAS System                                    06:58 Friday, September 29, 2017
-
+      real time           1.60 seconds
+      cpu time            1.51 seconds
       
 
-252        
-253        proc sort data=_dat_NMSC_path_dx out=_dat_NMSC_path_dxNMSC nodupkey; by exposureID PATH_date dx; where dx in :("173");run;
+288        
+289        proc sort data=_dat_NMSC_path_dx out=_dat_NMSC_path_dxNMSC nodupkey; by exposureID PATH_date dx; where dx in :("173");run;
 
 NOTE: Input data set is already sorted; it has been copied to the output data set.
 NOTE: There were 1311 observations read from the data set WORK._DAT_NMSC_PATH_DX.
       WHERE dx in: ('173');
 NOTE: The data set WORK._DAT_NMSC_PATH_DXNMSC has 1311 observations and 25 variables.
 NOTE: PROCEDURE SORT used (Total process time):
-      real time           0.01 seconds
-      cpu time            0.01 seconds
+      real time           0.09 seconds
+      cpu time            0.00 seconds
+6                                                                   The SAS System                                     07:42 Tuesday, November 7, 2017
+
       
 
-254        proc sql outobs=50;
-255        title "pat can have both DX Squamous and Basal on the same day";
-256        select *, count(*) as n from _dat_NMSC_path_dxNMSC(drop=/* PROV_ID PROV_ID_TYPE FACILITY_ID */ ADMIT_DATE DISCHARGE_DATE /*
-256      ! DISCHARGE_STATUS */)
-257        group by exposureID, path_date
-258        having n>1;
+290        proc sql outobs=50;
+291        title "pat can have both DX Squamous and Basal on the same day";
+292        select *, count(*) as n from _dat_NMSC_path_dxNMSC(drop=/* PROV_ID PROV_ID_TYPE FACILITY_ID */ ADMIT_DATE DISCHARGE_DATE /*
+292      ! DISCHARGE_STATUS */)
+293        group by exposureID, path_date
+294        having n>1;
 NOTE: The query requires remerging summary statistics back with the original data.
 WARNING: Statement terminated early due to OUTOBS=50 option.
-                                               pat can have both DX Squamous and Basal on the same day            06:58 Friday, September 29, 2017  55
+                                               pat can have both DX Squamous and Basal on the same day             07:42 Tuesday, November 7, 2017  55
 
                                                                          Date of
                                                                       the End of
@@ -4462,7 +4450,7 @@ WARNING: Statement terminated early due to OUTOBS=50 option.
  
  
                                                                    CANCER_NMSC.sas
-                                               pat can have both DX Squamous and Basal on the same day            06:58 Friday, September 29, 2017  56
+                                               pat can have both DX Squamous and Basal on the same day             07:42 Tuesday, November 7, 2017  56
 
                                                                          Date of
                                                                       the End of
@@ -4536,7 +4524,7 @@ WARNING: Statement terminated early due to OUTOBS=50 option.
  
  
                                                                    CANCER_NMSC.sas
-                                               pat can have both DX Squamous and Basal on the same day            06:58 Friday, September 29, 2017  57
+                                               pat can have both DX Squamous and Basal on the same day             07:42 Tuesday, November 7, 2017  57
 
                                                                          Date of
                                                                       the End of
@@ -4610,7 +4598,7 @@ WARNING: Statement terminated early due to OUTOBS=50 option.
  
  
                                                                    CANCER_NMSC.sas
-                                               pat can have both DX Squamous and Basal on the same day            06:58 Friday, September 29, 2017  58
+                                               pat can have both DX Squamous and Basal on the same day             07:42 Tuesday, November 7, 2017  58
 
                                                                          Date of
                                                                       the End of
@@ -4684,18 +4672,18 @@ WARNING: Statement terminated early due to OUTOBS=50 option.
  
  
                                                                    CANCER_NMSC.sas
-259        title;
-260        quit;
+295        title;
+296        quit;
 NOTE: The PROCEDURE SQL printed pages 55-58.
 NOTE: PROCEDURE SQL used (Total process time):
       real time           0.15 seconds
-      cpu time            0.12 seconds
+      cpu time            0.10 seconds
       
 
-261        
-262        proc freq data=_dat_NMSC_path_dxNMSC; tables NMSC_Basal *NMSC_Squamous/missing;run;
+297        
+298        proc freq data=_dat_NMSC_path_dxNMSC; tables NMSC_Basal *NMSC_Squamous/missing;run;
 
-                                                                                                                  06:58 Friday, September 29, 2017  59
+                                                                                                                   07:42 Tuesday, November 7, 2017  59
 
                                                                   The FREQ Procedure
 
@@ -4771,13 +4759,13 @@ NOTE: PROCEDURE SQL used (Total process time):
 NOTE: There were 1311 observations read from the data set WORK._DAT_NMSC_PATH_DXNMSC.
 NOTE: The PROCEDURE FREQ printed page 59.
 NOTE: PROCEDURE FREQ used (Total process time):
-      real time           0.12 seconds
-      cpu time            0.00 seconds
+      real time           0.09 seconds
+      cpu time            0.01 seconds
       
 
-263        proc freq data=_dat_NMSC_DX; tables NMSC_Basal*NMSC_Squamous dx/missing;run;
+299        proc freq data=_dat_NMSC_DX; tables NMSC_Basal*NMSC_Squamous dx/missing;run;
 
-                                                                                                                  06:58 Friday, September 29, 2017  60
+                                                                                                                   07:42 Tuesday, November 7, 2017  60
 
                                                                   The FREQ Procedure
 
@@ -4850,7 +4838,7 @@ NOTE: PROCEDURE FREQ used (Total process time):
  
  
                                                                    CANCER_NMSC.sas
-                                                                                                                  06:58 Friday, September 29, 2017  61
+                                                                                                                   07:42 Tuesday, November 7, 2017  61
 
                                                                   The FREQ Procedure
 
@@ -4926,13 +4914,13 @@ NOTE: PROCEDURE FREQ used (Total process time):
 NOTE: There were 4267 observations read from the data set WORK._DAT_NMSC_DX.
 NOTE: The PROCEDURE FREQ printed pages 60-61.
 NOTE: PROCEDURE FREQ used (Total process time):
-      real time           0.07 seconds
+      real time           0.12 seconds
       cpu time            0.04 seconds
       
 
-264        proc freq data=_dat_NMSC_PX; tables PX_TYPE;run;
+300        proc freq data=_dat_NMSC_PX; tables PX_TYPE;run;
 
-                                                                                                                  06:58 Friday, September 29, 2017  62
+                                                                                                                   07:42 Tuesday, November 7, 2017  62
 
                                                                   The FREQ Procedure
 
@@ -5008,84 +4996,84 @@ NOTE: PROCEDURE FREQ used (Total process time):
 NOTE: There were 21411 observations read from the data set WORK._DAT_NMSC_PX.
 NOTE: The PROCEDURE FREQ printed page 62.
 NOTE: PROCEDURE FREQ used (Total process time):
-      real time           0.01 seconds
+      real time           0.04 seconds
       cpu time            0.01 seconds
       
 
-265        
-266        data _cancer_NMSC12(keep=exposureID NMSC_def1 NMSC_def2 begin_date DX PX px_type dx_type px_date outcome_date outcome_start_date NMSC_Basal
-266      !  NMSC_Squamous ENC_TYPE);
-267        if _n_=1 then do;
-268          declare hash hpx(dataset:"_dat_NMSC_PX(where=(biopsy^=1))", multidata:"Y");
-269          rc=hpx.defineKey("exposureID");
-270          rc=hpx.defineData("px_date", "PX", "px_type");
-271          rc=hpx.defineDone();
-272        end;
-273        if 0 then set _dat_NMSC_PX(keep=exposureID px_date PX px_type);
-274        set _dat_NMSC_DX;
-275        by exposureID begin_date;
-276        length NMSC_def1 NMSC_def2 $1 outcome_date outcome_start_date 4;
-277        format outcome_date outcome_start_date mmddyy10.;
-7                                                                   The SAS System                                    06:58 Friday, September 29, 2017
+301        
+302        data _cancer_NMSC12(keep=exposureID NMSC_def1 NMSC_def2 begin_date DX PX px_type dx_type px_date outcome_date outcome_start_date NMSC_Basal
+302      !  NMSC_Squamous ENC_TYPE);
+303        if _n_=1 then do;
+304          declare hash hpx(dataset:"_dat_NMSC_PX(where=(biopsy^=1))", multidata:"Y");
+305          rc=hpx.defineKey("exposureID");
+306          rc=hpx.defineData("px_date", "PX", "px_type");
+307          rc=hpx.defineDone();
+308        end;
+309        if 0 then set _dat_NMSC_PX(keep=exposureID px_date PX px_type);
+310        set _dat_NMSC_DX;
+311        by exposureID begin_date;
+312        length NMSC_def1 NMSC_def2 $1 outcome_date outcome_start_date 4;
+313        format outcome_date outcome_start_date mmddyy10.;
+314                rc =hpx.find(key:exposureID);
+315                 do while (rc = 0);
+316                    if begin_date=px_date then NMSC_def1="Y";
+317                        else NMSC_def1="N";
+318                    if abs(begin_date-px_date)<=90 and ENC_TYPE in ("IP","AV","ER","ED","HH","NH") then NMSC_def2="Y";
+319                        else NMSC_def2="N";
+320                    outcome_date=max(px_date,begin_date);
+321                    outcome_start_date=min(px_date,begin_date);
+322                    if NMSC_def1="Y" or NMSC_def2="Y" then output;
+323                    rc = hpx.find_next();
+324                 end;
+325        run;
+7                                                                   The SAS System                                     07:42 Tuesday, November 7, 2017
 
-278                rc =hpx.find(key:exposureID);
-279                 do while (rc = 0);
-280                    if begin_date=px_date then NMSC_def1="Y";
-281                        else NMSC_def1="N";
-282                    if abs(begin_date-px_date)<=90 and ENC_TYPE in ("IP","AV","ER","ED","HH","NH") then NMSC_def2="Y";
-283                        else NMSC_def2="N";
-284                    outcome_date=max(px_date,begin_date);
-285                    outcome_start_date=min(px_date,begin_date);
-286                    if NMSC_def1="Y" or NMSC_def2="Y" then output;
-287                    rc = hpx.find_next();
-288                 end;
-289        run;
 
 NOTE: There were 9348 observations read from the data set WORK._DAT_NMSC_PX.
       WHERE biopsy not = 1;
 NOTE: There were 4267 observations read from the data set WORK._DAT_NMSC_DX.
 NOTE: The data set WORK._CANCER_NMSC12 has 7166 observations and 14 variables.
 NOTE: DATA statement used (Total process time):
-      real time           0.01 seconds
-      cpu time            0.01 seconds
+      real time           0.06 seconds
+      cpu time            0.03 seconds
       
 
-290        proc sql;
-291        create table _cancer_NMSC3 as
-292        select * from _dat_NMSC_PX(where=(biopsy=1)) a
-293        join _dat_NMSC_path_dxNMSC(keep=exposureID Path_date PX_path DX NMSC_Basal
-294            NMSC_Squamous ENC_TYPE dx_type begin_date)  b
-295        on a.exposureID=b.exposureID and a.px_date<=b.path_date<=a.px_date+14;
+326        proc sql;
+327        create table _cancer_NMSC3 as
+328        select * from _dat_NMSC_PX(where=(biopsy=1)) a
+329        join _dat_NMSC_path_dxNMSC(keep=exposureID Path_date PX_path DX NMSC_Basal
+330            NMSC_Squamous ENC_TYPE dx_type begin_date)  b
+331        on a.exposureID=b.exposureID and a.px_date<=b.path_date<=a.px_date+14;
 WARNING: Variable exposureID already exists on file WORK._CANCER_NMSC3.
 NOTE: Table WORK._CANCER_NMSC3 created, with 906 rows and 13 columns.
 
-296        quit;
+332        quit;
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           0.01 seconds
+      real time           0.06 seconds
       cpu time            0.01 seconds
       
 
-297        data _cancer_NMSC3(keep=exposureID NMSC_def3 begin_date DX PX px_type dx_type px_date outcome_date outcome_start_date
-298        NMSC_Basal NMSC_Squamous ENC_TYPE path_date px_path);
-299        set _cancer_NMSC3;
-300        length NMSC_def3 $1 outcome_date outcome_start_date 4;
-301        format outcome_date outcome_start_date mmddyy10.;
-302        outcome_date=max(px_date , path_date , begin_date);
-303        outcome_start_date=min(px_date , path_date , begin_date);
-304        NMSC_def3="Y";
-305        outcome="NMSC";
-306        run;
+333        data _cancer_NMSC3(keep=exposureID NMSC_def3 begin_date DX PX px_type dx_type px_date outcome_date outcome_start_date
+334        NMSC_Basal NMSC_Squamous ENC_TYPE path_date px_path);
+335        set _cancer_NMSC3;
+336        length NMSC_def3 $1 outcome_date outcome_start_date 4;
+337        format outcome_date outcome_start_date mmddyy10.;
+338        outcome_date=max(px_date , path_date , begin_date);
+339        outcome_start_date=min(px_date , path_date , begin_date);
+340        NMSC_def3="Y";
+341        outcome="NMSC";
+342        run;
 
 NOTE: There were 906 observations read from the data set WORK._CANCER_NMSC3.
 NOTE: The data set WORK._CANCER_NMSC3 has 906 observations and 15 variables.
 NOTE: DATA statement used (Total process time):
-      real time           0.01 seconds
+      real time           0.04 seconds
       cpu time            0.01 seconds
       
 
-307        proc freq data=_cancer_NMSC3; tables NMSC_def3 NMSC_Basal*NMSC_Squamous/missing;run;
+343        proc freq data=_cancer_NMSC3; tables NMSC_def3 NMSC_Basal*NMSC_Squamous/missing;run;
 
-                                                                                                                  06:58 Friday, September 29, 2017  63
+                                                                                                                   07:42 Tuesday, November 7, 2017  63
 
                                                                   The FREQ Procedure
 
@@ -5161,62 +5149,62 @@ NOTE: DATA statement used (Total process time):
 NOTE: There were 906 observations read from the data set WORK._CANCER_NMSC3.
 NOTE: The PROCEDURE FREQ printed page 63.
 NOTE: PROCEDURE FREQ used (Total process time):
-      real time           0.04 seconds
+      real time           0.09 seconds
       cpu time            0.01 seconds
       
 
-308        data _cancer_NMSC;
-309        set _cancer_NMSC12 _cancer_NMSC3;
-310        run;
+344        data _cancer_NMSC;
+345        set _cancer_NMSC12 _cancer_NMSC3;
+346        run;
 
 NOTE: There were 7166 observations read from the data set WORK._CANCER_NMSC12.
 NOTE: There were 906 observations read from the data set WORK._CANCER_NMSC3.
 NOTE: The data set WORK._CANCER_NMSC has 8072 observations and 17 variables.
 NOTE: DATA statement used (Total process time):
-8                                                                   The SAS System                                    06:58 Friday, September 29, 2017
-
-      real time           0.00 seconds
-      cpu time            0.00 seconds
+      real time           0.04 seconds
+      cpu time            0.01 seconds
       
 
-311        
-312        
-313        proc sort data=_cancer_NMSC nodupkey;
-314        by exposureID outcome_date descending outcome_start_date NMSC_def1 NMSC_def2 NMSC_def3 NMSC_Basal NMSC_Squamous;run;
+347        
+348        
+349        proc sort data=_cancer_NMSC nodupkey;
+350        by exposureID outcome_date descending outcome_start_date NMSC_def1 NMSC_def2 NMSC_def3 NMSC_Basal NMSC_Squamous;run;
 
 NOTE: There were 8072 observations read from the data set WORK._CANCER_NMSC.
 NOTE: 3283 observations with duplicate key values were deleted.
 NOTE: The data set WORK._CANCER_NMSC has 4789 observations and 17 variables.
+8                                                                   The SAS System                                     07:42 Tuesday, November 7, 2017
+
 NOTE: PROCEDURE SORT used (Total process time):
-      real time           0.03 seconds
-      cpu time            0.01 seconds
-      
-
-315        
-316        data DT.Outcome_cancer_nmsc(keep=exposureID NMSC_def1 NMSC_def2 NMSC_def3 begin_date PX px_date outcome_date
-317        outcome_start_date NMSC_Basal NMSC_Squamous DX ENC_TYPE Path_date PX_path dx_type px_type);
-318        set _cancer_NMSC;
-319        length cancer $10;
-320        by exposureID outcome_date descending outcome_start_date;
-321        /*if first.outcome_date;*/
-322        cancer="NMSC";
-323        run;
-
-NOTE: There were 4789 observations read from the data set WORK._CANCER_NMSC.
-NOTE: The data set DT.OUTCOME_CANCER_NMSC has 4789 observations and 17 variables.
-NOTE: DATA statement used (Total process time):
-      real time           0.07 seconds
+      real time           0.06 seconds
       cpu time            0.00 seconds
       
 
-324        
-325        proc sql outobs=50;
-326        select *, count(*) as n from _cancer_NMSC
-327        group by exposureID, outcome_date
-328        having n>1;
+351        
+352        data Work.Outcome_cancer_nmsc(keep=exposureID NMSC_def1 NMSC_def2 NMSC_def3 begin_date PX px_date outcome_date
+353        outcome_start_date NMSC_Basal NMSC_Squamous DX ENC_TYPE Path_date PX_path dx_type px_type);
+354        set _cancer_NMSC;
+355        length cancer $10;
+356        by exposureID outcome_date descending outcome_start_date;
+357        /*if first.outcome_date;*/
+358        cancer="NMSC";
+359        run;
+
+NOTE: There were 4789 observations read from the data set WORK._CANCER_NMSC.
+NOTE: The data set WORK.OUTCOME_CANCER_NMSC has 4789 observations and 17 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.00 seconds
+      
+
+360        
+361        proc sql outobs=50;
+362        select *, count(*) as n from _cancer_NMSC
+363        group by exposureID, outcome_date
+364        having n>1;
 NOTE: The query requires remerging summary statistics back with the original data.
 WARNING: Statement terminated early due to OUTOBS=50 option.
-                                                                                                                  06:58 Friday, September 29, 2017  64
+                                                                                                                   07:42 Tuesday, November 7, 2017  64
 
                                                           Beginning
 exposure   Procedure  Procedure  Procedure    Encounter     Date of  Diagnosis                      NMSC_  NMSC_                             outcome_
@@ -5289,7 +5277,7 @@ start_date        Date  Code         NMSC_def3         n
  
  
                                                                    CANCER_NMSC.sas
-                                                                                                                  06:58 Friday, September 29, 2017  65
+                                                                                                                   07:42 Tuesday, November 7, 2017  65
 
                                                           Beginning
 exposure   Procedure  Procedure  Procedure    Encounter     Date of  Diagnosis                      NMSC_  NMSC_                             outcome_
@@ -5362,7 +5350,7 @@ start_date        Date  Code         NMSC_def3         n
  
  
                                                                    CANCER_NMSC.sas
-                                                                                                                  06:58 Friday, September 29, 2017  66
+                                                                                                                   07:42 Tuesday, November 7, 2017  66
 
                                                           Beginning
 exposure   Procedure  Procedure  Procedure    Encounter     Date of  Diagnosis                      NMSC_  NMSC_                             outcome_
@@ -5435,25 +5423,25 @@ start_date        Date  Code         NMSC_def3         n
  
  
                                                                    CANCER_NMSC.sas
-329        quit;
+365        quit;
 NOTE: The PROCEDURE SQL printed pages 64-66.
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           0.12 seconds
-      cpu time            0.10 seconds
+      real time           0.10 seconds
+      cpu time            0.07 seconds
       
 
-330        
-331        proc datasets nolist; delete
-332        _dat_NMSC_DX
-333        _dat_NMSC_PX
-334        _cancer_NMSC
-335        _cancer_NMSC12
-336        _cancer_NMSC3
-337        _dat_NMSC_path
-338        _dat_NMSC_path_dx
-339        _dat_NMSC_path_dxNMSC
-340        ;
-341        quit;
+366        
+367        proc datasets nolist; delete
+368        _dat_NMSC_DX
+369        _dat_NMSC_PX
+370        _cancer_NMSC
+371        _cancer_NMSC12
+372        _cancer_NMSC3
+373        _dat_NMSC_path
+374        _dat_NMSC_path_dx
+375        _dat_NMSC_path_dxNMSC
+376        ;
+377        quit;
 
 NOTE: Deleting WORK._DAT_NMSC_DX (memtype=DATA).
 NOTE: Deleting WORK._DAT_NMSC_PX (memtype=DATA).
@@ -5466,35 +5454,47 @@ NOTE: Deleting WORK._DAT_NMSC_PATH_DXNMSC (memtype=DATA).
 NOTE: PROCEDURE DATASETS used (Total process time):
       real time           0.00 seconds
       cpu time            0.00 seconds
-9                                                                   The SAS System                                    06:58 Friday, September 29, 2017
-
       
 
-342        
-343        
-344        proc sql;
-345          select B.database, B.exposure, "NMSC" as cancer, count(distinct A.exposureID) as countDistinctExposureID
-346            from DT.Outcome_cancer_nmsc A inner join
-347                 DT.exposureTimeline B on (A.exposureID = B.exposureID)
-348            group by B.database, B.exposure;
-                                                                                                                  06:58 Friday, September 29, 2017  67
+378        
+379        
+380        /*
+381        Per protocol, keep all incident NMSC cancers
+382         */
+383        proc sql;
+384          create table DT.cancerNMSCEpisodesInc as
+385            select A.database, A.exposure, A.patid, A.exposureStart, A.exposureEnd, A.exposureID,
+386                   "Non Melanoma Skin Cancer" as cancer,
+387                   B.outcome_start_date
+9                                                                   The SAS System                                     07:42 Tuesday, November 7, 2017
 
-                                                                                            count
-                                                                                         Distinct
-                                                    database    exposure     cancer    ExposureID
-                                                    ---------------------------------------------
-                                                    MPCD        DMARD        NMSC               3
-                                                    MPCD        NSAID        NMSC               4
-                                                    MPCD        No exposure  NMSC              22
-                                                    MPCD        TNF          NMSC              19
-                                                    Marketscan  DMARD        NMSC              12
-                                                    Marketscan  NSAID        NMSC              33
-                                                    Marketscan  No exposure  NMSC              41
-                                                    Marketscan  TNF          NMSC              42
-                                                    Medicare    DMARD        NMSC             165
-                                                    Medicare    NSAID        NMSC             431
-                                                    Medicare    No exposure  NMSC             500
-                                                    Medicare    TNF          NMSC             207
+388            from DT.exposureTimeline A inner join
+389                 Work.Outcome_cancer_nmsc B on (A.exposureID = B.exposureID);
+NOTE: Table DT.CANCERNMSCEPISODESINC created, with 4789 rows and 8 columns.
+
+390          select A.database, A.exposure, A.cancer,
+391                 count(distinct A.patid) as countDistinctPatid,
+392                 count(distinct A.exposureID) as countDistinctExposureID
+393            from DT.cancerNMSCEpisodesInc A
+394            group by A.database, A.exposure, A.cancer;
+                                                                                                                   07:42 Tuesday, November 7, 2017  67
+
+                                                                                              count         count
+                                                                                           Distinct      Distinct
+                                    database    exposure     cancer                           Patid    ExposureID
+                                    -----------------------------------------------------------------------------
+                                    MPCD        DMARD        Non Melanoma Skin Cancer             3             3
+                                    MPCD        NSAID        Non Melanoma Skin Cancer             4             4
+                                    MPCD        No exposure  Non Melanoma Skin Cancer            22            22
+                                    MPCD        TNF          Non Melanoma Skin Cancer            19            19
+                                    Marketscan  DMARD        Non Melanoma Skin Cancer            12            12
+                                    Marketscan  NSAID        Non Melanoma Skin Cancer            31            33
+                                    Marketscan  No exposure  Non Melanoma Skin Cancer            41            41
+                                    Marketscan  TNF          Non Melanoma Skin Cancer            42            42
+                                    Medicare    DMARD        Non Melanoma Skin Cancer           156           165
+                                    Medicare    NSAID        Non Melanoma Skin Cancer           399           431
+                                    Medicare    No exposure  Non Melanoma Skin Cancer           500           500
+                                    Medicare    TNF          Non Melanoma Skin Cancer           203           207
  
  
  
@@ -5550,18 +5550,102 @@ NOTE: PROCEDURE DATASETS used (Total process time):
  
  
                                                                    CANCER_NMSC.sas
-349        quit;
+395        quit;
 NOTE: The PROCEDURE SQL printed page 67.
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           0.07 seconds
+      real time           0.10 seconds
       cpu time            0.06 seconds
       
 
-350        
-351        
-352        ods html close;
+396        proc contents data = DT.cancerNMSCEpisodesInc order = varnum;
+397        run;
+
+                                                                                                                   07:42 Tuesday, November 7, 2017  68
+
+                                                                The CONTENTS Procedure
+
+                                    Data Set Name        DT.CANCERNMSCEPISODESINC      Observations          4789
+                                    Member Type          DATA                          Variables             8   
+                                    Engine               V9                            Indexes               0   
+                                    Created              11/07/2017 07:43:18           Observation Length    96  
+                                    Last Modified        11/07/2017 07:43:18           Deleted Observations  0   
+                                    Protection                                         Compressed            NO  
+                                    Data Set Type                                      Sorted                NO  
+                                    Label                                                                        
+                                    Data Representation  WINDOWS_32                                              
+                                    Encoding             wlatin1  Western (Windows)                              
+
+
+                                                          Engine/Host Dependent Information
+
+                                    Data Set Page Size          1048576                                          
+                                    Number of Data Set Pages    1                                                
+                                    First Data Page             1                                                
+                                    Max Obs per Page            10908                                            
+                                    Obs in First Data Page      4789                                             
+                                    Number of Data Set Repairs  0                                                
+                                    ExtendObsCounter            YES                                              
+                                    Filename                    V:\studies\AS\data\cancernmscepisodesinc.sas7bdat
+                                    Release Created             9.0401M1                                         
+                                    Host Created                W32_ES08R2                                       
+
+
+                                                             Variables in Creation Order
+ 
+                             #    Variable              Type    Len    Format       Label
+
+                             1    database              Char     10                                                     
+                             2    exposure              Char     11                                                     
+                             3    PATID                 Char     20                 Unique Patient Identification Number
+                             4    exposureStart         Num       8    MMDDYY10.                                        
+                             5    exposureEnd           Num       8    MMDDYY10.                                        
+                             6    exposureID            Num       8                                                     
+                             7    cancer                Char     24                                                     
+                             8    outcome_start_date    Num       4    MMDDYY10.                                        
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+                                                                   CANCER_NMSC.sas
+NOTE: PROCEDURE CONTENTS used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+      
+NOTE: The PROCEDURE CONTENTS printed page 68.
+
+398        
+399        
+400        
+401        
+402        ods html close;
 NOTE: SAS Institute Inc., SAS Campus Drive, Cary, NC USA 27513-2414
 NOTE: The SAS System used:
-      real time           31.26 seconds
-      cpu time            31.09 seconds
+      real time           31.34 seconds
+      cpu time            30.23 seconds
       
