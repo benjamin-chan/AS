@@ -1,24 +1,24 @@
 del ..\output\* /q
 del ..\data\processed\* /q
 
-call :execute contentsSourceDatasets
-call :execute importOutcomeCodebook
-call :execute buildIndexLookup
-call :execute buildControlLookup
-call :execute buildExposureFollowUp
-call :execute reproduceTables2
-call :execute buildServiceCodeDatasets
-call :execute buildServiceCodeDatasetsControl
-call :execute queryFractures
+rem call :execute contentsSourceDatasets
+rem call :execute importOutcomeCodebook
+rem call :execute buildIndexLookup
+rem call :execute buildControlLookup
+rem call :execute buildExposureFollowUp
+rem call :execute reproduceTables2
+rem call :execute buildServiceCodeDatasets
+rem call :execute buildServiceCodeDatasetsControl
+rem call :execute queryFractures
 call :execute queryFracturesControl
-call :execute CANCER_setoguchi
-call :execute CANCER_NMSC
-call :execute queryOutcomeHospitalizedInfection
-call :execute queryOutcomeOpportunisticInfection
-call :execute queryPrevalentComorbidities
+rem call :execute CANCER_setoguchi
+rem call :execute CANCER_NMSC
+rem call :execute queryOutcomeHospitalizedInfection
+rem call :execute queryOutcomeOpportunisticInfection
+rem call :execute queryPrevalentComorbidities
 call :execute queryPrevalentComorbiditiesControl
-call :execute queryIncidenceOutcomes
-call :execute queryOtherComorbidities
+rem call :execute queryIncidenceOutcomes
+rem call :execute queryOtherComorbidities
 rem call :execute modelPropensityScore
 call :execute contentsWorkingDatasets
 
