@@ -88,12 +88,14 @@ df <-
   filter(indCommonSupport == TRUE)
 ```
 
+**Propensity of NSAID or no exposure.**
 Create propensity score deciles.
 
 ```{r}
 df <-
   df %>% 
-  group_by(model, exposure) %>% 
+  filter(X_LEVEL_ == "NSAID or no exposure") %>% 
+  group_by(model) %>% 
   mutate(psDecile = cut(ps,
                         breaks = quantile(ps, probs = seq(0, 1, 0.1)),
                         include.lowest = TRUE,
@@ -108,11 +110,7 @@ df <-
                                           dig.lab = 2))))
 df %>% 
   group_by(model, exposure, psDecile) %>% 
-  summarize(n = length(ps), min = min(ps), max = max(ps),
-            nTNF = sum(exposure == "TNF"),
-            nDMARD = sum(exposure == "DMARD"),
-            nNSAID = sum(exposure == "NSAID or no exposure"),
-            nCorrect = sum(exposure == X_LEVEL_)) %>% 
+  summarize(n = length(ps), min = min(ps), max = max(ps)) %>% 
   kable(digits = 2)
 ```
 

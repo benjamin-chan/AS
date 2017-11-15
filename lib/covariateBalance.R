@@ -27,7 +27,7 @@ covariateBalance <- function (type, var, lab) {
     aes(x = factor(psDecile), y = y, color = exposure, group = exposure) +
     geom_point(aes(size = size), alpha = 1/2) +
     geom_line() +
-    scale_x_discrete("Propensity score decile") +
+    scale_x_discrete("NSAID or no exposure propensity score decile") +
     scale_y_continuous(lab) +
     scale_color_brewer("", palette = "Set1") +
     scale_size_continuous("Within group %", guide = "none") +
