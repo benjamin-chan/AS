@@ -28,7 +28,7 @@ covariateBalance <- function (type, var, lab) {
     geom_point(aes(size = size), alpha = 1/2) +
     geom_line() +
     scale_x_discrete("Propensity score decile") +
-    scale_y_continuous(lab, limits = lim) +
+    scale_y_continuous(lab) +
     scale_color_brewer("", palette = "Set1") +
     scale_size_continuous("Within group %", guide = "none") +
     theme(legend.position = "bottom")
