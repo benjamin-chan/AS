@@ -284,10 +284,11 @@ quit;
 
 /* 
 Determine common support region
-For propensity of NSAID or no exposure
+For propensity of TNF
  */
+%let exposure = "TNF";
 proc means data = Work.ps n nmiss min max mean median stddev;
-  where _level_ in ("NSAID or no exposure", "No exposure");
+  where _level_ in (&exposure);
   class model _level_ exposure;
   var ps;
 run;
@@ -300,12 +301,12 @@ proc sql;
                  min(ps) as minPS,
                  max(ps) as maxPS
           from Work.ps
-      where _level_ in ("NSAID or no exposure", "No exposure")
+          where _level_ in (&exposure)
           group by model, exposure)
     group by model;
   select * from Work.commonSupportRegion;
   create table Work.temp as
-    select * from Work.ps where _level_ in ("NSAID or no exposure", "No exposure");
+    select * from Work.ps where _level_ in (&exposure);
   create table Work.ps as
     select A.*, 
            B.commonSupportLowerBound, 
