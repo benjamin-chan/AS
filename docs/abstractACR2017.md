@@ -47,64 +47,30 @@ Prevalence is **12-month (6-month baseline to 6-month follow-up)**.
 
 
 ```
-## Error in table.margins(x): x is not an array
+## Error in list_or_dots(...): could not find function "compareIncidenceRates"
 ```
 
+```
+## Error in inc[is.na(inc)] <- 0: object 'inc' not found
+```
 
-
-|outcomeCategory            |disease                                   | MPCD TNF | MPCD DMARD | MPCD p-value | Marketscan TNF | Marketscan DMARD | Marketscan p-value | Medicare TNF | Medicare DMARD | Medicare p-value |
-|:--------------------------|:-----------------------------------------|:--------:|:----------:|:------------:|:--------------:|:----------------:|:------------------:|:------------:|:--------------:|:----------------:|
-|Cancer                     |Hematologic Cancer                        |   0.2    |    0.2     |      NS      |      0.2       |       0.8        |       <0.001       |     0.4      |      0.8       |      <0.001      |
-|Cancer                     |Non Melanoma Skin Cancer                  |   1.3    |    0.7     |      NS      |      0.9       |       1.2        |         NS         |     1.9      |      2.2       |        NS        |
-|Cancer                     |Solid Cancer                              |   2.1    |    1.7     |      NS      |      1.6       |       3.6        |       <0.001       |     2.9      |      4.3       |      <0.001      |
-|Cardiac disease            |Aortic Insufficiency/Aortic Regurgitation |   1.1    |    0.0     |    0.018     |      0.7       |       1.0        |         NS         |     1.7      |      2.5       |      <0.001      |
-|Cardiac disease            |Conduction Block                          |   0.3    |    0.0     |      NS      |      0.6       |       0.7        |         NS         |     1.8      |      2.3       |      0.010       |
-|Cardiac disease            |Myocardial infarction                     |   0.3    |    0.0     |      NS      |      0.2       |       0.3        |         NS         |     0.7      |      1.2       |      <0.001      |
-|Infection                  |Hospitalized infection                    |   3.4    |    2.6     |      NS      |      5.8       |       7.3        |       0.036        |     11.2     |      15.3      |      <0.001      |
-|Infection                  |Opportunistic infection                   |   0.6    |    0.5     |      NS      |      0.6       |       0.9        |         NS         |     1.2      |      1.5       |        NS        |
-|Inflammatory bowel disease |Crohn.s Disease                           |   3.8    |    1.9     |      NS      |      3.6       |       2.4        |       0.009        |     2.5      |      1.9       |      0.005       |
-|Inflammatory bowel disease |Ulcerative Colitis                        |   2.2    |    1.0     |      NS      |      2.2       |       2.3        |         NS         |     1.6      |      1.4       |        NS        |
-|Kidney disease             |Amyloidosis                               |   0.0    |    0.0     |      NS      |      0.0       |       0.0        |         NS         |     0.1      |      0.0       |        NS        |
-|Kidney disease             |IgA nephropathy                           |   0.2    |    0.0     |      NS      |      0.1       |       0.0        |         NS         |     0.2      |      0.1       |        NS        |
-|Kidney disease             |Nephrotic syndrome                        |   0.1    |    0.0     |      NS      |      0.0       |       0.1        |         NS         |     0.1      |      0.1       |        NS        |
-|Lung disease               |Apical Pulmonary fibrosis                 |   0.0    |    0.0     |      NS      |      0.0       |       0.0        |         NS         |     0.0      |      0.0       |        NS        |
-|Lung disease               |Interstitial lung disease                 |   0.0    |    0.0     |      NS      |      0.1       |       0.1        |         NS         |     0.4      |      0.7       |      <0.001      |
-|Lung disease               |Restrictive lung disease                  |   0.7    |    0.0     |      NS      |      0.7       |       0.8        |         NS         |     1.9      |      2.3       |      0.028       |
-|Neurological Disease       |Cauda Equina syndrome                     |   0.0    |    0.0     |      NS      |      0.0       |       0.1        |         NS         |     0.1      |      0.0       |      0.020       |
-|Neurological Disease       |Spinal Cord compression                   |   0.1    |    0.0     |      NS      |      0.2       |       0.2        |         NS         |     0.2      |      0.3       |        NS        |
-|Osteoporotic fracture      |Clinical vertebral fracture               |   0.7    |    0.2     |      NS      |      0.4       |       0.7        |         NS         |     1.6      |      2.2       |      0.003       |
-|Osteoporotic fracture      |Non-vertebral osteoporotic fracture       |   1.3    |    0.9     |      NS      |      1.2       |       1.2        |         NS         |     2.5      |      3.1       |      0.008       |
-|PsO/PsA                    |Psoriasis                                 |   3.2    |    1.0     |    0.009     |      3.1       |       2.7        |         NS         |     3.0      |      2.5       |      0.013       |
-|PsO/PsA                    |Psoriatic arthritis                       |   4.5    |    3.7     |      NS      |      4.4       |       5.4        |         NS         |     3.8      |      3.1       |      0.011       |
-|Uveitis                    |Uveitis                                   |   4.2    |    5.8     |      NS      |      4.7       |       5.1        |         NS         |     3.1      |      2.0       |      <0.001      |
+```
+## Error in eval(expr, envir, enclos): object 'inc' not found
+```
 
 \newline
 
 **TNF vs DMARD**
 
 
-|outcomeCategory            |disease                                   | MPCD TNF | MPCD DMARD | MPCD p-value | Marketscan TNF | Marketscan DMARD | Marketscan p-value | Medicare TNF | Medicare DMARD | Medicare p-value |
-|:--------------------------|:-----------------------------------------|:--------:|:----------:|:------------:|:--------------:|:----------------:|:------------------:|:------------:|:--------------:|:----------------:|
-|Cancer                     |Hematologic Cancer                        |   0.2    |    0.2     |      NS      |      0.2       |       0.8        |       <0.001       |     0.4      |      0.8       |      <0.001      |
-|Cancer                     |Non Melanoma Skin Cancer                  |   1.3    |    0.7     |      NS      |      0.9       |       1.2        |         NS         |     1.9      |      2.2       |        NS        |
-|Cancer                     |Solid Cancer                              |   2.1    |    1.7     |      NS      |      1.6       |       3.6        |       <0.001       |     2.9      |      4.3       |      <0.001      |
-|Cardiac disease            |Aortic Insufficiency/Aortic Regurgitation |   1.1    |    0.0     |    0.018     |      0.7       |       1.0        |         NS         |     1.7      |      2.5       |      <0.001      |
-|Cardiac disease            |Conduction Block                          |   0.3    |    0.0     |      NS      |      0.6       |       0.7        |         NS         |     1.8      |      2.3       |      0.010       |
-|Cardiac disease            |Myocardial infarction                     |   0.3    |    0.0     |      NS      |      0.2       |       0.3        |         NS         |     0.7      |      1.2       |      <0.001      |
-|Infection                  |Hospitalized infection                    |   3.4    |    2.6     |      NS      |      5.8       |       7.3        |       0.036        |     11.2     |      15.3      |      <0.001      |
-|Infection                  |Opportunistic infection                   |   0.6    |    0.5     |      NS      |      0.6       |       0.9        |         NS         |     1.2      |      1.5       |        NS        |
-|Inflammatory bowel disease |Crohn.s Disease                           |   3.8    |    1.9     |      NS      |      3.6       |       2.4        |       0.009        |     2.5      |      1.9       |      0.005       |
-|Inflammatory bowel disease |Ulcerative Colitis                        |   2.2    |    1.0     |      NS      |      2.2       |       2.3        |         NS         |     1.6      |      1.4       |        NS        |
-|Kidney disease             |Amyloidosis                               |   0.0    |    0.0     |      NS      |      0.0       |       0.0        |         NS         |     0.1      |      0.0       |        NS        |
-|Kidney disease             |IgA nephropathy                           |   0.2    |    0.0     |      NS      |      0.1       |       0.0        |         NS         |     0.2      |      0.1       |        NS        |
-|Kidney disease             |Nephrotic syndrome                        |   0.1    |    0.0     |      NS      |      0.0       |       0.1        |         NS         |     0.1      |      0.1       |        NS        |
-|Lung disease               |Apical Pulmonary fibrosis                 |   0.0    |    0.0     |      NS      |      0.0       |       0.0        |         NS         |     0.0      |      0.0       |        NS        |
-|Lung disease               |Interstitial lung disease                 |   0.0    |    0.0     |      NS      |      0.1       |       0.1        |         NS         |     0.4      |      0.7       |      <0.001      |
-|Lung disease               |Restrictive lung disease                  |   0.7    |    0.0     |      NS      |      0.7       |       0.8        |         NS         |     1.9      |      2.3       |      0.028       |
-|Neurological Disease       |Cauda Equina syndrome                     |   0.0    |    0.0     |      NS      |      0.0       |       0.1        |         NS         |     0.1      |      0.0       |      0.020       |
-|Neurological Disease       |Spinal Cord compression                   |   0.1    |    0.0     |      NS      |      0.2       |       0.2        |         NS         |     0.2      |      0.3       |        NS        |
-|Osteoporotic fracture      |Clinical vertebral fracture               |   0.7    |    0.2     |      NS      |      0.4       |       0.7        |         NS         |     1.6      |      2.2       |      0.003       |
-|Osteoporotic fracture      |Non-vertebral osteoporotic fracture       |   1.3    |    0.9     |      NS      |      1.2       |       1.2        |         NS         |     2.5      |      3.1       |      0.008       |
-|PsO/PsA                    |Psoriasis                                 |   3.2    |    1.0     |    0.009     |      3.1       |       2.7        |         NS         |     3.0      |      2.5       |      0.013       |
-|PsO/PsA                    |Psoriatic arthritis                       |   4.5    |    3.7     |      NS      |      4.4       |       5.4        |         NS         |     3.8      |      3.1       |      0.011       |
-|Uveitis                    |Uveitis                                   |   4.2    |    5.8     |      NS      |      4.7       |       5.1        |         NS         |     3.1      |      2.0       |      <0.001      |
+```
+## Error in list_or_dots(...): could not find function "compareIncidenceRates"
+```
+
+```
+## Error in inc[is.na(inc)] <- 0: object 'inc' not found
+```
+
+```
+## Error in eval(expr, envir, enclos): object 'inc' not found
+```
