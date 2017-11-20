@@ -129,7 +129,7 @@ Fit 4-level model
 4 levels of treatment exposure: TNF, DMARD, NSAID, no exposure
  */
 proc logistic data = Work.allCovariates outest = Work.psBetas4Level;
-  class exposure4 (ref = "No exposure") 
+  class exposure4 (ref = "TNF") 
         database (ref = "Medicare") 
         sex (ref = "M") 
         / param = ref;
@@ -172,7 +172,7 @@ Fit 3-level model
 3 levels of treatment exposure: TNF, DMARD, NSAID or no exposure
  */
  proc logistic data = Work.allCovariates outest = Work.psBetas3Level;
-  class exposure3 (ref = "NSAID or no exposure") 
+  class exposure3 (ref = "TNF") 
         database (ref = "Medicare") 
         sex (ref = "M") 
         / param = ref;
