@@ -1,4 +1,4 @@
-1                                                          The SAS System                            15:16 Friday, November 17, 2017
+1                                                          The SAS System                            16:25 Monday, November 20, 2017
 
 NOTE: Unable to open SASUSER.REGSTRY. WORK.REGSTRY will be opened instead.
 NOTE: All registry changes will be lost at the end of the session.
@@ -35,7 +35,7 @@ Please remember not to copy any data files that contain PHI (protected health id
 
 
 NOTE: SAS initialization used:
-      real time           0.76 seconds
+      real time           0.21 seconds
       cpu time            0.15 seconds
       
 1          *  University of Alabama at Birmingham                               *
@@ -72,7 +72,7 @@ NOTE: Libref NDC was successfully assigned as follows:
       Physical Name: W:\onenote\references\drug ndcs\sas data
 127        footnote "&pgm.";
 128        * footnote2 "%sysfunc(datetime(),datetime14.)";
-2                                                                   The SAS System                                     15:16 Friday, November 17, 2017
+2                                                                   The SAS System                                     16:25 Monday, November 20, 2017
 
 129        title1 '--- AS project ---';
 130        **********************************************************************;
@@ -146,7 +146,7 @@ NOTE: Writing HTML Body file: output\modelPropensityScore.html
 189              (select indexID, 1 as indHospInf          from DT.comorbidities      where indPrevPriorToIndex = 1 & prxmatch("/Hospitalized
 189      ! infection/"                    , disease    )) J  on (A.indexID = J.indexID ) left join
 190              (select indexID, 1 as indIgANeph          from DT.comorbidities      where indPrevPriorToIndex = 1 & prxmatch("/IgA nephropathy/"
-3                                                                   The SAS System                                     15:16 Friday, November 17, 2017
+3                                                                   The SAS System                                     16:25 Monday, November 20, 2017
 
 190      !                        , disease    )) K  on (A.indexID = K.indexID ) left join
 191              (select indexID, 1 as indInterstLungDis   from DT.comorbidities      where indPrevPriorToIndex = 1 & prxmatch("/Interstitial lung
@@ -187,8 +187,8 @@ NOTE: Table WORK.ALLCOVARIATES created, with 60010 rows and 34 columns.
 
 208        quit;
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           1.82 seconds
-      cpu time            1.26 seconds
+      real time           2.08 seconds
+      cpu time            1.79 seconds
       
 
 209        
@@ -220,12 +220,12 @@ NOTE: PROCEDURE SQL used (Total process time):
 235              indDiabetes
 236              indHT
 237              indMetabSyn
-4                                                                   The SAS System                                     15:16 Friday, November 17, 2017
+4                                                                   The SAS System                                     16:25 Monday, November 20, 2017
 
 238              indNAFattyLiverDis;
 239        run;
 
-                                                                  --- AS project ---                               15:16 Friday, November 17, 2017   1
+                                                                  --- AS project ---                               16:25 Monday, November 20, 2017   1
 
                                                                  The MEANS Procedure
 
@@ -302,8 +302,8 @@ NOTE: PROCEDURE SQL used (Total process time):
 NOTE: There were 60010 observations read from the data set WORK.ALLCOVARIATES.
 NOTE: The PROCEDURE MEANS printed page 1.
 NOTE: PROCEDURE MEANS used (Total process time):
-      real time           0.14 seconds
-      cpu time            0.15 seconds
+      real time           0.15 seconds
+      cpu time            0.20 seconds
       
 
 240        
@@ -313,7 +313,7 @@ NOTE: PROCEDURE MEANS used (Total process time):
 244        4 levels of treatment exposure: TNF, DMARD, NSAID, no exposure
 245         */
 246        proc logistic data = Work.allCovariates outest = Work.psBetas4Level;
-247          class exposure4 (ref = "No exposure")
+247          class exposure4 (ref = "TNF")
 248                database (ref = "Medicare")
 249                sex (ref = "M")
 250                / param = ref;
@@ -351,7 +351,7 @@ NOTE: PROCEDURE MEANS used (Total process time):
 282          output out = Work.ps4Level predicted = ps xbeta = xbeta;
 283        run;
 
-                                                                  --- AS project ---                               15:16 Friday, November 17, 2017   2
+                                                                  --- AS project ---                               16:25 Monday, November 20, 2017   2
 
                                                                 The LOGISTIC Procedure
 
@@ -378,11 +378,11 @@ NOTE: PROCEDURE MEANS used (Total process time):
                                                                3     No exposure         20564
                                                                4     TNF                 12986
 
-                                        Logits modeled use exposure4='No exposure' as the reference category.
+                                            Logits modeled use exposure4='TNF' as the reference category.
 
 NOTE: 1 observation was deleted due to missing values for the response or explanatory variables.
 NOTE: PROC LOGISTIC is fitting the generalized logit model. The logits modeled contrast each response category against the reference category 
-      (exposure4='No exposure').
+      (exposure4='TNF').
 
 
                                                                Class Level Information
@@ -428,7 +428,7 @@ NOTE: Convergence criterion (GCONV=1E-8) satisfied.
  
  
                                                                modelPropensityScore.sas
-                                                                  --- AS project ---                               15:16 Friday, November 17, 2017   3
+                                                                  --- AS project ---                               16:25 Monday, November 20, 2017   3
 
                                                                 The LOGISTIC Procedure
 
@@ -472,9 +472,9 @@ NOTE: Convergence criterion (GCONV=1E-8) satisfied.
 NOTE: The following parameters have been set to 0, since the variables are a linear combination of other variables as shown.
 
 
-                                                               indCrohnsDis_DMARD =  0
-                                                               indCrohnsDis_NSAID =  0
-                                                                 indCrohnsDis_TNF =  0
+                                                                  indCrohnsDis_DMARD =  0
+                                                                  indCrohnsDis_NSAID =  0
+                                                            indCrohnsDis_No_exposure =  0
 
 
                                                       Analysis of Maximum Likelihood Estimates
@@ -482,27 +482,27 @@ NOTE: The following parameters have been set to 0, since the variables are a lin
                                                                                           Standard          Wald
                        Parameter                         exposure4      DF    Estimate       Error    Chi-Square    Pr > ChiSq
 
-                       Intercept                         DMARD           1      0.2396      0.0650       13.5934        0.0002
-                       Intercept                         NSAID           1      1.4246      0.0506      792.0780        <.0001
-                       Intercept                         TNF             1      1.7650      0.0550     1030.7578        <.0001
-                       database            MPCD          DMARD           1     -0.4686      0.0587       63.7734        <.0001
-                       database            MPCD          NSAID           1     -0.6355      0.0458      192.4315        <.0001
-                       database            MPCD          TNF             1     0.00409      0.0460        0.0079        0.9291
-                       database            Marketscan    DMARD           1     -0.3286      0.0361       82.9921        <.0001
-                       database            Marketscan    NSAID           1     -0.3417      0.0277      152.5299        <.0001
-                       database            Marketscan    TNF             1      0.2562      0.0298       73.9822        <.0001
-                       age                               DMARD           1     -0.0327     0.00107      933.1131        <.0001
-                       age                               NSAID           1     -0.0353    0.000832     1795.8276        <.0001
-                       age                               TNF             1     -0.0529    0.000950     3104.4245        <.0001
-                       SEX                 F             DMARD           1      0.6643      0.0278      569.4666        <.0001
-                       SEX                 F             NSAID           1      0.3469      0.0216      258.2161        <.0001
-                       SEX                 F             TNF             1      0.2978      0.0244      149.0212        <.0001
-                       indAmyloidosis                    DMARD           1      0.1808      1.2676        0.0203        0.8866
-                       indAmyloidosis                    NSAID           1      0.7740      1.0918        0.5025        0.4784
-                       indAmyloidosis                    TNF             1      1.0428      1.1245        0.8599        0.3538
+                       Intercept                         DMARD           1     -1.5254      0.0654      544.4754        <.0001
+                       Intercept                         NSAID           1     -0.3404      0.0513       44.0808        <.0001
+                       Intercept                         No exposure     1     -1.7650      0.0550     1030.7578        <.0001
+                       database            MPCD          DMARD           1     -0.4727      0.0603       61.5032        <.0001
+                       database            MPCD          NSAID           1     -0.6396      0.0481      177.0826        <.0001
+                       database            MPCD          No exposure     1    -0.00409      0.0460        0.0079        0.9291
+                       database            Marketscan    DMARD           1     -0.5848      0.0372      247.5060        <.0001
+                       database            Marketscan    NSAID           1     -0.5979      0.0293      416.7425        <.0001
+                       database            Marketscan    No exposure     1     -0.2562      0.0298       73.9822        <.0001
+                       age                               DMARD           1      0.0203     0.00113      323.3283        <.0001
+                       age                               NSAID           1      0.0176    0.000910      375.8457        <.0001
+                       age                               No exposure     1      0.0529    0.000950     3104.4245        <.0001
+                       SEX                 F             DMARD           1      0.3666      0.0295      154.2697        <.0001
+                       SEX                 F             NSAID           1      0.0492      0.0238        4.2625        0.0390
+                       SEX                 F             No exposure     1     -0.2978      0.0244      149.0212        <.0001
+                       indAmyloidosis                    DMARD           1     -0.8620      0.8182        1.1101        0.2921
+                       indAmyloidosis                    NSAID           1     -0.2688      0.5235        0.2637        0.6076
+                       indAmyloidosis                    No exposure     1     -1.0428      1.1245        0.8599        0.3538
  
                                                                modelPropensityScore.sas
-                                                                  --- AS project ---                               15:16 Friday, November 17, 2017   4
+                                                                  --- AS project ---                               16:25 Monday, November 20, 2017   4
 
                                                                 The LOGISTIC Procedure
 
@@ -511,72 +511,72 @@ NOTE: The following parameters have been set to 0, since the variables are a lin
                                                                                           Standard          Wald
                        Parameter                         exposure4      DF    Estimate       Error    Chi-Square    Pr > ChiSq
 
-                       indAortInsuffRegurg               DMARD           1      1.1939      0.1226       94.8287        <.0001
-                       indAortInsuffRegurg               NSAID           1      1.4635      0.1039      198.3613        <.0001
-                       indAortInsuffRegurg               TNF             1      1.4253      0.1184      144.9105        <.0001
-                       indApicalPulmFib                  DMARD           1      1.0853      1.3638        0.6334        0.4261
-                       indApicalPulmFib                  NSAID           1      0.4903      1.3028        0.1416        0.7067
-                       indApicalPulmFib                  TNF             1     -8.3102     59.9583        0.0192        0.8898
-                       indCaudaEquina                    DMARD           1      0.1486      0.5034        0.0871        0.7678
-                       indCaudaEquina                    NSAID           1      0.0585      0.4083        0.0205        0.8861
-                       indCaudaEquina                    TNF             1     -0.7383      0.6653        1.2313        0.2671
-                       indVertFrac                       DMARD           1     -0.1808      0.0913        3.9243        0.0476
-                       indVertFrac                       NSAID           1      0.3001      0.0643       21.7668        <.0001
-                       indVertFrac                       TNF             1     -0.1608      0.0903        3.1698        0.0750
-                       indConductBlock                   DMARD           1      0.6221      0.1174       28.0650        <.0001
-                       indConductBlock                   NSAID           1      1.0621      0.0904      137.9743        <.0001
-                       indConductBlock                   TNF             1      0.7343      0.1150       40.7471        <.0001
+                       indAortInsuffRegurg               DMARD           1     -0.2314      0.1051        4.8456        0.0277
+                       indAortInsuffRegurg               NSAID           1      0.0382      0.0829        0.2127        0.6446
+                       indAortInsuffRegurg               No exposure     1     -1.4253      0.1184      144.9105        <.0001
+                       indApicalPulmFib                  DMARD           1      9.3956     59.9504        0.0246        0.8755
+                       indApicalPulmFib                  NSAID           1      8.8005     59.9491        0.0216        0.8833
+                       indApicalPulmFib                  No exposure     1      8.3102     59.9583        0.0192        0.8898
+                       indCaudaEquina                    DMARD           1      0.8869      0.6931        1.6376        0.2007
+                       indCaudaEquina                    NSAID           1      0.7968      0.6251        1.6247        0.2024
+                       indCaudaEquina                    No exposure     1      0.7383      0.6653        1.2313        0.2671
+                       indVertFrac                       DMARD           1     -0.0200      0.1047        0.0365        0.8485
+                       indVertFrac                       NSAID           1      0.4609      0.0826       31.1113        <.0001
+                       indVertFrac                       No exposure     1      0.1608      0.0903        3.1698        0.0750
+                       indConductBlock                   DMARD           1     -0.1121      0.1199        0.8750        0.3496
+                       indConductBlock                   NSAID           1      0.3278      0.0939       12.1848        0.0005
+                       indConductBlock                   No exposure     1     -0.7343      0.1150       40.7471        <.0001
                        indCrohnsDis                      DMARD           0           0                                        
                        indCrohnsDis                      NSAID           0           0                                        
-                       indCrohnsDis                      TNF             0           0                                        
-                       indHematCa                        DMARD           1      1.0865      0.1733       39.3269        <.0001
-                       indHematCa                        NSAID           1      1.0764      0.1502       51.3408        <.0001
-                       indHematCa                        TNF             1      0.0312      0.2167        0.0207        0.8856
-                       indHospInf                        DMARD           1      0.3223      0.0504       40.8910        <.0001
-                       indHospInf                        NSAID           1      0.4914      0.0399      151.6995        <.0001
-                       indHospInf                        TNF             1     -0.0272      0.0513        0.2820        0.5954
-                       indIgANeph                        DMARD           1      1.1449      0.5086        5.0685        0.0244
-                       indIgANeph                        NSAID           1      1.3509      0.4541        8.8492        0.0029
-                       indIgANeph                        TNF             1      1.3804      0.4766        8.3883        0.0038
-                       indInterstLungDis                 DMARD           1      0.8373      0.2397       12.2005        0.0005
-                       indInterstLungDis                 NSAID           1      0.2422      0.2259        1.1494        0.2837
-                       indInterstLungDis                 TNF             1      0.5627      0.2592        4.7134        0.0299
-                       indMI                             DMARD           1      0.0550      0.1709        0.1037        0.7474
-                       indMI                             NSAID           1      0.0935      0.1329        0.4952        0.4816
-                       indMI                             TNF             1      0.2406      0.1598        2.2666        0.1322
-                       indNephSyn                        DMARD           1      2.3759      1.0882        4.7673        0.0290
-                       indNephSyn                        NSAID           1      2.3058      1.0538        4.7877        0.0287
-                       indNephSyn                        TNF             1      2.1799      1.0824        4.0559        0.0440
-                       indNMSC                           DMARD           1      3.0536      0.4028       57.4578        <.0001
-                       indNMSC                           NSAID           1      3.5375      0.3865       83.7495        <.0001
-                       indNMSC                           TNF             1      3.4284      0.3958       75.0404        <.0001
-                       indNonVertOsFrac                  DMARD           1      1.0462      0.0996      110.2191        <.0001
-                       indNonVertOsFrac                  NSAID           1      1.4197      0.0838      287.1601        <.0001
-                       indNonVertOsFrac                  TNF             1      1.0239      0.0977      109.7916        <.0001
-                       indOppInf                         DMARD           1      2.0635      0.1851      124.2417        <.0001
-                       indOppInf                         NSAID           1      1.9014      0.1763      116.3755        <.0001
-                       indOppInf                         TNF             1      2.2699      0.1817      156.0379        <.0001
-                       indPsoriasis                      DMARD           1      1.3026      0.1228      112.5205        <.0001
-                       indPsoriasis                      NSAID           1      1.3475      0.1128      142.6869        <.0001
-                       indPsoriasis                      TNF             1      1.4738      0.1158      161.9185        <.0001
-                       indPSA                            DMARD           1      1.7702      0.0953      345.1391        <.0001
-                       indPSA                            NSAID           1      1.0663      0.0921      134.1665        <.0001
-                       indPSA                            TNF             1      2.0988      0.0893      552.6868        <.0001
-                       indRestrictLungDis                DMARD           1      1.4185      0.1310      117.2407        <.0001
-                       indRestrictLungDis                NSAID           1      1.3841      0.1185      136.3945        <.0001
-                       indRestrictLungDis                TNF             1      1.3614      0.1307      108.5780        <.0001
-                       indSolidCa                        DMARD           1      1.4857      0.0843      310.6528        <.0001
-                       indSolidCa                        NSAID           1      1.7679      0.0721      601.7486        <.0001
-                       indSolidCa                        TNF             1      1.2831      0.0855      225.0346        <.0001
-                       indSpinalCordComp                 DMARD           1      0.8719      0.2720       10.2714        0.0014
-                       indSpinalCordComp                 NSAID           1      1.1008      0.2280       23.3080        <.0001
-                       indSpinalCordComp                 TNF             1      0.5067      0.2868        3.1202        0.0773
-                       indUlcerColitis                   DMARD           1      1.4664      0.1194      150.7405        <.0001
-                       indUlcerColitis                   NSAID           1      0.9726      0.1126       74.6244        <.0001
-                       indUlcerColitis                   TNF             1      1.6172      0.1126      206.1000        <.0001
+                       indCrohnsDis                      No exposure     0           0                                        
+                       indHematCa                        DMARD           1      1.0554      0.2014       27.4493        <.0001
+                       indHematCa                        NSAID           1      1.0453      0.1822       32.8947        <.0001
+                       indHematCa                        No exposure     1     -0.0312      0.2167        0.0207        0.8856
+                       indHospInf                        DMARD           1      0.3496      0.0542       41.6198        <.0001
+                       indHospInf                        NSAID           1      0.5186      0.0450      132.5246        <.0001
+                       indHospInf                        No exposure     1      0.0272      0.0513        0.2820        0.5954
+                       indIgANeph                        DMARD           1     -0.2355      0.3539        0.4427        0.5058
+                       indIgANeph                        NSAID           1     -0.0295      0.2703        0.0119        0.9130
+                       indIgANeph                        No exposure     1     -1.3804      0.4766        8.3883        0.0038
+                       indInterstLungDis                 DMARD           1      0.2746      0.2113        1.6900        0.1936
+                       indInterstLungDis                 NSAID           1     -0.3204      0.1956        2.6836        0.1014
+                       indInterstLungDis                 No exposure     1     -0.5627      0.2592        4.7134        0.0299
+                       indMI                             DMARD           1     -0.1856      0.1779        1.0878        0.2970
+                       indMI                             NSAID           1     -0.1471      0.1428        1.0603        0.3031
+                       indMI                             No exposure     1     -0.2406      0.1598        2.2666        0.1322
+                       indNephSyn                        DMARD           1      0.1959      0.4864        0.1623        0.6870
+                       indNephSyn                        NSAID           1      0.1259      0.4172        0.0911        0.7628
+                       indNephSyn                        No exposure     1     -2.1799      1.0824        4.0559        0.0440
+                       indNMSC                           DMARD           1     -0.3748      0.1684        4.9552        0.0260
+                       indNMSC                           NSAID           1      0.1091      0.1257        0.7535        0.3854
+                       indNMSC                           No exposure     1     -3.4284      0.3958       75.0404        <.0001
+                       indNonVertOsFrac                  DMARD           1      0.0223      0.0875        0.0649        0.7989
+                       indNonVertOsFrac                  NSAID           1      0.3958      0.0696       32.3623        <.0001
+                       indNonVertOsFrac                  No exposure     1     -1.0239      0.0977      109.7916        <.0001
+                       indOppInf                         DMARD           1     -0.2064      0.1019        4.1026        0.0428
+                       indOppInf                         NSAID           1     -0.3685      0.0857       18.5069        <.0001
+                       indOppInf                         No exposure     1     -2.2699      0.1817      156.0379        <.0001
+                       indPsoriasis                      DMARD           1     -0.1711      0.0816        4.4024        0.0359
+                       indPsoriasis                      NSAID           1     -0.1262      0.0685        3.3988        0.0652
+                       indPsoriasis                      No exposure     1     -1.4738      0.1158      161.9185        <.0001
+                       indPSA                            DMARD           1     -0.3286      0.0644       26.0606        <.0001
+                       indPSA                            NSAID           1     -1.0325      0.0588      307.9800        <.0001
+                       indPSA                            No exposure     1     -2.0988      0.0893      552.6868        <.0001
+                       indRestrictLungDis                DMARD           1      0.0570      0.1013        0.3170        0.5734
+                       indRestrictLungDis                NSAID           1      0.0227      0.0851        0.0711        0.7897
+                       indRestrictLungDis                No exposure     1     -1.3614      0.1307      108.5780        <.0001
+                       indSolidCa                        DMARD           1      0.2026      0.0751        7.2820        0.0070
+                       indSolidCa                        NSAID           1      0.4847      0.0616       61.9031        <.0001
+                       indSolidCa                        No exposure     1     -1.2831      0.0855      225.0346        <.0001
+                       indSpinalCordComp                 DMARD           1      0.3652      0.2686        1.8481        0.1740
+                       indSpinalCordComp                 NSAID           1      0.5941      0.2251        6.9664        0.0083
+                       indSpinalCordComp                 No exposure     1     -0.5067      0.2868        3.1202        0.0773
+                       indUlcerColitis                   DMARD           1     -0.1508      0.0860        3.0742        0.0795
+                       indUlcerColitis                   NSAID           1     -0.6446      0.0758       72.2268        <.0001
+                       indUlcerColitis                   No exposure     1     -1.6172      0.1126      206.1000        <.0001
  
                                                                modelPropensityScore.sas
-                                                                  --- AS project ---                               15:16 Friday, November 17, 2017   5
+                                                                  --- AS project ---                               16:25 Monday, November 20, 2017   5
 
                                                                 The LOGISTIC Procedure
 
@@ -585,21 +585,21 @@ NOTE: The following parameters have been set to 0, since the variables are a lin
                                                                                           Standard          Wald
                        Parameter                         exposure4      DF    Estimate       Error    Chi-Square    Pr > ChiSq
 
-                       indUveitis                        DMARD           1      1.7289      0.0922      351.9794        <.0001
-                       indUveitis                        NSAID           1      1.6743      0.0839      398.5931        <.0001
-                       indUveitis                        TNF             1      1.8947      0.0850      496.3426        <.0001
-                       indDiabetes                       DMARD           1     -0.0290      0.0325        0.7949        0.3726
-                       indDiabetes                       NSAID           1     0.00948      0.0251        0.1427        0.7056
-                       indDiabetes                       TNF             1     -0.0733      0.0305        5.8002        0.0160
-                       indHT                             DMARD           1      0.2771      0.0368       56.6026        <.0001
-                       indHT                             NSAID           1      0.2338      0.0284       67.6830        <.0001
-                       indHT                             TNF             1      0.2384      0.0310       59.1102        <.0001
-                       indMetabSyn                       DMARD           1      0.2353      0.0990        5.6495        0.0175
-                       indMetabSyn                       NSAID           1      0.1915      0.0807        5.6264        0.0177
-                       indMetabSyn                       TNF             1      0.2721      0.0909        8.9669        0.0027
-                       indNAFattyLiverDis                DMARD           1      0.0648      0.0754        0.7387        0.3901
-                       indNAFattyLiverDis                NSAID           1      0.1122      0.0595        3.5515        0.0595
-                       indNAFattyLiverDis                TNF             1      0.2991      0.0659       20.6295        <.0001
+                       indUveitis                        DMARD           1     -0.1658      0.0620        7.1411        0.0075
+                       indUveitis                        NSAID           1     -0.2204      0.0490       20.2242        <.0001
+                       indUveitis                        No exposure     1     -1.8947      0.0850      496.3426        <.0001
+                       indDiabetes                       DMARD           1      0.0443      0.0363        1.4943        0.2215
+                       indDiabetes                       NSAID           1      0.0828      0.0300        7.6450        0.0057
+                       indDiabetes                       No exposure     1      0.0733      0.0305        5.8002        0.0160
+                       indHT                             DMARD           1      0.0387      0.0384        1.0191        0.3127
+                       indHT                             NSAID           1    -0.00462      0.0306        0.0228        0.8799
+                       indHT                             No exposure     1     -0.2384      0.0310       59.1102        <.0001
+                       indMetabSyn                       DMARD           1     -0.0368      0.1005        0.1345        0.7138
+                       indMetabSyn                       NSAID           1     -0.0807      0.0832        0.9397        0.3323
+                       indMetabSyn                       No exposure     1     -0.2721      0.0909        8.9669        0.0027
+                       indNAFattyLiverDis                DMARD           1     -0.2343      0.0759        9.5257        0.0020
+                       indNAFattyLiverDis                NSAID           1     -0.1869      0.0606        9.5215        0.0020
+                       indNAFattyLiverDis                No exposure     1     -0.2991      0.0659       20.6295        <.0001
 
 
                                                                 Odds Ratio Estimates
@@ -607,50 +607,50 @@ NOTE: The following parameters have been set to 0, since the variables are a lin
                                                                                             Point          95% Wald
                             Effect                                        exposure4      Estimate      Confidence Limits
 
-                            database            MPCD       vs Medicare    DMARD             0.626       0.558       0.702
-                            database            MPCD       vs Medicare    NSAID             0.530       0.484       0.579
-                            database            MPCD       vs Medicare    TNF               1.004       0.918       1.099
-                            database            Marketscan vs Medicare    DMARD             0.720       0.671       0.773
-                            database            Marketscan vs Medicare    NSAID             0.711       0.673       0.750
-                            database            Marketscan vs Medicare    TNF               1.292       1.219       1.370
-                            age                                           DMARD             0.968       0.966       0.970
-                            age                                           NSAID             0.965       0.964       0.967
-                            age                                           TNF               0.948       0.947       0.950
-                            SEX                 F vs M                    DMARD             1.943       1.840       2.052
-                            SEX                 F vs M                    NSAID             1.415       1.356       1.476
-                            SEX                 F vs M                    TNF               1.347       1.284       1.413
-                            indAmyloidosis                                DMARD             1.198       0.100      14.371
-                            indAmyloidosis                                NSAID             2.168       0.255      18.429
-                            indAmyloidosis                                TNF               2.837       0.313      25.709
-                            indAortInsuffRegurg                           DMARD             3.300       2.595       4.196
-                            indAortInsuffRegurg                           NSAID             4.321       3.525       5.297
-                            indAortInsuffRegurg                           TNF               4.159       3.298       5.245
-                            indApicalPulmFib                              DMARD             2.960       0.204      42.874
-                            indApicalPulmFib                              NSAID             1.633       0.127      20.983
-                            indApicalPulmFib                              TNF              <0.001      <0.001    >999.999
-                            indCaudaEquina                                DMARD             1.160       0.433       3.112
-                            indCaudaEquina                                NSAID             1.060       0.476       2.360
-                            indCaudaEquina                                TNF               0.478       0.130       1.761
-                            indVertFrac                                   DMARD             0.835       0.698       0.998
-                            indVertFrac                                   NSAID             1.350       1.190       1.531
-                            indVertFrac                                   TNF               0.851       0.713       1.016
-                            indConductBlock                               DMARD             1.863       1.480       2.345
-                            indConductBlock                               NSAID             2.892       2.423       3.453
-                            indConductBlock                               TNF               2.084       1.663       2.611
-                            indHematCa                                    DMARD             2.964       2.111       4.162
-                            indHematCa                                    NSAID             2.934       2.186       3.939
-                            indHematCa                                    TNF               1.032       0.675       1.578
-                            indHospInf                                    DMARD             1.380       1.250       1.524
-                            indHospInf                                    NSAID             1.635       1.512       1.767
-                            indHospInf                                    TNF               0.973       0.880       1.076
-                            indIgANeph                                    DMARD             3.142       1.160       8.514
-                            indIgANeph                                    NSAID             3.861       1.585       9.402
-                            indIgANeph                                    TNF               3.977       1.562      10.120
-                            indInterstLungDis                             DMARD             2.310       1.444       3.696
-                            indInterstLungDis                             NSAID             1.274       0.818       1.984
+                            database            MPCD       vs Medicare    DMARD             0.623       0.554       0.701
+                            database            MPCD       vs Medicare    NSAID             0.527       0.480       0.580
+                            database            MPCD       vs Medicare    No exposure       0.996       0.910       1.090
+                            database            Marketscan vs Medicare    DMARD             0.557       0.518       0.599
+                            database            Marketscan vs Medicare    NSAID             0.550       0.519       0.582
+                            database            Marketscan vs Medicare    No exposure       0.774       0.730       0.821
+                            age                                           DMARD             1.020       1.018       1.023
+                            age                                           NSAID             1.018       1.016       1.020
+                            age                                           No exposure       1.054       1.052       1.056
+                            SEX                 F vs M                    DMARD             1.443       1.362       1.529
+                            SEX                 F vs M                    NSAID             1.050       1.002       1.101
+                            SEX                 F vs M                    No exposure       0.742       0.708       0.779
+                            indAmyloidosis                                DMARD             0.422       0.085       2.099
+                            indAmyloidosis                                NSAID             0.764       0.274       2.132
+                            indAmyloidosis                                No exposure       0.352       0.039       3.194
+                            indAortInsuffRegurg                           DMARD             0.793       0.646       0.975
+                            indAortInsuffRegurg                           NSAID             1.039       0.883       1.222
+                            indAortInsuffRegurg                           No exposure       0.240       0.191       0.303
+                            indApicalPulmFib                              DMARD          >999.999      <0.001    >999.999
+                            indApicalPulmFib                              NSAID          >999.999      <0.001    >999.999
+                            indApicalPulmFib                              No exposure    >999.999      <0.001    >999.999
+                            indCaudaEquina                                DMARD             2.428       0.624       9.443
+                            indCaudaEquina                                NSAID             2.218       0.652       7.553
+                            indCaudaEquina                                No exposure       2.092       0.568       7.708
+                            indVertFrac                                   DMARD             0.980       0.798       1.203
+                            indVertFrac                                   NSAID             1.586       1.348       1.864
+                            indVertFrac                                   No exposure       1.174       0.984       1.402
+                            indConductBlock                               DMARD             0.894       0.707       1.131
+                            indConductBlock                               NSAID             1.388       1.155       1.668
+                            indConductBlock                               No exposure       0.480       0.383       0.601
+                            indHematCa                                    DMARD             2.873       1.936       4.264
+                            indHematCa                                    NSAID             2.844       1.990       4.065
+                            indHematCa                                    No exposure       0.969       0.634       1.482
+                            indHospInf                                    DMARD             1.418       1.276       1.577
+                            indHospInf                                    NSAID             1.680       1.538       1.835
+                            indHospInf                                    No exposure       1.028       0.929       1.136
+                            indIgANeph                                    DMARD             0.790       0.395       1.581
+                            indIgANeph                                    NSAID             0.971       0.572       1.649
+                            indIgANeph                                    No exposure       0.251       0.099       0.640
+                            indInterstLungDis                             DMARD             1.316       0.870       1.991
+                            indInterstLungDis                             NSAID             0.726       0.495       1.065
  
                                                                modelPropensityScore.sas
-                                                                  --- AS project ---                               15:16 Friday, November 17, 2017   6
+                                                                  --- AS project ---                               16:25 Monday, November 20, 2017   6
 
                                                                 The LOGISTIC Procedure
 
@@ -659,55 +659,55 @@ NOTE: The following parameters have been set to 0, since the variables are a lin
                                                                                             Point          95% Wald
                             Effect                                        exposure4      Estimate      Confidence Limits
 
-                            indInterstLungDis                             TNF               1.755       1.056       2.917
-                            indMI                                         DMARD             1.057       0.756       1.477
-                            indMI                                         NSAID             1.098       0.846       1.425
-                            indMI                                         TNF               1.272       0.930       1.740
-                            indNephSyn                                    DMARD            10.761       1.275      90.796
-                            indNephSyn                                    NSAID            10.033       1.272      79.146
-                            indNephSyn                                    TNF               8.846       1.060      73.809
-                            indNMSC                                       DMARD            21.191       9.622      46.672
-                            indNMSC                                       NSAID            34.380      16.117      73.339
-                            indNMSC                                       TNF              30.826      14.192      66.957
-                            indNonVertOsFrac                              DMARD             2.847       2.342       3.461
-                            indNonVertOsFrac                              NSAID             4.136       3.509       4.874
-                            indNonVertOsFrac                              TNF               2.784       2.299       3.372
-                            indOppInf                                     DMARD             7.873       5.477      11.317
-                            indOppInf                                     NSAID             6.696       4.740       9.458
-                            indOppInf                                     TNF               9.679       6.779      13.820
-                            indPsoriasis                                  DMARD             3.679       2.892       4.680
-                            indPsoriasis                                  NSAID             3.848       3.085       4.800
-                            indPsoriasis                                  TNF               4.366       3.479       5.478
-                            indPSA                                        DMARD             5.872       4.872       7.078
-                            indPSA                                        NSAID             2.905       2.425       3.479
-                            indPSA                                        TNF               8.157       6.847       9.716
-                            indRestrictLungDis                            DMARD             4.131       3.195       5.340
-                            indRestrictLungDis                            NSAID             3.991       3.164       5.035
-                            indRestrictLungDis                            TNF               3.902       3.020       5.040
-                            indSolidCa                                    DMARD             4.418       3.745       5.212
-                            indSolidCa                                    NSAID             5.858       5.087       6.747
-                            indSolidCa                                    TNF               3.608       3.051       4.266
-                            indSpinalCordComp                             DMARD             2.391       1.403       4.076
-                            indSpinalCordComp                             NSAID             3.007       1.923       4.701
-                            indSpinalCordComp                             TNF               1.660       0.946       2.912
-                            indUlcerColitis                               DMARD             4.333       3.429       5.476
-                            indUlcerColitis                               NSAID             2.645       2.121       3.298
-                            indUlcerColitis                               TNF               5.039       4.041       6.284
-                            indUveitis                                    DMARD             5.635       4.704       6.750
-                            indUveitis                                    NSAID             5.335       4.526       6.288
-                            indUveitis                                    TNF               6.651       5.629       7.857
-                            indDiabetes                                   DMARD             0.971       0.911       1.035
-                            indDiabetes                                   NSAID             1.010       0.961       1.060
-                            indDiabetes                                   TNF               0.929       0.875       0.986
-                            indHT                                         DMARD             1.319       1.227       1.418
-                            indHT                                         NSAID             1.263       1.195       1.336
-                            indHT                                         TNF               1.269       1.194       1.349
-                            indMetabSyn                                   DMARD             1.265       1.042       1.536
-                            indMetabSyn                                   NSAID             1.211       1.034       1.419
-                            indMetabSyn                                   TNF               1.313       1.099       1.569
-                            indNAFattyLiverDis                            DMARD             1.067       0.920       1.237
-                            indNAFattyLiverDis                            NSAID             1.119       0.996       1.257
-                            indNAFattyLiverDis                            TNF               1.349       1.185       1.534
+                            indInterstLungDis                             No exposure       0.570       0.343       0.947
+                            indMI                                         DMARD             0.831       0.586       1.177
+                            indMI                                         NSAID             0.863       0.652       1.142
+                            indMI                                         No exposure       0.786       0.575       1.075
+                            indNephSyn                                    DMARD             1.216       0.469       3.156
+                            indNephSyn                                    NSAID             1.134       0.501       2.569
+                            indNephSyn                                    No exposure       0.113       0.014       0.943
+                            indNMSC                                       DMARD             0.687       0.494       0.956
+                            indNMSC                                       NSAID             1.115       0.872       1.427
+                            indNMSC                                       No exposure       0.032       0.015       0.070
+                            indNonVertOsFrac                              DMARD             1.023       0.861       1.214
+                            indNonVertOsFrac                              NSAID             1.486       1.296       1.703
+                            indNonVertOsFrac                              No exposure       0.359       0.297       0.435
+                            indOppInf                                     DMARD             0.813       0.666       0.993
+                            indOppInf                                     NSAID             0.692       0.585       0.818
+                            indOppInf                                     No exposure       0.103       0.072       0.148
+                            indPsoriasis                                  DMARD             0.843       0.718       0.989
+                            indPsoriasis                                  NSAID             0.881       0.771       1.008
+                            indPsoriasis                                  No exposure       0.229       0.183       0.287
+                            indPSA                                        DMARD             0.720       0.635       0.817
+                            indPSA                                        NSAID             0.356       0.317       0.400
+                            indPSA                                        No exposure       0.123       0.103       0.146
+                            indRestrictLungDis                            DMARD             1.059       0.868       1.291
+                            indRestrictLungDis                            NSAID             1.023       0.866       1.209
+                            indRestrictLungDis                            No exposure       0.256       0.198       0.331
+                            indSolidCa                                    DMARD             1.225       1.057       1.419
+                            indSolidCa                                    NSAID             1.624       1.439       1.832
+                            indSolidCa                                    No exposure       0.277       0.234       0.328
+                            indSpinalCordComp                             DMARD             1.441       0.851       2.439
+                            indSpinalCordComp                             NSAID             1.811       1.165       2.816
+                            indSpinalCordComp                             No exposure       0.602       0.343       1.057
+                            indUlcerColitis                               DMARD             0.860       0.727       1.018
+                            indUlcerColitis                               NSAID             0.525       0.452       0.609
+                            indUlcerColitis                               No exposure       0.198       0.159       0.247
+                            indUveitis                                    DMARD             0.847       0.750       0.957
+                            indUveitis                                    NSAID             0.802       0.729       0.883
+                            indUveitis                                    No exposure       0.150       0.127       0.178
+                            indDiabetes                                   DMARD             1.045       0.974       1.122
+                            indDiabetes                                   NSAID             1.086       1.024       1.152
+                            indDiabetes                                   No exposure       1.076       1.014       1.142
+                            indHT                                         DMARD             1.039       0.964       1.121
+                            indHT                                         NSAID             0.995       0.937       1.057
+                            indHT                                         No exposure       0.788       0.741       0.837
+                            indMetabSyn                                   DMARD             0.964       0.792       1.174
+                            indMetabSyn                                   NSAID             0.923       0.784       1.086
+                            indMetabSyn                                   No exposure       0.762       0.637       0.910
+                            indNAFattyLiverDis                            DMARD             0.791       0.682       0.918
+                            indNAFattyLiverDis                            NSAID             0.830       0.737       0.934
+                            indNAFattyLiverDis                            No exposure       0.741       0.652       0.844
  
  
  
@@ -729,8 +729,8 @@ NOTE: The data set WORK.PSBETAS4LEVEL has 1 observations and 102 variables.
 NOTE: The data set WORK.PS4LEVEL has 240040 observations and 37 variables.
 NOTE: The PROCEDURE LOGISTIC printed pages 2-6.
 NOTE: PROCEDURE LOGISTIC used (Total process time):
-      real time           20.45 seconds
-      cpu time            19.74 seconds
+      real time           24.95 seconds
+      cpu time            24.74 seconds
       
 
 284        
@@ -738,10 +738,10 @@ NOTE: PROCEDURE LOGISTIC used (Total process time):
 286        Fit 3-level model
 287        3 levels of treatment exposure: TNF, DMARD, NSAID or no exposure
 288         */
-5                                                                   The SAS System                                     15:16 Friday, November 17, 2017
+5                                                                   The SAS System                                     16:25 Monday, November 20, 2017
 
 289         proc logistic data = Work.allCovariates outest = Work.psBetas3Level;
-290          class exposure3 (ref = "NSAID or no exposure")
+290          class exposure3 (ref = "TNF")
 291                database (ref = "Medicare")
 292                sex (ref = "M")
 293                / param = ref;
@@ -779,7 +779,7 @@ NOTE: PROCEDURE LOGISTIC used (Total process time):
 325          output out = Work.ps3Level predicted = ps xbeta = xbeta;
 326        run;
 
-                                                                  --- AS project ---                               15:16 Friday, November 17, 2017   7
+                                                                  --- AS project ---                               16:25 Monday, November 20, 2017   7
 
                                                                 The LOGISTIC Procedure
 
@@ -805,11 +805,11 @@ NOTE: PROCEDURE LOGISTIC used (Total process time):
                                                           2     NSAID or no exposure         39304
                                                           3     TNF                          12986
 
-                                    Logits modeled use exposure3='NSAID or no exposure' as the reference category.
+                                            Logits modeled use exposure3='TNF' as the reference category.
 
 NOTE: 1 observation was deleted due to missing values for the response or explanatory variables.
 NOTE: PROC LOGISTIC is fitting the generalized logit model. The logits modeled contrast each response category against the reference category 
-      (exposure3='NSAID or no exposure').
+      (exposure3='TNF').
 
 
                                                                Class Level Information
@@ -856,7 +856,7 @@ NOTE: Convergence criterion (GCONV=1E-8) satisfied.
  
  
                                                                modelPropensityScore.sas
-                                                                  --- AS project ---                               15:16 Friday, November 17, 2017   8
+                                                                  --- AS project ---                               16:25 Monday, November 20, 2017   8
 
                                                                 The LOGISTIC Procedure
 
@@ -900,8 +900,8 @@ NOTE: Convergence criterion (GCONV=1E-8) satisfied.
 NOTE: The following parameters have been set to 0, since the variables are a linear combination of other variables as shown.
 
 
-                                                               indCrohnsDis_DMARD =  0
-                                                                 indCrohnsDis_TNF =  0
+                                                                      indCrohnsDis_DMARD =  0
+                                                        indCrohnsDis_NSAID_or_no_exposur =  0
 
 
                                                        Analysis of Maximum Likelihood Estimates
@@ -909,28 +909,28 @@ NOTE: The following parameters have been set to 0, since the variables are a lin
                                                                                                Standard          Wald
                    Parameter                         exposure3               DF    Estimate       Error    Chi-Square    Pr > ChiSq
 
-                   Intercept                         DMARD                    1     -1.2209      0.0580      443.0164        <.0001
-                   Intercept                         TNF                      1      0.3016      0.0464       42.3215        <.0001
-                   database            MPCD          DMARD                    1     -0.1618      0.0549        8.7011        0.0032
-                   database            MPCD          TNF                      1      0.3196      0.0407       61.7622        <.0001
-                   database            Marketscan    DMARD                    1     -0.1464      0.0331       19.5363        <.0001
-                   database            Marketscan    TNF                      1      0.4409      0.0260      287.4165        <.0001
-                   age                               DMARD                    1     -0.0141    0.000955      218.6102        <.0001
-                   age                               TNF                      1     -0.0343    0.000819     1753.3715        <.0001
-                   SEX                 F             DMARD                    1      0.4875      0.0254      368.0765        <.0001
-                   SEX                 F             TNF                      1      0.1176      0.0215       29.9191        <.0001
-                   indAmyloidosis                    DMARD                    1     -0.4735      0.7856        0.3632        0.5467
-                   indAmyloidosis                    TNF                      1      0.3832      0.5247        0.5332        0.4653
-                   indAortInsuffRegurg               DMARD                    1      0.1283      0.0884        2.1082        0.1465
-                   indAortInsuffRegurg               TNF                      1      0.3520      0.0827       18.1313        <.0001
-                   indApicalPulmFib                  DMARD                    1      0.6266      0.8921        0.4933        0.4825
-                   indApicalPulmFib                  TNF                      1     -8.6755     56.7988        0.0233        0.8786
-                   indCaudaEquina                    DMARD                    1      0.0866      0.4239        0.0418        0.8380
-                   indCaudaEquina                    TNF                      1     -0.7929      0.6095        1.6927        0.1933
-                   indVertFrac                       DMARD                    1     -0.3893      0.0816       22.7836        <.0001
+                   Intercept                         DMARD                    1     -1.5225      0.0651      546.5862        <.0001
+                   Intercept                         NSAID or no exposure     1     -0.3016      0.0464       42.3215        <.0001
+                   database            MPCD          DMARD                    1     -0.4815      0.0602       64.0655        <.0001
+                   database            MPCD          NSAID or no exposure     1     -0.3196      0.0407       61.7622        <.0001
+                   database            Marketscan    DMARD                    1     -0.5874      0.0371      250.0572        <.0001
+                   database            Marketscan    NSAID or no exposure     1     -0.4409      0.0260      287.4165        <.0001
+                   age                               DMARD                    1      0.0202     0.00111      327.9307        <.0001
+                   age                               NSAID or no exposure     1      0.0343    0.000819     1753.3715        <.0001
+                   SEX                 F             DMARD                    1      0.3699      0.0295      157.2651        <.0001
+                   SEX                 F             NSAID or no exposure     1     -0.1176      0.0215       29.9191        <.0001
+                   indAmyloidosis                    DMARD                    1     -0.8566      0.8189        1.0942        0.2956
+                   indAmyloidosis                    NSAID or no exposure     1     -0.3832      0.5247        0.5332        0.4653
+                   indAortInsuffRegurg               DMARD                    1     -0.2236      0.1060        4.4532        0.0348
+                   indAortInsuffRegurg               NSAID or no exposure     1     -0.3520      0.0827       18.1313        <.0001
+                   indApicalPulmFib                  DMARD                    1      9.3021     56.8004        0.0268        0.8699
+                   indApicalPulmFib                  NSAID or no exposure     1      8.6755     56.7988        0.0233        0.8786
+                   indCaudaEquina                    DMARD                    1      0.8796      0.6931        1.6106        0.2044
+                   indCaudaEquina                    NSAID or no exposure     1      0.7929      0.6095        1.6927        0.1933
+                   indVertFrac                       DMARD                    1     -0.0102      0.1052        0.0093        0.9231
  
                                                                modelPropensityScore.sas
-                                                                  --- AS project ---                               15:16 Friday, November 17, 2017   9
+                                                                  --- AS project ---                               16:25 Monday, November 20, 2017   9
 
                                                                 The LOGISTIC Procedure
 
@@ -939,51 +939,51 @@ NOTE: The following parameters have been set to 0, since the variables are a lin
                                                                                                Standard          Wald
                    Parameter                         exposure3               DF    Estimate       Error    Chi-Square    Pr > ChiSq
 
-                   indVertFrac                       TNF                      1     -0.3792      0.0808       22.0035        <.0001
-                   indConductBlock                   DMARD                    1     -0.1037      0.0957        1.1743        0.2785
-                   indConductBlock                   TNF                      1     0.00279      0.0932        0.0009        0.9762
+                   indVertFrac                       NSAID or no exposure     1      0.3792      0.0808       22.0035        <.0001
+                   indConductBlock                   DMARD                    1     -0.1065      0.1207        0.7792        0.3774
+                   indConductBlock                   NSAID or no exposure     1    -0.00279      0.0932        0.0009        0.9762
                    indCrohnsDis                      DMARD                    0           0                                        
-                   indCrohnsDis                      TNF                      0           0                                        
-                   indHematCa                        DMARD                    1      0.3079      0.1277        5.8145        0.0159
-                   indHematCa                        TNF                      1     -0.7905      0.1842       18.4231        <.0001
-                   indHospInf                        DMARD                    1     0.00758      0.0432        0.0308        0.8606
-                   indHospInf                        TNF                      1     -0.3598      0.0440       66.9928        <.0001
-                   indIgANeph                        DMARD                    1      0.0145      0.3188        0.0021        0.9638
-                   indIgANeph                        TNF                      1      0.2828      0.2658        1.1316        0.2874
-                   indInterstLungDis                 DMARD                    1      0.6180      0.1644       14.1385        0.0002
-                   indInterstLungDis                 TNF                      1      0.3356      0.1923        3.0472        0.0809
-                   indMI                             DMARD                    1     0.00999      0.1472        0.0046        0.9459
-                   indMI                             TNF                      1      0.1999      0.1353        2.1829        0.1396
-                   indNephSyn                        DMARD                    1      0.3585      0.4545        0.6220        0.4303
-                   indNephSyn                        TNF                      1      0.1149      0.4329        0.0704        0.7907
-                   indNMSC                           DMARD                    1      0.0469      0.1460        0.1031        0.7481
-                   indNMSC                           TNF                      1      0.4522      0.1270       12.6798        0.0004
-                   indNonVertOsFrac                  DMARD                    1    -0.00870      0.0721        0.0146        0.9040
-                   indNonVertOsFrac                  TNF                      1     -0.0370      0.0695        0.2825        0.5951
-                   indOppInf                         DMARD                    1      0.4968      0.0923       28.9851        <.0001
-                   indOppInf                         TNF                      1      0.7090      0.0855       68.7025        <.0001
-                   indPsoriasis                      DMARD                    1      0.2506      0.0787       10.1476        0.0014
-                   indPsoriasis                      TNF                      1      0.4213      0.0668       39.7941        <.0001
-                   indPSA                            DMARD                    1      1.0458      0.0643      264.5476        <.0001
-                   indPSA                            TNF                      1      1.3773      0.0549      629.6275        <.0001
-                   indRestrictLungDis                DMARD                    1      0.3380      0.0851       15.7660        <.0001
-                   indRestrictLungDis                TNF                      1      0.2894      0.0846       11.7092        0.0006
-                   indSolidCa                        DMARD                    1      0.2323      0.0599       15.0476        0.0001
-                   indSolidCa                        TNF                      1      0.0193      0.0616        0.0979        0.7543
-                   indSpinalCordComp                 DMARD                    1      0.0319      0.2011        0.0252        0.8738
-                   indSpinalCordComp                 TNF                      1     -0.3097      0.2222        1.9423        0.1634
-                   indUlcerColitis                   DMARD                    1      0.7782      0.0821       89.8330        <.0001
-                   indUlcerColitis                   TNF                      1      0.9316      0.0719      167.7016        <.0001
-                   indUveitis                        DMARD                    1      0.5117      0.0591       74.9747        <.0001
-                   indUveitis                        TNF                      1      0.6877      0.0473      210.9610        <.0001
-                   indDiabetes                       DMARD                    1     -0.0375      0.0298        1.5898        0.2074
-                   indDiabetes                       TNF                      1     -0.0822      0.0274        8.9626        0.0028
-                   indHT                             DMARD                    1      0.1554      0.0338       21.1512        <.0001
-                   indHT                             TNF                      1      0.1151      0.0272       17.8552        <.0001
-                   indMetabSyn                       DMARD                    1      0.1141      0.0865        1.7405        0.1871
-                   indMetabSyn                       TNF                      1      0.1506      0.0771        3.8123        0.0509
-                   indNAFattyLiverDis                DMARD                    1     -0.0138      0.0668        0.0429        0.8359
-                   indNAFattyLiverDis                TNF                      1      0.2222      0.0558       15.8822        <.0001
+                   indCrohnsDis                      NSAID or no exposure     0           0                                        
+                   indHematCa                        DMARD                    1      1.0985      0.2035       29.1404        <.0001
+                   indHematCa                        NSAID or no exposure     1      0.7905      0.1842       18.4231        <.0001
+                   indHospInf                        DMARD                    1      0.3674      0.0547       45.0768        <.0001
+                   indHospInf                        NSAID or no exposure     1      0.3598      0.0440       66.9928        <.0001
+                   indIgANeph                        DMARD                    1     -0.2683      0.3549        0.5715        0.4497
+                   indIgANeph                        NSAID or no exposure     1     -0.2828      0.2658        1.1316        0.2874
+                   indInterstLungDis                 DMARD                    1      0.2824      0.2121        1.7724        0.1831
+                   indInterstLungDis                 NSAID or no exposure     1     -0.3356      0.1923        3.0472        0.0809
+                   indMI                             DMARD                    1     -0.1900      0.1782        1.1369        0.2863
+                   indMI                             NSAID or no exposure     1     -0.1999      0.1353        2.1829        0.1396
+                   indNephSyn                        DMARD                    1      0.2436      0.4876        0.2495        0.6174
+                   indNephSyn                        NSAID or no exposure     1     -0.1149      0.4329        0.0704        0.7907
+                   indNMSC                           DMARD                    1     -0.4053      0.1694        5.7241        0.0167
+                   indNMSC                           NSAID or no exposure     1     -0.4522      0.1270       12.6798        0.0004
+                   indNonVertOsFrac                  DMARD                    1      0.0282      0.0882        0.1026        0.7488
+                   indNonVertOsFrac                  NSAID or no exposure     1      0.0370      0.0695        0.2825        0.5951
+                   indOppInf                         DMARD                    1     -0.2122      0.1028        4.2650        0.0389
+                   indOppInf                         NSAID or no exposure     1     -0.7090      0.0855       68.7025        <.0001
+                   indPsoriasis                      DMARD                    1     -0.1707      0.0826        4.2747        0.0387
+                   indPsoriasis                      NSAID or no exposure     1     -0.4213      0.0668       39.7941        <.0001
+                   indPSA                            DMARD                    1     -0.3315      0.0650       25.9691        <.0001
+                   indPSA                            NSAID or no exposure     1     -1.3773      0.0549      629.6275        <.0001
+                   indRestrictLungDis                DMARD                    1      0.0486      0.1024        0.2251        0.6352
+                   indRestrictLungDis                NSAID or no exposure     1     -0.2894      0.0846       11.7092        0.0006
+                   indSolidCa                        DMARD                    1      0.2130      0.0759        7.8749        0.0050
+                   indSolidCa                        NSAID or no exposure     1     -0.0193      0.0616        0.0979        0.7543
+                   indSpinalCordComp                 DMARD                    1      0.3416      0.2691        1.6114        0.2043
+                   indSpinalCordComp                 NSAID or no exposure     1      0.3097      0.2222        1.9423        0.1634
+                   indUlcerColitis                   DMARD                    1     -0.1534      0.0863        3.1573        0.0756
+                   indUlcerColitis                   NSAID or no exposure     1     -0.9316      0.0719      167.7016        <.0001
+                   indUveitis                        DMARD                    1     -0.1760      0.0623        7.9880        0.0047
+                   indUveitis                        NSAID or no exposure     1     -0.6877      0.0473      210.9610        <.0001
+                   indDiabetes                       DMARD                    1      0.0446      0.0363        1.5138        0.2186
+                   indDiabetes                       NSAID or no exposure     1      0.0822      0.0274        8.9626        0.0028
+                   indHT                             DMARD                    1      0.0403      0.0383        1.1068        0.2928
+                   indHT                             NSAID or no exposure     1     -0.1151      0.0272       17.8552        <.0001
+                   indMetabSyn                       DMARD                    1     -0.0365      0.1005        0.1315        0.7169
+                   indMetabSyn                       NSAID or no exposure     1     -0.1506      0.0771        3.8123        0.0509
+                   indNAFattyLiverDis                DMARD                    1     -0.2361      0.0760        9.6475        0.0019
+                   indNAFattyLiverDis                NSAID or no exposure     1     -0.2222      0.0558       15.8822        <.0001
 
 
                                                                  Odds Ratio Estimates
@@ -991,20 +991,20 @@ NOTE: The following parameters have been set to 0, since the variables are a lin
                                                                                                  Point          95% Wald
                         Effect                                        exposure3               Estimate      Confidence Limits
 
-                        database            MPCD       vs Medicare    DMARD                      0.851       0.764       0.947
-                        database            MPCD       vs Medicare    TNF                        1.377       1.271       1.491
-                        database            Marketscan vs Medicare    DMARD                      0.864       0.809       0.922
-                        database            Marketscan vs Medicare    TNF                        1.554       1.477       1.635
-                        age                                           DMARD                      0.986       0.984       0.988
-                        age                                           TNF                        0.966       0.965       0.968
-                        SEX                 F vs M                    DMARD                      1.628       1.549       1.711
-                        SEX                 F vs M                    TNF                        1.125       1.078       1.173
-                        indAmyloidosis                                DMARD                      0.623       0.134       2.905
-                        indAmyloidosis                                TNF                        1.467       0.525       4.102
-                        indAortInsuffRegurg                           DMARD                      1.137       0.956       1.352
+                        database            MPCD       vs Medicare    DMARD                      0.618       0.549       0.695
+                        database            MPCD       vs Medicare    NSAID or no exposure       0.726       0.671       0.787
+                        database            Marketscan vs Medicare    DMARD                      0.556       0.517       0.598
+                        database            Marketscan vs Medicare    NSAID or no exposure       0.643       0.611       0.677
+                        age                                           DMARD                      1.020       1.018       1.023
+                        age                                           NSAID or no exposure       1.035       1.033       1.037
+                        SEX                 F vs M                    DMARD                      1.448       1.366       1.534
+                        SEX                 F vs M                    NSAID or no exposure       0.889       0.852       0.927
+                        indAmyloidosis                                DMARD                      0.425       0.085       2.114
+                        indAmyloidosis                                NSAID or no exposure       0.682       0.244       1.907
+                        indAortInsuffRegurg                           DMARD                      0.800       0.650       0.984
  
                                                                modelPropensityScore.sas
-                                                                  --- AS project ---                               15:16 Friday, November 17, 2017  10
+                                                                  --- AS project ---                               16:25 Monday, November 20, 2017  10
 
                                                                 The LOGISTIC Procedure
 
@@ -1013,55 +1013,55 @@ NOTE: The following parameters have been set to 0, since the variables are a lin
                                                                                                  Point          95% Wald
                         Effect                                        exposure3               Estimate      Confidence Limits
 
-                        indAortInsuffRegurg                           TNF                        1.422       1.209       1.672
-                        indApicalPulmFib                              DMARD                      1.871       0.326      10.751
-                        indApicalPulmFib                              TNF                       <0.001      <0.001    >999.999
-                        indCaudaEquina                                DMARD                      1.091       0.475       2.503
-                        indCaudaEquina                                TNF                        0.453       0.137       1.494
-                        indVertFrac                                   DMARD                      0.678       0.577       0.795
-                        indVertFrac                                   TNF                        0.684       0.584       0.802
-                        indConductBlock                               DMARD                      0.901       0.747       1.088
-                        indConductBlock                               TNF                        1.003       0.835       1.204
-                        indHematCa                                    DMARD                      1.361       1.059       1.748
-                        indHematCa                                    TNF                        0.454       0.316       0.651
-                        indHospInf                                    DMARD                      1.008       0.926       1.097
-                        indHospInf                                    TNF                        0.698       0.640       0.761
-                        indIgANeph                                    DMARD                      1.015       0.543       1.895
-                        indIgANeph                                    TNF                        1.327       0.788       2.234
-                        indInterstLungDis                             DMARD                      1.855       1.344       2.560
-                        indInterstLungDis                             TNF                        1.399       0.960       2.039
-                        indMI                                         DMARD                      1.010       0.757       1.348
-                        indMI                                         TNF                        1.221       0.937       1.592
-                        indNephSyn                                    DMARD                      1.431       0.587       3.488
-                        indNephSyn                                    TNF                        1.122       0.480       2.621
-                        indNMSC                                       DMARD                      1.048       0.787       1.395
-                        indNMSC                                       TNF                        1.572       1.225       2.016
-                        indNonVertOsFrac                              DMARD                      0.991       0.861       1.142
-                        indNonVertOsFrac                              TNF                        0.964       0.841       1.104
-                        indOppInf                                     DMARD                      1.643       1.372       1.969
-                        indOppInf                                     TNF                        2.032       1.718       2.403
-                        indPsoriasis                                  DMARD                      1.285       1.101       1.499
-                        indPsoriasis                                  TNF                        1.524       1.337       1.737
-                        indPSA                                        DMARD                      2.846       2.509       3.228
-                        indPSA                                        TNF                        3.964       3.560       4.415
-                        indRestrictLungDis                            DMARD                      1.402       1.187       1.657
-                        indRestrictLungDis                            TNF                        1.336       1.132       1.577
-                        indSolidCa                                    DMARD                      1.261       1.122       1.419
-                        indSolidCa                                    TNF                        1.019       0.904       1.150
-                        indSpinalCordComp                             DMARD                      1.032       0.696       1.531
-                        indSpinalCordComp                             TNF                        0.734       0.475       1.134
-                        indUlcerColitis                               DMARD                      2.178       1.854       2.558
-                        indUlcerColitis                               TNF                        2.539       2.205       2.923
-                        indUveitis                                    DMARD                      1.668       1.486       1.873
-                        indUveitis                                    TNF                        1.989       1.813       2.182
-                        indDiabetes                                   DMARD                      0.963       0.909       1.021
-                        indDiabetes                                   TNF                        0.921       0.873       0.972
-                        indHT                                         DMARD                      1.168       1.093       1.248
-                        indHT                                         TNF                        1.122       1.064       1.184
-                        indMetabSyn                                   DMARD                      1.121       0.946       1.328
-                        indMetabSyn                                   TNF                        1.163       0.999       1.352
-                        indNAFattyLiverDis                            DMARD                      0.986       0.865       1.124
-                        indNAFattyLiverDis                            TNF                        1.249       1.120       1.393
+                        indAortInsuffRegurg                           NSAID or no exposure       0.703       0.598       0.827
+                        indApicalPulmFib                              DMARD                   >999.999      <0.001    >999.999
+                        indApicalPulmFib                              NSAID or no exposure    >999.999      <0.001    >999.999
+                        indCaudaEquina                                DMARD                      2.410       0.620       9.374
+                        indCaudaEquina                                NSAID or no exposure       2.210       0.669       7.297
+                        indVertFrac                                   DMARD                      0.990       0.805       1.217
+                        indVertFrac                                   NSAID or no exposure       1.461       1.247       1.712
+                        indConductBlock                               DMARD                      0.899       0.710       1.139
+                        indConductBlock                               NSAID or no exposure       0.997       0.831       1.197
+                        indHematCa                                    DMARD                      3.000       2.013       4.470
+                        indHematCa                                    NSAID or no exposure       2.205       1.537       3.163
+                        indHospInf                                    DMARD                      1.444       1.297       1.607
+                        indHospInf                                    NSAID or no exposure       1.433       1.315       1.562
+                        indIgANeph                                    DMARD                      0.765       0.381       1.533
+                        indIgANeph                                    NSAID or no exposure       0.754       0.448       1.269
+                        indInterstLungDis                             DMARD                      1.326       0.875       2.010
+                        indInterstLungDis                             NSAID or no exposure       0.715       0.490       1.042
+                        indMI                                         DMARD                      0.827       0.583       1.173
+                        indMI                                         NSAID or no exposure       0.819       0.628       1.067
+                        indNephSyn                                    DMARD                      1.276       0.491       3.318
+                        indNephSyn                                    NSAID or no exposure       0.891       0.382       2.083
+                        indNMSC                                       DMARD                      0.667       0.478       0.929
+                        indNMSC                                       NSAID or no exposure       0.636       0.496       0.816
+                        indNonVertOsFrac                              DMARD                      1.029       0.865       1.223
+                        indNonVertOsFrac                              NSAID or no exposure       1.038       0.905       1.189
+                        indOppInf                                     DMARD                      0.809       0.661       0.989
+                        indOppInf                                     NSAID or no exposure       0.492       0.416       0.582
+                        indPsoriasis                                  DMARD                      0.843       0.717       0.991
+                        indPsoriasis                                  NSAID or no exposure       0.656       0.576       0.748
+                        indPSA                                        DMARD                      0.718       0.632       0.815
+                        indPSA                                        NSAID or no exposure       0.252       0.227       0.281
+                        indRestrictLungDis                            DMARD                      1.050       0.859       1.283
+                        indRestrictLungDis                            NSAID or no exposure       0.749       0.634       0.884
+                        indSolidCa                                    DMARD                      1.237       1.066       1.436
+                        indSolidCa                                    NSAID or no exposure       0.981       0.869       1.107
+                        indSpinalCordComp                             DMARD                      1.407       0.830       2.385
+                        indSpinalCordComp                             NSAID or no exposure       1.363       0.882       2.107
+                        indUlcerColitis                               DMARD                      0.858       0.724       1.016
+                        indUlcerColitis                               NSAID or no exposure       0.394       0.342       0.454
+                        indUveitis                                    DMARD                      0.839       0.742       0.947
+                        indUveitis                                    NSAID or no exposure       0.503       0.458       0.552
+                        indDiabetes                                   DMARD                      1.046       0.974       1.123
+                        indDiabetes                                   NSAID or no exposure       1.086       1.029       1.146
+                        indHT                                         DMARD                      1.041       0.966       1.122
+                        indHT                                         NSAID or no exposure       0.891       0.845       0.940
+                        indMetabSyn                                   DMARD                      0.964       0.792       1.174
+                        indMetabSyn                                   NSAID or no exposure       0.860       0.740       1.001
+                        indNAFattyLiverDis                            DMARD                      0.790       0.680       0.917
+                        indNAFattyLiverDis                            NSAID or no exposure       0.801       0.718       0.893
  
  
  
@@ -1083,8 +1083,8 @@ NOTE: The data set WORK.PSBETAS3LEVEL has 1 observations and 70 variables.
 NOTE: The data set WORK.PS3LEVEL has 180030 observations and 37 variables.
 NOTE: The PROCEDURE LOGISTIC printed pages 7-10.
 NOTE: PROCEDURE LOGISTIC used (Total process time):
-      real time           9.67 seconds
-      cpu time            9.28 seconds
+      real time           16.37 seconds
+      cpu time            16.20 seconds
       
 
 327        
@@ -1098,7 +1098,7 @@ NOTE: PROCEDURE LOGISTIC used (Total process time):
 335            from Work.ps4Level
 336            group by indexID
 337            having calculated sumPS < 1 - 1e-12;
-                                                                  --- AS project ---                               15:16 Friday, November 17, 2017  11
+                                                                  --- AS project ---                               16:25 Monday, November 20, 2017  11
 
                                                                    indexID     sumPS
                                                                   ------------------
@@ -1177,7 +1177,7 @@ NOTE: PROCEDURE LOGISTIC used (Total process time):
 340            from Work.ps3Level
 341            group by indexID
 342            having calculated sumPS < 1 - 1e-12;
-                                                                  --- AS project ---                               15:16 Friday, November 17, 2017  12
+                                                                  --- AS project ---                               16:25 Monday, November 20, 2017  12
 
                                                                    indexID     sumPS
                                                                   ------------------
@@ -1254,9 +1254,9 @@ NOTE: PROCEDURE LOGISTIC used (Total process time):
 343        quit;
 NOTE: The PROCEDURE SQL printed pages 11-12.
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           0.29 seconds
-      cpu time            0.32 seconds
-6                                                                   The SAS System                                     15:16 Friday, November 17, 2017
+      real time           0.34 seconds
+      cpu time            0.42 seconds
+6                                                                   The SAS System                                     16:25 Monday, November 20, 2017
 
       
 
@@ -1269,11 +1269,11 @@ NOTE: PROCEDURE SQL used (Total process time):
 350          create table Work.psBetas as
 351            select * from Work.psBetas4Level union corr
 352            select * from Work.psBetas3Level ;
-NOTE: Table WORK.PSBETAS created, with 2 rows and 70 columns.
+NOTE: Table WORK.PSBETAS created, with 2 rows and 38 columns.
 
 353        quit;
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           0.01 seconds
+      real time           0.04 seconds
       cpu time            0.01 seconds
       
 
@@ -1327,10 +1327,10 @@ NOTE: 420070 rows were updated in WORK.PS.
 
 397        quit;
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           2.69 seconds
-      cpu time            3.65 seconds
+      real time           3.46 seconds
+      cpu time            4.16 seconds
       
-7                                                                   The SAS System                                     15:16 Friday, November 17, 2017
+7                                                                   The SAS System                                     16:25 Monday, November 20, 2017
 
 
 398        
@@ -1346,7 +1346,7 @@ NOTE: PROCEDURE SQL used (Total process time):
 408          var ps;
 409        run;
 
-                                                                  --- AS project ---                               15:16 Friday, November 17, 2017  13
+                                                                  --- AS project ---                               16:25 Monday, November 20, 2017  13
 
                                                                  The MEANS Procedure
 
@@ -1424,8 +1424,8 @@ NOTE: There were 120020 observations read from the data set WORK.PS.
       WHERE _level_='TNF';
 NOTE: The PROCEDURE MEANS printed page 13.
 NOTE: PROCEDURE MEANS used (Total process time):
-      real time           0.20 seconds
-      cpu time            0.18 seconds
+      real time           0.23 seconds
+      cpu time            0.31 seconds
       
 
 410        proc sql;
@@ -1443,7 +1443,7 @@ NOTE: PROCEDURE MEANS used (Total process time):
 NOTE: Table WORK.COMMONSUPPORTREGION created, with 2 rows and 3 columns.
 
 422          select * from Work.commonSupportRegion;
-                                                                  --- AS project ---                               15:16 Friday, November 17, 2017  14
+                                                                  --- AS project ---                               16:25 Monday, November 20, 2017  14
 
                                                                              common        common
                                                                             Support       Support
@@ -1543,7 +1543,7 @@ NOTE: Table WORK.PS created, with 120020 rows and 39 columns.
 442                 sum(indCommonSupport = 0) / sum(^missing(indCommonSupport)) format = percent9.3 as prop0
 443            from Work.ps
 444            group by model, exposure, _level_;
-                                                                  --- AS project ---                               15:16 Friday, November 17, 2017  15
+                                                                  --- AS project ---                               16:25 Monday, November 20, 2017  15
 
                         model             exposure              Response Value              n1      prop1        n0      prop0
                         ------------------------------------------------------------------------------------------------------
@@ -1620,13 +1620,13 @@ NOTE: Table WORK.PS created, with 120020 rows and 39 columns.
 445        quit;
 NOTE: The PROCEDURE SQL printed pages 14-15.
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           0.59 seconds
-      cpu time            0.62 seconds
+      real time           1.13 seconds
+      cpu time            1.01 seconds
       
 
 446        
 447        
-8                                                                   The SAS System                                     15:16 Friday, November 17, 2017
+8                                                                   The SAS System                                     16:25 Monday, November 20, 2017
 
 448        /*
 449        Stabilize weights
@@ -1661,8 +1661,8 @@ NOTE: Table WORK.PS created, with 120020 rows and 41 columns.
 NOTE: Table WORK.TEMP has been dropped.
 474        quit;
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           0.29 seconds
-      cpu time            0.28 seconds
+      real time           0.70 seconds
+      cpu time            0.50 seconds
       
 
 475        proc means data = Work.ps n nmiss min max mean median stddev maxdec = 3;
@@ -1670,7 +1670,7 @@ NOTE: PROCEDURE SQL used (Total process time):
 477          var ps marginalPS iptw iptwStabilized;
 478        run;
 
-                                                                  --- AS project ---                               15:16 Friday, November 17, 2017  16
+                                                                  --- AS project ---                               16:25 Monday, November 20, 2017  16
 
                                                                  The MEANS Procedure
 
@@ -1744,7 +1744,7 @@ NOTE: PROCEDURE SQL used (Total process time):
       ------------------------------------------------------------------------------------------------------------------------------------------
  
                                                                modelPropensityScore.sas
-                                                                  --- AS project ---                               15:16 Friday, November 17, 2017  17
+                                                                  --- AS project ---                               16:25 Monday, November 20, 2017  17
 
                                                                  The MEANS Procedure
 
@@ -1818,7 +1818,7 @@ NOTE: PROCEDURE SQL used (Total process time):
  
  
                                                                modelPropensityScore.sas
-                                                                  --- AS project ---                               15:16 Friday, November 17, 2017  18
+                                                                  --- AS project ---                               16:25 Monday, November 20, 2017  18
 
                                                                  The MEANS Procedure
 
@@ -1892,7 +1892,7 @@ NOTE: PROCEDURE SQL used (Total process time):
  
  
                                                                modelPropensityScore.sas
-                                                                  --- AS project ---                               15:16 Friday, November 17, 2017  19
+                                                                  --- AS project ---                               16:25 Monday, November 20, 2017  19
 
                                                                  The MEANS Procedure
 
@@ -1966,7 +1966,7 @@ NOTE: PROCEDURE SQL used (Total process time):
  
  
                                                                modelPropensityScore.sas
-                                                                  --- AS project ---                               15:16 Friday, November 17, 2017  20
+                                                                  --- AS project ---                               16:25 Monday, November 20, 2017  20
 
                                                                  The MEANS Procedure
 
@@ -2043,15 +2043,15 @@ NOTE: PROCEDURE SQL used (Total process time):
 NOTE: There were 120020 observations read from the data set WORK.PS.
 NOTE: The PROCEDURE MEANS printed pages 16-20.
 NOTE: PROCEDURE MEANS used (Total process time):
-      real time           0.18 seconds
-      cpu time            0.10 seconds
+      real time           0.31 seconds
+      cpu time            0.32 seconds
       
 
 479        proc corr data = Work.ps;
 480          var iptw iptwStabilized;
 481        run;
 
-                                                                  --- AS project ---                               15:16 Friday, November 17, 2017  21
+                                                                  --- AS project ---                               16:25 Monday, November 20, 2017  21
 
                                                                   The CORR Procedure
 
@@ -2127,8 +2127,8 @@ NOTE: PROCEDURE MEANS used (Total process time):
                                                                modelPropensityScore.sas
 NOTE: The PROCEDURE CORR printed page 21.
 NOTE: PROCEDURE CORR used (Total process time):
-      real time           0.09 seconds
-      cpu time            0.06 seconds
+      real time           0.12 seconds
+      cpu time            0.07 seconds
       
 
 482        
@@ -2144,7 +2144,7 @@ NOTE: Table DT.PS created, with 120020 rows and 41 columns.
 
 491          create table Work.psDeidentified as
 492            select model,
-9                                                                   The SAS System                                     15:16 Friday, November 17, 2017
+9                                                                   The SAS System                                     16:25 Monday, November 20, 2017
 
 493                   database,
 494                   exposure,
@@ -2188,8 +2188,8 @@ NOTE: Table WORK.PSDEIDENTIFIED created, with 120020 rows and 38 columns.
 
 531        quit;
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           0.21 seconds
-      cpu time            0.15 seconds
+      real time           0.40 seconds
+      cpu time            0.24 seconds
       
 
 532        proc export
@@ -2204,7 +2204,7 @@ NOTE: PROCEDURE SQL used (Total process time):
 540         *   PRODUCT:   SAS
 541         *   VERSION:   9.4
 542         *   CREATOR:   External File Interface
-543         *   DATE:      17NOV17
+543         *   DATE:      20NOV17
 544         *   DESC:      Generated SAS Datastep Code
 545         *   TEMPLATE SOURCE:  (None Specified.)
 546         ***********************************************************************/
@@ -2218,7 +2218,7 @@ NOTE: PROCEDURE SQL used (Total process time):
 554                  "_LINK_"
 555               ','
 556                  "_TYPE_"
-10                                                                  The SAS System                                     15:16 Friday, November 17, 2017
+10                                                                  The SAS System                                     16:25 Monday, November 20, 2017
 
 557               ','
 558                  "_STATUS_"
@@ -2227,307 +2227,175 @@ NOTE: PROCEDURE SQL used (Total process time):
 561               ','
 562                  "Intercept_DMARD"
 563               ','
-564                  "Intercept_TNF"
+564                  "databaseMPCD_DMARD"
 565               ','
-566                  "databaseMPCD_DMARD"
+566                  "databaseMarketscan_DMARD"
 567               ','
-568                  "databaseMPCD_TNF"
+568                  "age_DMARD"
 569               ','
-570                  "databaseMarketscan_DMARD"
+570                  "SEXF_DMARD"
 571               ','
-572                  "databaseMarketscan_TNF"
+572                  "indAmyloidosis_DMARD"
 573               ','
-574                  "age_DMARD"
+574                  "indAortInsuffRegurg_DMARD"
 575               ','
-576                  "age_TNF"
+576                  "indApicalPulmFib_DMARD"
 577               ','
-578                  "SEXF_DMARD"
+578                  "indCaudaEquina_DMARD"
 579               ','
-580                  "SEXF_TNF"
+580                  "indVertFrac_DMARD"
 581               ','
-582                  "indAmyloidosis_DMARD"
+582                  "indConductBlock_DMARD"
 583               ','
-584                  "indAmyloidosis_TNF"
+584                  "indCrohnsDis_DMARD"
 585               ','
-586                  "indAortInsuffRegurg_DMARD"
+586                  "indHematCa_DMARD"
 587               ','
-588                  "indAortInsuffRegurg_TNF"
+588                  "indHospInf_DMARD"
 589               ','
-590                  "indApicalPulmFib_DMARD"
+590                  "indIgANeph_DMARD"
 591               ','
-592                  "indApicalPulmFib_TNF"
+592                  "indInterstLungDis_DMARD"
 593               ','
-594                  "indCaudaEquina_DMARD"
+594                  "indMI_DMARD"
 595               ','
-596                  "indCaudaEquina_TNF"
+596                  "indNephSyn_DMARD"
 597               ','
-598                  "indVertFrac_DMARD"
+598                  "indNMSC_DMARD"
 599               ','
-600                  "indVertFrac_TNF"
+600                  "indNonVertOsFrac_DMARD"
 601               ','
-602                  "indConductBlock_DMARD"
+602                  "indOppInf_DMARD"
 603               ','
-604                  "indConductBlock_TNF"
+604                  "indPsoriasis_DMARD"
 605               ','
-606                  "indCrohnsDis_DMARD"
+606                  "indPSA_DMARD"
 607               ','
-608                  "indCrohnsDis_TNF"
+608                  "indRestrictLungDis_DMARD"
 609               ','
-610                  "indHematCa_DMARD"
+610                  "indSolidCa_DMARD"
 611               ','
-612                  "indHematCa_TNF"
+612                  "indSpinalCordComp_DMARD"
 613               ','
-614                  "indHospInf_DMARD"
+614                  "indUlcerColitis_DMARD"
 615               ','
-616                  "indHospInf_TNF"
+616                  "indUveitis_DMARD"
 617               ','
-618                  "indIgANeph_DMARD"
+618                  "indDiabetes_DMARD"
 619               ','
-620                  "indIgANeph_TNF"
+620                  "indHT_DMARD"
 621               ','
-622                  "indInterstLungDis_DMARD"
+622                  "indMetabSyn_DMARD"
 623               ','
-624                  "indInterstLungDis_TNF"
+624                  "indNAFattyLiverDis_DMARD"
 625               ','
-626                  "indMI_DMARD"
+626                  "_LNLIKE_"
 627               ','
-628                  "indMI_TNF"
-11                                                                  The SAS System                                     15:16 Friday, November 17, 2017
+628                  "_ESTTYPE_"
+11                                                                  The SAS System                                     16:25 Monday, November 20, 2017
 
-629               ','
-630                  "indNephSyn_DMARD"
-631               ','
-632                  "indNephSyn_TNF"
-633               ','
-634                  "indNMSC_DMARD"
-635               ','
-636                  "indNMSC_TNF"
-637               ','
-638                  "indNonVertOsFrac_DMARD"
-639               ','
-640                  "indNonVertOsFrac_TNF"
-641               ','
-642                  "indOppInf_DMARD"
-643               ','
-644                  "indOppInf_TNF"
-645               ','
-646                  "indPsoriasis_DMARD"
-647               ','
-648                  "indPsoriasis_TNF"
-649               ','
-650                  "indPSA_DMARD"
-651               ','
-652                  "indPSA_TNF"
-653               ','
-654                  "indRestrictLungDis_DMARD"
-655               ','
-656                  "indRestrictLungDis_TNF"
-657               ','
-658                  "indSolidCa_DMARD"
-659               ','
-660                  "indSolidCa_TNF"
-661               ','
-662                  "indSpinalCordComp_DMARD"
-663               ','
-664                  "indSpinalCordComp_TNF"
-665               ','
-666                  "indUlcerColitis_DMARD"
-667               ','
-668                  "indUlcerColitis_TNF"
-669               ','
-670                  "indUveitis_DMARD"
-671               ','
-672                  "indUveitis_TNF"
-673               ','
-674                  "indDiabetes_DMARD"
-675               ','
-676                  "indDiabetes_TNF"
-677               ','
-678                  "indHT_DMARD"
-679               ','
-680                  "indHT_TNF"
-681               ','
-682                  "indMetabSyn_DMARD"
-683               ','
-684                  "indMetabSyn_TNF"
-685               ','
-686                  "indNAFattyLiverDis_DMARD"
-687               ','
-688                  "indNAFattyLiverDis_TNF"
-689               ','
-690                  "_LNLIKE_"
-691               ','
-692                  "_ESTTYPE_"
-693               ;
-694             end;
-695           set  WORK.PSBETAS   end=EFIEOD;
-696               format _LINK_ $8. ;
-697               format _TYPE_ $8. ;
-698               format _STATUS_ $11. ;
-699               format _NAME_ $9. ;
-700               format Intercept_DMARD best12. ;
-12                                                                  The SAS System                                     15:16 Friday, November 17, 2017
+629               ;
+630             end;
+631           set  WORK.PSBETAS   end=EFIEOD;
+632               format _LINK_ $8. ;
+633               format _TYPE_ $8. ;
+634               format _STATUS_ $11. ;
+635               format _NAME_ $9. ;
+636               format Intercept_DMARD best12. ;
+637               format databaseMPCD_DMARD best12. ;
+638               format databaseMarketscan_DMARD best12. ;
+639               format age_DMARD best12. ;
+640               format SEXF_DMARD best12. ;
+641               format indAmyloidosis_DMARD best12. ;
+642               format indAortInsuffRegurg_DMARD best12. ;
+643               format indApicalPulmFib_DMARD best12. ;
+644               format indCaudaEquina_DMARD best12. ;
+645               format indVertFrac_DMARD best12. ;
+646               format indConductBlock_DMARD best12. ;
+647               format indCrohnsDis_DMARD best12. ;
+648               format indHematCa_DMARD best12. ;
+649               format indHospInf_DMARD best12. ;
+650               format indIgANeph_DMARD best12. ;
+651               format indInterstLungDis_DMARD best12. ;
+652               format indMI_DMARD best12. ;
+653               format indNephSyn_DMARD best12. ;
+654               format indNMSC_DMARD best12. ;
+655               format indNonVertOsFrac_DMARD best12. ;
+656               format indOppInf_DMARD best12. ;
+657               format indPsoriasis_DMARD best12. ;
+658               format indPSA_DMARD best12. ;
+659               format indRestrictLungDis_DMARD best12. ;
+660               format indSolidCa_DMARD best12. ;
+661               format indSpinalCordComp_DMARD best12. ;
+662               format indUlcerColitis_DMARD best12. ;
+663               format indUveitis_DMARD best12. ;
+664               format indDiabetes_DMARD best12. ;
+665               format indHT_DMARD best12. ;
+666               format indMetabSyn_DMARD best12. ;
+667               format indNAFattyLiverDis_DMARD best12. ;
+668               format _LNLIKE_ best12. ;
+669               format _ESTTYPE_ $4. ;
+670             do;
+671               EFIOUT + 1;
+672               put _LINK_ $ @;
+673               put _TYPE_ $ @;
+674               put _STATUS_ $ @;
+675               put _NAME_ $ @;
+676               put Intercept_DMARD @;
+677               put databaseMPCD_DMARD @;
+678               put databaseMarketscan_DMARD @;
+679               put age_DMARD @;
+680               put SEXF_DMARD @;
+681               put indAmyloidosis_DMARD @;
+682               put indAortInsuffRegurg_DMARD @;
+683               put indApicalPulmFib_DMARD @;
+684               put indCaudaEquina_DMARD @;
+685               put indVertFrac_DMARD @;
+686               put indConductBlock_DMARD @;
+687               put indCrohnsDis_DMARD @;
+688               put indHematCa_DMARD @;
+689               put indHospInf_DMARD @;
+690               put indIgANeph_DMARD @;
+691               put indInterstLungDis_DMARD @;
+692               put indMI_DMARD @;
+693               put indNephSyn_DMARD @;
+694               put indNMSC_DMARD @;
+695               put indNonVertOsFrac_DMARD @;
+696               put indOppInf_DMARD @;
+697               put indPsoriasis_DMARD @;
+698               put indPSA_DMARD @;
+699               put indRestrictLungDis_DMARD @;
+700               put indSolidCa_DMARD @;
+12                                                                  The SAS System                                     16:25 Monday, November 20, 2017
 
-701               format Intercept_TNF best12. ;
-702               format databaseMPCD_DMARD best12. ;
-703               format databaseMPCD_TNF best12. ;
-704               format databaseMarketscan_DMARD best12. ;
-705               format databaseMarketscan_TNF best12. ;
-706               format age_DMARD best12. ;
-707               format age_TNF best12. ;
-708               format SEXF_DMARD best12. ;
-709               format SEXF_TNF best12. ;
-710               format indAmyloidosis_DMARD best12. ;
-711               format indAmyloidosis_TNF best12. ;
-712               format indAortInsuffRegurg_DMARD best12. ;
-713               format indAortInsuffRegurg_TNF best12. ;
-714               format indApicalPulmFib_DMARD best12. ;
-715               format indApicalPulmFib_TNF best12. ;
-716               format indCaudaEquina_DMARD best12. ;
-717               format indCaudaEquina_TNF best12. ;
-718               format indVertFrac_DMARD best12. ;
-719               format indVertFrac_TNF best12. ;
-720               format indConductBlock_DMARD best12. ;
-721               format indConductBlock_TNF best12. ;
-722               format indCrohnsDis_DMARD best12. ;
-723               format indCrohnsDis_TNF best12. ;
-724               format indHematCa_DMARD best12. ;
-725               format indHematCa_TNF best12. ;
-726               format indHospInf_DMARD best12. ;
-727               format indHospInf_TNF best12. ;
-728               format indIgANeph_DMARD best12. ;
-729               format indIgANeph_TNF best12. ;
-730               format indInterstLungDis_DMARD best12. ;
-731               format indInterstLungDis_TNF best12. ;
-732               format indMI_DMARD best12. ;
-733               format indMI_TNF best12. ;
-734               format indNephSyn_DMARD best12. ;
-735               format indNephSyn_TNF best12. ;
-736               format indNMSC_DMARD best12. ;
-737               format indNMSC_TNF best12. ;
-738               format indNonVertOsFrac_DMARD best12. ;
-739               format indNonVertOsFrac_TNF best12. ;
-740               format indOppInf_DMARD best12. ;
-741               format indOppInf_TNF best12. ;
-742               format indPsoriasis_DMARD best12. ;
-743               format indPsoriasis_TNF best12. ;
-744               format indPSA_DMARD best12. ;
-745               format indPSA_TNF best12. ;
-746               format indRestrictLungDis_DMARD best12. ;
-747               format indRestrictLungDis_TNF best12. ;
-748               format indSolidCa_DMARD best12. ;
-749               format indSolidCa_TNF best12. ;
-750               format indSpinalCordComp_DMARD best12. ;
-751               format indSpinalCordComp_TNF best12. ;
-752               format indUlcerColitis_DMARD best12. ;
-753               format indUlcerColitis_TNF best12. ;
-754               format indUveitis_DMARD best12. ;
-755               format indUveitis_TNF best12. ;
-756               format indDiabetes_DMARD best12. ;
-757               format indDiabetes_TNF best12. ;
-758               format indHT_DMARD best12. ;
-759               format indHT_TNF best12. ;
-760               format indMetabSyn_DMARD best12. ;
-761               format indMetabSyn_TNF best12. ;
-762               format indNAFattyLiverDis_DMARD best12. ;
-763               format indNAFattyLiverDis_TNF best12. ;
-764               format _LNLIKE_ best12. ;
-765               format _ESTTYPE_ $4. ;
-766             do;
-767               EFIOUT + 1;
-768               put _LINK_ $ @;
-769               put _TYPE_ $ @;
-770               put _STATUS_ $ @;
-771               put _NAME_ $ @;
-772               put Intercept_DMARD @;
-13                                                                  The SAS System                                     15:16 Friday, November 17, 2017
-
-773               put Intercept_TNF @;
-774               put databaseMPCD_DMARD @;
-775               put databaseMPCD_TNF @;
-776               put databaseMarketscan_DMARD @;
-777               put databaseMarketscan_TNF @;
-778               put age_DMARD @;
-779               put age_TNF @;
-780               put SEXF_DMARD @;
-781               put SEXF_TNF @;
-782               put indAmyloidosis_DMARD @;
-783               put indAmyloidosis_TNF @;
-784               put indAortInsuffRegurg_DMARD @;
-785               put indAortInsuffRegurg_TNF @;
-786               put indApicalPulmFib_DMARD @;
-787               put indApicalPulmFib_TNF @;
-788               put indCaudaEquina_DMARD @;
-789               put indCaudaEquina_TNF @;
-790               put indVertFrac_DMARD @;
-791               put indVertFrac_TNF @;
-792               put indConductBlock_DMARD @;
-793               put indConductBlock_TNF @;
-794               put indCrohnsDis_DMARD @;
-795               put indCrohnsDis_TNF @;
-796               put indHematCa_DMARD @;
-797               put indHematCa_TNF @;
-798               put indHospInf_DMARD @;
-799               put indHospInf_TNF @;
-800               put indIgANeph_DMARD @;
-801               put indIgANeph_TNF @;
-802               put indInterstLungDis_DMARD @;
-803               put indInterstLungDis_TNF @;
-804               put indMI_DMARD @;
-805               put indMI_TNF @;
-806               put indNephSyn_DMARD @;
-807               put indNephSyn_TNF @;
-808               put indNMSC_DMARD @;
-809               put indNMSC_TNF @;
-810               put indNonVertOsFrac_DMARD @;
-811               put indNonVertOsFrac_TNF @;
-812               put indOppInf_DMARD @;
-813               put indOppInf_TNF @;
-814               put indPsoriasis_DMARD @;
-815               put indPsoriasis_TNF @;
-816               put indPSA_DMARD @;
-817               put indPSA_TNF @;
-818               put indRestrictLungDis_DMARD @;
-819               put indRestrictLungDis_TNF @;
-820               put indSolidCa_DMARD @;
-821               put indSolidCa_TNF @;
-822               put indSpinalCordComp_DMARD @;
-823               put indSpinalCordComp_TNF @;
-824               put indUlcerColitis_DMARD @;
-825               put indUlcerColitis_TNF @;
-826               put indUveitis_DMARD @;
-827               put indUveitis_TNF @;
-828               put indDiabetes_DMARD @;
-829               put indDiabetes_TNF @;
-830               put indHT_DMARD @;
-831               put indHT_TNF @;
-832               put indMetabSyn_DMARD @;
-833               put indMetabSyn_TNF @;
-834               put indNAFattyLiverDis_DMARD @;
-835               put indNAFattyLiverDis_TNF @;
-836               put _LNLIKE_ @;
-837               put _ESTTYPE_ $ ;
-838               ;
-839             end;
-840            if _ERROR_ then call symputx('_EFIERR_',1);  /* set ERROR detection macro variable */
-841            if EFIEOD then call symputx('_EFIREC_',EFIOUT);
-842            run;
+701               put indSpinalCordComp_DMARD @;
+702               put indUlcerColitis_DMARD @;
+703               put indUveitis_DMARD @;
+704               put indDiabetes_DMARD @;
+705               put indHT_DMARD @;
+706               put indMetabSyn_DMARD @;
+707               put indNAFattyLiverDis_DMARD @;
+708               put _LNLIKE_ @;
+709               put _ESTTYPE_ $ ;
+710               ;
+711             end;
+712            if _ERROR_ then call symputx('_EFIERR_',1);  /* set ERROR detection macro variable */
+713            if EFIEOD then call symputx('_EFIREC_',EFIOUT);
+714            run;
 
 NOTE: The file 'data\processed\psBetas.csv' is:
-14                                                                  The SAS System                                     15:16 Friday, November 17, 2017
-
       Filename=U:\studies\AS\pgms\bchan\data\processed\psBetas.csv,
       RECFM=V,LRECL=32767,File Size (bytes)=0,
-      Last Modified=17Nov2017:15:16:41,
+      Last Modified=20Nov2017:16:26:49,
       Create Time=13Nov2017:10:43:08
 
 NOTE: 3 records were written to the file 'data\processed\psBetas.csv'.
-      The minimum record length was 852.
-      The maximum record length was 1180.
+      The minimum record length was 455.
+      The maximum record length was 646.
 NOTE: There were 2 observations read from the data set WORK.PSBETAS.
 NOTE: DATA statement used (Total process time):
-      real time           0.04 seconds
-      cpu time            0.03 seconds
+      real time           0.00 seconds
+      cpu time            0.00 seconds
       
 
 2 records created in data\processed\psBetas.csv from WORK.PSBETAS.
@@ -2535,214 +2403,214 @@ NOTE: DATA statement used (Total process time):
   
 NOTE: "data\processed\psBetas.csv" file was successfully created.
 NOTE: PROCEDURE EXPORT used (Total process time):
-      real time           0.84 seconds
+      real time           0.09 seconds
       cpu time            0.09 seconds
       
 
-843        proc export
-844          data = Work.psDeidentified
-845          outfile = "data\processed\psDeidentified.csv"
-846          dbms = csv
-847          replace;
-848          delimiter = ",";
-849        run;
+715        proc export
+716          data = Work.psDeidentified
+717          outfile = "data\processed\psDeidentified.csv"
+718          dbms = csv
+719          replace;
+720          delimiter = ",";
+721        run;
 
-850         /**********************************************************************
-851         *   PRODUCT:   SAS
-852         *   VERSION:   9.4
-853         *   CREATOR:   External File Interface
-854         *   DATE:      17NOV17
-855         *   DESC:      Generated SAS Datastep Code
-856         *   TEMPLATE SOURCE:  (None Specified.)
-857         ***********************************************************************/
-858            data _null_;
-859            %let _EFIERR_ = 0; /* set the ERROR detection macro variable */
-860            %let _EFIREC_ = 0;     /* clear export record count macro variable */
-861            file 'data\processed\psDeidentified.csv' delimiter=',' DSD DROPOVER lrecl=32767;
-862            if _n_ = 1 then        /* write column names or labels */
-863             do;
-864               put
-865                  "model"
-866               ','
-867                  "database"
-868               ','
-869                  "exposure"
-870               ','
-871                  "_LEVEL_"
-872               ','
-873                  "ps"
-874               ','
-875                  "indCommonSupport"
-876               ','
-877                  "iptw"
-878               ','
-879                  "marginalPS"
-880               ','
-881                  "iptwStabilized"
-882               ','
-883                  "age"
-884               ','
-885                  "SEX"
-886               ','
-887                  "indAmyloidosis"
-888               ','
-889                  "indAortInsuffRegurg"
-890               ','
-15                                                                  The SAS System                                     15:16 Friday, November 17, 2017
+722         /**********************************************************************
+723         *   PRODUCT:   SAS
+724         *   VERSION:   9.4
+725         *   CREATOR:   External File Interface
+726         *   DATE:      20NOV17
+727         *   DESC:      Generated SAS Datastep Code
+728         *   TEMPLATE SOURCE:  (None Specified.)
+729         ***********************************************************************/
+730            data _null_;
+731            %let _EFIERR_ = 0; /* set the ERROR detection macro variable */
+732            %let _EFIREC_ = 0;     /* clear export record count macro variable */
+733            file 'data\processed\psDeidentified.csv' delimiter=',' DSD DROPOVER lrecl=32767;
+734            if _n_ = 1 then        /* write column names or labels */
+735             do;
+736               put
+737                  "model"
+738               ','
+739                  "database"
+740               ','
+741                  "exposure"
+742               ','
+743                  "_LEVEL_"
+744               ','
+745                  "ps"
+746               ','
+13                                                                  The SAS System                                     16:25 Monday, November 20, 2017
 
-891                  "indApicalPulmFib"
-892               ','
-893                  "indCaudaEquina"
-894               ','
-895                  "indVertFrac"
-896               ','
-897                  "indConductBlock"
-898               ','
-899                  "indCrohnsDis"
-900               ','
-901                  "indHematCa"
-902               ','
-903                  "indHospInf"
-904               ','
-905                  "indIgANeph"
-906               ','
-907                  "indInterstLungDis"
-908               ','
-909                  "indMI"
-910               ','
-911                  "indNephSyn"
-912               ','
-913                  "indNMSC"
-914               ','
-915                  "indNonVertOsFrac"
-916               ','
-917                  "indOppInf"
-918               ','
-919                  "indPsoriasis"
-920               ','
-921                  "indPSA"
-922               ','
-923                  "indRestrictLungDis"
-924               ','
-925                  "indSolidCa"
-926               ','
-927                  "indSpinalCordComp"
-928               ','
-929                  "indUlcerColitis"
-930               ','
-931                  "indUveitis"
-932               ','
-933                  "indDiabetes"
-934               ','
-935                  "indHT"
-936               ','
-937                  "indMetabSyn"
-938               ','
-939                  "indNAFattyLiverDis"
-940               ;
-941             end;
-942           set  WORK.PSDEIDENTIFIED   end=EFIEOD;
-943               format model $16. ;
-944               format database $10. ;
-945               format exposure $20. ;
-946               format _LEVEL_ $20. ;
-947               format ps best12. ;
-948               format indCommonSupport best12. ;
-949               format iptw best12. ;
-950               format marginalPS best12. ;
-951               format iptwStabilized best12. ;
-952               format age best12. ;
-953               format SEX $2. ;
-954               format indAmyloidosis best12. ;
-955               format indAortInsuffRegurg best12. ;
-956               format indApicalPulmFib best12. ;
-957               format indCaudaEquina best12. ;
-958               format indVertFrac best12. ;
-959               format indConductBlock best12. ;
-960               format indCrohnsDis best12. ;
-961               format indHematCa best12. ;
-962               format indHospInf best12. ;
-16                                                                  The SAS System                                     15:16 Friday, November 17, 2017
+747                  "indCommonSupport"
+748               ','
+749                  "iptw"
+750               ','
+751                  "marginalPS"
+752               ','
+753                  "iptwStabilized"
+754               ','
+755                  "age"
+756               ','
+757                  "SEX"
+758               ','
+759                  "indAmyloidosis"
+760               ','
+761                  "indAortInsuffRegurg"
+762               ','
+763                  "indApicalPulmFib"
+764               ','
+765                  "indCaudaEquina"
+766               ','
+767                  "indVertFrac"
+768               ','
+769                  "indConductBlock"
+770               ','
+771                  "indCrohnsDis"
+772               ','
+773                  "indHematCa"
+774               ','
+775                  "indHospInf"
+776               ','
+777                  "indIgANeph"
+778               ','
+779                  "indInterstLungDis"
+780               ','
+781                  "indMI"
+782               ','
+783                  "indNephSyn"
+784               ','
+785                  "indNMSC"
+786               ','
+787                  "indNonVertOsFrac"
+788               ','
+789                  "indOppInf"
+790               ','
+791                  "indPsoriasis"
+792               ','
+793                  "indPSA"
+794               ','
+795                  "indRestrictLungDis"
+796               ','
+797                  "indSolidCa"
+798               ','
+799                  "indSpinalCordComp"
+800               ','
+801                  "indUlcerColitis"
+802               ','
+803                  "indUveitis"
+804               ','
+805                  "indDiabetes"
+806               ','
+807                  "indHT"
+808               ','
+809                  "indMetabSyn"
+810               ','
+811                  "indNAFattyLiverDis"
+812               ;
+813             end;
+814           set  WORK.PSDEIDENTIFIED   end=EFIEOD;
+815               format model $16. ;
+816               format database $10. ;
+817               format exposure $20. ;
+818               format _LEVEL_ $20. ;
+14                                                                  The SAS System                                     16:25 Monday, November 20, 2017
 
-963               format indIgANeph best12. ;
-964               format indInterstLungDis best12. ;
-965               format indMI best12. ;
-966               format indNephSyn best12. ;
-967               format indNMSC best12. ;
-968               format indNonVertOsFrac best12. ;
-969               format indOppInf best12. ;
-970               format indPsoriasis best12. ;
-971               format indPSA best12. ;
-972               format indRestrictLungDis best12. ;
-973               format indSolidCa best12. ;
-974               format indSpinalCordComp best12. ;
-975               format indUlcerColitis best12. ;
-976               format indUveitis best12. ;
-977               format indDiabetes best12. ;
-978               format indHT best12. ;
-979               format indMetabSyn best12. ;
-980               format indNAFattyLiverDis best12. ;
-981             do;
-982               EFIOUT + 1;
-983               put model $ @;
-984               put database $ @;
-985               put exposure $ @;
-986               put _LEVEL_ $ @;
-987               put ps @;
-988               put indCommonSupport @;
-989               put iptw @;
-990               put marginalPS @;
-991               put iptwStabilized @;
-992               put age @;
-993               put SEX $ @;
-994               put indAmyloidosis @;
-995               put indAortInsuffRegurg @;
-996               put indApicalPulmFib @;
-997               put indCaudaEquina @;
-998               put indVertFrac @;
-999               put indConductBlock @;
-1000              put indCrohnsDis @;
-1001              put indHematCa @;
-1002              put indHospInf @;
-1003              put indIgANeph @;
-1004              put indInterstLungDis @;
-1005              put indMI @;
-1006              put indNephSyn @;
-1007              put indNMSC @;
-1008              put indNonVertOsFrac @;
-1009              put indOppInf @;
-1010              put indPsoriasis @;
-1011              put indPSA @;
-1012              put indRestrictLungDis @;
-1013              put indSolidCa @;
-1014              put indSpinalCordComp @;
-1015              put indUlcerColitis @;
-1016              put indUveitis @;
-1017              put indDiabetes @;
-1018              put indHT @;
-1019              put indMetabSyn @;
-1020              put indNAFattyLiverDis ;
-1021              ;
-1022            end;
-1023           if _ERROR_ then call symputx('_EFIERR_',1);  /* set ERROR detection macro variable */
-1024           if EFIEOD then call symputx('_EFIREC_',EFIOUT);
-1025           run;
+819               format ps best12. ;
+820               format indCommonSupport best12. ;
+821               format iptw best12. ;
+822               format marginalPS best12. ;
+823               format iptwStabilized best12. ;
+824               format age best12. ;
+825               format SEX $2. ;
+826               format indAmyloidosis best12. ;
+827               format indAortInsuffRegurg best12. ;
+828               format indApicalPulmFib best12. ;
+829               format indCaudaEquina best12. ;
+830               format indVertFrac best12. ;
+831               format indConductBlock best12. ;
+832               format indCrohnsDis best12. ;
+833               format indHematCa best12. ;
+834               format indHospInf best12. ;
+835               format indIgANeph best12. ;
+836               format indInterstLungDis best12. ;
+837               format indMI best12. ;
+838               format indNephSyn best12. ;
+839               format indNMSC best12. ;
+840               format indNonVertOsFrac best12. ;
+841               format indOppInf best12. ;
+842               format indPsoriasis best12. ;
+843               format indPSA best12. ;
+844               format indRestrictLungDis best12. ;
+845               format indSolidCa best12. ;
+846               format indSpinalCordComp best12. ;
+847               format indUlcerColitis best12. ;
+848               format indUveitis best12. ;
+849               format indDiabetes best12. ;
+850               format indHT best12. ;
+851               format indMetabSyn best12. ;
+852               format indNAFattyLiverDis best12. ;
+853             do;
+854               EFIOUT + 1;
+855               put model $ @;
+856               put database $ @;
+857               put exposure $ @;
+858               put _LEVEL_ $ @;
+859               put ps @;
+860               put indCommonSupport @;
+861               put iptw @;
+862               put marginalPS @;
+863               put iptwStabilized @;
+864               put age @;
+865               put SEX $ @;
+866               put indAmyloidosis @;
+867               put indAortInsuffRegurg @;
+868               put indApicalPulmFib @;
+869               put indCaudaEquina @;
+870               put indVertFrac @;
+871               put indConductBlock @;
+872               put indCrohnsDis @;
+873               put indHematCa @;
+874               put indHospInf @;
+875               put indIgANeph @;
+876               put indInterstLungDis @;
+877               put indMI @;
+878               put indNephSyn @;
+879               put indNMSC @;
+880               put indNonVertOsFrac @;
+881               put indOppInf @;
+882               put indPsoriasis @;
+883               put indPSA @;
+884               put indRestrictLungDis @;
+885               put indSolidCa @;
+886               put indSpinalCordComp @;
+887               put indUlcerColitis @;
+888               put indUveitis @;
+889               put indDiabetes @;
+890               put indHT @;
+15                                                                  The SAS System                                     16:25 Monday, November 20, 2017
+
+891               put indMetabSyn @;
+892               put indNAFattyLiverDis ;
+893               ;
+894             end;
+895            if _ERROR_ then call symputx('_EFIERR_',1);  /* set ERROR detection macro variable */
+896            if EFIEOD then call symputx('_EFIREC_',EFIOUT);
+897            run;
 
 NOTE: The file 'data\processed\psDeidentified.csv' is:
       Filename=U:\studies\AS\pgms\bchan\data\processed\psDeidentified.csv,
       RECFM=V,LRECL=32767,File Size (bytes)=0,
-      Last Modified=17Nov2017:15:16:42,
+      Last Modified=20Nov2017:16:26:50,
       Create Time=13Nov2017:10:31:18
 
 NOTE: 120021 records were written to the file 'data\processed\psDeidentified.csv'.
       The minimum record length was 103.
-17                                                                  The SAS System                                     15:16 Friday, November 17, 2017
-
       The maximum record length was 445.
 NOTE: There were 120020 observations read from the data set WORK.PSDEIDENTIFIED.
 NOTE: DATA statement used (Total process time):
-      real time           1.21 seconds
-      cpu time            1.20 seconds
+      real time           1.32 seconds
+      cpu time            1.32 seconds
       
 
 120020 records created in data\processed\psDeidentified.csv from WORK.PSDEIDENTIFIED.
@@ -2750,59 +2618,61 @@ NOTE: DATA statement used (Total process time):
   
 NOTE: "data\processed\psDeidentified.csv" file was successfully created.
 NOTE: PROCEDURE EXPORT used (Total process time):
-      real time           1.40 seconds
-      cpu time            1.38 seconds
+      real time           1.52 seconds
+      cpu time            1.51 seconds
       
 
-1026       proc export
-1027         data = Work.commonSupportRegion
-1028         outfile = "data\processed\commonSupportRegion.csv"
-1029         dbms = csv
-1030         replace;
-1031         delimiter = ",";
-1032       run;
+898        proc export
+899          data = Work.commonSupportRegion
+900          outfile = "data\processed\commonSupportRegion.csv"
+901          dbms = csv
+902          replace;
+903          delimiter = ",";
+904        run;
 
-1033        /**********************************************************************
-1034        *   PRODUCT:   SAS
-1035        *   VERSION:   9.4
-1036        *   CREATOR:   External File Interface
-1037        *   DATE:      17NOV17
-1038        *   DESC:      Generated SAS Datastep Code
-1039        *   TEMPLATE SOURCE:  (None Specified.)
-1040        ***********************************************************************/
-1041           data _null_;
-1042           %let _EFIERR_ = 0; /* set the ERROR detection macro variable */
-1043           %let _EFIREC_ = 0;     /* clear export record count macro variable */
-1044           file 'data\processed\commonSupportRegion.csv' delimiter=',' DSD DROPOVER lrecl=32767;
-1045           if _n_ = 1 then        /* write column names or labels */
-1046            do;
-1047              put
-1048                 "model"
-1049              ','
-1050                 "commonSupportLowerBound"
-1051              ','
-1052                 "commonSupportUpperBound"
-1053              ;
-1054            end;
-1055          set  WORK.COMMONSUPPORTREGION   end=EFIEOD;
-1056              format model $16. ;
-1057              format commonSupportLowerBound best12. ;
-1058              format commonSupportUpperBound best12. ;
-1059            do;
-1060              EFIOUT + 1;
-1061              put model $ @;
-1062              put commonSupportLowerBound @;
-1063              put commonSupportUpperBound ;
-1064              ;
-1065            end;
-1066           if _ERROR_ then call symputx('_EFIERR_',1);  /* set ERROR detection macro variable */
-1067           if EFIEOD then call symputx('_EFIREC_',EFIOUT);
-1068           run;
+905         /**********************************************************************
+906         *   PRODUCT:   SAS
+907         *   VERSION:   9.4
+908         *   CREATOR:   External File Interface
+909         *   DATE:      20NOV17
+910         *   DESC:      Generated SAS Datastep Code
+911         *   TEMPLATE SOURCE:  (None Specified.)
+912         ***********************************************************************/
+913            data _null_;
+914            %let _EFIERR_ = 0; /* set the ERROR detection macro variable */
+915            %let _EFIREC_ = 0;     /* clear export record count macro variable */
+916            file 'data\processed\commonSupportRegion.csv' delimiter=',' DSD DROPOVER lrecl=32767;
+917            if _n_ = 1 then        /* write column names or labels */
+918             do;
+919               put
+920                  "model"
+921               ','
+922                  "commonSupportLowerBound"
+923               ','
+924                  "commonSupportUpperBound"
+925               ;
+926             end;
+927           set  WORK.COMMONSUPPORTREGION   end=EFIEOD;
+928               format model $16. ;
+929               format commonSupportLowerBound best12. ;
+930               format commonSupportUpperBound best12. ;
+931             do;
+932               EFIOUT + 1;
+933               put model $ @;
+934               put commonSupportLowerBound @;
+935               put commonSupportUpperBound ;
+936               ;
+16                                                                  The SAS System                                     16:25 Monday, November 20, 2017
+
+937             end;
+938            if _ERROR_ then call symputx('_EFIERR_',1);  /* set ERROR detection macro variable */
+939            if EFIEOD then call symputx('_EFIREC_',EFIOUT);
+940            run;
 
 NOTE: The file 'data\processed\commonSupportRegion.csv' is:
       Filename=U:\studies\AS\pgms\bchan\data\processed\commonSupportRegion.csv,
       RECFM=V,LRECL=32767,File Size (bytes)=0,
-      Last Modified=17Nov2017:15:16:43,
+      Last Modified=20Nov2017:16:26:51,
       Create Time=13Nov2017:10:31:20
 
 NOTE: 3 records were written to the file 'data\processed\commonSupportRegion.csv'.
@@ -2810,10 +2680,8 @@ NOTE: 3 records were written to the file 'data\processed\commonSupportRegion.csv
       The maximum record length was 53.
 NOTE: There were 2 observations read from the data set WORK.COMMONSUPPORTREGION.
 NOTE: DATA statement used (Total process time):
-18                                                                  The SAS System                                     15:16 Friday, November 17, 2017
-
-      real time           0.04 seconds
-      cpu time            0.00 seconds
+      real time           0.01 seconds
+      cpu time            0.01 seconds
       
 
 2 records created in data\processed\commonSupportRegion.csv from WORK.COMMONSUPPORTREGION.
@@ -2821,15 +2689,15 @@ NOTE: DATA statement used (Total process time):
   
 NOTE: "data\processed\commonSupportRegion.csv" file was successfully created.
 NOTE: PROCEDURE EXPORT used (Total process time):
-      real time           0.10 seconds
-      cpu time            0.04 seconds
+      real time           0.06 seconds
+      cpu time            0.06 seconds
       
 
-1069       
-1070       
-1071       ods html close;
+941        
+942        
+943        ods html close;
 NOTE: SAS Institute Inc., SAS Campus Drive, Cary, NC USA 27513-2414
 NOTE: The SAS System used:
-      real time           43.33 seconds
-      cpu time            37.73 seconds
+      real time           53.02 seconds
+      cpu time            52.10 seconds
       
