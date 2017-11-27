@@ -1,5 +1,79 @@
 # Propensity score
 
+`r format(Sys.Date(), "%B %d, %Y")`
+
+
+## Description of model
+
+See [`modelPropensityScore.sas`](../scripts/modelPropensityScore.sas) script for details on model.
+
+The propensity of exposure to the three treatments: TNF, DMARD, and NSAID or no exposure, was modeled using a multinomial logistic regression model (SAS `proc logistic`).
+The link function used was a generalized logit.
+TNF exposure was used as the reference exposure.
+
+Included independent variables:
+
+Variable name | Description
+--------------|------------
+database | MPCD, Marketscan, or Medicare (3-levels)
+age | Continuous
+sex | Male, Female
+indAmyloidosis | Amyloidosis (any prior to exposure)
+indAortInsuffRegurg | Aortic Insufficiency/Aortic Regurgitation (any prior to exposure)
+indApicalPulmFib | Apical Pulmonary fibrosis (any prior to exposure)
+indCaudaEquina | Cauda Equina syndrome (any prior to exposure)
+indVertFrac | Clinical vertebral fracture (any prior to exposure)
+indConductBlock | Conduction Block (any prior to exposure)
+indCrohnsDis | Crohn’s Disease (any prior to exposure)
+indHematCa | Hematologic Cancer (any prior to exposure)
+indHospInf | Hospitalized infection (any prior to exposure)
+indIgANeph | IgA nephropathy (any prior to exposure)
+indInterstLungDis | Interstitial lung disease (any prior to exposure)
+indMI | Myocardial infarction (any prior to exposure)
+indNephSyn | Nephrotic syndrome (any prior to exposure)
+indNMSC | Non Melanoma Skin Cancer (any prior to exposure)
+indNonVertOsFrac | Non-vertebral osteoporotic fracture (any prior to exposure)
+indOppInf | Opportunistic infection (any prior to exposure)
+indPsoriasis | Psoriasis (any prior to exposure)
+indPSA | Psoriatic arthritis (any prior to exposure)
+indRestrictLungDis | Restrictive lung disease (any prior to exposure)
+indSolidCa | Solid Cancer (any prior to exposure)
+indSpinalCordComp | Spinal Cord compression (any prior to exposure)
+indUlcerColitis | Ulcerative Colitis (any prior to exposure)
+indUveitis | Uveitis (any prior to exposure)
+indDiabetes | Diabetes
+indHT | Hypertention
+indMetabSyn | Metabolic syndrome
+indNAFattyLiverDis | Non-alcoholic fatty liver disease
+
+Model output is probability of exposure to TNF, DMARD, and NSAID or no exposure.
+For our purposes, we focus only on the propensity for TNF exposure.
+
+The common support region lower bound is the maximum of the lowest TNF propensity score among the 3 exposure groups.
+The common support region upper bound is the minimum of the greatest TNF propensity score among the 3 exposure groups.
+
+To check covariate balance, subjects are partitioned into deciles defined by the TNF propensity score, regardless of true exposure.
+Model covariates are plotted on the y-axis in relation to TNF propensity decile on the x-axis.
+Comparisons are made between exposure groups to check for balance.
+
+Inverse probability treatment weight (IPTW) for TNF exposure was calculated as
+
+$$
+IPTW_\text{TNF} = \frac{I_\text{TNF}}{\hat{p}_\text{TNF}} + \frac{1 - I_\text{TNF}}{1 - \hat{p}_\text{TNF}}
+$$
+
+where $I_\text{TNF}$ is a 0/1 indicator for TNF exposure.
+
+Stabilized IPTW are calculated as described in
+Austin, P. C., and Stuart, E. A. (2015) Moving towards best practice when
+using inverse probability of treatment weighting (IPTW) using the propensity
+score to estimate causal treatment effects in observational studies. Statist.
+Med., 34: 3661–3679. 
+doi: [10.1002/sim.6607](http://onlinelibrary.wiley.com/doi/10.1002/sim.6607/abstract).
+
+
+## Import data sets
+
 Read deidentified propensity score data.
 Data was created by [`modelPropensityScore.sas`](../scripts/modelPropensityScore.sas).
 
