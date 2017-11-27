@@ -79,7 +79,7 @@ proc sql;
       (select indexID, 1 as indCaudaEquina      from DT.comorbidities      where indPrevPriorToIndex = 1 & prxmatch("/Cauda Equina syndrome/"                     , disease    )) E  on (A.indexID = E.indexID ) left join
       (select indexID, 1 as indVertFrac         from DT.comorbidities      where indPrevPriorToIndex = 1 & prxmatch("/Clinical vertebral fracture/"               , disease    )) F  on (A.indexID = F.indexID ) left join
       (select indexID, 1 as indConductBlock     from DT.comorbidities      where indPrevPriorToIndex = 1 & prxmatch("/Conduction Block/"                          , disease    )) G  on (A.indexID = G.indexID ) left join
-      (select indexID, 1 as indCrohnsDis        from DT.comorbidities      where indPrevPriorToIndex = 1 & prxmatch("/Crohn’s Disease/"                           , disease    )) H  on (A.indexID = H.indexID ) left join
+      (select indexID, 1 as indCrohnsDis        from DT.comorbidities      where indPrevPriorToIndex = 1 & prxmatch("/Crohn/"                                     , disease    )) H  on (A.indexID = H.indexID ) left join
       (select indexID, 1 as indHematCa          from DT.comorbidities      where indPrevPriorToIndex = 1 & prxmatch("/Hematologic Cancer/"                        , disease    )) I  on (A.indexID = I.indexID ) left join
       (select indexID, 1 as indHospInf          from DT.comorbidities      where indPrevPriorToIndex = 1 & prxmatch("/Hospitalized infection/"                    , disease    )) J  on (A.indexID = J.indexID ) left join
       (select indexID, 1 as indIgANeph          from DT.comorbidities      where indPrevPriorToIndex = 1 & prxmatch("/IgA nephropathy/"                           , disease    )) K  on (A.indexID = K.indexID ) left join
@@ -170,7 +170,7 @@ proc logistic data = Work.allCovariates outest = Work.psBetas3Level;
                     /* indCaudaEquina */
                     indVertFrac
                     /* indConductBlock */
-                    /* indCrohnsDis */
+                    indCrohnsDis
                     indHematCa
                     indHospInf
                     indIgANeph
@@ -214,7 +214,7 @@ proc logistic data = Work.allCovariates outest = Work.psBetas3Level;
                     /* indCaudaEquina */
                     indVertFrac
                     indConductBlock
-                    /* indCrohnsDis */
+                    indCrohnsDis
                     indHematCa
                     indHospInf
                     indIgANeph
@@ -258,7 +258,7 @@ proc logistic data = Work.allCovariates outest = Work.psBetas3Level;
                     indCaudaEquina
                     indVertFrac
                     indConductBlock
-                    /* indCrohnsDis */
+                    indCrohnsDis
                     indHematCa
                     indHospInf
                     indIgANeph
