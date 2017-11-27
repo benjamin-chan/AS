@@ -25,7 +25,6 @@ ods html
 proc sql;
   create table Work.allCovariates as
     select A.database,
-           A.exposure as exposure4,
            case
              when A.exposure in ("No exposure", "NSAID") then "NSAID or no exposure"
              else A.exposure
@@ -125,49 +124,6 @@ run;
 
 
 /* 
-Fit 4-level model
-4 levels of treatment exposure: TNF, DMARD, NSAID, no exposure
- */
-proc logistic data = Work.allCovariates outest = Work.psBetas4Level;
-  class exposure4 (ref = "TNF") 
-        database (ref = "Medicare") 
-        sex (ref = "M") 
-        / param = ref;
-  model exposure4 = database
-                    age
-                    sex
-                    indAmyloidosis
-                    indAortInsuffRegurg
-                    indApicalPulmFib
-                    indCaudaEquina
-                    indVertFrac
-                    indConductBlock
-                    indCrohnsDis
-                    indHematCa
-                    indHospInf
-                    indIgANeph
-                    indInterstLungDis
-                    indMI
-                    indNephSyn
-                    indNMSC
-                    indNonVertOsFrac
-                    indOppInf
-                    indPsoriasis
-                    indPSA
-                    indRestrictLungDis
-                    indSolidCa
-                    indSpinalCordComp
-                    indUlcerColitis
-                    indUveitis
-                    indDiabetes
-                    indHT
-                    indMetabSyn
-                    indNAFattyLiverDis
-                    / link = glogit rsquare;
-  output out = Work.ps4Level predicted = ps xbeta = xbeta;
-run;
-
-/* 
 Fit 3-level model
 3 levels of treatment exposure: TNF, DMARD, NSAID or no exposure
  */
@@ -217,11 +173,6 @@ Check
 proc sql;
   select indexID,
          sum(ps) as sumPS 
-    from Work.ps4Level
-    group by indexID
-    having calculated sumPS < 1 - 1e-12;
-  select indexID,
-         sum(ps) as sumPS 
     from Work.ps3Level
     group by indexID
     having calculated sumPS < 1 - 1e-12;
@@ -233,7 +184,6 @@ Union model coefficients from the 4-level model and the 3-level model
  */
 proc sql;
   create table Work.psBetas as
-    select * from Work.psBetas4Level union corr
     select * from Work.psBetas3Level ;
 quit;
 
@@ -274,7 +224,6 @@ Calculate IPTW
                indNAFattyLiverDis;
 proc sql;
   create table Work.ps as
-    select "4-level exposure" as model, exposure4 as exposure, &varlist from Work.ps4Level union corr
     select "3-level exposure" as model, exposure3 as exposure, &varlist from Work.ps3Level 
     order by indexID, model, exposure;
   alter table Work.ps add iptw numeric;
@@ -320,7 +269,7 @@ proc sql;
          Work.commonSupportRegion B on (A.model = B.model);
   select model,
          exposure, 
-     _level_, 
+         _level_, 
          sum(indCommonSupport = 1) as n1, 
          sum(indCommonSupport = 1) / sum(^missing(indCommonSupport)) format = percent9.3 as prop1,
          sum(indCommonSupport = 0) as n0, 
