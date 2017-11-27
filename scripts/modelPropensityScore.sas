@@ -159,9 +159,10 @@ Some parameters blow up; exlude these from the model estimation
 proc logistic data = Work.allCovariates outest = Work.psBetas3Level;
   where database = "&db";
   class exposure3 (ref = "TNF") 
+        catAge (ref = "70+")
         sex (ref = "M") 
         / param = ref;
-  model exposure3 = age
+  model exposure3 = catAge
                     sex
                     /* indAmyloidosis */
                     indAortInsuffRegurg
@@ -202,9 +203,10 @@ run;
 proc logistic data = Work.allCovariates outest = Work.psBetas3Level;
   where database = "&db";
   class exposure3 (ref = "TNF") 
+        catAge (ref = "70+")
         sex (ref = "M") 
         / param = ref;
-  model exposure3 = age
+  model exposure3 = catAge
                     sex
                     /* indAmyloidosis */
                     indAortInsuffRegurg
@@ -245,9 +247,10 @@ run;
 proc logistic data = Work.allCovariates outest = Work.psBetas3Level;
   where database = "&db";
   class exposure3 (ref = "TNF") 
+        catAge (ref = "70+")
         sex (ref = "M") 
         / param = ref;
-  model exposure3 = age
+  model exposure3 = catAge
                     sex
                     indAmyloidosis
                     indAortInsuffRegurg
@@ -323,6 +326,7 @@ Calculate IPTW
  */
 %let varlist = indexID, database, _level_, ps,
                age,
+               catAge,
                sex,
                indAmyloidosis,
                indAortInsuffRegurg,
@@ -462,6 +466,7 @@ proc sql;
            marginalPS,
            iptwStabilized,
            age,
+           catAge,
            sex,
            indAmyloidosis,
            indAortInsuffRegurg,
