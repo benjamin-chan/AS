@@ -15,8 +15,7 @@ Included independent variables:
 
 Variable name | Description
 --------------|------------
-database | MPCD, Marketscan, or Medicare (3-levels)
-age | Continuous
+age | Categorized; <19, 19-29, 30-39, 40-49, 50-59, 60-69, 70+
 sex | Male, Female
 indAmyloidosis | Amyloidosis (any prior to exposure)
 indAortInsuffRegurg | Aortic Insufficiency/Aortic Regurgitation (any prior to exposure)
@@ -48,6 +47,10 @@ indNAFattyLiverDis | Non-alcoholic fatty liver disease
 
 Model output is probability of exposure to TNF, DMARD, and NSAID or no exposure.
 For our purposes, we focus only on the propensity for TNF exposure.
+
+Model estimation was performed separately for the 3 data sources: MPCD, Marketscan, and Medicare.
+Independent variables were excluded from model estimation if they led to unstable estimates when included in data source-specific models.
+This can occur if the covariate is so rare that zero records with this covariate appear in the model estimation cohort.
 
 The common support region lower bound is the maximum of the lowest TNF propensity score among the 3 exposure groups.
 The common support region upper bound is the minimum of the greatest TNF propensity score among the 3 exposure groups.
@@ -88,12 +91,12 @@ Data was created by [`modelPropensityScore.sas`](../scripts/modelPropensityScore
 
 |indCommonSupport |model            |exposure             |     n| minPS| maxPS| minIPTW| maxIPTW|
 |:----------------|:----------------|:--------------------|-----:|-----:|-----:|-------:|-------:|
-|FALSE            |3-level exposure |TNF                  |    12| 0.764| 0.810|   1.234|   1.308|
-|FALSE            |3-level exposure |DMARD                |    15| 0.000| 0.799|   1.000|   4.976|
-|FALSE            |3-level exposure |NSAID or no exposure |    60| 0.000| 0.031|   1.000|   1.032|
-|TRUE             |3-level exposure |TNF                  | 12974| 0.031| 0.759|   1.318|  32.043|
-|TRUE             |3-level exposure |DMARD                |  7704| 0.031| 0.758|   1.032|   4.126|
-|TRUE             |3-level exposure |NSAID or no exposure | 39244| 0.032| 0.762|   1.033|   4.195|
+|FALSE            |3-level exposure |TNF                  |     7| 0.841| 0.960|   1.041|   1.189|
+|FALSE            |3-level exposure |DMARD                |     2| 0.018| 0.018|   1.018|   1.018|
+|FALSE            |3-level exposure |NSAID or no exposure |    24| 0.010| 0.883|   1.010|   8.512|
+|TRUE             |3-level exposure |TNF                  | 12979| 0.022| 0.840|   1.190|  45.123|
+|TRUE             |3-level exposure |DMARD                |  7717| 0.022| 0.840|   1.023|   6.265|
+|TRUE             |3-level exposure |NSAID or no exposure | 39280| 0.022| 0.781|   1.023|   4.567|
 |NA               |3-level exposure |TNF                  |     1|    NA|    NA|      NA|      NA|
 
 \newline
@@ -101,7 +104,7 @@ Data was created by [`modelPropensityScore.sas`](../scripts/modelPropensityScore
 
 |model            | commonSupportLowerBound| commonSupportUpperBound|
 |:----------------|-----------------------:|-----------------------:|
-|3-level exposure |               0.0312083|               0.7616191|
+|3-level exposure |               0.0221618|               0.8403839|
 
 
 
@@ -118,36 +121,36 @@ Create propensity score deciles.
 
 |model            |exposure             | psDecile|    n|  min|  max|
 |:----------------|:--------------------|--------:|----:|----:|----:|
-|3-level exposure |TNF                  |        1|  266| 0.03| 0.09|
-|3-level exposure |TNF                  |        2|  475| 0.09| 0.11|
-|3-level exposure |TNF                  |        3|  696| 0.11| 0.12|
-|3-level exposure |TNF                  |        4|  863| 0.12| 0.15|
-|3-level exposure |TNF                  |        5| 1139| 0.15| 0.19|
-|3-level exposure |TNF                  |        6| 1348| 0.19| 0.23|
-|3-level exposure |TNF                  |        7| 1667| 0.23| 0.27|
-|3-level exposure |TNF                  |        8| 1912| 0.27| 0.32|
-|3-level exposure |TNF                  |        9| 2022| 0.32| 0.39|
-|3-level exposure |TNF                  |       10| 2586| 0.39| 0.76|
-|3-level exposure |DMARD                |        1|  535| 0.03| 0.09|
-|3-level exposure |DMARD                |        2|  807| 0.09| 0.11|
-|3-level exposure |DMARD                |        3|  776| 0.11| 0.12|
-|3-level exposure |DMARD                |        4|  820| 0.12| 0.15|
-|3-level exposure |DMARD                |        5|  820| 0.15| 0.19|
-|3-level exposure |DMARD                |        6|  877| 0.19| 0.23|
-|3-level exposure |DMARD                |        7|  778| 0.23| 0.27|
-|3-level exposure |DMARD                |        8|  812| 0.27| 0.32|
-|3-level exposure |DMARD                |        9|  694| 0.32| 0.39|
-|3-level exposure |DMARD                |       10|  785| 0.39| 0.76|
-|3-level exposure |NSAID or no exposure |        1| 5192| 0.03| 0.09|
-|3-level exposure |NSAID or no exposure |        2| 4751| 0.09| 0.11|
-|3-level exposure |NSAID or no exposure |        3| 4481| 0.11| 0.12|
-|3-level exposure |NSAID or no exposure |        4| 4310| 0.12| 0.15|
-|3-level exposure |NSAID or no exposure |        5| 4032| 0.15| 0.19|
-|3-level exposure |NSAID or no exposure |        6| 3744| 0.19| 0.23|
-|3-level exposure |NSAID or no exposure |        7| 3649| 0.23| 0.27|
-|3-level exposure |NSAID or no exposure |        8| 3293| 0.27| 0.32|
-|3-level exposure |NSAID or no exposure |        9| 3172| 0.32| 0.39|
-|3-level exposure |NSAID or no exposure |       10| 2620| 0.39| 0.76|
+|3-level exposure |TNF                  |        1|  314| 0.02| 0.06|
+|3-level exposure |TNF                  |        2|  397| 0.06| 0.09|
+|3-level exposure |TNF                  |        3|  709| 0.09| 0.13|
+|3-level exposure |TNF                  |        4|  960| 0.13| 0.17|
+|3-level exposure |TNF                  |        5|  989| 0.17| 0.20|
+|3-level exposure |TNF                  |        6| 1363| 0.20| 0.25|
+|3-level exposure |TNF                  |        7| 1837| 0.25| 0.29|
+|3-level exposure |TNF                  |        8| 1668| 0.29| 0.32|
+|3-level exposure |TNF                  |        9| 2002| 0.32| 0.35|
+|3-level exposure |TNF                  |       10| 2740| 0.35| 0.84|
+|3-level exposure |DMARD                |        1|  543| 0.02| 0.06|
+|3-level exposure |DMARD                |        2|  780| 0.06| 0.09|
+|3-level exposure |DMARD                |        3|  705| 0.09| 0.13|
+|3-level exposure |DMARD                |        4|  995| 0.13| 0.17|
+|3-level exposure |DMARD                |        5|  768| 0.17| 0.20|
+|3-level exposure |DMARD                |        6|  852| 0.20| 0.25|
+|3-level exposure |DMARD                |        7|  851| 0.25| 0.29|
+|3-level exposure |DMARD                |        8|  639| 0.29| 0.32|
+|3-level exposure |DMARD                |        9|  643| 0.32| 0.35|
+|3-level exposure |DMARD                |       10|  941| 0.35| 0.84|
+|3-level exposure |NSAID or no exposure |        1| 5252| 0.02| 0.06|
+|3-level exposure |NSAID or no exposure |        2| 4711| 0.06| 0.09|
+|3-level exposure |NSAID or no exposure |        3| 4636| 0.09| 0.13|
+|3-level exposure |NSAID or no exposure |        4| 4711| 0.13| 0.17|
+|3-level exposure |NSAID or no exposure |        5| 3529| 0.17| 0.20|
+|3-level exposure |NSAID or no exposure |        6| 3817| 0.20| 0.25|
+|3-level exposure |NSAID or no exposure |        7| 3959| 0.25| 0.29|
+|3-level exposure |NSAID or no exposure |        8| 3022| 0.29| 0.32|
+|3-level exposure |NSAID or no exposure |        9| 3327| 0.32| 0.35|
+|3-level exposure |NSAID or no exposure |       10| 2316| 0.35| 0.78|
 
 \newline
 

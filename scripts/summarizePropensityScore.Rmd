@@ -15,8 +15,7 @@ Included independent variables:
 
 Variable name | Description
 --------------|------------
-database | MPCD, Marketscan, or Medicare (3-levels)
-age | Continuous
+age | Categorized; <19, 19-29, 30-39, 40-49, 50-59, 60-69, 70+
 sex | Male, Female
 indAmyloidosis | Amyloidosis (any prior to exposure)
 indAortInsuffRegurg | Aortic Insufficiency/Aortic Regurgitation (any prior to exposure)
@@ -48,6 +47,10 @@ indNAFattyLiverDis | Non-alcoholic fatty liver disease
 
 Model output is probability of exposure to TNF, DMARD, and NSAID or no exposure.
 For our purposes, we focus only on the propensity for TNF exposure.
+
+Model estimation was performed separately for the 3 data sources: MPCD, Marketscan, and Medicare.
+Independent variables were excluded from model estimation if they led to unstable estimates when included in data source-specific models.
+This can occur if the covariate is so rare that zero records with this covariate appear in the model estimation cohort.
 
 The common support region lower bound is the maximum of the lowest TNF propensity score among the 3 exposure groups.
 The common support region upper bound is the minimum of the greatest TNF propensity score among the 3 exposure groups.
@@ -134,13 +137,12 @@ G <-
     scale_x_continuous("Propensity score",
                        trans = "identity",
                        breaks = c(D1$commonSupportLowerBound,
-                                  c(seq(0.2, 0.8, 0.1), 0.95),
+                                  seq(0.1, 0.9, 0.1),
                                   D1$commonSupportUpperBound,
                                   0, 1),
                        limits = c(0, 1),
                        labels = c(sprintf("%.02f", D1$commonSupportLowerBound),
-                                  sprintf("%.01f", seq(0.2, 0.8, 0.1)),
-                                  sprintf("%.02f", c(0.95)),
+                                  sprintf("%.01f", seq(0.1, 0.9, 0.1)),
                                   sprintf("%.02f", D1$commonSupportUpperBound),
                                   0, 1)) +
     scale_color_brewer("", palette = "Set1") +
