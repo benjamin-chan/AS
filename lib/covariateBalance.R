@@ -27,11 +27,13 @@ covariateBalance <- function (type, var, lab) {
     aes(x = factor(psDecile), y = y, color = exposure, group = exposure) +
     geom_point(aes(size = size), alpha = 1/2) +
     geom_line() +
+    labs(title = sprintf("Covariate balance: %s", lab)) +
     scale_x_discrete("TNF propensity score decile") +
     scale_y_continuous(lab) +
     scale_color_brewer("", palette = "Set1") +
     scale_size_continuous("Within group %", guide = "none") +
-    theme(legend.position = "bottom")
+    theme(legend.position = "bottom",
+          plot.title = element_text(hjust = 0.5))
   list(type = type,
        variable = var,
        label = lab,
