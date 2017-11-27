@@ -104,6 +104,7 @@ quit;
 
 
 proc means data = Work.allCovariates;
+  class database exposure3;
   var indAmyloidosis
       indAortInsuffRegurg
       indApicalPulmFib
