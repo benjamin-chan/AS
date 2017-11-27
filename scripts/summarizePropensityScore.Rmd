@@ -1,0 +1,470 @@
+# Propensity score
+
+`r format(Sys.Date(), "%B %d, %Y")`
+
+
+## Description of model
+
+See [`modelPropensityScore.sas`](../scripts/modelPropensityScore.sas) script for details on model.
+
+The propensity of exposure to the three treatments: TNF, DMARD, and NSAID or no exposure, was modeled using a multinomial logistic regression model (SAS `proc logistic`).
+The link function used was a generalized logit.
+TNF exposure was used as the reference exposure.
+
+Included independent variables:
+
+Variable name | Description
+--------------|------------
+age | Categorized; <19, 19-29, 30-39, 40-49, 50-59, 60-69, 70+
+sex | Male, Female
+indAmyloidosis | Amyloidosis (any prior to exposure)
+indAortInsuffRegurg | Aortic Insufficiency/Aortic Regurgitation (any prior to exposure)
+indApicalPulmFib | Apical Pulmonary fibrosis (any prior to exposure)
+indCaudaEquina | Cauda Equina syndrome (any prior to exposure)
+indVertFrac | Clinical vertebral fracture (any prior to exposure)
+indConductBlock | Conduction Block (any prior to exposure)
+indCrohnsDis | Crohn’s Disease (any prior to exposure)
+indHematCa | Hematologic Cancer (any prior to exposure)
+indHospInf | Hospitalized infection (any prior to exposure)
+indIgANeph | IgA nephropathy (any prior to exposure)
+indInterstLungDis | Interstitial lung disease (any prior to exposure)
+indMI | Myocardial infarction (any prior to exposure)
+indNephSyn | Nephrotic syndrome (any prior to exposure)
+indNMSC | Non Melanoma Skin Cancer (any prior to exposure)
+indNonVertOsFrac | Non-vertebral osteoporotic fracture (any prior to exposure)
+indOppInf | Opportunistic infection (any prior to exposure)
+indPsoriasis | Psoriasis (any prior to exposure)
+indPSA | Psoriatic arthritis (any prior to exposure)
+indRestrictLungDis | Restrictive lung disease (any prior to exposure)
+indSolidCa | Solid Cancer (any prior to exposure)
+indSpinalCordComp | Spinal Cord compression (any prior to exposure)
+indUlcerColitis | Ulcerative Colitis (any prior to exposure)
+indUveitis | Uveitis (any prior to exposure)
+indDiabetes | Diabetes
+indHT | Hypertention
+indMetabSyn | Metabolic syndrome
+indNAFattyLiverDis | Non-alcoholic fatty liver disease
+
+Model output is probability of exposure to TNF, DMARD, and NSAID or no exposure.
+For our purposes, we focus only on the propensity for TNF exposure.
+
+Model estimation was performed separately for the 3 data sources: MPCD, Marketscan, and Medicare.
+Independent variables were excluded from model estimation if they led to unstable estimates when included in data source-specific models.
+This can occur if the covariate is so rare that zero records with this covariate appear in the model estimation cohort.
+
+The common support region lower bound is the maximum of the lowest TNF propensity score among the 3 exposure groups.
+The common support region upper bound is the minimum of the greatest TNF propensity score among the 3 exposure groups.
+
+To check covariate balance, subjects are partitioned into deciles defined by the TNF propensity score, regardless of true exposure.
+Model covariates are plotted on the y-axis in relation to TNF propensity decile on the x-axis.
+Comparisons are made between exposure groups to check for balance.
+
+Inverse probability treatment weight (IPTW) for TNF exposure was calculated as
+
+$$
+IPTW_\text{TNF} = \frac{I_\text{TNF}}{\hat{p}_\text{TNF}} + \frac{1 - I_\text{TNF}}{1 - \hat{p}_\text{TNF}}
+$$
+
+where $I_\text{TNF}$ is a 0/1 indicator for TNF exposure.
+
+Stabilized IPTW are calculated as described in
+Austin, P. C., and Stuart, E. A. (2015) Moving towards best practice when
+using inverse probability of treatment weighting (IPTW) using the propensity
+score to estimate causal treatment effects in observational studies. Statist.
+Med., 34: 3661–3679. 
+doi: [10.1002/sim.6607](http://onlinelibrary.wiley.com/doi/10.1002/sim.6607/abstract).
+
+
+## Import data sets
+
+Read deidentified propensity score data.
+Data was created by [`modelPropensityScore.sas`](../scripts/modelPropensityScore.sas).
+
+* Image files saved as [PNG](../figures/densityPS.png), [SVG](../figures/densityPS.svg)
+
+![Densities propensity scores.png](../figures/densityPS.png)
+
+```{r}
+D0 <- 
+  read.csv("../data/processed/psDeidentified.csv") %>% 
+  filter(model == "3-level exposure") %>% 
+  mutate(indCommonSupport = as.logical(indCommonSupport)) %>% 
+  mutate(exposure = droplevels(exposure),
+         X_LEVEL_ = droplevels(X_LEVEL_)) %>% 
+  mutate(exposure = factor(exposure,
+                           levels = c("TNF", "DMARD", "NSAID or no exposure")),
+         X_LEVEL_ = factor(X_LEVEL_,
+                           levels = c("TNF", "DMARD", "NSAID or no exposure")))
+```
+
+\newline
+
+```{r}
+D0 %>%
+  group_by(indCommonSupport, model, exposure) %>% 
+  summarize(n = length(ps),
+            minPS = min(ps, na.rm = TRUE),
+            maxPS = max(ps, na.rm = TRUE),
+            minIPTW = min(iptw, na.rm = TRUE),
+            maxIPTW = max(iptw, na.rm = TRUE)) %>% 
+  kable(digits = 3)
+```
+
+\newline
+
+```{r}
+D1 <- 
+  read.csv("../data/processed/commonSupportRegion.csv") %>% 
+  filter(model == "3-level exposure")
+D1 %>% kable()
+```
+
+```{r, fig.show = "hide", warning = FALSE, message = FALSE}
+f <- "densityPS"
+G <- 
+  D0 %>% 
+  mutate(X_LEVEL_ = factor(sprintf("Propensity of %s", X_LEVEL_),
+                           levels = sprintf("Propensity of %s",
+                                            c("TNF", "DMARD", "NSAID or no exposure")))) %>% 
+  ggplot +
+    ggtitle("Propensity score\nCommon support") +
+    aes(x = ps, color = exposure, fill = exposure) +
+    annotate("rect", xmin = 0, xmax = D1$commonSupportLowerBound, ymin = -Inf, ymax = Inf, alpha = 1/4) +
+    annotate("rect", xmin = D1$commonSupportUpperBound, xmax = 1, ymin = -Inf, ymax = Inf, alpha = 1/4) +
+    geom_density(alpha = 1/3) +
+    facet_wrap(~ X_LEVEL_, scales = "free_y", ncol = 1) + 
+    scale_y_continuous("Density") +
+    scale_x_continuous("Propensity score",
+                       trans = "identity",
+                       breaks = c(D1$commonSupportLowerBound,
+                                  seq(0.1, 0.9, 0.1),
+                                  D1$commonSupportUpperBound,
+                                  0, 1),
+                       limits = c(0, 1),
+                       labels = c(sprintf("%.02f", D1$commonSupportLowerBound),
+                                  sprintf("%.01f", seq(0.1, 0.9, 0.1)),
+                                  sprintf("%.02f", D1$commonSupportUpperBound),
+                                  0, 1)) +
+    scale_color_brewer("", palette = "Set1") +
+    scale_fill_brewer("", palette = "Set1") +
+    theme(axis.text.y = element_blank(),
+          axis.ticks.y = element_blank(),
+          legend.position = "bottom",
+          panel.grid = element_blank(),
+          plot.title = element_text(hjust = 0.5))
+ggsave(paste0("../figures/", f, ".png"), dpi = 300)
+ggsave(paste0("../figures/", f, ".svg"), dpi = 300)
+```
+
+
+## Covariate balance
+
+Include only episodes with propensity scores in the common support region.
+
+```{r}
+df <- 
+  D0 %>% 
+  filter(indCommonSupport == TRUE)
+```
+
+**Propensity of TNF.**
+Create propensity score deciles.
+
+```{r}
+df <-
+  df %>% 
+  filter(X_LEVEL_ == "TNF") %>% 
+  group_by(model) %>% 
+  mutate(psDecile = cut(ps,
+                        breaks = quantile(ps, probs = seq(0, 1, 0.1)),
+                        include.lowest = TRUE,
+                        label = FALSE)) %>% 
+  mutate(psDecileLabel = sprintf("%d: %s",
+                                 psDecile,
+                                 gsub(",",
+                                      ", ",
+                                      cut(ps,
+                                          breaks = quantile(ps, probs = seq(0, 1, 0.1)),
+                                          include.lowest = TRUE,
+                                          dig.lab = 2))))
+df %>% 
+  group_by(model, exposure, psDecile) %>% 
+  summarize(n = length(ps), min = min(ps), max = max(ps)) %>% 
+  kable(digits = 2)
+```
+
+\newline
+
+
+### Demographic characteristics
+
+![covarBalGender.png](../figures/covarBalGender.png)
+
+```{r, fig.show = "hide", warning = FALSE, message = FALSE}
+f <- "covarBalGender"
+df <- df %>% mutate(genderFemale = SEX == "F")
+L <- covariateBalance("dichotomous", "genderFemale", "% Gender, female")
+ggsave(paste0("../figures/", f, ".png"), dpi = 300)
+ggsave(paste0("../figures/", f, ".svg"), dpi = 300)
+```
+
+![covarBalAge.png](../figures/covarBalAge.png)
+
+```{r, fig.show = "hide", warning = FALSE, message = FALSE}
+f <- "covarBalAge"
+L <- covariateBalance("continuous", "age", "Age, mean")
+ggsave(paste0("../figures/", f, ".png"), dpi = 300)
+ggsave(paste0("../figures/", f, ".svg"), dpi = 300)
+```
+
+
+### Other covariates
+
+![covarBalDiabetes.png](../figures/covarBalDiabetes.png)
+
+```{r, fig.show = "hide", warning = FALSE, message = FALSE}
+f <- "covarBalDiabetes"
+L <- covariateBalance("dichotomous", "indDiabetes", "% Diabetes")
+ggsave(paste0("../figures/", f, ".png"), dpi = 300)
+ggsave(paste0("../figures/", f, ".svg"), dpi = 300)
+```
+
+![covarBalHT.png](../figures/covarBalHT.png)
+
+```{r, fig.show = "hide", warning = FALSE, message = FALSE}
+f <- "covarBalHT"
+L <- covariateBalance("dichotomous", "indHT", "% Hypertension")
+ggsave(paste0("../figures/", f, ".png"), dpi = 300)
+ggsave(paste0("../figures/", f, ".svg"), dpi = 300)
+```
+
+![covarBalMetabSyn.png](../figures/covarBalMetabSyn.png)
+
+```{r, fig.show = "hide", warning = FALSE, message = FALSE}
+f <- "covarBalMetabSyn"
+L <- covariateBalance("dichotomous", "indMetabSyn", "% Metabolic syndrome")
+ggsave(paste0("../figures/", f, ".png"), dpi = 300)
+ggsave(paste0("../figures/", f, ".svg"), dpi = 300)
+```
+
+![covarBalNAFattyLiverDis.png](../figures/covarBalNAFattyLiverDis.png)
+
+```{r, fig.show = "hide", warning = FALSE, message = FALSE}
+f <- "covarBalNAFattyLiverDis"
+L <- covariateBalance("dichotomous", "indNAFattyLiverDis", "% Non-alcoholic fatty liver disease")
+ggsave(paste0("../figures/", f, ".png"), dpi = 300)
+ggsave(paste0("../figures/", f, ".svg"), dpi = 300)
+```
+
+
+### Comorbidities
+
+![covarBalHematCa.png](../figures/covarBalHematCa.png)
+
+```{r, fig.show = "hide", warning = FALSE, message = FALSE}
+f <- "covarBalHematCa"
+L <- covariateBalance("dichotomous", "indHematCa", "% Hematologic Cancer")
+ggsave(paste0("../figures/", f, ".png"), dpi = 300)
+ggsave(paste0("../figures/", f, ".svg"), dpi = 300)
+```
+
+![covarBalNMSC.png](../figures/covarBalNMSC.png)
+
+```{r, fig.show = "hide", warning = FALSE, message = FALSE}
+f <- "covarBalNMSC"
+L <- covariateBalance("dichotomous", "indNMSC", "% Non Melanoma Skin Cancer")
+ggsave(paste0("../figures/", f, ".png"), dpi = 300)
+ggsave(paste0("../figures/", f, ".svg"), dpi = 300)
+```
+
+![covarBalSolidCa.png](../figures/covarBalSolidCa.png)
+
+```{r, fig.show = "hide", warning = FALSE, message = FALSE}
+f <- "covarBalSolidCa"
+L <- covariateBalance("dichotomous", "indSolidCa", "% Solid Cancer")
+ggsave(paste0("../figures/", f, ".png"), dpi = 300)
+ggsave(paste0("../figures/", f, ".svg"), dpi = 300)
+```
+
+![covarBalAortInsuffRegurg.png](../figures/covarBalAortInsuffRegurg.png)
+
+```{r, fig.show = "hide", warning = FALSE, message = FALSE}
+f <- "covarBalAortInsuffRegurg"
+L <- covariateBalance("dichotomous", "indAortInsuffRegurg", "% Aortic Insufficiency/Aortic Regurgitation")
+ggsave(paste0("../figures/", f, ".png"), dpi = 300)
+ggsave(paste0("../figures/", f, ".svg"), dpi = 300)
+```
+
+![covarBalConductBlock.png](../figures/covarBalConductBlock.png)
+
+```{r, fig.show = "hide", warning = FALSE, message = FALSE}
+f <- "covarBalConductBlock"
+L <- covariateBalance("dichotomous", "indConductBlock", "% Conduction Block")
+ggsave(paste0("../figures/", f, ".png"), dpi = 300)
+ggsave(paste0("../figures/", f, ".svg"), dpi = 300)
+```
+
+![covarBalMI.png](../figures/covarBalMI.png)
+
+```{r, fig.show = "hide", warning = FALSE, message = FALSE}
+f <- "covarBalMI"
+L <- covariateBalance("dichotomous", "indMI", "% Myocardial infarction")
+ggsave(paste0("../figures/", f, ".png"), dpi = 300)
+ggsave(paste0("../figures/", f, ".svg"), dpi = 300)
+```
+
+![covarBalHospInf.png](../figures/covarBalHospInf.png)
+
+```{r, fig.show = "hide", warning = FALSE, message = FALSE}
+f <- "covarBalHospInf"
+L <- covariateBalance("dichotomous", "indHospInf", "% Hospitalized infection")
+ggsave(paste0("../figures/", f, ".png"), dpi = 300)
+ggsave(paste0("../figures/", f, ".svg"), dpi = 300)
+```
+
+![covarBalOppInf.png](../figures/covarBalOppInf.png)
+
+```{r, fig.show = "hide", warning = FALSE, message = FALSE}
+f <- "covarBalOppInf"
+L <- covariateBalance("dichotomous", "indOppInf", "% Opportunistic infection")
+ggsave(paste0("../figures/", f, ".png"), dpi = 300)
+ggsave(paste0("../figures/", f, ".svg"), dpi = 300)
+```
+
+![covarBalAmyloidosis.png](../figures/covarBalAmyloidosis.png)
+
+```{r, fig.show = "hide", warning = FALSE, message = FALSE}
+f <- "covarBalAmyloidosis"
+L <- covariateBalance("dichotomous", "indAmyloidosis", "% Amyloidosis")
+ggsave(paste0("../figures/", f, ".png"), dpi = 300)
+ggsave(paste0("../figures/", f, ".svg"), dpi = 300)
+```
+
+![covarBalIgANeph.png](../figures/covarBalIgANeph.png)
+
+```{r, fig.show = "hide", warning = FALSE, message = FALSE}
+f <- "covarBalIgANeph"
+L <- covariateBalance("dichotomous", "indIgANeph", "% IgA nephropathy")
+ggsave(paste0("../figures/", f, ".png"), dpi = 300)
+ggsave(paste0("../figures/", f, ".svg"), dpi = 300)
+```
+
+![covarBalNephSyn.png](../figures/covarBalNephSyn.png)
+
+```{r, fig.show = "hide", warning = FALSE, message = FALSE}
+f <- "covarBalNephSyn"
+L <- covariateBalance("dichotomous", "indNephSyn", "% Nephrotic syndrome")
+ggsave(paste0("../figures/", f, ".png"), dpi = 300)
+ggsave(paste0("../figures/", f, ".svg"), dpi = 300)
+```
+
+![covarBalApicalPulmFib.png](../figures/covarBalApicalPulmFib.png)
+
+```{r, fig.show = "hide", warning = FALSE, message = FALSE}
+f <- "covarBalApicalPulmFib"
+L <- covariateBalance("dichotomous", "indApicalPulmFib", "% Apical Pulmonary fibrosis")
+ggsave(paste0("../figures/", f, ".png"), dpi = 300)
+ggsave(paste0("../figures/", f, ".svg"), dpi = 300)
+```
+
+![covarBalInterstLungDis.png](../figures/covarBalInterstLungDis.png)
+
+```{r, fig.show = "hide", warning = FALSE, message = FALSE}
+f <- "covarBalInterstLungDis"
+L <- covariateBalance("dichotomous", "indInterstLungDis", "% Interstitial lung disease")
+ggsave(paste0("../figures/", f, ".png"), dpi = 300)
+ggsave(paste0("../figures/", f, ".svg"), dpi = 300)
+```
+
+![covarBalRestrictLungDis.png](../figures/covarBalRestrictLungDis.png)
+
+```{r, fig.show = "hide", warning = FALSE, message = FALSE}
+f <- "covarBalRestrictLungDis"
+L <- covariateBalance("dichotomous", "indRestrictLungDis", "% Restrictive lung disease")
+ggsave(paste0("../figures/", f, ".png"), dpi = 300)
+ggsave(paste0("../figures/", f, ".svg"), dpi = 300)
+```
+
+![covarBalCaudaEquina.png](../figures/covarBalCaudaEquina.png)
+
+```{r, fig.show = "hide", warning = FALSE, message = FALSE}
+f <- "covarBalCaudaEquina"
+L <- covariateBalance("dichotomous", "indCaudaEquina", "% Cauda Equina syndrome")
+ggsave(paste0("../figures/", f, ".png"), dpi = 300)
+ggsave(paste0("../figures/", f, ".svg"), dpi = 300)
+```
+
+![covarBalSpinalCordComp.png](../figures/covarBalSpinalCordComp.png)
+
+```{r, fig.show = "hide", warning = FALSE, message = FALSE}
+f <- "covarBalSpinalCordComp"
+L <- covariateBalance("dichotomous", "indSpinalCordComp", "% Spinal Cord compression")
+ggsave(paste0("../figures/", f, ".png"), dpi = 300)
+ggsave(paste0("../figures/", f, ".svg"), dpi = 300)
+```
+
+![covarBalVertFrac.png](../figures/covarBalVertFrac.png)
+
+```{r, fig.show = "hide", warning = FALSE, message = FALSE}
+f <- "covarBalVertFrac"
+L <- covariateBalance("dichotomous", "indVertFrac", "% Clinical vertebral fracture")
+ggsave(paste0("../figures/", f, ".png"), dpi = 300)
+ggsave(paste0("../figures/", f, ".svg"), dpi = 300)
+```
+
+![covarBalNonVertOsFrac.png](../figures/covarBalNonVertOsFrac.png)
+
+```{r, fig.show = "hide", warning = FALSE, message = FALSE}
+f <- "covarBalNonVertOsFrac"
+L <- covariateBalance("dichotomous", "indNonVertOsFrac", "% Non-vertebral osteoporotic fracture")
+ggsave(paste0("../figures/", f, ".png"), dpi = 300)
+ggsave(paste0("../figures/", f, ".svg"), dpi = 300)
+```
+
+
+### Extra-articular manifestations (EAMs)
+
+![covarBalCrohnsDis.png](../figures/covarBalCrohnsDis.png)
+
+```{r, fig.show = "hide", warning = FALSE, message = FALSE}
+f <- "covarBalCrohnsDis"
+L <- covariateBalance("dichotomous", "indCrohnsDis", "% Crohn's Disease")
+ggsave(paste0("../figures/", f, ".png"), dpi = 300)
+ggsave(paste0("../figures/", f, ".svg"), dpi = 300)
+```
+
+![covarBalUlcerColitis.png](../figures/covarBalUlcerColitis.png)
+
+```{r, fig.show = "hide", warning = FALSE, message = FALSE}
+f <- "covarBalUlcerColitis"
+L <- covariateBalance("dichotomous", "indUlcerColitis", "% Ulcerative Colitis")
+ggsave(paste0("../figures/", f, ".png"), dpi = 300)
+ggsave(paste0("../figures/", f, ".svg"), dpi = 300)
+```
+
+![covarBalPsoriasis.png](../figures/covarBalPsoriasis.png)
+
+```{r, fig.show = "hide", warning = FALSE, message = FALSE}
+f <- "covarBalPsoriasis"
+L <- covariateBalance("dichotomous", "indPsoriasis", "% Psoriasis")
+ggsave(paste0("../figures/", f, ".png"), dpi = 300)
+ggsave(paste0("../figures/", f, ".svg"), dpi = 300)
+```
+
+![covarBalPSA.png](../figures/covarBalPSA.png)
+
+```{r, fig.show = "hide", warning = FALSE, message = FALSE}
+f <- "covarBalPSA"
+L <- covariateBalance("dichotomous", "indPSA", "% Psoriatic arthritis")
+ggsave(paste0("../figures/", f, ".png"), dpi = 300)
+ggsave(paste0("../figures/", f, ".svg"), dpi = 300)
+```
+
+![covarBalUveitis.png](../figures/covarBalUveitis.png)
+
+```{r, fig.show = "hide", warning = FALSE, message = FALSE}
+f <- "covarBalUveitis"
+L <- covariateBalance("dichotomous", "indUveitis", "% Uveitis")
+ggsave(paste0("../figures/", f, ".png"), dpi = 300)
+ggsave(paste0("../figures/", f, ".svg"), dpi = 300)
+```

@@ -39,8 +39,8 @@ proc sql;
   create table UCB.temp&type.DxAllControl as
     select * from UCB.temp&type.DxMPCDControl union corr
     select * from UCB.temp&type.DxSABRControl ;
-  select "UCB.temp&type.DxAllControl" as table, database, count(*) format = comma20.0 as n from UCB.temp&type.RxAllControl group by database;
-  drop table UCB.temp&type.RxMPCDControl;
-  drop table UCB.temp&type.RxSABRControl;
+  select "UCB.temp&type.DxAllControl" as table, database, count(*) format = comma20.0 as n from UCB.temp&type.DxAllControl group by database;
+  drop table UCB.temp&type.DxMPCDControl;
+  drop table UCB.temp&type.DxSABRControl;
 
 quit;

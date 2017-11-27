@@ -54,9 +54,7 @@ proc sql;
            C.age, C.sex,
            C.comorbidity,
            1 as indPreExposure
-    from (&select1 from UCB.tempPrevDxMPCD A &join1 union corr
-          &select1 from UCB.tempPrevDxUCB  A &join1 union corr
-          &select1 from UCB.tempPrevDxSABR A &join1 ) C;
+    from (&select1 from UCB.tempPrevDxAll A &join1) C;
 
   select comorbidity, database, exposure, sum(indPreExposure) as sumIndPreExposure
     from DT.comorbiditiesOther
