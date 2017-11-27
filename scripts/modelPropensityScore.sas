@@ -126,18 +126,108 @@ run;
 /* 
 Fit 3-level model
 3 levels of treatment exposure: TNF, DMARD, NSAID or no exposure
+
+Fit separate models for each data source: MPCD, Marketscan, Medicare
+
+Some parameters blow up; exlude these from the model estimation
  */
- proc logistic data = Work.allCovariates outest = Work.psBetas3Level;
+%let db = MPCD;
+proc logistic data = Work.allCovariates outest = Work.psBetas3Level;
+  where database = "&db";
   class exposure3 (ref = "TNF") 
-        database (ref = "Medicare") 
         sex (ref = "M") 
         / param = ref;
-  model exposure3 = database
-                    age
+  model exposure3 = age
+                    sex
+                    /* indAmyloidosis */
+                    indAortInsuffRegurg
+                    /* indApicalPulmFib */
+                    /* indCaudaEquina */
+                    indVertFrac
+                    /* indConductBlock */
+                    indCrohnsDis
+                    indHematCa
+                    indHospInf
+                    indIgANeph
+                    /* indInterstLungDis */
+                    /* indMI */
+                    /* indNephSyn */
+                    /* indNMSC */
+                    indNonVertOsFrac
+                    indOppInf
+                    indPsoriasis
+                    indPSA
+                    indRestrictLungDis
+                    indSolidCa
+                    /* indSpinalCordComp */
+                    indUlcerColitis
+                    indUveitis
+                    indDiabetes
+                    indHT
+                    indMetabSyn
+                    indNAFattyLiverDis
+                    / link = glogit rsquare;
+  output out = Work.ps3Level predicted = ps xbeta = xbeta;
+run;
+proc datasets library = work nolist;
+  change psBetas3Level = psBetas3Level&db
+         ps3Level = ps3Level&db;
+run;
+
+%let db = Marketscan;
+proc logistic data = Work.allCovariates outest = Work.psBetas3Level;
+  where database = "&db";
+  class exposure3 (ref = "TNF") 
+        sex (ref = "M") 
+        / param = ref;
+  model exposure3 = age
+                    sex
+                    /* indAmyloidosis */
+                    indAortInsuffRegurg
+                    /* indApicalPulmFib */
+                    /* indCaudaEquina */
+                    indVertFrac
+                    indConductBlock
+                    indCrohnsDis
+                    indHematCa
+                    indHospInf
+                    indIgANeph
+                    indInterstLungDis
+                    indMI
+                    /* indNephSyn */
+                    indNMSC
+                    indNonVertOsFrac
+                    indOppInf
+                    indPsoriasis
+                    indPSA
+                    indRestrictLungDis
+                    indSolidCa
+                    indSpinalCordComp
+                    indUlcerColitis
+                    indUveitis
+                    indDiabetes
+                    indHT
+                    indMetabSyn
+                    indNAFattyLiverDis
+                    / link = glogit rsquare;
+  output out = Work.ps3Level predicted = ps xbeta = xbeta;
+run;
+proc datasets library = work nolist;
+  change psBetas3Level = psBetas3Level&db
+         ps3Level = ps3Level&db;
+run;
+
+%let db = Medicare;
+proc logistic data = Work.allCovariates outest = Work.psBetas3Level;
+  where database = "&db";
+  class exposure3 (ref = "TNF") 
+        sex (ref = "M") 
+        / param = ref;
+  model exposure3 = age
                     sex
                     indAmyloidosis
                     indAortInsuffRegurg
-                    indApicalPulmFib
+                    /* indApicalPulmFib */
                     indCaudaEquina
                     indVertFrac
                     indConductBlock
@@ -165,16 +255,31 @@ Fit 3-level model
                     / link = glogit rsquare;
   output out = Work.ps3Level predicted = ps xbeta = xbeta;
 run;
+proc datasets library = work nolist;
+  change psBetas3Level = psBetas3Level&db
+         ps3Level = ps3Level&db;
+run;
+
+proc sql;
+  create table Work.ps3Level as
+    select * from ps3LevelMPCD union corr
+    select * from ps3LevelMarketscan union corr
+    select * from ps3LevelMedicare ;
+  create table Work.psBetas3Level as
+    select "MPCD" as database, * from psBetas3LevelMPCD union corr
+    select "Marketscan" as database, * from psBetas3LevelMarketscan union corr
+    select "Medicare" as database, * from psBetas3LevelMedicare ;
+quit;
 
 
 /* 
 Check
  */
 proc sql;
-  select indexID,
+  select database, indexID,
          sum(ps) as sumPS 
     from Work.ps3Level
-    group by indexID
+    group by database, indexID
     having calculated sumPS < 1 - 1e-12;
 quit;
 
