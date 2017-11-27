@@ -31,6 +31,17 @@ proc sql;
              end as exposure3,
            A.PATID,
            A.age,
+           case
+             when age = 0 then "0"
+             when  1 <= age <= 18 then "1-18"
+             when 19 <= age <= 29 then "19-29"
+             when 30 <= age <= 39 then "30-39"
+             when 40 <= age <= 49 then "40-49"
+             when 50 <= age <= 59 then "50-59"
+             when 60 <= age <= 69 then "60-69"
+             when 70 <= age       then "70+"
+             else ""
+             end as catAge,
            A.SEX,
            A.indexID,
            max(0, B.indAmyloidosis     ) as indAmyloidosis,
@@ -121,6 +132,18 @@ proc means data = Work.allCovariates;
       indMetabSyn
       indNAFattyLiverDis;
 run;
+proc sql;
+  select database,
+         catAge,
+         min(age) as minAge,
+         max(age) as maxAge,
+         count(*) as n,
+         sum(exposure3 = "TNF") as nTNF,
+         sum(exposure3 = "DMARD") as nDMARD,
+         sum(exposure3 = "NSAID or no exposure") as nNSAID
+  from Work.AllCovariates
+  group by database, catAge;
+quit;
 
 
 /* 
