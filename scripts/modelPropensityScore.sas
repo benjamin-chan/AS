@@ -170,7 +170,7 @@ proc logistic data = Work.allCovariates outest = Work.psBetas3Level;
                     /* indCaudaEquina */
                     indVertFrac
                     /* indConductBlock */
-                    indCrohnsDis
+                    /* indCrohnsDis */
                     indHematCa
                     indHospInf
                     indIgANeph
@@ -214,7 +214,7 @@ proc logistic data = Work.allCovariates outest = Work.psBetas3Level;
                     /* indCaudaEquina */
                     indVertFrac
                     indConductBlock
-                    indCrohnsDis
+                    /* indCrohnsDis */
                     indHematCa
                     indHospInf
                     indIgANeph
@@ -258,7 +258,7 @@ proc logistic data = Work.allCovariates outest = Work.psBetas3Level;
                     indCaudaEquina
                     indVertFrac
                     indConductBlock
-                    indCrohnsDis
+                    /* indCrohnsDis */
                     indHematCa
                     indHospInf
                     indIgANeph
