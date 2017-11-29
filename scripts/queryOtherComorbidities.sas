@@ -78,5 +78,54 @@ quit;
 
 
 
+proc sql;
+/* 
+Oral corticosteroid use
+Mean outpatient prescribed daily dose of prednisone equivalents in the 6
+months prior to index date: less than 5 mg/d (low dose), 5 to less than 10
+mg/d (medium dose), and 10 mg/d or more (high dose)
+ */
+  create table DT.rxOralCorticosteroid as
+    select C.database, C.patid, C.indexID,
+           1 as indOralCorticosteroid,
+           sum(C.daysAtRisk * C.prednisodeEquivalentDose) as sumPredEq,
+           sum(C.daysAtRisk) as sumDaysSupply,
+           sum(C.daysAtRisk * C.prednisodeEquivalentDose) / 183 as meanPredEqDose,
+           case 
+             when 0 <= sum(C.daysAtRisk * C.prednisodeEquivalentDose) / 183 < 2.5 then "Low (<2.5 mg/d)"
+             when 2.5 <= sum(C.daysAtRisk * C.prednisodeEquivalentDose) / 183 < 5 then "Medium-Low (2.5-5 mg/d)"
+             when 5 <= sum(C.daysAtRisk * C.prednisodeEquivalentDose) / 183 < 10 then "Medium-High (5-10 mg/d)"
+             when 10 <= sum(C.daysAtRisk * C.prednisodeEquivalentDose) / 183 then "High (10+ mg/d)"
+             else ""
+             end as meanPredEqDoseCat
+    from (select A.database, A.patid, A.indexID, 
+                 A.indexDate - 183 format = mmddyy10. as riskStart, 
+                 A.indexDate, 
+                 A.dispense_date, 
+                 A.dispense_date + A.dispense_sup - 1 format = mmddyy10. as dispense_end, 
+                 A.dispense_sup, 
+                 case
+                   /* Rx completely in at-risk period */
+                   when (A.indexDate - 183 <= A.dispense_date) & ((A.dispense_date + A.dispense_sup - 1) <= A.indexDate) 
+                     then A.dispense_sup 
+                   /* Rx begins before at-risk period */
+                   when (A.dispense_date < A.indexDate - 183) 
+                     then A.dispense_sup - (A.indexDate - 183 - A.dispense_date) 
+                   /* Rx ends after at-risk period */
+                   when (A.indexDate < (A.dispense_date + A.dispense_sup - 1)) 
+                     then A.dispense_sup - (A.dispense_date + A.dispense_sup - 1 - A.indexDate) 
+                   else .
+                   end as daysAtRisk,
+                 B.prednisodeEquivalentDose
+          from UCB.tempPrevRxAll A inner join
+               DT.lookupNDC B on (A.ndc = B.ndc)
+          where ^missing(B.prednisodeEquivalentDose) & 
+                ((A.indexDate - 183 <= A.dispense_date <= A.indexDate) | 
+                  (A.indexDate - 183 <= (A.dispense_date + A.dispense_sup - 1) <= A.indexDate))) C
+    group by C.database, C.patid, C.indexID;
+quit;
+
+
+
 
 ods html close;
