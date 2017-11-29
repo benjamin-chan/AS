@@ -195,24 +195,31 @@ df <-
 Create propensity score deciles.
 
 ```{r}
+cut <- 
+  breaks %>% 
+  ungroup() %>% 
+  mutate(psDecile = sprintf("cut%s", psDecile)) %>% 
+  spread(psDecile, cutpoint)
 df <-
-  df %>% 
+  D0 %>% 
+  filter(indCommonSupport == TRUE) %>% 
   filter(X_LEVEL_ == "TNF") %>% 
-  group_by(model) %>% 
-  mutate(psDecile = cut(ps,
-                        breaks = quantile(ps, probs = seq(0, 1, 0.1)),
-                        include.lowest = TRUE,
-                        label = FALSE)) %>% 
-  mutate(psDecileLabel = sprintf("%d: %s",
-                                 psDecile,
-                                 gsub(",",
-                                      ", ",
-                                      cut(ps,
-                                          breaks = quantile(ps, probs = seq(0, 1, 0.1)),
-                                          include.lowest = TRUE,
-                                          dig.lab = 2))))
+  group_by(model, database) %>% 
+  merge(., cut, by = c("model", "database")) %>% 
+  mutate(psDecile = case_when(     0 <= .$ps & .$ps <= .$cut1 ~ 1,
+                              .$cut1 <  .$ps & .$ps <= .$cut2 ~ 2,
+                              .$cut2 <  .$ps & .$ps <= .$cut3 ~ 3,
+                              .$cut3 <  .$ps & .$ps <= .$cut4 ~ 4,
+                              .$cut4 <  .$ps & .$ps <= .$cut5 ~ 5,
+                              .$cut5 <  .$ps & .$ps <= .$cut6 ~ 6,
+                              .$cut6 <  .$ps & .$ps <= .$cut7 ~ 7,
+                              .$cut7 <  .$ps & .$ps <= .$cut8 ~ 8,
+                              .$cut8 <  .$ps & .$ps <= .$cut9 ~ 9,
+                              .$cut9 <  .$ps & .$ps <= 1      ~ 10,
+                              TRUE ~ NaN)) %>% 
+  select(-starts_with("cut"))
 df %>% 
-  group_by(model, exposure, psDecile) %>% 
+  group_by(model, database, exposure, psDecile) %>% 
   summarize(n = length(ps), min = min(ps), max = max(ps)) %>% 
   kable(digits = 2)
 ```

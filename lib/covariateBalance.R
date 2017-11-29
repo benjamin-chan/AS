@@ -6,7 +6,7 @@ covariateBalance <- function (type, var, lab) {
   if (type == "dichotomous") {
     tab <- 
       df %>% 
-      group_by(exposure, psDecile, psDecileLabel) %>% 
+      group_by(exposure, psDecile) %>% 
       summarize(denom = length(ps), min = min(ps), max = max(ps),
                 numer = sum(y)) %>% 
       mutate(y = numer / denom)
@@ -14,7 +14,7 @@ covariateBalance <- function (type, var, lab) {
   } else if (type == "continuous") {
     tab <- 
       df %>% 
-      group_by(exposure, psDecile, psDecileLabel) %>% 
+      group_by(exposure, psDecile) %>% 
       summarize(denom = length(ps), min = min(ps), max = max(ps),
                 y = mean(y, na.rm = TRUE))
     lim <- df %>% ungroup() %>% summarize(min = min(y), max = max(y)) %>% as.numeric
