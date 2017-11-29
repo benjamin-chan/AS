@@ -41,6 +41,20 @@ proc sql;
     drop compact_definion, icd9_list, billable, description, F;
   delete from Work.comorbidityLookup
     where missing(code);
+  insert into Work.comorbidityLookup
+    values ("COPD or emphysema", "4910" )
+    values ("COPD or emphysema", "4911" )
+    values ("COPD or emphysema", "49120")
+    values ("COPD or emphysema", "49121")
+    values ("COPD or emphysema", "49122")
+    values ("COPD or emphysema", "4918" )
+    values ("COPD or emphysema", "4919" )
+    values ("COPD or emphysema", "4920" )
+    values ("COPD or emphysema", "4928" )
+    values ("COPD or emphysema", "496"  )
+    values ("COPD or emphysema", "49320")
+    values ("COPD or emphysema", "49321")
+    values ("COPD or emphysema", "49322");
 quit;
 
 
