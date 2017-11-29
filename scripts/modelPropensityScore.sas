@@ -166,13 +166,13 @@ Fit separate models for each data source: MPCD, Marketscan, Medicare
 
 Some parameters blow up; exlude these from the model estimation
  */
+%let class = exposure3 (ref = "TNF") catAge (ref = "70+") sex (ref = "M") meanPredEqDoseCat (ref = "None") / param = ref;
+
+
 %let db = MPCD;
 proc logistic data = Work.allCovariates outest = Work.psBetas3Level;
   where database = "&db";
-  class exposure3 (ref = "TNF") 
-        catAge (ref = "70+")
-        sex (ref = "M") 
-        / param = ref;
+  class &class;
   model exposure3 = catAge
                     sex
                     /* indAmyloidosis */
@@ -215,10 +215,7 @@ run;
 %let db = Marketscan;
 proc logistic data = Work.allCovariates outest = Work.psBetas3Level;
   where database = "&db";
-  class exposure3 (ref = "TNF") 
-        catAge (ref = "70+")
-        sex (ref = "M") 
-        / param = ref;
+  class &class;
   model exposure3 = catAge
                     sex
                     /* indAmyloidosis */
@@ -261,10 +258,7 @@ run;
 %let db = Medicare;
 proc logistic data = Work.allCovariates outest = Work.psBetas3Level;
   where database = "&db";
-  class exposure3 (ref = "TNF") 
-        catAge (ref = "70+")
-        sex (ref = "M") 
-        / param = ref;
+  class &class;
   model exposure3 = catAge
                     sex
                     indAmyloidosis
@@ -377,7 +371,7 @@ Calculate IPTW
 proc sql;
   create table Work.ps as
     select "3-level exposure" as model, exposure3 as exposure, &varlist from Work.ps3Level 
-    order by indexID, model, exposure;
+    order by indexID, exposure;
   alter table Work.ps add iptw numeric;
   update Work.ps set iptw = (exposure  = _level_) / ps + (exposure ^= _level_) / (1 - ps);
 quit;
