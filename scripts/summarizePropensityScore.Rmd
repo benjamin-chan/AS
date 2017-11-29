@@ -15,7 +15,7 @@ Included independent variables:
 
 Variable name | Description
 --------------|------------
-age | Categorized; <19, 19-29, 30-39, 40-49, 50-59, 60-69, 70+
+age | Categorized: <19, 19-29, 30-39, 40-49, 50-59, 60-69, 70+
 sex | Male, Female
 indAmyloidosis | Amyloidosis (any prior to exposure)
 indAortInsuffRegurg | Aortic Insufficiency/Aortic Regurgitation (any prior to exposure)
@@ -44,6 +44,8 @@ indDiabetes | Diabetes
 indHT | Hypertention
 indMetabSyn | Metabolic syndrome
 indNAFattyLiverDis | Non-alcoholic fatty liver disease
+indCOPDEmphysema | COPD or emphysema
+meanPredEqDoseCat | Categorized: None, Low (<2.5 mg/d), Medium-Low (2.5-5 mg/d), Medium-High (5-10 mg/d), High (10+ mg/d)
 
 Model output is probability of exposure to TNF, DMARD, and NSAID or no exposure.
 For our purposes, we focus only on the propensity for TNF exposure.
@@ -102,9 +104,6 @@ D0 <-
                            levels = c("TNF", "DMARD", "NSAID or no exposure")),
          X_LEVEL_ = factor(X_LEVEL_,
                            levels = c("TNF", "DMARD", "NSAID or no exposure"))) %>% 
-  mutate(X_LEVEL_ = factor(sprintf("Propensity of %s", X_LEVEL_),
-                           levels = sprintf("Propensity of %s",
-                                            c("TNF", "DMARD", "NSAID or no exposure")))) %>% 
   mutate(database = factor(database,
                            levels = c("MPCD", "Marketscan", "Medicare")))
 ```
@@ -119,6 +118,8 @@ D0 %>%
             maxPS = max(ps, na.rm = TRUE),
             minIPTW = min(iptw, na.rm = TRUE),
             maxIPTW = max(iptw, na.rm = TRUE)) %>% 
+  ungroup() %>% 
+  select(-model) %>% 
   kable(digits = 3)
 ```
 
@@ -127,7 +128,8 @@ D0 %>%
 ```{r}
 D1 <- 
   read.csv("../data/processed/commonSupportRegion.csv") %>% 
-  filter(model == "3-level exposure")
+  filter(model == "3-level exposure") %>% 
+  select(-model)
 D1 %>% kable()
 ```
 
@@ -221,6 +223,8 @@ df <-
 df %>% 
   group_by(model, database, exposure, psDecile) %>% 
   summarize(n = length(ps), min = min(ps), max = max(ps)) %>% 
+  ungroup() %>% 
+  select(-model) %>% 
   kable(digits = 2)
 ```
 
