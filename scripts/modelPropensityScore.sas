@@ -384,21 +384,21 @@ For propensity of TNF
 %let exposure = "TNF";
 proc means data = Work.ps n nmiss min max mean median stddev;
   where _level_ in (&exposure);
-  class model _level_ exposure;
+  class model database _level_ exposure;
   var ps;
 run;
 proc sql;
   create table Work.commonSupportRegion as
-    select model,
+    select model, database,
            max(minPS) as commonSupportLowerBound,
            min(maxPS) as commonSupportUpperBound
-    from (select model, exposure,
+    from (select model, database, exposure,
                  min(ps) as minPS,
                  max(ps) as maxPS
           from Work.ps
           where _level_ in (&exposure)
-          group by model, exposure)
-    group by model;
+          group by model, database, exposure)
+    group by model, database;
   select * from Work.commonSupportRegion;
   create table Work.temp as
     select * from Work.ps where _level_ in (&exposure);
@@ -412,8 +412,10 @@ proc sql;
              else 0
              end as indCommonSupport
     from Work.temp A inner join
-         Work.commonSupportRegion B on (A.model = B.model);
+         Work.commonSupportRegion B on (A.model = B.model &
+                                        A.database = B.database);
   select model,
+         database,
          exposure, 
          _level_, 
          sum(indCommonSupport = 1) as n1, 
@@ -421,7 +423,7 @@ proc sql;
          sum(indCommonSupport = 0) as n0, 
          sum(indCommonSupport = 0) / sum(^missing(indCommonSupport)) format = percent9.3 as prop0
     from Work.ps
-    group by model, exposure, _level_;
+    group by model, database, exposure, _level_;
 quit;
 
 
@@ -445,15 +447,18 @@ proc sql;
              as iptwStabilized
     from Work.temp A inner join
          (select model,
+                 database, 
                  exposure, 
                  _level_, 
                  mean(ps) as marginalPS 
           from Work.temp 
-          group by model, exposure, _level_) B on (A.model = B.model & A.exposure = B.exposure);
+          group by model, database, exposure, _level_) B on (A.model = B.model & 
+                                                             A.database = B.database & 
+                                                             A.exposure = B.exposure);
   drop table Work.temp;
 quit;
 proc means data = Work.ps n nmiss min max mean median stddev maxdec = 3;
-  class indCommonSupport model exposure _level_;
+  class indCommonSupport model database exposure _level_;
   var ps marginalPS iptw iptwStabilized;
 run;
 proc corr data = Work.ps;
