@@ -70,7 +70,12 @@ proc sql;
            max(0, AA.indDiabetes       ) as indDiabetes,
            max(0, BB.indHT             ) as indHT,
            max(0, CC.indMetabSyn       ) as indMetabSyn,
-           max(0, DD.indNAFattyLiverDis) as indNAFattyLiverDis
+           max(0, DD.indNAFattyLiverDis) as indNAFattyLiverDis,
+           max(0, EE.indCOPDEmphysema  ) as indCOPDEmphysema,
+           case
+             when FF.meanPredEqDoseCat = "" then "None"
+             else FF.meanPredEqDoseCat
+             end as meanPredEqDoseCat
     from 
       DT.indexLookup A left join
       (select indexID, 1 as indAmyloidosis      from DT.comorbidities      where indPrevPriorToIndex = 1 & prxmatch("/Amyloidosis/"                               , disease    )) B  on (A.indexID = B.indexID ) left join
@@ -99,7 +104,9 @@ proc sql;
       (select indexID, 1 as indDiabetes         from DT.comorbiditiesOther where                           prxmatch("/Diabetes/"                                  , comorbidity)) AA on (A.indexID = AA.indexID) left join
       (select indexID, 1 as indHT               from DT.comorbiditiesOther where                           prxmatch("/Hypertention/"                              , comorbidity)) BB on (A.indexID = BB.indexID) left join
       (select indexID, 1 as indMetabSyn         from DT.comorbiditiesOther where                           prxmatch("/Metabolic syndrome/"                        , comorbidity)) CC on (A.indexID = CC.indexID) left join
-      (select indexID, 1 as indNAFattyLiverDis  from DT.comorbiditiesOther where                           prxmatch("/Non-alcoholic fatty liver disease/"         , comorbidity)) DD on (A.indexID = DD.indexID) ;
+      (select indexID, 1 as indNAFattyLiverDis  from DT.comorbiditiesOther where                           prxmatch("/Non-alcoholic fatty liver disease/"         , comorbidity)) DD on (A.indexID = DD.indexID) left join
+      (select indexID, 1 as indCOPDEmphysema    from DT.comorbiditiesOther where                           prxmatch("/COPD or emphysema/"                         , comorbidity)) EE on (A.indexID = EE.indexID) left join
+      (select indexID, meanPredEqDoseCat        from DT.rxOralCorticosteroid                                                                                                    ) FF on (A.indexID = FF.indexID) ;
 quit;
 
 
@@ -131,7 +138,11 @@ proc means data = Work.allCovariates;
       indDiabetes
       indHT
       indMetabSyn
-      indNAFattyLiverDis;
+      indNAFattyLiverDis
+      indCOPDEmphysema;
+run;
+proc freq data = Work.allCovariates;
+  table database * exposure3 * meanPredEqDoseCat / list;
 run;
 proc sql;
   select database,
@@ -191,6 +202,8 @@ proc logistic data = Work.allCovariates outest = Work.psBetas3Level;
                     indHT
                     indMetabSyn
                     indNAFattyLiverDis
+                    indCOPDEmphysema
+                    meanPredEqDoseCat
                     / link = glogit rsquare;
   output out = Work.ps3Level predicted = ps xbeta = xbeta;
 run;
@@ -235,6 +248,8 @@ proc logistic data = Work.allCovariates outest = Work.psBetas3Level;
                     indHT
                     indMetabSyn
                     indNAFattyLiverDis
+                    indCOPDEmphysema
+                    meanPredEqDoseCat
                     / link = glogit rsquare;
   output out = Work.ps3Level predicted = ps xbeta = xbeta;
 run;
@@ -279,6 +294,8 @@ proc logistic data = Work.allCovariates outest = Work.psBetas3Level;
                     indHT
                     indMetabSyn
                     indNAFattyLiverDis
+                    indCOPDEmphysema
+                    meanPredEqDoseCat
                     / link = glogit rsquare;
   output out = Work.ps3Level predicted = ps xbeta = xbeta;
 run;
@@ -354,7 +371,9 @@ Calculate IPTW
                indDiabetes,
                indHT,
                indMetabSyn,
-               indNAFattyLiverDis;
+               indNAFattyLiverDis,
+               indCOPDEmphysema,
+               meanPredEqDoseCat;
 proc sql;
   create table Work.ps as
     select "3-level exposure" as model, exposure3 as exposure, &varlist from Work.ps3Level 
@@ -494,7 +513,9 @@ proc sql;
            indDiabetes,
            indHT,
            indMetabSyn,
-           indNAFattyLiverDis
+           indNAFattyLiverDis,
+           indCOPDEmphysema,
+           meanPredEqDoseCat
     from DT.ps;
 quit;
 proc export
