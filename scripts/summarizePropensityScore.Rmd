@@ -131,14 +131,36 @@ D1 <-
 D1 %>% kable()
 ```
 
+Create propensity score deciles cutpoints.
+
+```{r}
+breaks <- 
+  D0 %>% 
+  filter(indCommonSupport == TRUE) %>% 
+  filter(X_LEVEL_ == "TNF") %>% 
+  filter(exposure == "TNF") %>% 
+  group_by(model, database) %>% 
+  mutate(psDecile = cut(ps,
+                        breaks = quantile(ps, probs = seq(0, 1, 0.1)),
+                        include.lowest = TRUE,
+                        label = FALSE)) %>% 
+  group_by(model, database, psDecile) %>% 
+  summarize(cutpoint = max(ps)) %>% 
+  filter(psDecile < 10)
+```
+
 ```{r, fig.show = "hide", warning = FALSE, message = FALSE}
 f <- "densityPS"
 G <- 
   D0 %>% 
+  mutate(X_LEVEL_ = factor(sprintf("Propensity of %s", X_LEVEL_),
+                           levels = sprintf("Propensity of %s",
+                                            c("TNF", "DMARD", "NSAID or no exposure")))) %>% 
   ggplot() +
     ggtitle("Propensity Score Common Support") +
     geom_rect(data = D1, aes(xmin = 0, xmax = commonSupportLowerBound, ymin = -Inf, ymax = Inf), alpha = 1/4) +
     geom_rect(data = D1, aes(xmin = commonSupportUpperBound, xmax = 1, ymin = -Inf, ymax = Inf), alpha = 1/4) +
+    geom_vline(data = breaks, aes(xintercept = cutpoint), alpha = 1/4) +
     geom_density(aes(x = ps, color = exposure, fill = exposure), alpha = 1/3) +
     scale_y_continuous("Density") +
     scale_x_continuous("",
@@ -151,7 +173,7 @@ G <-
     facet_grid(database ~ X_LEVEL_) +
     theme(axis.text.y = element_blank(),
           axis.ticks.y = element_blank(),
-          legend.position = "top",
+          legend.position = "bottom",
           panel.grid = element_blank(),
           plot.title = element_text(hjust = 0.5))
 ggsave(paste0("../figures/", f, ".png"), width = 6, height = 6, dpi = 300)
