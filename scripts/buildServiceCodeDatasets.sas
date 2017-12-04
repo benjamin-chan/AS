@@ -39,16 +39,17 @@ and CMS use different coding system.
 Service code data sets for prevalence (non-fracture outcomes)
  */
 %let type = Prev;
-%let select1 = select A.*, B.enc_type, B.admit_date, B.begin_date, B.discharge_date, B.end_date, B.dx_type, B.dx, B.pdx, "ICD9-DX" as codeType, B.dx as code;
+%let select1 = select A.*, 
+                      B.encounterID, B.enc_type, B.admit_date, B.begin_date, B.discharge_date, B.end_date, B.dx_type, B.dx, B.pdx, "ICD9-DX" as codeType, B.dx as code;
 %let on1 = on (A.patid = B.patid);
-%let select2 = select A.patid, A.enc_type, A.admit_date, A.begin_date, A.discharge_date, A.end_date, A.dx_type, A.dx, A.pdx;
+%let select2 = select A.patid, A.encounterID, A.enc_type, A.admit_date, A.begin_date, A.discharge_date, A.end_date, A.dx_type, A.dx, A.pdx;
 %let where2 = where A.dx_type = "09" & A.enc_type in ("IP", "AV", "ED", "NH", "HH");
 %let selectfrom3 = select * from DT.indexLookup;
 
 %include "lib\buildDx.sas";  /* Call script to query ICD-9 diagnosis codes */
 
 %let select1 = select A.*, 
-                      B.admit_date, B.begin_date, B.discharge_date, B.end_date, B.px_date, B.px_type, B.px, 
+                      B.encounterID, B.admit_date, B.begin_date, B.discharge_date, B.end_date, B.px_date, B.px_type, B.px, 
                       case 
                         when B.px_type = "09" then "ICD9-PX" 
                         when B.px_type = "C1" | ^anyalpha(strip(B.px)) then "CPT" 
@@ -56,7 +57,7 @@ Service code data sets for prevalence (non-fracture outcomes)
                         else "" 
                         end as codeType, 
                       B.px as code;
-%let select2 = select patid, admit_date, begin_date, discharge_date, end_date, px_date, px_type, px;
+%let select2 = select patid, encounterID, admit_date, begin_date, discharge_date, end_date, px_date, px_type, px;
 
 %include "lib\buildPx.sas";  /* Call script to query procedure codes */
 
@@ -72,16 +73,16 @@ Service code data sets for prevalence (non-fracture outcomes)
 Service code data sets for incidence (non-fracture outcomes)
  */
 %let type = Inc;
-%let select1 = select A.*, B.enc_type, B.admit_date, B.begin_date, B.discharge_date, B.end_date, B.dx_type, B.dx, B.pdx, "ICD9-DX" as codeType, B.dx as code;
+%let select1 = select A.*, B.encounterID, B.enc_type, B.admit_date, B.begin_date, B.discharge_date, B.end_date, B.dx_type, B.dx, B.pdx, "ICD9-DX" as codeType, B.dx as code;
 %let on1 = on (A.patid = B.patid & A.exposureStart <= B.begin_date <= A.exposureEnd);
-%let select2 = select A.patid, A.enc_type, A.admit_date, A.begin_date, A.discharge_date, A.end_date, A.dx_type, A.dx, A.pdx;
+%let select2 = select A.patid, A.encounterID, A.enc_type, A.admit_date, A.begin_date, A.discharge_date, A.end_date, A.dx_type, A.dx, A.pdx;
 %let where2 = where dx_type = "09" & A.enc_type in ("IP", "AV", "ED", "NH", "HH");
 %let selectfrom3 = select * from DT.exposureTimeline;
 
 %include "lib\buildDx.sas";  /* Call script to query ICD-9 diagnosis codes */
 
 %let select1 = select A.*, 
-                      B.admit_date, B.begin_date, B.discharge_date, B.end_date, B.px_date, B.px_type, B.px, 
+                      B.encounterID, B.admit_date, B.begin_date, B.discharge_date, B.end_date, B.px_date, B.px_type, B.px, 
                       case 
                         when B.px_type = "09" then "ICD9-PX" 
                         when B.px_type = "C1" | ^anyalpha(strip(B.px)) then "CPT" 
@@ -89,7 +90,7 @@ Service code data sets for incidence (non-fracture outcomes)
                         else "" 
                         end as codeType, 
                       B.px as code;
-%let select2 = select patid, admit_date, begin_date, discharge_date, end_date, px_date, px_type, px;
+%let select2 = select patid, encounterID, admit_date, begin_date, discharge_date, end_date, px_date, px_type, px;
 
 %include "lib\buildPx.sas";  /* Call script to query procedure codes */
 
