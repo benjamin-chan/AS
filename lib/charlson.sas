@@ -31,69 +31,69 @@ Fenglong
 PROC FORMAT;
    VALUE $ICD9CF(multilabel)
 /* Myocardial infarction */
-	"410"-"410.99",
-	"412"-"421.99" = "MI"      
+	"410"-"41099",
+	"412"-"42199" = "MI"      
 /* Coronary heart disease *//*changed according to Dr. Curtis"*/
-    "410"-"410.99",/*changed according to Dr. Curtis"*/
-	"411"-"414.99",        /*changed according to Dr. Curtis"*/
-	"429.2"-"429.29"= "CHD"
+    "410"-"41099",/*changed according to Dr. Curtis"*/
+	"411"-"41499",        /*changed according to Dr. Curtis"*/
+	"4292"-"42929"= "CHD"
 /* Peripheral vascular disorder */
-	"440.20"-"440.24",
-	"440.31"-"440.32",
-	"440.8"-"440.89",
-	"440.9"-"440.99",
-	"443.9"-"443.99",
-	"441"-"441.99",
-	"785.4"-"785.49",
-    "V43.4"-"V43.49",
-	"v43.4"-"v43.49"= "PVD"
+	"44020"-"44024",
+	"44031"-"44032",
+	"4408"-"44089",
+	"4409"-"44099",
+	"4439"-"44399",
+	"441"-"44199",
+	"7854"-"78549",
+    "V434"-"V4349",
+  "V434"-"V4349"= "PVD"
 /* Cerebrovascular disease */
-    "430"-"438.99" = "CVD"
+    "430"-"43899" = "CVD"
 /* Dementia */
-	"290"-"290.99" = "DEM"
+	"290"-"29099" = "DEM"
 /* Chronic pulmonary disease */
-	"490"-"496.99",
-	"500"-"505.99",
-	"506.4"-"506.49" =  "CPD"
+	"490"-"49699",
+	"500"-"50599",
+	"5064"-"50649" =  "CPD"
 /* Rheumatologic disease */
-	"710.0"-"710.09",
-    "710.1"-"710.19",
- 	"710.4"-"710.49",
+	"7100"-"71009",
+    "7101"-"71019",
+ 	"7104"-"71049",
    /* "714.0 "-"714.2 ",
     "714.81", exclude RA*/
-    "725"-"725.99" = "RHD"
+    "725"-"72599" = "RHD"
 /* Peptic ulcer disease */
-	"531"-"534.99" = "PUD"
+	"531"-"53499" = "PUD"
 /* Mild liver disease */
-	"571.2"-"571.29",
-	"571.5"-"571.59",
-	"571.6"-"571.69",
-	"571.4"-"571.49" = "MLIVD"
+	"5712"-"57129",
+	"5715"-"57159",
+	"5716"-"57169",
+	"5714"-"57149" = "MLIVD"
 /* Diabetes */
-	"250"-"250.39",
-	"250.7"-"250.79" = "DIAB"
+	"250"-"25039",
+	"2507"-"25079" = "DIAB"
 /* Diabetes with chronic complications */
-	"250.4"-"250.69" = "DIABC"
+	"2504"-"25069" = "DIABC"
 /* Hemiplegia or paraplegia */
-	"344.1"-"344.19",
-	"342"-"342.99" = "PLEGIA"
+	"3441"-"34419",
+	"342"-"34299" = "PLEGIA"
 /* Renal Disease */
-	"582"-"582.99",
-	"583"-"583.79",
-	"585"-"585.99",
-	"586"-"586.99",
-	"588"-"588.99" = "REN"
+	"582"-"58299",
+	"583"-"58379",
+	"585"-"58599",
+	"586"-"58699",
+	"588"-"58899" = "REN"
 /*Malignancy, including leukemia and lymphoma */
-	"140"-"172.99",
-	"174"-"195.89",
-	"200"-"208.99" = "MALIGN"
+	"140"-"17299",
+	"174"-"19589",
+	"200"-"20899" = "MALIGN"
 /* Moderate or severe liver disease */
-	"572.2"-"572.89",
-	"456.0"-"456.21" = "SLIVD"
+	"5722"-"57289",
+	"4560"-"45621" = "SLIVD"
 /* Metastatic solid tumor */
-	"196"-"199.19" = "MST"
+	"196"-"19919" = "MST"
 /* AIDS */
-	"042"-"044.99" = "AIDS"
+	"042"-"04499" = "AIDS"
 /* Other */
    other   = "other"
 ;
@@ -117,14 +117,14 @@ run;
 proc sql;
   create table  _DxSubset as
   select *, put(dx, $icd9cf.) as CodedDx
-  from dx
-  where  enctype in &inpatout.
+  from UCB.tempPrevDx12mPrior
+  where  enc_type in &inpatout.
   ;
 
    create table _PxSubset as
   select*
-  from px 
-  where enctype in &inpatout.
+  from UCB.tempPrevPx12mPrior 
+  /* where enc_type in &inpatout. */
   ;
  
 quit ;
@@ -188,16 +188,19 @@ data _PxAssign;
    by &idVar &indexdateVarName;
    keep &idVar &indexdateVarName PVD;
    if first.&indexdateVarName then PVD = 0;
-   if    PX= "38.48" or
-         PX ="93668" or
-         PX in ("34201","34203","35454","35456","35459","35470") or
-                "35355" <= PX <= "35381" or
-         PX in ("35473","35474","35482","35483","35485","35492","35493",
-                "35495","75962","75992") or
-         PX in ("35521","35533","35541","35546","35548","35549","35551",
-                "35556","35558","35563","35565","35566","35571","35582","35583",
-                "35584","35585","35586","35587","35621","35623","35641","35646",
-                "35647","35651","35654","35656","35661","35663","35665","35666","35671")
+   if    (codeType = "ICD9-PX" & PX= "3848") or
+         (codeType = "CPT" & PX ="93668") or
+         (codeType = "CPT" & 
+                   PX in ("34201","34203","35454","35456","35459","35470") or
+                          "35355" <= PX <= "35381") or
+         (codeType = "CPT" & 
+                   PX in ("35473","35474","35482","35483","35485","35492","35493",
+                          "35495","75962","75992")) or
+         (codeType = "CPT" & 
+                  PX in ("35521","35533","35541","35546","35548","35549","35551",
+                         "35556","35558","35563","35565","35566","35571","35582","35583",
+                         "35584","35585","35586","35587","35621","35623","35641","35646",
+                         "35647","35651","35654","35656","35661","35663","35665","35666","35671"))
          then PVD=1;
    if last.&indexdateVarName then output;
 run;
@@ -302,7 +305,7 @@ proc sql &sqlopts ;
       , coalesce(w.MST          , 0) as  MST           label = "Metastatic solid tumor: "
       , coalesce(w.AIDS         , 0) as  AIDS          label = "AIDS: "
       , coalesce(w.&IndexVarName, 0) as  &IndexVarName label = "Charlson score: "
-      , (w.MRN is null)              as  NoVisitFlag   label = "No visits for this person"
+      , (w.&idVar is null)              as  NoVisitFlag   label = "No visits for this person"
   from  _WithCharlson as w
   ;
 
