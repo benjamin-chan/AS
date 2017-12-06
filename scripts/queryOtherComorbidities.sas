@@ -78,6 +78,87 @@ quit;
 
 
 
+/* 
+BEGIN Fenglong's comorbidities code
+ */
+/* 
+Only use ICD-9 codes from previous 12 months for Charlson
+ */
+proc sql;
+  create table UCB.tempPrevDx12mPrior as
+    select * 
+    from UCB.tempPrevDxAll 
+    where intnx("year", indexDate, -1, "same") < begin_date <= indexDate
+    order by indexID, indexDate;
+  create table UCB.tempPrevPx12mPrior as
+    select * 
+    from UCB.tempPrevPxAll 
+    where intnx("year", indexDate, -1, "same") < px_date <= indexDate
+    order by indexID, indexDate;
+  create table UCB.tempPrevRx12mPrior as
+    select A.*, B.etc_name, B.source
+    from UCB.tempPrevRxAll A left join
+         DT.lookupNDC B on (A.ndc = B.ndc)
+    where intnx("year", indexDate, -1, "same") < dispense_date <= indexDate
+    order by indexID, indexDate;
+quit;
+
+%include "lib\charlson.sas" / source2;
+%include "lib\indicationDx.sas" / source2;
+%include "lib\indicationPx.sas" / source2;
+%include "lib\indicationRx.sas" / source2;
+%include "lib\NumCnt.sas" / source2;
+%include "lib\ciras.sas" / source2;
+
+%let CovariateListDx= hepatitisC fluVaccineDx JointSurgDx ulcer obese smoke 
+                      lipidDx uveitis growthFail mammoDx PSAdx PapDx endoDx Sjogrens MI heartFailure stroke TIA EAM
+                      fistula_abscessDx hemaCa solidCa
+                      Hypertension angina fracture osteo icd7100; *covariate in 3rd line are from malignancy WG;
+%indicationDx(indexID, indexDate);
+
+%let CovariateListPx = InflamMarker RehabVisit RF platelet LFT FluVaccine jointSurg lipidPx Coronary_Revas
+                       intraArticularInj MammoPx PSApx PAPpx endoPx FOBT J3490
+                       fistula_abscessPx ercpPx barium_ugiPx barium_colonPx; 
+%indicationPx(indexID, indexDate);
+
+%let CovariateListRx= chemo lipid dm folate fungus HTN naproxen narcotics nsaid sedative steroid tb thyroid viral
+                     dementia statin NSAIDcox BBlocker op_PPI op_bisphosp op_other 
+                     thiazide thiazolidinedione anticoagulant
+           antithrom antibiotics antipsych antidepres anticonvul calcium Adrenergic; 
+%indicationRx(indexID, indexDate);
+proc means data = Work.indRx;
+  var &CovariateListRx;
+run;
+
+%charlson(inputds = ,
+          idVar = indexID,
+          IndexDateVarName = indexDate,
+          outputds = CCI,
+          IndexVarName = Charlson,
+          inpatonly = B,
+          malig = N);
+
+%ciras(DT.indexLookup, indexID, indexDate);
+
+
+proc sql;
+  create table DT.charlsonIndex as select * from Work._WithCharlson;
+  create table DT.CIRAS as select * from Work.CIRAS;
+  create table DT.indRx as select * from Work.indRx;
+quit;
+proc contents data = DT.charlsonIndex order = varnum;
+run;
+proc contents data = DT.CIRAS order = varnum;
+run;
+proc contents data = DT.indRx order = varnum;
+run;
+/* 
+END Fenglong's comorbidities code
+ */
+
+
+
+
 proc sql;
 /* 
 Oral corticosteroid use
@@ -123,6 +204,46 @@ mg/d (medium dose), and 10 mg/d or more (high dose)
                 ((A.indexDate - 183 <= A.dispense_date <= A.indexDate) | 
                   (A.indexDate - 183 <= (A.dispense_date + A.dispense_sup - 1) <= A.indexDate))) C
     group by C.database, C.patid, C.indexID;
+/* 
+Inhaled antibiotics
+
+IS A DAYS-SUPPLY CRITERION REQUIRED??
+  create table Work.indInhaledAntibiotics0 as
+    select A.patid, A.episodeID, 
+           A.begin_date format = mmddyy10. as rxDate, 
+           "HCPCS" as codeType, 
+           A.px as drugCode, 
+           "INJECTION" as drugRoute, 
+           B.descript as drugName, 
+           A.px_amt,
+           . as dispense_sup, 
+           . as dispense_amt
+      from WRK.proccodesHCPCS12mPrior A inner join 
+           DT.lookupJcodes B on (A.px = B.code)
+      where lower(category) = "inhaled antibiotic"
+    union corr
+    select D.patid, D.episodeID, 
+           D.dispense_date format = mmddyy10. as rxDate, 
+           "NDC" as codeType, 
+           E.ndc as drugCode, 
+           D.rt as drugRoute, 
+           D.gnn as drugName, 
+           . as px_amt,
+           D.dispense_sup, 
+           D.dispense_amt
+      from WRK.rx12mPrior D inner join 
+           DT.lookupNDC E on (D.ndc = E.ndc)
+      where (lower(E.etc_name) like '%antibiotic%' | lower(E.etc_name) like '%polymyxin%') & 
+            lowcase(E.rt) in ("inhalation", "intraven", "injection");
+  select codeType, drugRoute, drugName, count(distinct patid) as countDistinctPatid
+    from Work.indInhaledAntibiotics0
+    group by codeType, drugRoute, drugName;
+  create table Work.indInhaledAntibiotics1 as
+    select distinct
+           A.patid, A.episodeID,
+           1 as indInhaledAntibiotics
+    from Work.indInhaledAntibiotics0 A;
+ */
 quit;
 
 

@@ -19,7 +19,6 @@ rem call :execute queryPrevalentComorbidities
 rem call :execute queryPrevalentComorbiditiesControl
 rem call :execute queryIncidenceOutcomes
 call :execute generateNDCLookup
-call :execute codeCharlson
 call :execute queryOtherComorbidities
 call :execute modelPropensityScore
 rem call :execute modelIncidenceOutcomes
