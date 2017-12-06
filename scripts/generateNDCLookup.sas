@@ -220,8 +220,8 @@ Use LIKE string 2 on etc_name
       A.*,
       C.coeff as prednisoneMultiplier,
       C.Prednisone_EQ_Dose as prednisodeEquivalentDose,
-    "" as category,
-    "" as subcategory
+      "" as category,
+      "" as subcategory
     from
       FDB.FDB_ETC_NDC_15 A inner join
       NDC.Ndc_oralsteroids C on (A.NDC = C.Code)
@@ -234,8 +234,45 @@ Use LIKE string 2 on etc_name
       D.subcate as subcategory
     from
       FDB.FDB_ETC_NDC_15 A inner join
-      NDC.NDC_DMARD_Bio_All D on (A.NDC = D.Code)
-    where D.codeType = "NDC";
+      (select codeType, code, category, subcate from NDC.NDC_ALOPU union corr
+       select codeType, code, category, subcate from NDC.NDC_DMARD_BIO_ALL) D on (A.NDC = D.Code)
+    where D.codeType = "NDC"
+    union all
+    select
+      A.*, . as prednisoneMultiplier, . as prednisodeEquivalentDose, "" as category, "" as subcategory
+    from
+      FDB.FDB_ETC_NDC_15 A inner join
+      (select codeType, code from NDC.NDC_ALOPU union corr
+       select codeType, code from NDC.NDC_ANTI_FUNGAL union corr
+       select codeType, code from NDC.NDC_ANTI_HYPERTENSIVE union corr
+       select codeType, code from NDC.NDC_ANTIBIOTICS union corr
+       select codeType, code from NDC.NDC_ANTICOAGULANTS union corr
+       select codeType, code from NDC.NDC_ANTIHYPERLIPID union corr
+       select codeType, code from NDC.NDC_ANTIVIRAL union corr
+       select codeType, code from NDC.NDC_BETABLOCKERS union corr
+       select codeType, code from NDC.NDC_BISPHOSPHONATES union corr
+       select codeType, code from NDC.NDC_DMARD_BIO_ALL union corr
+       select codeType, code from NDC.NDC_FOLIC_ACID union corr
+       select codeType, code from NDC.NDC_GANCICLOVIR union corr
+       select codeType, code from NDC.NDC_INSULIN union corr
+       select codeType, code from NDC.NDC_JIA_DMARDS union corr
+       select codeType, code from NDC.NDC_NARCOTICS union corr
+       select codeType, code from NDC.NDC_NSAIDCOX union corr
+       select codeType, code from NDC.NDC_NSAIDNONCOX union corr
+       select codeType, code from NDC.NDC_ORALSTEROIDS union corr
+       select codeType, code from NDC.NDC_PPIS union corr
+       select codeType, code from NDC.NDC_PULMONARY_EMBOLISM union corr
+       select codeType, code from NDC.NDC_STATIN union corr
+       select codeType, code from NDC.NDC_STATIN_OLD15 union corr
+       select codeType, code from NDC.NDC_STATINS union corr
+       select codeType, code from NDC.NDC_STATINS_OBSOLETE union corr
+       select codeType, code from NDC.NDC_STEROIDS union corr
+       select codeType, code from NDC.NDC_TB union corr
+       select codeType, code from NDC.NDC_TOPICALSTEROIDS union corr
+       select codeType, code from NDC.NDC_VASCULITIS union corr
+       select codeType, code from NDC.NDC_ZOSVAC) E on (A.NDC = E.Code)
+    where E.codeType = "NDC";
+
   create table DT.lookupJcodes as
     select A.* from NDC.NDC_DMARD_Bio_All A where A.codeType = "HCPCS" union corr
     select "" as gnn,
@@ -253,6 +290,7 @@ Use LIKE string 2 on etc_name
             description like '%gentam%' | 
             description like '%tobram%' 
     order by category, subCate, code;
+
   create table Work.summaryLookupNDC as
     select "Summary of DT.lookupNDC" as table,
            etc_name, 
