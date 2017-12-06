@@ -23,6 +23,7 @@ Fenglong
 
 
 %macro ciras(cohort,idVar,indexDateVarName);
+
 data inflamMarker RehabVisit RF platelet lft; 
   set UCB.tempPrevPx12mPrior; 
   if (codeType = "CPT" &
@@ -55,16 +56,16 @@ set UCB.tempPrevDx12mPrior(where=(enc_type in ('IP','IF','AV')));
 if prov_type = 66;
 run;
 	
-  %NumCnt(rh,adate);
-  %NumCnt(inflamMarker,adate);
-  %NumCnt(RehabVisit,adate);
-  %NumCnt(lft,adate);
-  %NumCnt(RF,adate);
-  %NumCnt(platelet,adate);
-  %NumCnt(felty,adate); 
+  %NumCnt(rh, admit_date);
+  %NumCnt(inflamMarker, admit_date);
+  %NumCnt(RehabVisit, admit_date);
+  %NumCnt(lft, admit_date);
+  %NumCnt(RF, admit_date);
+  %NumCnt(platelet, admit_date);
+  %NumCnt(felty, admit_date); 
 
-data ciras(drop=j sex birth_date gender age);
-merge &cohort(keep=&idVar &indexDateVarName  birth_date gender in=a)
+data ciras(drop=j sex01 /* birth_date */ sex age);
+merge &cohort(keep=&idVar &indexDateVarName  /* birth_date */ sex age in=a)
       numInflamMarker
 	  numRehabVisit
 	  numRF
@@ -74,15 +75,15 @@ merge &cohort(keep=&idVar &indexDateVarName  birth_date gender in=a)
 	  numRh;
 by &idVar &indexDateVarName;
 if a;
-age=(&indexDateVarName-birth_date)/365.25;
-if lowcase(gender)='m' then sex=0; else sex=1;
+/* age=(&indexDateVarName-birth_date)/365.25; */
+if lowcase(sex)='m' then sex01=0; else sex01=1;
 
 array zero(*)   NumRh numinflamMarker NumRehabVisit NumRF Numplatelet Numlft Numfelty ;
     do j=1 to dim(zero);
 	if zero(j)=. then zero(j)=0;
 	end;
 
-CIRAS=age*(-0.066) + sex*(-0.092) + numinflamMarker*0.60 + NumRehabVisit*0.69+NumRF*2.1+
+CIRAS=age*(-0.066) + sex01*(-0.092) + numinflamMarker*0.60 + NumRehabVisit*0.69+NumRF*2.1+
         NumFelty*2.3 + Numplatelet*0.42  + NumLft*(-0.14)       + NumRh*0.52   + 6.5;
 run;
 
