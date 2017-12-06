@@ -40,9 +40,9 @@ Service code data sets for prevalence (non-fracture outcomes)
  */
 %let type = Prev;
 %let select1 = select A.*, 
-                      B.encounterID, B.enc_type, B.admit_date, B.begin_date, B.discharge_date, B.end_date, B.dx_type, B.dx, B.pdx, "ICD9-DX" as codeType, B.dx as code;
+                      B.encounterID, B.enc_type, B.admit_date, B.begin_date, B.discharge_date, B.end_date, B.dx_type, B.dx, B.pdx, "ICD9-DX" as codeType, B.dx as code, B.prov_type;
 %let on1 = on (A.patid = B.patid);
-%let select2 = select A.patid, A.encounterID, A.enc_type, A.admit_date, A.begin_date, A.discharge_date, A.end_date, A.dx_type, A.dx, A.pdx;
+%let select2 = select A.patid, A.encounterID, A.enc_type, A.admit_date, A.begin_date, A.discharge_date, A.end_date, A.dx_type, A.dx, A.pdx, A.prov_type;
 %let where2 = where A.dx_type = "09" & A.enc_type in ("IP", "AV", "ED", "NH", "HH");
 %let selectfrom3 = select * from DT.indexLookup;
 
@@ -73,9 +73,9 @@ Service code data sets for prevalence (non-fracture outcomes)
 Service code data sets for incidence (non-fracture outcomes)
  */
 %let type = Inc;
-%let select1 = select A.*, B.encounterID, B.enc_type, B.admit_date, B.begin_date, B.discharge_date, B.end_date, B.dx_type, B.dx, B.pdx, "ICD9-DX" as codeType, B.dx as code;
+%let select1 = select A.*, B.encounterID, B.enc_type, B.admit_date, B.begin_date, B.discharge_date, B.end_date, B.dx_type, B.dx, B.pdx, "ICD9-DX" as codeType, B.dx as code, B.prov_type;
 %let on1 = on (A.patid = B.patid & A.exposureStart <= B.begin_date <= A.exposureEnd);
-%let select2 = select A.patid, A.encounterID, A.enc_type, A.admit_date, A.begin_date, A.discharge_date, A.end_date, A.dx_type, A.dx, A.pdx;
+%let select2 = select A.patid, A.encounterID, A.enc_type, A.admit_date, A.begin_date, A.discharge_date, A.end_date, A.dx_type, A.dx, A.pdx, A.prov_type;
 %let where2 = where dx_type = "09" & A.enc_type in ("IP", "AV", "ED", "NH", "HH");
 %let selectfrom3 = select * from DT.exposureTimeline;
 
