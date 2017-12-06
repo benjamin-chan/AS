@@ -25,7 +25,7 @@ Fenglong
 %macro ciras(cohort,idVar,indexDateVarName);
 
 data inflamMarker RehabVisit RF platelet lft; 
-  set UCB.tempPrevPx12mPrior; 
+  set UCB.tempPrevPxAll; 
   if (codeType = "CPT" &
       px in ('85652','86141')) then output inflamMarker; 
   if (codeType in ("CPT", "HCPCS") &
@@ -48,11 +48,11 @@ data inflamMarker RehabVisit RF platelet lft;
 run; 
 
 data felty; 
-set  UCB.tempPrevDx12mPrior(where=(dx=:'7141' and enc_type in ('IP','IF','AV')));    
+set  UCB.tempPrevDxAll(where=(dx=:'7141' and enc_type in ('IP','IF','AV')));    
 run; 
 
 data rh;
-set UCB.tempPrevDx12mPrior(where=(enc_type in ('IP','IF','AV')));
+set UCB.tempPrevDxAll(where=(enc_type in ('IP','IF','AV')));
 if prov_type = 66;
 run;
 	
