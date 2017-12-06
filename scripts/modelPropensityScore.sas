@@ -75,7 +75,17 @@ proc sql;
            case
              when FF.meanPredEqDoseCat = "" then "None"
              else FF.meanPredEqDoseCat
-             end as meanPredEqDoseCat
+             end as meanPredEqDoseCat,
+           max(0, GG.charlson) as charlson,
+           max(0, HH.ciras) as ciras,
+           HH.numinflamMarker > 0 as indInflamMarker, 
+           max(0, II.nsaid) as indRxNSAID, 
+           max(0, II.htn) as indRxHtn, 
+           max(0, II.narcotics) as indRxNarcotics, 
+           max(0, II.fungus) as indRxFungus, 
+           max(0, II.op_bisphosp) as indRxOP_bisphosp, 
+           max(0, II.thiazide) as indRxThiazide,
+           max(0, II.anticoagulant) as indRxAnticoagulant
     from 
       DT.indexLookup A left join
       (select indexID, 1 as indAmyloidosis      from DT.comorbidities      where indPrevPriorToIndex = 1 & prxmatch("/Amyloidosis/"                               , disease    )) B  on (A.indexID = B.indexID ) left join
@@ -106,8 +116,19 @@ proc sql;
       (select indexID, 1 as indMetabSyn         from DT.comorbiditiesOther where                           prxmatch("/Metabolic syndrome/"                        , comorbidity)) CC on (A.indexID = CC.indexID) left join
       (select indexID, 1 as indNAFattyLiverDis  from DT.comorbiditiesOther where                           prxmatch("/Non-alcoholic fatty liver disease/"         , comorbidity)) DD on (A.indexID = DD.indexID) left join
       (select indexID, 1 as indCOPDEmphysema    from DT.comorbiditiesOther where                           prxmatch("/COPD or emphysema/"                         , comorbidity)) EE on (A.indexID = EE.indexID) left join
-      (select indexID, meanPredEqDoseCat        from DT.rxOralCorticosteroid                                                                                                    ) FF on (A.indexID = FF.indexID) ;
+      (select indexID, meanPredEqDoseCat        from DT.rxOralCorticosteroid                                                                                                    ) FF on (A.indexID = FF.indexID) left join
+      (select indexID, charlson from DT.charlsonIndex) GG on (A.indexID = GG.indexID) left join
+      (select indexID, ciras, numinflamMarker from DT.CIRAS) HH on (A.indexID = HH.indexID) left join
+      (select indexID, nsaid, htn, narcotics, fungus, op_bisphosp, thiazide, anticoagulant from DT.indRx) II on (A.indexID = II.indexID) 
+    order by A.database;
 quit;
+
+
+proc rank data = Work.allCovariates out = Work.allCovariates groups = 4;
+  by database;
+  var charlson ciras;
+  ranks quartileCharlson quartileCIRAS;
+run;
 
 
 proc means data = Work.allCovariates;
@@ -139,10 +160,21 @@ proc means data = Work.allCovariates;
       indHT
       indMetabSyn
       indNAFattyLiverDis
-      indCOPDEmphysema;
+      indCOPDEmphysema
+      charlson
+      quartileCharlson
+      ciras
+      indInflamMarker
+      indRxNSAID
+      indRxHtn
+      indRxNarcotics
+      indRxFungus
+      indRxOP_bisphosp
+      indRxThiazide
+      indRxAnticoagulant;
 run;
 proc freq data = Work.allCovariates;
-  table database * exposure3 * meanPredEqDoseCat / list;
+  table database * exposure3 * (meanPredEqDoseCat quartileCharlson quartileCIRAS) / list;
 run;
 proc sql;
   select database,
@@ -166,7 +198,7 @@ Fit separate models for each data source: MPCD, Marketscan, Medicare
 
 Some parameters blow up; exlude these from the model estimation
  */
-%let class = exposure3 (ref = "TNF") catAge (ref = "70+") sex (ref = "M") meanPredEqDoseCat (ref = "None") / param = ref;
+%let class = exposure3 (ref = "TNF") catAge (ref = "70+") sex (ref = "M") meanPredEqDoseCat (ref = "None") quartileCharlson (ref = first) quartileCIRAS (ref = first) / param = ref;
 
 
 %let db = MPCD;
@@ -204,6 +236,15 @@ proc logistic data = Work.allCovariates outest = Work.psBetas3Level;
                     indNAFattyLiverDis
                     indCOPDEmphysema
                     meanPredEqDoseCat
+                    quartileCharlson
+                    indInflamMarker
+                    indRxNSAID
+                    indRxHtn
+                    indRxNarcotics
+                    indRxFungus
+                    indRxOP_bisphosp
+                    indRxThiazide
+                    indRxAnticoagulant
                     / link = glogit rsquare;
   output out = Work.ps3Level predicted = ps xbeta = xbeta;
 run;
@@ -247,6 +288,15 @@ proc logistic data = Work.allCovariates outest = Work.psBetas3Level;
                     indNAFattyLiverDis
                     indCOPDEmphysema
                     meanPredEqDoseCat
+                    quartileCharlson
+                    indInflamMarker
+                    indRxNSAID
+                    indRxHtn
+                    indRxNarcotics
+                    indRxFungus
+                    indRxOP_bisphosp
+                    indRxThiazide
+                    indRxAnticoagulant
                     / link = glogit rsquare;
   output out = Work.ps3Level predicted = ps xbeta = xbeta;
 run;
@@ -290,6 +340,15 @@ proc logistic data = Work.allCovariates outest = Work.psBetas3Level;
                     indNAFattyLiverDis
                     indCOPDEmphysema
                     meanPredEqDoseCat
+                    quartileCharlson
+                    indInflamMarker
+                    indRxNSAID
+                    indRxHtn
+                    indRxNarcotics
+                    indRxFungus
+                    indRxOP_bisphosp
+                    indRxThiazide
+                    indRxAnticoagulant
                     / link = glogit rsquare;
   output out = Work.ps3Level predicted = ps xbeta = xbeta;
 run;
@@ -367,7 +426,17 @@ Calculate IPTW
                indMetabSyn,
                indNAFattyLiverDis,
                indCOPDEmphysema,
-               meanPredEqDoseCat;
+               meanPredEqDoseCat, 
+               quartileCharlson,
+               indInflamMarker,
+               indRxNSAID,
+               indRxHtn,
+               indRxNarcotics,
+               indRxFungus,
+               indRxOP_bisphosp,
+               indRxThiazide,
+               indRxAnticoagulant
+;
 proc sql;
   create table Work.ps as
     select "3-level exposure" as model, exposure3 as exposure, &varlist from Work.ps3Level 
@@ -514,7 +583,16 @@ proc sql;
            indMetabSyn,
            indNAFattyLiverDis,
            indCOPDEmphysema,
-           meanPredEqDoseCat
+           meanPredEqDoseCat,
+           quartileCharlson,
+           indInflamMarker,
+           indRxNSAID,
+           indRxHtn,
+           indRxNarcotics,
+           indRxFungus,
+           indRxOP_bisphosp,
+           indRxThiazide,
+           indRxAnticoagulant
     from DT.ps;
 quit;
 proc export
