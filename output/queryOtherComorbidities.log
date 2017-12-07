@@ -1,4 +1,4 @@
-1                                                          The SAS System                          14:23 Wednesday, November 8, 2017
+1                                                          The SAS System                         11:21 Wednesday, November 29, 2017
 
 NOTE: Copyright (c) 2002-2012 by SAS Institute Inc., Cary, NC, USA. 
 NOTE: SAS (r) Proprietary Software 9.4 (TS1M1) 
@@ -28,7 +28,7 @@ Please remember not to copy any data files that contain PHI (protected health id
 
 
 NOTE: SAS initialization used:
-      real time           0.24 seconds
+      real time           0.20 seconds
       cpu time            0.12 seconds
       
 1          *  University of Alabama at Birmingham                               *
@@ -72,7 +72,7 @@ NOTE: Libref NDC was successfully assigned as follows:
 133        
 134        
 135        ods html
-2                                                                   The SAS System                                   14:23 Wednesday, November 8, 2017
+2                                                                   The SAS System                                  11:21 Wednesday, November 29, 2017
 
 136          body = "output\&cmt..html"
 137          style = Statistical;
@@ -94,8 +94,8 @@ NOTE:    Variable Name Change.  Compact Definion -> Compact_Definion
 NOTE: The import data set has 1112 observations and 6 variables.
 NOTE: WORK.COMORBIDITYLOOKUP data set was successfully created.
 NOTE: PROCEDURE IMPORT used (Total process time):
-      real time           0.40 seconds
-      cpu time            0.20 seconds
+      real time           0.26 seconds
+      cpu time            0.21 seconds
       
 
 150        proc sql;
@@ -113,37 +113,67 @@ NOTE: Table WORK.COMORBIDITYLOOKUP has been modified, with 2 columns.
 158            where missing(code);
 NOTE: 1009 rows were deleted from WORK.COMORBIDITYLOOKUP.
 
-159        quit;
+159          insert into Work.comorbidityLookup
+160            values ("COPD or emphysema", "4910" )
+161            values ("COPD or emphysema", "4911" )
+162            values ("COPD or emphysema", "49120")
+163            values ("COPD or emphysema", "49121")
+164            values ("COPD or emphysema", "49122")
+165            values ("COPD or emphysema", "4918" )
+166            values ("COPD or emphysema", "4919" )
+167            values ("COPD or emphysema", "4920" )
+168            values ("COPD or emphysema", "4928" )
+169            values ("COPD or emphysema", "496"  )
+170            values ("COPD or emphysema", "49320")
+171            values ("COPD or emphysema", "49321")
+172            values ("COPD or emphysema", "49322");
+NOTE: 13 rows were inserted into WORK.COMORBIDITYLOOKUP.
+
+173        quit;
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           0.21 seconds
-      cpu time            0.03 seconds
+      real time           0.12 seconds
+      cpu time            0.01 seconds
       
 
-160        
-161        
-162        proc sql;
-163        
-164          %let select1 = select A.*, B.comorbidity;
-165          %let join1 = inner join Work.comorbidityLookup B on (A.code = B.code);
-166          create table DT.comorbiditiesOther as
-167            select distinct
-168                   C.database, C.exposure, C.patid, C.ASCohortDate, C.indexGNN, C.indexDate, C.indexID,
-169                   C.age, C.sex,
-170                   C.comorbidity,
-171                   1 as indPreExposure
-172            from (&select1 from UCB.tempPrevDxAll A &join1) C;
-NOTE: Parallel WHERE evaluation suppressed due to sort order on table.
-NOTE: Table DT.COMORBIDITIESOTHER created, with 61082 rows and 11 columns.
+174        
+175        
+176        proc sql;
+177        
+178          %let select1 = select A.*, B.comorbidity;
+179          %let join1 = inner join Work.comorbidityLookup B on (A.code = B.code);
+180          create table DT.comorbiditiesOther as
+181            select distinct
+182                   C.database, C.exposure, C.patid, C.ASCohortDate, C.indexGNN, C.indexDate, C.indexID,
+183                   C.age, C.sex,
+184                   C.comorbidity,
+3                                                                   The SAS System                                  11:21 Wednesday, November 29, 2017
 
-173        
-174          select comorbidity, database, exposure, sum(indPreExposure) as sumIndPreExposure
-175            from DT.comorbiditiesOther
-176            group by comorbidity, database, exposure;
-                                                                  --- AS project ---                             14:23 Wednesday, November 8, 2017   1
+185                   1 as indPreExposure
+186            from (&select1 from UCB.tempPrevDxAll A &join1) C;
+NOTE: Parallel WHERE evaluation suppressed due to sort order on table.
+NOTE: Table DT.COMORBIDITIESOTHER created, with 75789 rows and 11 columns.
+
+187        
+188          select comorbidity, database, exposure, sum(indPreExposure) as sumIndPreExposure
+189            from DT.comorbiditiesOther
+190            group by comorbidity, database, exposure;
+                                                                  --- AS project ---                            11:21 Wednesday, November 29, 2017   1
 
                                                                                                       sumIndPre
                                        Comorbidity                        database    exposure         Exposure
                                        ------------------------------------------------------------------------
+                                       COPD or emphysema                  MPCD        DMARD                  37
+                                       COPD or emphysema                  MPCD        NSAID                  63
+                                       COPD or emphysema                  MPCD        No exposure           252
+                                       COPD or emphysema                  MPCD        TNF                    61
+                                       COPD or emphysema                  Marketscan  DMARD                 117
+                                       COPD or emphysema                  Marketscan  NSAID                 378
+                                       COPD or emphysema                  Marketscan  No exposure           501
+                                       COPD or emphysema                  Marketscan  TNF                   259
+                                       COPD or emphysema                  Medicare    DMARD                1856
+                                       COPD or emphysema                  Medicare    NSAID                4801
+                                       COPD or emphysema                  Medicare    No exposure          4641
+                                       COPD or emphysema                  Medicare    TNF                  1741
                                        Diabetes                           MPCD        DMARD                  69
                                        Diabetes                           MPCD        NSAID                 121
                                        Diabetes                           MPCD        No exposure           401
@@ -200,36 +230,121 @@ NOTE: Table DT.COMORBIDITIESOTHER created, with 61082 rows and 11 columns.
  
  
  
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
                                                              queryOtherComorbidities.sas
-177        
-178        quit;
+191        
+192        quit;
 NOTE: The PROCEDURE SQL printed page 1.
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           2:10.93
-      cpu time            36.64 seconds
+      real time           42.08 seconds
+      cpu time            43.74 seconds
       
-3                                                                   The SAS System                                   14:23 Wednesday, November 8, 2017
 
+193        
+194        
+195        
+196        proc sql;
+197        /*
+198        Oral corticosteroid use
+199        Mean outpatient prescribed daily dose of prednisone equivalents in the 6
+200        months prior to index date: less than 5 mg/d (low dose), 5 to less than 10
+201        mg/d (medium dose), and 10 mg/d or more (high dose)
+202         */
+203          create table DT.rxOralCorticosteroid as
+204            select C.database, C.patid, C.indexID,
+205                   1 as indOralCorticosteroid,
+206                   sum(C.daysAtRisk * C.prednisodeEquivalentDose) as sumPredEq,
+207                   sum(C.daysAtRisk) as sumDaysSupply,
+208                   sum(C.daysAtRisk * C.prednisodeEquivalentDose) / 183 as meanPredEqDose,
+209                   case
+210                     when 0 <= sum(C.daysAtRisk * C.prednisodeEquivalentDose) / 183 < 2.5 then "Low (<2.5 mg/d)"
+211                     when 2.5 <= sum(C.daysAtRisk * C.prednisodeEquivalentDose) / 183 < 5 then "Medium-Low (2.5-5 mg/d)"
+212                     when 5 <= sum(C.daysAtRisk * C.prednisodeEquivalentDose) / 183 < 10 then "Medium-High (5-10 mg/d)"
+213                     when 10 <= sum(C.daysAtRisk * C.prednisodeEquivalentDose) / 183 then "High (10+ mg/d)"
+214                     else ""
+215                     end as meanPredEqDoseCat
+216            from (select A.database, A.patid, A.indexID,
+217                         A.indexDate - 183 format = mmddyy10. as riskStart,
+218                         A.indexDate,
+219                         A.dispense_date,
+220                         A.dispense_date + A.dispense_sup - 1 format = mmddyy10. as dispense_end,
+221                         A.dispense_sup,
+222                         case
+223                           /* Rx completely in at-risk period */
+224                           when (A.indexDate - 183 <= A.dispense_date) & ((A.dispense_date + A.dispense_sup - 1) <= A.indexDate)
+225                             then A.dispense_sup
+226                           /* Rx begins before at-risk period */
+227                           when (A.dispense_date < A.indexDate - 183)
+228                             then A.dispense_sup - (A.indexDate - 183 - A.dispense_date)
+229                           /* Rx ends after at-risk period */
+230                           when (A.indexDate < (A.dispense_date + A.dispense_sup - 1))
+231                             then A.dispense_sup - (A.dispense_date + A.dispense_sup - 1 - A.indexDate)
+232                           else .
+233                           end as daysAtRisk,
+234                         B.prednisodeEquivalentDose
+235                  from UCB.tempPrevRxAll A inner join
+236                       DT.lookupNDC B on (A.ndc = B.ndc)
+237                  where ^missing(B.prednisodeEquivalentDose) &
+238                        ((A.indexDate - 183 <= A.dispense_date <= A.indexDate) |
+239                          (A.indexDate - 183 <= (A.dispense_date + A.dispense_sup - 1) <= A.indexDate))) C
+240            group by C.database, C.patid, C.indexID;
+NOTE: Parallel WHERE evaluation suppressed due to sort order on table.
+NOTE: Table DT.RXORALCORTICOSTEROID created, with 18717 rows and 8 columns.
 
-179        
-180        
-181        
-182        
-183        ods html close;
+241        /*
+242        Inhaled antibiotics
+243        
+244        IS A DAYS-SUPPLY CRITERION REQUIRED??
+4                                                                   The SAS System                                  11:21 Wednesday, November 29, 2017
+
+245          create table Work.indInhaledAntibiotics0 as
+246            select A.patid, A.episodeID,
+247                   A.begin_date format = mmddyy10. as rxDate,
+248                   "HCPCS" as codeType,
+249                   A.px as drugCode,
+250                   "INJECTION" as drugRoute,
+251                   B.descript as drugName,
+252                   A.px_amt,
+253                   . as dispense_sup,
+254                   . as dispense_amt
+255              from WRK.proccodesHCPCS12mPrior A inner join
+256                   DT.lookupJcodes B on (A.px = B.code)
+257              where lower(category) = "inhaled antibiotic"
+258            union corr
+259            select D.patid, D.episodeID,
+260                   D.dispense_date format = mmddyy10. as rxDate,
+261                   "NDC" as codeType,
+262                   E.ndc as drugCode,
+263                   D.rt as drugRoute,
+264                   D.gnn as drugName,
+265                   . as px_amt,
+266                   D.dispense_sup,
+267                   D.dispense_amt
+268              from WRK.rx12mPrior D inner join
+269                   DT.lookupNDC E on (D.ndc = E.ndc)
+270              where (lower(E.etc_name) like '%antibiotic%' | lower(E.etc_name) like '%polymyxin%') &
+271                    lowcase(E.rt) in ("inhalation", "intraven", "injection");
+272          select codeType, drugRoute, drugName, count(distinct patid) as countDistinctPatid
+273            from Work.indInhaledAntibiotics0
+274            group by codeType, drugRoute, drugName;
+275          create table Work.indInhaledAntibiotics1 as
+276            select distinct
+277                   A.patid, A.episodeID,
+278                   1 as indInhaledAntibiotics
+279            from Work.indInhaledAntibiotics0 A;
+280         */
+281        quit;
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           3.24 seconds
+      cpu time            2.94 seconds
+      
+
+282        
+283        
+284        
+285        
+286        ods html close;
 NOTE: SAS Institute Inc., SAS Campus Drive, Cary, NC USA 27513-2414
 NOTE: The SAS System used:
-      real time           2:13.65
-      cpu time            37.26 seconds
+      real time           46.20 seconds
+      cpu time            47.29 seconds
       

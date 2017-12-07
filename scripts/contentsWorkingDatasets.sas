@@ -48,6 +48,7 @@ UCB CntlCohortStdC5P
 UCB CntlCohortStdMPCD
 UCB tempPrevDxAll
 UCB tempPrevPxAll
+UCB tempPrevRxAll
 UCB tempFracDxAll
 UCB tempFracPxAll
 UCB tempPrevDxAllControl
@@ -71,6 +72,11 @@ DT comorbiditiesControl
 DT comorbiditiesOther
 DT outcome_cancer
 DT Outcome_cancer_nmsc
+DT lookupJcodes
+DT summaryLookupNDC
+DT summaryOralSteroids
+DT lookupNDC
+DT rxOralCorticosteroid
   ;
 run;
 proc sort data = Work.WorkingDatasets;

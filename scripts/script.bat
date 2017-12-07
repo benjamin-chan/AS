@@ -10,16 +10,18 @@ rem call :execute reproduceTables2
 rem call :execute buildServiceCodeDatasets
 rem call :execute buildServiceCodeDatasetsControl
 rem call :execute queryFractures
-call :execute queryFracturesControl
+rem call :execute queryFracturesControl
 rem call :execute CANCER_setoguchi
 rem call :execute CANCER_NMSC
 rem call :execute queryOutcomeHospitalizedInfection
 rem call :execute queryOutcomeOpportunisticInfection
 rem call :execute queryPrevalentComorbidities
-call :execute queryPrevalentComorbiditiesControl
+rem call :execute queryPrevalentComorbiditiesControl
 rem call :execute queryIncidenceOutcomes
-rem call :execute queryOtherComorbidities
-rem call :execute modelPropensityScore
+call :execute generateNDCLookup
+call :execute queryOtherComorbidities
+call :execute modelPropensityScore
+rem call :execute modelIncidenceOutcomes
 call :execute contentsWorkingDatasets
 
 "C:\Program Files\7-Zip\7z.exe" d ..\output.zip ..\output\*

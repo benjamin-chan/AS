@@ -1,0 +1,1976 @@
+1                                                          The SAS System                         11:20 Wednesday, November 29, 2017
+
+NOTE: Copyright (c) 2002-2012 by SAS Institute Inc., Cary, NC, USA. 
+NOTE: SAS (r) Proprietary Software 9.4 (TS1M1) 
+      Licensed to UNIVERSITY OF ALABAMA AT BIRMINGHAM - SFA - T&R, Site 70058223.
+NOTE: This session is executing on the W32_ES08R2  platform.
+
+
+
+NOTE: Updated analytical products:
+      
+      SAS/STAT 13.1
+      SAS/ETS 13.1
+      SAS/OR 13.1
+      SAS/IML 13.1
+      SAS/QC 13.1
+
+NOTE: Additional host information:
+
+ W32_ES08R2 WIN 6.1.7601 Service Pack 1 Server
+
+--- PEER News and Updates ---
+
+: SECURITY REMINDER :
+Please remember not to copy any data files that contain PHI (protected health identifiers) to any of the shared folders.
+
+ 
+
+
+NOTE: SAS initialization used:
+      real time           0.26 seconds
+      cpu time            0.10 seconds
+      
+1          *  University of Alabama at Birmingham                               *
+2          *  BRONCHIECTASIS project                                            *
+3          **********************************************************************;
+4          options pagesize=74 linesize=150 pageno=1 missing=' ' date FORMCHAR="|----|+|---+=|-/\<>*";
+5          * Programmer    : Benjamin Chan <chanb@ohsu.edu>
+6          * Creation date :
+7          * Modify date   :
+8          ;
+9          %let cmt=generateNDCLookup; * type the name of your program here (without the filename extension);
+10         %let pgm=&cmt..sas;
+11         %include "lib\libname.sas" ;
+NOTE: Libref STDC5P was successfully assigned as follows: 
+      Engine:        SPDE 
+      Physical Name: H:\studies\osteo\data\STD_files\5pct\
+NOTE: Libref STD_SABR was successfully assigned as follows: 
+      Engine:        SPDE 
+      Physical Name: q:\data\std_SABER\
+NOTE: Libref MPSTD was successfully assigned as follows: 
+      Engine:        SPDE 
+      Physical Name: h:\studies\mpcd\data\stddata\
+NOTE: Libref UCBSTD was successfully assigned as follows: 
+      Engine:        SPDE 
+      Physical Name: q:\studies\AS\data\stddata\
+NOTE: Libref UCB was successfully assigned as follows: 
+      Engine:        SPDE 
+      Physical Name: q:\studies\AS\data\UCB\
+NOTE: Libref DT was successfully assigned as follows: 
+      Engine:        V9 
+      Physical Name: V:\studies\AS\data
+NOTE: Libref NDC was successfully assigned as follows: 
+      Engine:        V9 
+      Physical Name: W:\onenote\references\drug ndcs\sas data
+127        footnote "&pgm.";
+128        * footnote2 "%sysfunc(datetime(),datetime14.)";
+129        title1 '--- BRONCHIECTASIS project ---';
+130        **********************************************************************;
+131        options macrogen mlogic mprint symbolgen;
+132        options nomacrogen nomlogic nomprint nosymbolgen;
+133        
+134        
+135        
+2                                                                   The SAS System                                  11:20 Wednesday, November 29, 2017
+
+136        ods html
+137          body = "output\&cmt..html"
+138          style = Statistical;
+NOTE: Writing HTML Body file: output\generateNDCLookup.html
+139        
+140        
+141        /*
+142        From: Yang, Shuo [mailto:shuoyang@uabmc.edu]
+143        Sent: Wednesday, August 24, 2016 12:06 PM
+144        To: Benjamin Chan <chanb@ohsu.edu>; Chen, Lang <langchen@uabmc.edu>
+145        Cc: Emily Henkle <henkle@ohsu.edu>; Matthews, Robert S <rsm@uab.edu>; Curtis, Jeffrey R <jrcurtis@uabmc.edu>
+146        Subject: RE: oral steroids for bronchiectasis
+147        
+148        Hi Ben,
+149        
+150        I copied 1 SAS datasets to "Q:\pgms\bchan\FDB" folder:
+151        
+152        * FDB_ETC_NDC_15:
+153        
+154          * It's the First Data Bank data with 'Enhanced Therapeutic Class'
+155            identifiers. And this is the most often used data for searching target
+156            generic names and NDCs.
+157        
+158          * If you have the accurate generic name list, then you can search generic
+159            names in 'GNN', 'GNN60' variables, which are generic name and generic name
+160            in 60 characters; or search generic/brand names in 'BN', 'LN', 'LN60'
+161            variables, which are brand name, label name and label name in 60
+162            characters. Then you can get the NDC lists. Or
+163        
+164          * If you don't have a complete/accurate generic names, you can search one or
+165            several generic names which you are sure they should be correct, then get
+166            the 'ETC_NAME' and 'ETC_ID' of them, which they stands for 'Enhanced
+167            Therapeutic Class Names' and 'Enhanced Therapeutic Class IDs', and then go
+168            back to search those 'ETC_ID' in the FDB_ETC_NDC_15 data. This step will
+169            give you medicines assigned in the same therapeutic class. Then you can
+170            review the generic name list to drop anything you don't need.
+171        
+172          * Notes:
+173        
+174            * Key variables you would be interested are: ETC_NAME, ETC_ID, GNN, GNN60,
+175              BN, LN, LN60, RT, STR, STR60. And in which,
+176        
+177              * RT stands for Route
+178        
+179              * STR stands for Strength; and STR60 stands for Strength info in 60
+180                characters (longer format)
+181        
+182            * In the results of any search, the RT variable should not be 'MISCELL',
+183              which stands for 'MISCELLANEOUS' and the medicine in this type are 'Bulk
+184              Chemicals' and we don't think they are real medicines prescribed to
+185              patients.
+186        
+187          * An example of SAS codes to search for biologic drugs that I used are
+188            pasted below.
+189        
+190        Feel free to let me know if you have any question.
+191        
+192        Best,
+193        
+194        Shawn
+195         */
+196        libname FDB "Q:\pgms\bchan\FDB" access = readonly;
+NOTE: Libref FDB was successfully assigned as follows: 
+      Engine:        V9 
+      Physical Name: Q:\pgms\bchan\FDB
+197        proc contents data = FDB.FDB_ETC_NDC_15 order = varnum;
+198        run;
+
+                                                            --- BRONCHIECTASIS project ---                      11:20 Wednesday, November 29, 2017   1
+
+                                                                The CONTENTS Procedure
+
+                                   Data Set Name        FDB.FDB_ETC_NDC_15            Observations           457780
+                                   Member Type          DATA                          Variables              26    
+                                   Engine               V9                            Indexes                0     
+                                   Created              08/24/2016 12:32:53           Observation Length     648   
+                                   Last Modified        08/24/2016 12:32:53           Deleted Observations   0     
+                                   Protection                                         Compressed             CHAR  
+                                   Data Set Type                                      Reuse Space            NO    
+                                   Label                                              Point to Observations  YES   
+                                   Data Representation  WINDOWS_32                    Sorted                 NO    
+                                   Encoding             wlatin1  Western (Windows)                                 
+
+
+                                                          Engine/Host Dependent Information
+
+                                        Data Set Page Size          1048576                                  
+                                        Number of Data Set Pages    120                                      
+                                        Number of Data Set Repairs  0                                        
+                                        ExtendObsCounter            YES                                      
+                                        Filename                    Q:\pgms\bchan\FDB\fdb_etc_ndc_15.sas7bdat
+                                        Release Created             9.0401M1                                 
+                                        Host Created                W32_ES08R2                               
+
+
+                                                             Variables in Creation Order
+ 
+                          #    Variable                      Type    Len    Format    Informat    Label
+
+                          1    GCN_SEQNO                     Num       8    7.        7.          GCN_SEQNO                 
+                          2    ETC_NAME                      Char     70    $70.      $70.        ETC_NAME                  
+                          3    NDC                           Char     11    $11.      $11.        NDC                       
+                          4    BN                            Char     30    $30.      $30.        BN                        
+                          5    LN                            Char     30    $30.      $30.        LN                        
+                          6    LN25                          Char     25    $25.      $25.        LN25                      
+                          7    LN60                          Char     60    $60.      $60.        LN60                      
+                          8    GNN                           Char     30    $30.      $30.        GNN                       
+                          9    GNN60                         Char     60    $60.      $60.        GNN60                     
+                         10    Package_Description           Char     10    $10.      $10.        PD                        
+                         11    TRADENAME                     Char    125    $125.     $125.       TRADENAME                 
+                         12    STR                           Char     10    $10.      $10.        STR                       
+                         13    STR60                         Char     60    $60.      $60.        STR60                     
+                         14    RT                            Char     10    $10.      $10.        RT                        
+                         15    GCRT_DESC                     Char     40    $40.      $40.        GCRT_DESC                 
+                         16    ETC_ID                        Num       8    9.        9.          ETC_ID                    
+                         17    ETC_HIERARCHY_LEVEL           Num       8    3.        3.          ETC_HIERARCHY_LEVEL       
+                         18    ETC_ULTIMATE_PARENT_ETC_ID    Num       8    9.        9.          ETC_ULTIMATE_PARENT_ETC_ID
+                         19    ETC_PARENT_ETC_ID             Num       8    9.        9.          ETC_PARENT_ETC_ID         
+                         20    ETC_ULTIMATE_CHILD_IND        Char      1    $1.       $1.         ETC_ULTIMATE_CHILD_IND    
+                         21    GCN                           Num       8    6.        6.          GCN                       
+                         22    GCRT                          Char      1    $1.       $1.         GCRT                      
+                         23    HICL_SEQNO                    Num       8    7.        7.          HICL_SEQNO                
+                         24    HIC3                          Char      3    $3.       $3.         HIC3                      
+                         25    HIC3_SEQN                     Num       8    7.        7.          HIC3_SEQN                 
+                         26    TC                            Num       8    3.        3.          TC                        
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+                                                                generateNDCLookup.sas
+NOTE: PROCEDURE CONTENTS used (Total process time):
+      real time           0.32 seconds
+      cpu time            0.15 seconds
+      
+3                                                                   The SAS System                                  11:20 Wednesday, November 29, 2017
+
+NOTE: The PROCEDURE CONTENTS printed page 1.
+
+199        
+200        
+201        /*
+202        For oral steroids, integrate UAB's Ndc_oralsteroids data set
+203        
+204        
+205        From: Yang, Shuo [mailto:shuoyang@uabmc.edu]
+206        Sent: Monday, September 19, 2016 11:28 AM
+207        To: Biostatistics & Design Program <bdp@ohsu.edu>; Benjamin Chan <chanb@ohsu.edu>
+208        Cc: Chen, Lang <langchen@uabmc.edu>; Kevin Winthrop <winthrop@ohsu.edu>; Curtis, Jeffrey R <jrcurtis@uabmc.edu>
+209        Subject: Oral Steroids NDC List with Converted Prednisone Equivalent Dose
+210        
+211        Hi Ben and All,
+212        
+213        The cleaned oral steroids NDC list (with Prednisone equivalent dose) are at
+214        our shared server SAS library :
+215        
+216        libname ndc "W:\onenote\references\Drug NDCs\SAS Data";
+217        
+218        And named: Ndc_oralsteroids
+219        
+220        There are 8 unique GNNs found,
+221        
+222        BETAMETHASONE
+223        BUDESONIDE
+224        CORTISONE
+225        DEXAMETHASONE
+226        HYDROCORTISONE
+227        PREDNISOLONE
+228        PREDNISONE
+229        TRIAMCINOLONE
+230        
+231        with 3360 unique NDCs;
+232        
+233        And the variable "Prednisone_EQ_Dose" in the SAS data gives the converted
+234        doses; The 'coeff' variable gives the converting coefficient based on below
+235        algorithm.
+236        
+237        Target Steroids    | xx mg = | xx mg Prednisone
+238        -------------------|---------|-----------------
+239        BETAMETHASONE      | 1 =     | 25/3
+240        CORTISONE          | 1 =     | 1/5
+241        DEXAMETHASONE      | 1 =     | 20/3
+242        FLUDROCORTISONE    | 1 =     | 1/5
+243        HYDROCORTISONE     | 1 =     | 1/4
+244        METHYLPREDNISOLONE | 1 =     | 5/4
+245        PREDNISOLONE       | 1 =     | 1
+246        TRIAMCINOLONE      | 1 =     | 5/4
+247        BUDESONIDE         | 1 =     | N/A (confirmed there is no coefficient by Lang on 9/13/2016)
+248        
+249        Let me know if you have any difficulty to find or view the SAS data.
+250         */
+251        libname NDC "W:\onenote\references\Drug NDCs\SAS Data" access = readonly;
+NOTE: Libref NDC was successfully assigned as follows: 
+      Engine:        V9 
+      Physical Name: W:\onenote\references\Drug NDCs\SAS Data
+252        proc contents data = NDC.Ndc_oralsteroids order = varnum;
+253        run;
+
+                                                            --- BRONCHIECTASIS project ---                      11:20 Wednesday, November 29, 2017   2
+
+                                                                The CONTENTS Procedure
+
+              Data Set Name        NDC.NDC_ORALSTEROIDS                                                      Observations          3409
+              Member Type          DATA                                                                      Variables             10  
+              Engine               V9                                                                        Indexes               0   
+              Created              02/27/2017 20:36:39                                                       Observation Length    136 
+              Last Modified        02/27/2017 20:36:39                                                       Deleted Observations  0   
+              Protection           ALTER                                                                     Compressed            NO  
+              Data Set Type                                                                                  Sorted                YES 
+              Label                FDB NDC Updated to 2016; Px Updated to 2014 Last updated on 01/10/2017                              
+              Data Representation  WINDOWS_32                                                                                          
+              Encoding             wlatin1  Western (Windows)                                                                          
+
+
+                                                          Engine/Host Dependent Information
+
+                            Data Set Page Size          1048576                                                           
+                            Number of Data Set Pages    1                                                                 
+                            First Data Page             1                                                                 
+                            Max Obs per Page            7702                                                              
+                            Obs in First Data Page      3409                                                              
+                            Number of Data Set Repairs  0                                                                 
+                            Filename                    W:\onenote\references\Drug NDCs\SAS Data\ndc_oralsteroids.sas7bdat
+                            Release Created             9.0301M0                                                          
+                            Host Created                X64_7PRO                                                          
+
+
+                                                             Variables in Creation Order
+ 
+                             #    Variable              Type    Len    Format    Informat    Label
+
+                             1    GNN                   Char     30                                                      
+                             2    DESC                  Char     30    $30.      $30.        Brand Name or Px Description
+                             3    Code                  Char     11    $11.      $11.        NDC or Px Codes             
+                             4    STR                   Char     10    $10.      $10.        Strength                    
+                             5    RT                    Char     10    $10.      $10.        Route                       
+                             6    CodeType              Char      5                                                      
+                             7    UNIT                  Char     10                                                      
+                             8    Str_Num               Num       8                                                      
+                             9    coeff                 Num       8                                                      
+                            10    Prednisone_EQ_Dose    Num       8                                                      
+
+
+                                                                  Sort Information
+
+                                                         Sortedby       CodeType RT GNN Code
+                                                         Validated      YES                 
+                                                         Character Set  ANSI                
+                                                         Sort Option    NODUPREC            
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+                                                                generateNDCLookup.sas
+NOTE: PROCEDURE CONTENTS used (Total process time):
+      real time           0.04 seconds
+      cpu time            0.03 seconds
+      
+NOTE: The PROCEDURE CONTENTS printed page 2.
+
+254        proc contents data = NDC.NDC_DMARD_Bio_All order = varnum;
+255        run;
+
+                                                            --- BRONCHIECTASIS project ---                      11:20 Wednesday, November 29, 2017   3
+
+                                                                The CONTENTS Procedure
+
+                   Data Set Name        NDC.NDC_DMARD_BIO_ALL                                            Observations          1261
+                   Member Type          DATA                                                             Variables             8   
+                   Engine               V9                                                               Indexes               0   
+                   Created              10/05/2017 08:40:43                                              Observation Length    146 
+                   Last Modified        10/05/2017 08:40:43                                              Deleted Observations  0   
+                   Protection           ALTER                                                            Compressed            NO  
+                   Data Set Type                                                                         Sorted                YES 
+                   Label                Created on 2/27/2017; Based on FDB 2016 & Px Collection 2016:                              
+                   Data Representation  WINDOWS_64                                                                                 
+                   Encoding             wlatin1  Western (Windows)                                                                 
+
+
+                                                          Engine/Host Dependent Information
+
+                           Data Set Page Size          65536                                                              
+                           Number of Data Set Pages    3                                                                  
+                           First Data Page             1                                                                  
+                           Max Obs per Page            448                                                                
+                           Obs in First Data Page      435                                                                
+                           Number of Data Set Repairs  0                                                                  
+                           ExtendObsCounter            YES                                                                
+                           Filename                    W:\onenote\references\Drug NDCs\SAS Data\ndc_dmard_bio_all.sas7bdat
+                           Release Created             9.0401M1                                                           
+                           Host Created                X64_7PRO                                                           
+
+
+                                                              Variables in Creation Order
+ 
+                                  #    Variable    Type    Len    Format    Informat    Label
+
+                                  1    GNN         Char     30                                                      
+                                  2    CodeType    Char      5                                                      
+                                  3    Descript    Char     60    $60.      $60.        Brand Name or Px Description
+                                  4    Code        Char     11    $11.      $11.        NDC or Px Codes             
+                                  5    STR         Char     10    $10.      $10.        Strength                    
+                                  6    RT          Char     10    $10.      $10.        Route                       
+                                  7    Category    Char     10                                                      
+                                  8    SubCate     Char     10                                                      
+
+
+                                                                  Sort Information
+
+                                          Sortedby       GNN CodeType Descript Code STR RT Category SubCate
+                                          Validated      YES                                               
+                                          Character Set  ANSI                                              
+                                          Sort Option    NODUPKEY                                          
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+                                                                generateNDCLookup.sas
+NOTE: PROCEDURE CONTENTS used (Total process time):
+      real time           0.04 seconds
+4                                                                   The SAS System                                  11:20 Wednesday, November 29, 2017
+
+      cpu time            0.03 seconds
+      
+NOTE: The PROCEDURE CONTENTS printed page 3.
+
+256        
+257        
+258        proc sql;
+259        /*
+260        Create table of search strings used in LIKE operators
+261         */
+262          create table Work.LikeStr (class char(32), rt char(10), drug char(32), likeStr1 char(32), likeStr2 char(28));
+NOTE: Table WORK.LIKESTR created, with 0 rows and 5 columns.
+263          insert into Work.LikeStr
+264            values ("macrolide", "oral", "azithromycin", '%azithromycin%', 'macrolides')
+265            values ("macrolide", "oral", "clarithromycin", '%clarithromycin%', 'macrolides')
+266            values ("macrolide", "oral", "erythromycin", '%erythromycin%', 'macrolides');
+NOTE: 3 rows were inserted into WORK.LIKESTR.
+
+267          insert into Work.LikeStr
+268            values ("antitubercular", "oral", "ethambutol", '%ethambutol%', '%antitubercular%')
+269            values ("antitubercular", "oral", "rifamycin", '%rifa%', '%antitubercular%')
+270            values ("antitubercular", "oral", "rifabutin", '%rifabutin%', '%antitubercular%')
+271            values ("antitubercular", "oral", "pyrazinamide", '%pyrazinamide%', '%antitubercular%');
+NOTE: 4 rows were inserted into WORK.LIKESTR.
+
+272          insert into Work.LikeStr
+273            values ("inhaled steroid", "inhalation", "beclomethasone", '%beclomethasone%', '%asthma%')
+274            values ("inhaled steroid", "inhalation", "budesonide", '%budesonide%', '%asthma%')
+275            values ("inhaled steroid", "inhalation", "flunisolide", '%flunisolide%', '%asthma%')
+276            values ("inhaled steroid", "inhalation", "fluticasone", '%fluticasone%', '%asthma%')
+277            values ("inhaled steroid", "inhalation", "mometasone", '%mometasone%', '%asthma%')
+278            values ("inhaled steroid", "inhalation", "triamcinolone", '%triamcinolone%', '%asthma%');
+NOTE: 6 rows were inserted into WORK.LIKESTR.
+
+279          insert into Work.LikeStr
+280            values ("combined steroid/bronchodilator", "inhalation", "ipratropium/albuterol", '%ipratropium%albuterol%', '%asthma%')
+281            values ("combined steroid/bronchodilator", "inhalation", "budesonide/formoterol", '%budesonide%formoterol%', '%asthma%')
+282            values ("combined steroid/bronchodilator", "inhalation", "fluticasone/salmeterol", '%fluticasone%salmeterol%', '%asthma%');
+NOTE: 3 rows were inserted into WORK.LIKESTR.
+
+283          insert into Work.LikeStr
+284            values ("antibiotic", "oral", "levofloxacin", '%levofloxacin%', '%fluoroquinolone%antibiotic%')
+285            values ("antibiotic", "oral", "moxifloxacin", '%moxifloxacin%', '%fluoroquinolone%antibiotic%')
+286            values ("antibiotic", "oral", "ciprofloxacin", '%ciprofloxacin%', '%fluoroquinolone%antibiotic%')
+287            values ("antibiotic", "oral", "amoxicillin", '%amoxicillin%', '%aminopenicillin%antibiotic%')
+288            values ("antibiotic", "oral", "amoxicillin", '%amoxicillin%clavulanate', '%aminopenicillin%antibiotic%')
+289            values ("antibiotic", "oral", "doxycycline", '%doxycycline', '%tetracycline%antibiotic%')
+290            values ("antibiotic", "oral", "minocycline", '%minocycline%', '%tetracycline%antibiotic%')
+291            values ("antibiotic", "oral", "sulfamethoxazole/trimethoprim", '%sulfa%trim', '%antibac%')
+292            values ("antibiotic", "oral", "linezolid", '%linezolid%', '%oxazolidinone%antibiotic%');
+NOTE: 9 rows were inserted into WORK.LIKESTR.
+
+293          insert into Work.LikeStr
+294            values ("antibiotic", "inhalation", "aztreonam", '%aztreonam%', '%antibiotic%')
+295            values ("antibiotic", "inhalation", "tobramycin", '%tobram%', '%antibiotic%')
+296            values ("antibiotic", "inhalation", "amikacin", '%amikac%', '%antibiotic%')
+297            values ("antibiotic", "inhalation", "colistin", '%colistin%', '%polymyxin%')
+298            values ("antibiotic", "inhalation", "gentamicin", '%gentam%', '%antibiotic%')
+299            values ("antibiotic", "intraven", "aztreonam", '%aztreonam%', '%antibiotic%')
+300            values ("antibiotic", "intraven", "tobramycin", '%tobram%', '%antibiotic%')
+301            values ("antibiotic", "intraven", "amikacin", '%amikac%', '%antibiotic%')
+302            values ("antibiotic", "intraven", "colistin", '%colistin%', '%polymyxin%')
+303            values ("antibiotic", "intraven", "gentamicin", '%gentam%', '%antibiotic%')
+304            values ("antibiotic", "injection", "aztreonam", '%aztreonam%', '%antibiotic%')
+305            values ("antibiotic", "injection", "tobramycin", '%tobram%', '%antibiotic%')
+306            values ("antibiotic", "injection", "amikacin", '%amikac%', '%antibiotic%')
+307            values ("antibiotic", "injection", "colistin", '%colistin%', '%polymyxin%')
+308            values ("antibiotic", "injection", "gentamicin", '%gentam%', '%antibiotic%');
+NOTE: 15 rows were inserted into WORK.LIKESTR.
+
+309          select "Work.LikeStr" as table, * from Work.LikeStr;
+                                                            --- BRONCHIECTASIS project ---                      11:20 Wednesday, November 29, 2017   4
+
+            table         class                             rt          drug                              likeStr1
+            likeStr2
+            ------------------------------------------------------------------------------------------------------------------------------
+            Work.LikeStr  macrolide                         oral        azithromycin                      %azithromycin%                  
+            macrolides                  
+
+            Work.LikeStr  macrolide                         oral        clarithromycin                    %clarithromycin%                
+            macrolides                  
+
+            Work.LikeStr  macrolide                         oral        erythromycin                      %erythromycin%                  
+            macrolides                  
+
+            Work.LikeStr  antitubercular                    oral        ethambutol                        %ethambutol%                    
+            %antitubercular%            
+
+            Work.LikeStr  antitubercular                    oral        rifamycin                         %rifa%                          
+            %antitubercular%            
+
+            Work.LikeStr  antitubercular                    oral        rifabutin                         %rifabutin%                     
+            %antitubercular%            
+
+            Work.LikeStr  antitubercular                    oral        pyrazinamide                      %pyrazinamide%                  
+            %antitubercular%            
+
+            Work.LikeStr  inhaled steroid                   inhalation  beclomethasone                    %beclomethasone%                
+            %asthma%                    
+
+            Work.LikeStr  inhaled steroid                   inhalation  budesonide                        %budesonide%                    
+            %asthma%                    
+
+            Work.LikeStr  inhaled steroid                   inhalation  flunisolide                       %flunisolide%                   
+            %asthma%                    
+
+            Work.LikeStr  inhaled steroid                   inhalation  fluticasone                       %fluticasone%                   
+            %asthma%                    
+
+            Work.LikeStr  inhaled steroid                   inhalation  mometasone                        %mometasone%                    
+            %asthma%                    
+
+            Work.LikeStr  inhaled steroid                   inhalation  triamcinolone                     %triamcinolone%                 
+            %asthma%                    
+
+            Work.LikeStr  combined steroid/bronchodilator   inhalation  ipratropium/albuterol             %ipratropium%albuterol%         
+            %asthma%                    
+
+            Work.LikeStr  combined steroid/bronchodilator   inhalation  budesonide/formoterol             %budesonide%formoterol%         
+            %asthma%                    
+
+            Work.LikeStr  combined steroid/bronchodilator   inhalation  fluticasone/salmeterol            %fluticasone%salmeterol%        
+            %asthma%                    
+
+            Work.LikeStr  antibiotic                        oral        levofloxacin                      %levofloxacin%                  
+            %fluoroquinolone%antibiotic%
+
+            Work.LikeStr  antibiotic                        oral        moxifloxacin                      %moxifloxacin%                  
+            %fluoroquinolone%antibiotic%
+
+            Work.LikeStr  antibiotic                        oral        ciprofloxacin                     %ciprofloxacin%                 
+            %fluoroquinolone%antibiotic%
+
+            Work.LikeStr  antibiotic                        oral        amoxicillin                       %amoxicillin%                   
+            %aminopenicillin%antibiotic%
+
+            Work.LikeStr  antibiotic                        oral        amoxicillin                       %amoxicillin%clavulanate        
+            %aminopenicillin%antibiotic%
+
+            Work.LikeStr  antibiotic                        oral        doxycycline                       %doxycycline                    
+            %tetracycline%antibiotic%   
+ 
+ 
+ 
+                                                                generateNDCLookup.sas
+                                                            --- BRONCHIECTASIS project ---                      11:20 Wednesday, November 29, 2017   5
+
+            table         class                             rt          drug                              likeStr1
+            likeStr2
+            ------------------------------------------------------------------------------------------------------------------------------
+            Work.LikeStr  antibiotic                        oral        minocycline                       %minocycline%                   
+            %tetracycline%antibiotic%   
+
+            Work.LikeStr  antibiotic                        oral        sulfamethoxazole/trimethoprim     %sulfa%trim                     
+            %antibac%                   
+
+            Work.LikeStr  antibiotic                        oral        linezolid                         %linezolid%                     
+            %oxazolidinone%antibiotic%  
+
+            Work.LikeStr  antibiotic                        inhalation  aztreonam                         %aztreonam%                     
+            %antibiotic%                
+
+            Work.LikeStr  antibiotic                        inhalation  tobramycin                        %tobram%                        
+            %antibiotic%                
+
+            Work.LikeStr  antibiotic                        inhalation  amikacin                          %amikac%                        
+            %antibiotic%                
+
+            Work.LikeStr  antibiotic                        inhalation  colistin                          %colistin%                      
+            %polymyxin%                 
+
+            Work.LikeStr  antibiotic                        inhalation  gentamicin                        %gentam%                        
+            %antibiotic%                
+
+            Work.LikeStr  antibiotic                        intraven    aztreonam                         %aztreonam%                     
+            %antibiotic%                
+
+            Work.LikeStr  antibiotic                        intraven    tobramycin                        %tobram%                        
+            %antibiotic%                
+
+            Work.LikeStr  antibiotic                        intraven    amikacin                          %amikac%                        
+            %antibiotic%                
+
+            Work.LikeStr  antibiotic                        intraven    colistin                          %colistin%                      
+            %polymyxin%                 
+
+            Work.LikeStr  antibiotic                        intraven    gentamicin                        %gentam%                        
+            %antibiotic%                
+
+            Work.LikeStr  antibiotic                        injection   aztreonam                         %aztreonam%                     
+            %antibiotic%                
+
+            Work.LikeStr  antibiotic                        injection   tobramycin                        %tobram%                        
+            %antibiotic%                
+
+            Work.LikeStr  antibiotic                        injection   amikacin                          %amikac%                        
+            %antibiotic%                
+
+            Work.LikeStr  antibiotic                        injection   colistin                          %colistin%                      
+            %polymyxin%                 
+
+            Work.LikeStr  antibiotic                        injection   gentamicin                        %gentam%                        
+            %antibiotic%                
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+                                                                generateNDCLookup.sas
+310        /*
+5                                                                   The SAS System                                  11:20 Wednesday, November 29, 2017
+
+311        Create NDC lookup table
+312        Use LIKE string 1 on brand name, generic name permutations, label name permutations, and tradename
+313        Use LIKE string 2 on etc_name
+314         */
+315          create table DT.lookupNDC as
+316            select distinct
+317              A.*,
+318              . as prednisoneMultiplier,
+319              . as prednisodeEquivalentDose,
+320            "" as category,
+321            "" as subcategory
+322            from
+323              FDB.FDB_ETC_NDC_15 A inner join
+324              Work.LikeStr B on (lowcase(A.rt) = B.rt &
+325                                 (lowcase(A.bn) like compress(B.likeStr1) |
+326                                  lowcase(A.gnn) like compress(B.likeStr1) |
+327                                  lowcase(A.gnn60) like compress(B.likeStr1) |
+328                                  lowcase(A.ln) like compress(B.likeStr1) |
+329                                  lowcase(A.ln25) like compress(B.likeStr1) |
+330                                  lowcase(A.ln60) like compress(B.likeStr1) |
+331                                  lowcase(A.tradename) like compress(B.likeStr1)) &
+332                                 lowcase(etc_name) like compress(B.likeStr2))
+333            union all
+334            select
+335              A.*,
+336              C.coeff as prednisoneMultiplier,
+337              C.Prednisone_EQ_Dose as prednisodeEquivalentDose,
+338            "" as category,
+339            "" as subcategory
+340            from
+341              FDB.FDB_ETC_NDC_15 A inner join
+342              NDC.Ndc_oralsteroids C on (A.NDC = C.Code)
+343            union all
+344            select
+345              A.*,
+346              . as prednisoneMultiplier,
+347              . as prednisodeEquivalentDose,
+348              D.category,
+349              D.subcate as subcategory
+350            from
+351              FDB.FDB_ETC_NDC_15 A inner join
+352              NDC.NDC_DMARD_Bio_All D on (A.NDC = D.Code)
+353            where D.codeType = "NDC";
+NOTE: Table DT.LOOKUPNDC created, with 13035 rows and 30 columns.
+
+354          create table DT.lookupJcodes as
+355            select A.* from NDC.NDC_DMARD_Bio_All A where A.codeType = "HCPCS" union corr
+356            select "" as gnn,
+357                   "HCPCS" as codeType,
+358                   description as descript,
+359                   hcpcs_cd as code,
+360                   "" as str,
+361                   "" as rt,
+362                   "Inhaled antibiotic" as category,
+363                   "" as subCate
+364              from NDC.Antibiotics_parenteral_hcpcs
+365              where description like '%amikac%' |
+366                    description like '%aztreo%' |
+367                    description like '%colist%' |
+368                    description like '%gentam%' |
+369                    description like '%tobram%'
+370            order by category, subCate, code;
+NOTE: Table DT.LOOKUPJCODES created, with 39 rows and 8 columns.
+
+371          create table Work.summaryLookupNDC as
+372            select "Summary of DT.lookupNDC" as table,
+373                   etc_name,
+374                   rt,
+375                   gnn60,
+376                   count(*) as n
+377            from DT.lookupNDC
+378            group by gnn60, rt, etc_name;
+6                                                                   The SAS System                                  11:20 Wednesday, November 29, 2017
+
+NOTE: Table WORK.SUMMARYLOOKUPNDC created, with 133 rows and 5 columns.
+
+379          select * from Work.summaryLookupNDC;
+                                                            --- BRONCHIECTASIS project ---                      11:20 Wednesday, November 29, 2017   6
+
+                     table                    ETC_NAME                                                                RT
+                     GNN60                                                                n
+                     -----------------------------------------------------------------------------------------------------------
+                     Summary of DT.lookupNDC  DMARD - Antinflammatory, Select. costimulation modulator,T-cell Inhib.  SUB-Q     
+                     ABATACEPT                                                            2
+
+                     Summary of DT.lookupNDC  DMARD - Antinflammatory, Select. costimulation modulator,T-cell Inhib.  INTRAVEN  
+                     ABATACEPT/MALTOSE                                                    1
+
+                     Summary of DT.lookupNDC  Anti-inflammatory Tumor Necrosis Factor Inhibiting Agnts,TNF-alpha Sel  SUB-Q     
+                     ADALIMUMAB                                                          11
+
+                     Summary of DT.lookupNDC  Inflammatory Bowel Agent - Tumor Necrosis Factor Alpha Blockers         SUB-Q     
+                     ADALIMUMAB                                                           7
+
+                     Summary of DT.lookupNDC  Aminoglycoside Antibiotic                                               INJECTION 
+                     AMIKACIN SULFATE                                                    62
+
+                     Summary of DT.lookupNDC  Aminoglycoside Antibiotic                                               INTRAVEN  
+                     AMIKACIN SULFATE                                                     1
+
+                     Summary of DT.lookupNDC  Aminoglycoside Antibiotic                                               INTRAVEN  
+                     AMIKACIN SULFATE IN 0.9 % SODIUM CHLORIDE                            1
+
+                     Summary of DT.lookupNDC  Aminoglycoside Antibiotic                                               INJECTION 
+                     AMIKACIN SULFATE/PF                                                  2
+
+                     Summary of DT.lookupNDC  Aminopenicillin Antibiotic                                              ORAL      
+                     AMOXICILLIN                                                       2195
+
+                     Summary of DT.lookupNDC  Aminopenicillin Antibiotic - Beta-lactamase Inhibitor Combinations      ORAL      
+                     AMOXICILLIN/POTASSIUM CLAVULANATE                                  634
+
+                     Summary of DT.lookupNDC  DMARD - Interleukin-1 Receptor Antagonist (IL-1Ra)                      SUB-Q     
+                     ANAKINRA                                                             6
+
+                     Summary of DT.lookupNDC  DMARD - Phosphodiesterase-4 (PDE4) Inhibitors                           ORAL      
+                     APREMILAST                                                           5
+
+                     Summary of DT.lookupNDC  Dermatological - Antipsoriatics Systemic, Phosphodiesterase 4 Inhib.    ORAL      
+                     APREMILAST                                                           5
+
+                     Summary of DT.lookupNDC  DMARD - Immunosuppressives                                              ORAL      
+                     AZATHIOPRINE                                                        45
+
+                     Summary of DT.lookupNDC  Immunosuppressive - Purine Analogs                                      ORAL      
+                     AZATHIOPRINE                                                        45
+
+                     Summary of DT.lookupNDC  DMARD - Immunosuppressives                                              INJECTION 
+                     AZATHIOPRINE SODIUM                                                  6
+
+                     Summary of DT.lookupNDC  Immunosuppressive - Purine Analogs                                      INJECTION 
+                     AZATHIOPRINE SODIUM                                                  6
+
+                     Summary of DT.lookupNDC  Macrolides                                                              ORAL      
+                     AZITHROMYCIN                                                       380
+
+                     Summary of DT.lookupNDC  Monobactam Antibiotics                                                  INJECTION 
+                     AZTREONAM                                                           37
+
+                     Summary of DT.lookupNDC  Monobactam Antibiotics                                                  INHALATION
+                     AZTREONAM LYSINE                                                     1
+
+                     Summary of DT.lookupNDC  Monobactam Antibiotics                                                  INTRAVEN  
+                     AZTREONAM/DEXTROSE-WATER                                             8
+
+                     Summary of DT.lookupNDC  Inflammatory Bowel Agent - Aminosalicylates and Related Agents          ORAL      
+                     BALSALAZIDE DISODIUM                                                15
+ 
+ 
+ 
+                                                                generateNDCLookup.sas
+                                                            --- BRONCHIECTASIS project ---                      11:20 Wednesday, November 29, 2017   7
+
+                     table                    ETC_NAME                                                                RT
+                     GNN60                                                                n
+                     -----------------------------------------------------------------------------------------------------------
+                     Summary of DT.lookupNDC  Asthma Therapy - Glucocorticoids                                        INHALATION
+                     BECLOMETHASONE DIPROPIONATE                                         44
+
+                     Summary of DT.lookupNDC  Immunomodulator B-Lymphocyte Stimulator (BLyS)-Specific Inhibitor MCAB  INTRAVEN  
+                     BELIMUMAB                                                            2
+
+                     Summary of DT.lookupNDC  Glucocorticoids                                                         ORAL      
+                     BETAMETHASONE                                                        4
+
+                     Summary of DT.lookupNDC  Asthma Therapy - Glucocorticoids                                        INHALATION
+                     BUDESONIDE                                                          30
+
+                     Summary of DT.lookupNDC  Inflammatory Bowel Agent - Glucocorticoids                              ORAL      
+                     BUDESONIDE                                                          14
+
+                     Summary of DT.lookupNDC  Asthma/COPD Therapy - Beta Adrenergic-Glucocorticoid Combinations       INHALATION
+                     BUDESONIDE/FORMOTEROL FUMARATE                                       7
+
+                     Summary of DT.lookupNDC  Anti-inflammatory - Interleukin-1 beta Blockers                         SUB-Q     
+                     CANAKINUMAB/PF                                                       1
+
+                     Summary of DT.lookupNDC  Anti-inflammatory Tumor Necrosis Factor Inhibiting Agnts,TNF-alpha Sel  SUB-Q     
+                     CERTOLIZUMAB PEGOL                                                   3
+
+                     Summary of DT.lookupNDC  Inflammatory Bowel Agent - Tumor Necrosis Factor Alpha Blockers         SUB-Q     
+                     CERTOLIZUMAB PEGOL                                                   3
+
+                     Summary of DT.lookupNDC  Fluoroquinolone Antibiotics                                             ORAL      
+                     CIPROFLOXACIN                                                       10
+
+                     Summary of DT.lookupNDC  Fluoroquinolone Antibiotics                                             ORAL      
+                     CIPROFLOXACIN HCL                                                  711
+
+                     Summary of DT.lookupNDC  Macrolides                                                              ORAL      
+                     CLARITHROMYCIN                                                     245
+
+                     Summary of DT.lookupNDC  Polymyxins and Derivatives - Single Agents                              INJECTION 
+                     COLISTIN (AS COLISTIMETHATE SODIUM)                                 15
+
+                     Summary of DT.lookupNDC  Glucocorticoids                                                         ORAL      
+                     CORTISONE ACETATE                                                   83
+
+                     Summary of DT.lookupNDC  Antineoplastic - Alkylating Agent - Nitrogen Mustards                   INTRAVEN  
+                     CYCLOPHOSPHAMIDE                                                    60
+
+                     Summary of DT.lookupNDC  DMARD - Immunosuppressives                                              INTRAVEN  
+                     CYCLOPHOSPHAMIDE                                                    60
+
+                     Summary of DT.lookupNDC  Antineoplastic - Alkylating Agent - Nitrogen Mustards                   ORAL      
+                     CYCLOPHOSPHAMIDE                                                    25
+
+                     Summary of DT.lookupNDC  DMARD - Immunosuppressives                                              ORAL      
+                     CYCLOPHOSPHAMIDE                                                    25
+
+                     Summary of DT.lookupNDC  Immunosuppressive - Calcineurin Inhibitors                              INTRAVEN  
+                     CYCLOSPORINE                                                         4
+
+                     Summary of DT.lookupNDC  DMARD - Immunosuppressives                                              ORAL      
+                     CYCLOSPORINE                                                        14
+
+                     Summary of DT.lookupNDC  Immunosuppressive - Calcineurin Inhibitors                              ORAL      
+                     CYCLOSPORINE                                                        14
+
+                     Summary of DT.lookupNDC  DMARD - Immunosuppressives                                              ORAL      
+                     CYCLOSPORINE, MODIFIED                                              30
+ 
+ 
+ 
+                                                                generateNDCLookup.sas
+                                                            --- BRONCHIECTASIS project ---                      11:20 Wednesday, November 29, 2017   8
+
+                     table                    ETC_NAME                                                                RT
+                     GNN60                                                                n
+                     -----------------------------------------------------------------------------------------------------------
+                     Summary of DT.lookupNDC  Immunosuppressive - Calcineurin Inhibitors                              ORAL      
+                     CYCLOSPORINE, MODIFIED                                              30
+
+                     Summary of DT.lookupNDC  Glucocorticoids                                                         ORAL      
+                     DEXAMETHASONE                                                      641
+
+                     Summary of DT.lookupNDC  Tetracycline Antibiotics                                                ORAL      
+                     DOXYCYCLINE HYCLATE                                                 53
+
+                     Summary of DT.lookupNDC  Tetracycline Antibiotics                                                ORAL      
+                     DOXYCYCLINE MONOHYDRATE                                             64
+
+                     Summary of DT.lookupNDC  Dermatological - Antipsoriatic Agents Systemic, Immunnosuppressive      SUB-Q     
+                     EFALIZUMAB                                                           2
+
+                     Summary of DT.lookupNDC  Macrolides                                                              ORAL      
+                     ERYTHROMYCIN BASE                                                  752
+
+                     Summary of DT.lookupNDC  Macrolides                                                              ORAL      
+                     ERYTHROMYCIN ESTOLATE                                              154
+
+                     Summary of DT.lookupNDC  Macrolides                                                              ORAL      
+                     ERYTHROMYCIN ETHYLSUCCINATE                                        465
+
+                     Summary of DT.lookupNDC  Macrolides                                                              ORAL      
+                     ERYTHROMYCIN STEARATE                                              568
+
+                     Summary of DT.lookupNDC  Anti-inflammatory Tumor Necrosis Factor Inhibiting Agnts,Non-SeIective  SUB-Q     
+                     ETANERCEPT                                                          10
+
+                     Summary of DT.lookupNDC  Antitubercular Agents Other                                             ORAL      
+                     ETHAMBUTOL HCL                                                      62
+
+                     Summary of DT.lookupNDC  Asthma Therapy - Glucocorticoids                                        INHALATION
+                     FLUNISOLIDE                                                         11
+
+                     Summary of DT.lookupNDC  Asthma Therapy - Glucocorticoids                                        INHALATION
+                     FLUNISOLIDE/MENTHOL                                                  5
+
+                     Summary of DT.lookupNDC  Asthma Therapy - Glucocorticoids                                        INHALATION
+                     FLUTICASONE FUROATE                                                  4
+
+                     Summary of DT.lookupNDC  Asthma/COPD Therapy - Beta Adrenergic-Glucocorticoid Combinations       INHALATION
+                     FLUTICASONE FUROATE/VILANTEROL TRIFENATATE                           4
+
+                     Summary of DT.lookupNDC  Asthma Therapy - Glucocorticoids                                        INHALATION
+                     FLUTICASONE PROPIONATE                                              49
+
+                     Summary of DT.lookupNDC  Asthma/COPD Therapy - Beta Adrenergic-Glucocorticoid Combinations       INHALATION
+                     FLUTICASONE PROPIONATE/SALMETEROL XINAFOATE                         40
+
+                     Summary of DT.lookupNDC  Aminoglycoside Antibiotic                                               INJECTION 
+                     GENTAMICIN SULFATE                                                 138
+
+                     Summary of DT.lookupNDC  Aminoglycoside Antibiotic                                               INTRAVEN  
+                     GENTAMICIN SULFATE IN SODIUM CHLORIDE, ISO-OSMOTIC                  27
+
+                     Summary of DT.lookupNDC  Aminoglycoside Antibiotic                                               INJECTION 
+                     GENTAMICIN SULFATE/PF                                                5
+
+                     Summary of DT.lookupNDC  Aminoglycoside Antibiotic                                               INTRAVEN  
+                     GENTAMICIN SULFATE/PF                                                6
+
+                     Summary of DT.lookupNDC  Aminoglycoside Antibiotic                                               INTRAVEN  
+                     GENTAMICIN SULFATE/SODIUM CHLORIDE                                  15
+ 
+ 
+ 
+                                                                generateNDCLookup.sas
+                                                            --- BRONCHIECTASIS project ---                      11:20 Wednesday, November 29, 2017   9
+
+                     table                    ETC_NAME                                                                RT
+                     GNN60                                                                n
+                     -----------------------------------------------------------------------------------------------------------
+                     Summary of DT.lookupNDC  DMARD - Gold Compounds                                                  INJECTION 
+                     GOLD SODIUM THIOMALATE                                              23
+
+                     Summary of DT.lookupNDC  Anti-inflammatory Tumor Necrosis Factor Inhibiting Agnts,TNF-alpha Sel  INTRAVEN  
+                     GOLIMUMAB                                                            1
+
+                     Summary of DT.lookupNDC  Anti-inflammatory Tumor Necrosis Factor Inhibiting Agnts,TNF-alpha Sel  SUB-Q     
+                     GOLIMUMAB                                                            4
+
+                     Summary of DT.lookupNDC  Glucocorticoids                                                         ORAL      
+                     HYDROCORTISONE                                                     124
+
+                     Summary of DT.lookupNDC  Glucocorticoids                                                         ORAL      
+                     HYDROCORTISONE CYPIONATE                                             1
+
+                     Summary of DT.lookupNDC  Antimalarials                                                           ORAL      
+                     HYDROXYCHLOROQUINE SULFATE                                          97
+
+                     Summary of DT.lookupNDC  DMARD - Antimalarials                                                   ORAL      
+                     HYDROXYCHLOROQUINE SULFATE                                          97
+
+                     Summary of DT.lookupNDC  Anti-inflammatory Tumor Necrosis Factor Inhibiting Agnts,TNF-alpha Sel  INTRAVEN  
+                     INFLIXIMAB                                                           1
+
+                     Summary of DT.lookupNDC  Inflammatory Bowel Agent - Tumor Necrosis Factor Alpha Blockers         INTRAVEN  
+                     INFLIXIMAB                                                           1
+
+                     Summary of DT.lookupNDC  Asthma/COPD Therapy - Beta Adrenergic-Anticholinergic Combinations      INHALATION
+                     IPRATROPIUM BROMIDE/ALBUTEROL SULFATE                               49
+
+                     Summary of DT.lookupNDC  DMARD - Pyrimidine Synthesis Inhibitors                                 ORAL      
+                     LEFLUNOMIDE                                                         35
+
+                     Summary of DT.lookupNDC  Fluoroquinolone Antibiotics                                             ORAL      
+                     LEVOFLOXACIN                                                       335
+
+                     Summary of DT.lookupNDC  Oxazolidinone Antibiotics                                               ORAL      
+                     LINEZOLID                                                           14
+
+                     Summary of DT.lookupNDC  Antineoplastic - Antimetabolite - Purine Analogs                        ORAL      
+                     MERCAPTOPURINE                                                      21
+
+                     Summary of DT.lookupNDC  Inflammatory Bowel Agent - Aminosalicylates and Related Agents          ORAL      
+                     MESALAMINE                                                          35
+
+                     Summary of DT.lookupNDC  Inflammatory Bowel Agent - Aminosalicylates and Related Agents          RECTAL    
+                     MESALAMINE                                                          27
+
+                     Summary of DT.lookupNDC  Inflammatory Bowel Agent - Aminosalicylates and Related Agents          RECTAL    
+                     MESALAMINE WITH CLEANSING WIPES                                      6
+
+                     Summary of DT.lookupNDC  General Anesthetic - Parenteral, Barbiturates                           INJECTION 
+                     METHOHEXITAL SODIUM                                                  1
+
+                     Summary of DT.lookupNDC  Antineoplastic - Antimetabolite - Folic Acid Analogs                    INJECTION 
+                     METHOTREXATE SODIUM                                                 47
+
+                     Summary of DT.lookupNDC  DMARD - Antimetabolites                                                 INJECTION 
+                     METHOTREXATE SODIUM                                                  8
+
+                     Summary of DT.lookupNDC  Antineoplastic - Antimetabolite - Folic Acid Analogs                    ORAL      
+                     METHOTREXATE SODIUM                                                 77
+
+                     Summary of DT.lookupNDC  DMARD - Antimetabolites                                                 ORAL      
+                     METHOTREXATE SODIUM                                                100
+ 
+ 
+ 
+                                                                generateNDCLookup.sas
+                                                            --- BRONCHIECTASIS project ---                      11:20 Wednesday, November 29, 2017  10
+
+                     table                    ETC_NAME                                                                RT
+                     GNN60                                                                n
+                     -----------------------------------------------------------------------------------------------------------
+                     Summary of DT.lookupNDC  Antineoplastic - Antimetabolite - Folic Acid Analogs                    INJECTION 
+                     METHOTREXATE SODIUM/PF                                             114
+
+                     Summary of DT.lookupNDC  DMARD - Antimetabolites                                                 INJECTION 
+                     METHOTREXATE SODIUM/PF                                               5
+
+                     Summary of DT.lookupNDC  DMARD - Antimetabolites                                                 SUB-Q     
+                     METHOTREXATE/PF                                                     30
+
+                     Summary of DT.lookupNDC  Glucocorticoids                                                         ORAL      
+                     METHYLPREDNISOLONE                                                 249
+
+                     Summary of DT.lookupNDC  Tetracycline Antibiotics                                                ORAL      
+                     MINOCYCLINE HCL                                                    281
+
+                     Summary of DT.lookupNDC  Asthma Therapy - Glucocorticoids                                        INHALATION
+                     MOMETASONE FUROATE                                                  14
+
+                     Summary of DT.lookupNDC  Asthma/COPD Therapy - Beta Adrenergic-Glucocorticoid Combinations       INHALATION
+                     MOMETASONE FUROATE/FORMOTEROL FUMARATE                               4
+
+                     Summary of DT.lookupNDC  Fluoroquinolone Antibiotics                                             ORAL      
+                     MOXIFLOXACIN HCL                                                    44
+
+                     Summary of DT.lookupNDC  Leukocyte adhesion inhibitors, alpha4-mediated, IgG4k mc antibody       INTRAVEN  
+                     NATALIZUMAB                                                          2
+
+                     Summary of DT.lookupNDC  Glucocorticoids                                                         ORAL      
+                     PREDNISOLONE                                                       220
+
+                     Summary of DT.lookupNDC  Glucocorticoids                                                         ORAL      
+                     PREDNISOLONE ACETATE                                                 1
+
+                     Summary of DT.lookupNDC  Glucocorticoids                                                         ORAL      
+                     PREDNISOLONE SOD PHOSPHATE                                          73
+
+                     Summary of DT.lookupNDC  Glucocorticoids                                                         ORAL      
+                     PREDNISOLONE SODIUM PHOSPHATE/PEAK FLOW METER                        2
+
+                     Summary of DT.lookupNDC  Glucocorticoids                                                         ORAL      
+                     PREDNISONE                                                        1835
+
+                     Summary of DT.lookupNDC  Antitubercular - Niacinamide Derivatives                                ORAL      
+                     PYRAZINAMIDE                                                        32
+
+                     Summary of DT.lookupNDC  Antitubercular - Rifamycin and Derivatives                              ORAL      
+                     RIFABUTIN                                                           10
+
+                     Summary of DT.lookupNDC  Antitubercular - Rifamycin and Derivatives                              ORAL      
+                     RIFAMPIN                                                            90
+
+                     Summary of DT.lookupNDC  Antitubercular Combinations                                             ORAL      
+                     RIFAMPIN/ISONIAZID                                                   3
+
+                     Summary of DT.lookupNDC  Antitubercular Combinations                                             ORAL      
+                     RIFAMPIN/ISONIAZID/PYRAZINAMIDE                                      1
+
+                     Summary of DT.lookupNDC  Antitubercular - Rifamycin and Derivatives                              ORAL      
+                     RIFAPENTINE                                                          3
+
+                     Summary of DT.lookupNDC  Anti-inflammatory - Interleukin-1 Receptor Antagonist                   SUB-Q     
+                     RILONACEPT                                                           1
+
+                     Summary of DT.lookupNDC  Antineoplastic - CD20 Specific Recombinant Monoclonal Antibody Agents   INTRAVEN  
+                     RITUXIMAB                                                            2
+ 
+ 
+ 
+                                                                generateNDCLookup.sas
+                                                            --- BRONCHIECTASIS project ---                      11:20 Wednesday, November 29, 2017  11
+
+                     table                    ETC_NAME                                                                RT
+                     GNN60                                                                n
+                     -----------------------------------------------------------------------------------------------------------
+                     Summary of DT.lookupNDC  DMARD - B Cell Targeted Agents                                          INTRAVEN  
+                     RITUXIMAB                                                            2
+
+                     Summary of DT.lookupNDC  Antipsoriatic Agents - MC Antibody, Interleukin-17A Antagonist          SUB-Q     
+                     SECUKINUMAB                                                          4
+
+                     Summary of DT.lookupNDC  Antibacterial Folate Antagonist - Other Combinations                    ORAL      
+                     SULFAMETHOXAZOLE/TRIMETHOPRIM                                       65
+
+                     Summary of DT.lookupNDC  DMARD - Other                                                           ORAL      
+                     SULFASALAZINE                                                      249
+
+                     Summary of DT.lookupNDC  Inflammatory Bowel Agent - Aminosalicylates and Related Agents          ORAL      
+                     SULFASALAZINE                                                      249
+
+                     Summary of DT.lookupNDC  Immunosuppressive - Calcineurin Inhibitors                              INTRAVEN  
+                     TACROLIMUS                                                           1
+
+                     Summary of DT.lookupNDC  Immunosuppressive - Calcineurin Inhibitors                              ORAL      
+                     TACROLIMUS                                                          73
+
+                     Summary of DT.lookupNDC  Dermatological - Calcineurin Inhibitors                                 TOPICAL   
+                     TACROLIMUS                                                          22
+
+                     Summary of DT.lookupNDC  Aminoglycoside Antibiotic                                               INHALATION
+                     TOBRAMYCIN                                                           7
+
+                     Summary of DT.lookupNDC  Aminoglycoside Antibiotic                                               INHALATION
+                     TOBRAMYCIN IN 0.225 % SODIUM CHLORIDE                               10
+
+                     Summary of DT.lookupNDC  Aminoglycoside Antibiotic                                               INJECTION 
+                     TOBRAMYCIN SULFATE                                                  97
+
+                     Summary of DT.lookupNDC  Aminoglycoside Antibiotic                                               INTRAVEN  
+                     TOBRAMYCIN SULFATE                                                   8
+
+                     Summary of DT.lookupNDC  Aminoglycoside Antibiotic                                               INTRAVEN  
+                     TOBRAMYCIN SULFATE/DEXTROSE 5 % IN WATER                             3
+
+                     Summary of DT.lookupNDC  Aminoglycoside Antibiotic                                               INTRAVEN  
+                     TOBRAMYCIN SULFATE/SODIUM CHLORIDE                                   5
+
+                     Summary of DT.lookupNDC  Aminoglycoside Antibiotic                                               INHALATION
+                     TOBRAMYCIN/NEBULIZER                                                 2
+
+                     Summary of DT.lookupNDC  DMARD - Interleukin-6 (IL-6) Receptor Inhibitors, Monoclonal Antibody   INTRAVEN  
+                     TOCILIZUMAB                                                          3
+
+                     Summary of DT.lookupNDC  DMARD - Interleukin-6 (IL-6) Receptor Inhibitors, Monoclonal Antibody   SUB-Q     
+                     TOCILIZUMAB                                                          1
+
+                     Summary of DT.lookupNDC  DMARD - Janus Kinase (JAK) Inhibitors                                   ORAL      
+                     TOFACITINIB CITRATE                                                  1
+
+                     Summary of DT.lookupNDC  Glucocorticoids                                                         ORAL      
+                     TRIAMCINOLONE                                                      112
+
+                     Summary of DT.lookupNDC  Asthma Therapy - Glucocorticoids                                        INHALATION
+                     TRIAMCINOLONE ACETONIDE                                             12
+
+                     Summary of DT.lookupNDC  Glucocorticoids                                                         ORAL      
+                     TRIAMCINOLONE DIACETATE                                              1
+
+                     Summary of DT.lookupNDC  Antipsoriatic Agents - MC Antibody, Human Interleukin 12/23 Inhibitors  SUB-Q     
+                     USTEKINUMAB                                                          3
+ 
+ 
+ 
+                                                                generateNDCLookup.sas
+                                                            --- BRONCHIECTASIS project ---                      11:20 Wednesday, November 29, 2017  12
+
+                     table                    ETC_NAME                                                                RT
+                     GNN60                                                                n
+                     -----------------------------------------------------------------------------------------------------------
+                     Summary of DT.lookupNDC  Inflammatory Bowel Agent - Integrin Receptor Antagonist, MC Antibody    INTRAVEN  
+                     VEDOLIZUMAB                                                          1
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+                                                                generateNDCLookup.sas
+380          create table Work.summaryOralSteroids as
+381            select "Summary of oral steroids" as table,
+382                   etc_name,
+383                   rt,
+384                   gnn60,
+385                   count(*) as n,
+386                   round(min(prednisodeEquivalentDose), 0.01) as minPrednisodeEqDose,
+387                   round(max(prednisodeEquivalentDose), 0.01) as maxPrednisodeEqDose
+388            from DT.lookupNDC
+389            where ^missing(prednisodeEquivalentDose)
+390            group by gnn60, rt, etc_name;
+NOTE: Table WORK.SUMMARYORALSTEROIDS created, with 13 rows and 7 columns.
+
+391          select * from Work.summaryOralSteroids;
+                                                            --- BRONCHIECTASIS project ---                      11:20 Wednesday, November 29, 2017  13
+
+                     table                     ETC_NAME                                                                RT
+                                                                                                      min           max
+                                                                                               Prednisode    Prednisode
+                     GNN60                                                                n        EqDose        EqDose
+                     ------------------------------------------------------------------------------------------------------------
+                     Summary of oral steroids  Glucocorticoids                                                         ORAL      
+                     BETAMETHASONE                                                        4             5             5
+
+                     Summary of oral steroids  Glucocorticoids                                                         ORAL      
+                     CORTISONE ACETATE                                                   83             1             5
+
+                     Summary of oral steroids  Glucocorticoids                                                         ORAL      
+                     DEXAMETHASONE                                                      641          1.33            40
+
+                     Summary of oral steroids  Glucocorticoids                                                         ORAL      
+                     HYDROCORTISONE                                                     124          1.25             5
+
+                     Summary of oral steroids  Glucocorticoids                                                         ORAL      
+                     HYDROCORTISONE CYPIONATE                                             1           2.5           2.5
+
+                     Summary of oral steroids  Glucocorticoids                                                         ORAL      
+                     METHYLPREDNISOLONE                                                 249             2            32
+
+                     Summary of oral steroids  Glucocorticoids                                                         ORAL      
+                     PREDNISOLONE                                                       220             5            15
+
+                     Summary of oral steroids  Glucocorticoids                                                         ORAL      
+                     PREDNISOLONE ACETATE                                                 1            15            15
+
+                     Summary of oral steroids  Glucocorticoids                                                         ORAL      
+                     PREDNISOLONE SOD PHOSPHATE                                          73             5            30
+
+                     Summary of oral steroids  Glucocorticoids                                                         ORAL      
+                     PREDNISOLONE SODIUM PHOSPHATE/PEAK FLOW METER                        2            15            15
+
+                     Summary of oral steroids  Glucocorticoids                                                         ORAL      
+                     PREDNISONE                                                        1835             1            50
+
+                     Summary of oral steroids  Glucocorticoids                                                         ORAL      
+                     TRIAMCINOLONE                                                      112          1.25            10
+
+                     Summary of oral steroids  Glucocorticoids                                                         ORAL      
+                     TRIAMCINOLONE DIACETATE                                              1           2.5           2.5
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+                                                                generateNDCLookup.sas
+392        quit;
+NOTE: The PROCEDURE SQL printed pages 4-13.
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           40.31 seconds
+      cpu time            39.76 seconds
+      
+
+393        
+394        
+395        proc contents data = DT.lookupNDC order = varnum;
+396        run;
+
+                                                            --- BRONCHIECTASIS project ---                      11:20 Wednesday, November 29, 2017  14
+
+                                                                The CONTENTS Procedure
+
+                                    Data Set Name        DT.LOOKUPNDC                  Observations          13035
+                                    Member Type          DATA                          Variables             30   
+                                    Engine               V9                            Indexes               0    
+                                    Created              11/29/2017 11:20:58           Observation Length    688  
+                                    Last Modified        11/29/2017 11:20:58           Deleted Observations  0    
+                                    Protection                                         Compressed            NO   
+                                    Data Set Type                                      Sorted                NO   
+                                    Label                                                                         
+                                    Data Representation  WINDOWS_32                                               
+                                    Encoding             wlatin1  Western (Windows)                               
+
+
+                                                          Engine/Host Dependent Information
+
+                                          Data Set Page Size          1048576                              
+                                          Number of Data Set Pages    9                                    
+                                          First Data Page             1                                    
+                                          Max Obs per Page            1523                                 
+                                          Obs in First Data Page      1517                                 
+                                          Number of Data Set Repairs  0                                    
+                                          ExtendObsCounter            YES                                  
+                                          Filename                    V:\studies\AS\data\lookupndc.sas7bdat
+                                          Release Created             9.0401M1                             
+                                          Host Created                W32_ES08R2                           
+
+
+                                                             Variables in Creation Order
+ 
+                          #    Variable                      Type    Len    Format    Informat    Label
+
+                          1    GCN_SEQNO                     Num       8    7.        7.          GCN_SEQNO                 
+                          2    ETC_NAME                      Char     70    $70.      $70.        ETC_NAME                  
+                          3    NDC                           Char     11    $11.      $11.        NDC                       
+                          4    BN                            Char     30    $30.      $30.        BN                        
+                          5    LN                            Char     30    $30.      $30.        LN                        
+                          6    LN25                          Char     25    $25.      $25.        LN25                      
+                          7    LN60                          Char     60    $60.      $60.        LN60                      
+                          8    GNN                           Char     30    $30.      $30.        GNN                       
+                          9    GNN60                         Char     60    $60.      $60.        GNN60                     
+                         10    Package_Description           Char     10    $10.      $10.        PD                        
+                         11    TRADENAME                     Char    125    $125.     $125.       TRADENAME                 
+                         12    STR                           Char     10    $10.      $10.        STR                       
+                         13    STR60                         Char     60    $60.      $60.        STR60                     
+                         14    RT                            Char     10    $10.      $10.        RT                        
+                         15    GCRT_DESC                     Char     40    $40.      $40.        GCRT_DESC                 
+                         16    ETC_ID                        Num       8    9.        9.          ETC_ID                    
+                         17    ETC_HIERARCHY_LEVEL           Num       8    3.        3.          ETC_HIERARCHY_LEVEL       
+                         18    ETC_ULTIMATE_PARENT_ETC_ID    Num       8    9.        9.          ETC_ULTIMATE_PARENT_ETC_ID
+                         19    ETC_PARENT_ETC_ID             Num       8    9.        9.          ETC_PARENT_ETC_ID         
+                         20    ETC_ULTIMATE_CHILD_IND        Char      1    $1.       $1.         ETC_ULTIMATE_CHILD_IND    
+                         21    GCN                           Num       8    6.        6.          GCN                       
+                         22    GCRT                          Char      1    $1.       $1.         GCRT                      
+                         23    HICL_SEQNO                    Num       8    7.        7.          HICL_SEQNO                
+                         24    HIC3                          Char      3    $3.       $3.         HIC3                      
+                         25    HIC3_SEQN                     Num       8    7.        7.          HIC3_SEQN                 
+                         26    TC                            Num       8    3.        3.          TC                        
+                         27    prednisoneMultiplier          Num       8                                                    
+                         28    prednisodeEquivalentDose      Num       8                                                    
+                         29    category                      Char     10                                                    
+                         30    subcategory                   Char     10                                                    
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+                                                                generateNDCLookup.sas
+NOTE: PROCEDURE CONTENTS used (Total process time):
+      real time           0.09 seconds
+      cpu time            0.03 seconds
+      
+NOTE: The PROCEDURE CONTENTS printed page 14.
+
+397        proc contents data = DT.lookupJcodes order = varnum;
+398        run;
+
+                                                            --- BRONCHIECTASIS project ---                      11:20 Wednesday, November 29, 2017  15
+
+                                                                The CONTENTS Procedure
+
+                                     Data Set Name        DT.LOOKUPJCODES               Observations          39 
+                                     Member Type          DATA                          Variables             8  
+                                     Engine               V9                            Indexes               0  
+                                     Created              11/29/2017 11:21:38           Observation Length    422
+                                     Last Modified        11/29/2017 11:21:38           Deleted Observations  0  
+                                     Protection                                         Compressed            NO 
+                                     Data Set Type                                      Sorted                YES
+                                     Label                                                                       
+                                     Data Representation  WINDOWS_32                                             
+                                     Encoding             wlatin1  Western (Windows)                             
+
+
+                                                          Engine/Host Dependent Information
+
+                                         Data Set Page Size          1048576                                 
+                                         Number of Data Set Pages    1                                       
+                                         First Data Page             1                                       
+                                         Max Obs per Page            2483                                    
+                                         Obs in First Data Page      39                                      
+                                         Number of Data Set Repairs  0                                       
+                                         ExtendObsCounter            YES                                     
+                                         Filename                    V:\studies\AS\data\lookupjcodes.sas7bdat
+                                         Release Created             9.0401M1                                
+                                         Host Created                W32_ES08R2                              
+
+
+                                                              Variables in Creation Order
+ 
+                                  #    Variable    Type    Len    Format    Informat    Label
+
+                                  1    GNN         Char     30                                                      
+                                  2    CodeType    Char      5                                                      
+                                  3    Descript    Char    328    $60.      $60.        Brand Name or Px Description
+                                  4    Code        Char     11    $11.      $11.        NDC or Px Codes             
+                                  5    STR         Char     10    $10.      $10.        Strength                    
+                                  6    RT          Char     10    $10.      $10.        Route                       
+                                  7    Category    Char     18                                                      
+                                  8    SubCate     Char     10                                                      
+
+
+                                                                  Sort Information
+
+                                          Sortedby       Category SubCate Code Descript STR RT GNN CodeType
+                                          Validated      YES                                               
+                                          Character Set  ANSI                                              
+                                          Sort Option    NODUPKEY                                          
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+                                                                generateNDCLookup.sas
+NOTE: PROCEDURE CONTENTS used (Total process time):
+      real time           0.07 seconds
+      cpu time            0.01 seconds
+      
+NOTE: The PROCEDURE CONTENTS printed page 15.
+
+399        
+400        
+401        proc export
+402          data = DT.lookupNDC
+403          outfile = "data\processed\lookupNDC.csv"
+404          dbms = csv
+405          replace;
+406          delimiter = ",";
+407        run;
+
+408         /**********************************************************************
+409         *   PRODUCT:   SAS
+410         *   VERSION:   9.4
+411         *   CREATOR:   External File Interface
+412         *   DATE:      29NOV17
+413         *   DESC:      Generated SAS Datastep Code
+414         *   TEMPLATE SOURCE:  (None Specified.)
+415         ***********************************************************************/
+416            data _null_;
+417            %let _EFIERR_ = 0; /* set the ERROR detection macro variable */
+418            %let _EFIREC_ = 0;     /* clear export record count macro variable */
+419            file 'data\processed\lookupNDC.csv' delimiter=',' DSD DROPOVER lrecl=32767;
+420            if _n_ = 1 then        /* write column names or labels */
+421             do;
+422               put
+423                  "GCN_SEQNO"
+424               ','
+425                  "ETC_NAME"
+7                                                                   The SAS System                                  11:20 Wednesday, November 29, 2017
+
+426               ','
+427                  "NDC"
+428               ','
+429                  "BN"
+430               ','
+431                  "LN"
+432               ','
+433                  "LN25"
+434               ','
+435                  "LN60"
+436               ','
+437                  "GNN"
+438               ','
+439                  "GNN60"
+440               ','
+441                  "Package_Description"
+442               ','
+443                  "TRADENAME"
+444               ','
+445                  "STR"
+446               ','
+447                  "STR60"
+448               ','
+449                  "RT"
+450               ','
+451                  "GCRT_DESC"
+452               ','
+453                  "ETC_ID"
+454               ','
+455                  "ETC_HIERARCHY_LEVEL"
+456               ','
+457                  "ETC_ULTIMATE_PARENT_ETC_ID"
+458               ','
+459                  "ETC_PARENT_ETC_ID"
+460               ','
+461                  "ETC_ULTIMATE_CHILD_IND"
+462               ','
+463                  "GCN"
+464               ','
+465                  "GCRT"
+466               ','
+467                  "HICL_SEQNO"
+468               ','
+469                  "HIC3"
+470               ','
+471                  "HIC3_SEQN"
+472               ','
+473                  "TC"
+474               ','
+475                  "prednisoneMultiplier"
+476               ','
+477                  "prednisodeEquivalentDose"
+478               ','
+479                  "category"
+480               ','
+481                  "subcategory"
+482               ;
+483             end;
+484           set  DT.LOOKUPNDC   end=EFIEOD;
+485               format GCN_SEQNO 7. ;
+486               format ETC_NAME $70. ;
+487               format NDC $11. ;
+488               format BN $30. ;
+489               format LN $30. ;
+490               format LN25 $25. ;
+491               format LN60 $60. ;
+492               format GNN $30. ;
+493               format GNN60 $60. ;
+494               format Package_Description $10. ;
+495               format TRADENAME $125. ;
+496               format STR $10. ;
+497               format STR60 $60. ;
+8                                                                   The SAS System                                  11:20 Wednesday, November 29, 2017
+
+498               format RT $10. ;
+499               format GCRT_DESC $40. ;
+500               format ETC_ID 9. ;
+501               format ETC_HIERARCHY_LEVEL 3. ;
+502               format ETC_ULTIMATE_PARENT_ETC_ID 9. ;
+503               format ETC_PARENT_ETC_ID 9. ;
+504               format ETC_ULTIMATE_CHILD_IND $1. ;
+505               format GCN 6. ;
+506               format GCRT $1. ;
+507               format HICL_SEQNO 7. ;
+508               format HIC3 $3. ;
+509               format HIC3_SEQN 7. ;
+510               format TC 3. ;
+511               format prednisoneMultiplier best12. ;
+512               format prednisodeEquivalentDose best12. ;
+513               format category $10. ;
+514               format subcategory $10. ;
+515             do;
+516               EFIOUT + 1;
+517               put GCN_SEQNO @;
+518               put ETC_NAME $ @;
+519               put NDC $ @;
+520               put BN $ @;
+521               put LN $ @;
+522               put LN25 $ @;
+523               put LN60 $ @;
+524               put GNN $ @;
+525               put GNN60 $ @;
+526               put Package_Description $ @;
+527               put TRADENAME $ @;
+528               put STR $ @;
+529               put STR60 $ @;
+530               put RT $ @;
+531               put GCRT_DESC $ @;
+532               put ETC_ID @;
+533               put ETC_HIERARCHY_LEVEL @;
+534               put ETC_ULTIMATE_PARENT_ETC_ID @;
+535               put ETC_PARENT_ETC_ID @;
+536               put ETC_ULTIMATE_CHILD_IND $ @;
+537               put GCN @;
+538               put GCRT $ @;
+539               put HICL_SEQNO @;
+540               put HIC3 $ @;
+541               put HIC3_SEQN @;
+542               put TC @;
+543               put prednisoneMultiplier @;
+544               put prednisodeEquivalentDose @;
+545               put category $ @;
+546               put subcategory $ ;
+547               ;
+548             end;
+549            if _ERROR_ then call symputx('_EFIERR_',1);  /* set ERROR detection macro variable */
+550            if EFIEOD then call symputx('_EFIREC_',EFIOUT);
+551            run;
+
+NOTE: The file 'data\processed\lookupNDC.csv' is:
+      Filename=U:\studies\AS\pgms\bchan\data\processed\lookupNDC.csv,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=29Nov2017:11:21:38,
+      Create Time=29Nov2017:11:21:38
+
+NOTE: 13036 records were written to the file 'data\processed\lookupNDC.csv'.
+      The minimum record length was 175.
+      The maximum record length was 405.
+NOTE: There were 13035 observations read from the data set DT.LOOKUPNDC.
+NOTE: DATA statement used (Total process time):
+      real time           0.13 seconds
+      cpu time            0.14 seconds
+      
+
+13035 records created in data\processed\lookupNDC.csv from DT.LOOKUPNDC.
+  
+9                                                                   The SAS System                                  11:20 Wednesday, November 29, 2017
+
+  
+NOTE: "data\processed\lookupNDC.csv" file was successfully created.
+NOTE: PROCEDURE EXPORT used (Total process time):
+      real time           0.29 seconds
+      cpu time            0.18 seconds
+      
+
+552        proc export
+553          data = DT.lookupJcodes
+554          outfile = "data\processed\lookupJcodes.csv"
+555          dbms = csv
+556          replace;
+557          delimiter = ",";
+558        run;
+
+559         /**********************************************************************
+560         *   PRODUCT:   SAS
+561         *   VERSION:   9.4
+562         *   CREATOR:   External File Interface
+563         *   DATE:      29NOV17
+564         *   DESC:      Generated SAS Datastep Code
+565         *   TEMPLATE SOURCE:  (None Specified.)
+566         ***********************************************************************/
+567            data _null_;
+568            %let _EFIERR_ = 0; /* set the ERROR detection macro variable */
+569            %let _EFIREC_ = 0;     /* clear export record count macro variable */
+570            file 'data\processed\lookupJcodes.csv' delimiter=',' DSD DROPOVER lrecl=32767;
+571            if _n_ = 1 then        /* write column names or labels */
+572             do;
+573               put
+574                  "GNN"
+575               ','
+576                  "CodeType"
+577               ','
+578                  "Descript"
+579               ','
+580                  "Code"
+581               ','
+582                  "STR"
+583               ','
+584                  "RT"
+585               ','
+586                  "Category"
+587               ','
+588                  "SubCate"
+589               ;
+590             end;
+591           set  DT.LOOKUPJCODES   end=EFIEOD;
+592               format GNN $30. ;
+593               format CodeType $5. ;
+594               format Descript $60. ;
+595               format Code $11. ;
+596               format STR $10. ;
+597               format RT $10. ;
+598               format Category $18. ;
+599               format SubCate $10. ;
+600             do;
+601               EFIOUT + 1;
+602               put GNN $ @;
+603               put CodeType $ @;
+604               put Descript $ @;
+605               put Code $ @;
+606               put STR $ @;
+607               put RT $ @;
+608               put Category $ @;
+609               put SubCate $ ;
+610               ;
+611             end;
+612            if _ERROR_ then call symputx('_EFIERR_',1);  /* set ERROR detection macro variable */
+613            if EFIEOD then call symputx('_EFIREC_',EFIOUT);
+614            run;
+
+10                                                                  The SAS System                                  11:20 Wednesday, November 29, 2017
+
+NOTE: The file 'data\processed\lookupJcodes.csv' is:
+      Filename=U:\studies\AS\pgms\bchan\data\processed\lookupJcodes.csv,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=29Nov2017:11:21:38,
+      Create Time=29Nov2017:11:21:38
+
+NOTE: 40 records were written to the file 'data\processed\lookupJcodes.csv'.
+      The minimum record length was 21.
+      The maximum record length was 98.
+NOTE: There were 39 observations read from the data set DT.LOOKUPJCODES.
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+39 records created in data\processed\lookupJcodes.csv from DT.LOOKUPJCODES.
+  
+  
+NOTE: "data\processed\lookupJcodes.csv" file was successfully created.
+NOTE: PROCEDURE EXPORT used (Total process time):
+      real time           0.06 seconds
+      cpu time            0.04 seconds
+      
+
+615        proc export
+616          data = Work.summaryLookupNDC
+617          outfile = "data\processed\summaryLookupNDC.csv"
+618          dbms = csv
+619          replace;
+620          delimiter = ",";
+621        run;
+
+622         /**********************************************************************
+623         *   PRODUCT:   SAS
+624         *   VERSION:   9.4
+625         *   CREATOR:   External File Interface
+626         *   DATE:      29NOV17
+627         *   DESC:      Generated SAS Datastep Code
+628         *   TEMPLATE SOURCE:  (None Specified.)
+629         ***********************************************************************/
+630            data _null_;
+631            %let _EFIERR_ = 0; /* set the ERROR detection macro variable */
+632            %let _EFIREC_ = 0;     /* clear export record count macro variable */
+633            file 'data\processed\summaryLookupNDC.csv' delimiter=',' DSD DROPOVER lrecl=32767;
+634            if _n_ = 1 then        /* write column names or labels */
+635             do;
+636               put
+637                  "table"
+638               ','
+639                  "ETC_NAME"
+640               ','
+641                  "RT"
+642               ','
+643                  "GNN60"
+644               ','
+645                  "n"
+646               ;
+647             end;
+648           set  WORK.SUMMARYLOOKUPNDC   end=EFIEOD;
+649               format table $23. ;
+650               format ETC_NAME $70. ;
+651               format RT $10. ;
+652               format GNN60 $60. ;
+653               format n best12. ;
+654             do;
+655               EFIOUT + 1;
+656               put table $ @;
+657               put ETC_NAME $ @;
+658               put RT $ @;
+659               put GNN60 $ @;
+660               put n ;
+661               ;
+11                                                                  The SAS System                                  11:20 Wednesday, November 29, 2017
+
+662             end;
+663            if _ERROR_ then call symputx('_EFIERR_',1);  /* set ERROR detection macro variable */
+664            if EFIEOD then call symputx('_EFIREC_',EFIOUT);
+665            run;
+
+NOTE: The file 'data\processed\summaryLookupNDC.csv' is:
+      Filename=U:\studies\AS\pgms\bchan\data\processed\summaryLookupNDC.csv,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=29Nov2017:11:21:38,
+      Create Time=29Nov2017:11:21:38
+
+NOTE: 134 records were written to the file 'data\processed\summaryLookupNDC.csv'.
+      The minimum record length was 25.
+      The maximum record length was 147.
+NOTE: There were 133 observations read from the data set WORK.SUMMARYLOOKUPNDC.
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+133 records created in data\processed\summaryLookupNDC.csv from WORK.SUMMARYLOOKUPNDC.
+  
+  
+NOTE: "data\processed\summaryLookupNDC.csv" file was successfully created.
+NOTE: PROCEDURE EXPORT used (Total process time):
+      real time           0.06 seconds
+      cpu time            0.04 seconds
+      
+
+666        proc export
+667          data = Work.summaryOralSteroids
+668          outfile = "data\processed\summaryOralSteroids.csv"
+669          dbms = csv
+670          replace;
+671          delimiter = ",";
+672        run;
+
+673         /**********************************************************************
+674         *   PRODUCT:   SAS
+675         *   VERSION:   9.4
+676         *   CREATOR:   External File Interface
+677         *   DATE:      29NOV17
+678         *   DESC:      Generated SAS Datastep Code
+679         *   TEMPLATE SOURCE:  (None Specified.)
+680         ***********************************************************************/
+681            data _null_;
+682            %let _EFIERR_ = 0; /* set the ERROR detection macro variable */
+683            %let _EFIREC_ = 0;     /* clear export record count macro variable */
+684            file 'data\processed\summaryOralSteroids.csv' delimiter=',' DSD DROPOVER lrecl=32767;
+685            if _n_ = 1 then        /* write column names or labels */
+686             do;
+687               put
+688                  "table"
+689               ','
+690                  "ETC_NAME"
+691               ','
+692                  "RT"
+693               ','
+694                  "GNN60"
+695               ','
+696                  "n"
+697               ','
+698                  "minPrednisodeEqDose"
+699               ','
+700                  "maxPrednisodeEqDose"
+701               ;
+702             end;
+703           set  WORK.SUMMARYORALSTEROIDS   end=EFIEOD;
+704               format table $24. ;
+705               format ETC_NAME $70. ;
+706               format RT $10. ;
+707               format GNN60 $60. ;
+12                                                                  The SAS System                                  11:20 Wednesday, November 29, 2017
+
+708               format n best12. ;
+709               format minPrednisodeEqDose best12. ;
+710               format maxPrednisodeEqDose best12. ;
+711             do;
+712               EFIOUT + 1;
+713               put table $ @;
+714               put ETC_NAME $ @;
+715               put RT $ @;
+716               put GNN60 $ @;
+717               put n @;
+718               put minPrednisodeEqDose @;
+719               put maxPrednisodeEqDose ;
+720               ;
+721             end;
+722            if _ERROR_ then call symputx('_EFIERR_',1);  /* set ERROR detection macro variable */
+723            if EFIEOD then call symputx('_EFIREC_',EFIOUT);
+724            run;
+
+NOTE: The file 'data\processed\summaryOralSteroids.csv' is:
+      Filename=U:\studies\AS\pgms\bchan\data\processed\summaryOralSteroids.csv,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=29Nov2017:11:21:38,
+      Create Time=29Nov2017:11:21:38
+
+NOTE: 14 records were written to the file 'data\processed\summaryOralSteroids.csv'.
+      The minimum record length was 65.
+      The maximum record length was 99.
+NOTE: There were 13 observations read from the data set WORK.SUMMARYORALSTEROIDS.
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+13 records created in data\processed\summaryOralSteroids.csv from WORK.SUMMARYORALSTEROIDS.
+  
+  
+NOTE: "data\processed\summaryOralSteroids.csv" file was successfully created.
+NOTE: PROCEDURE EXPORT used (Total process time):
+      real time           0.06 seconds
+      cpu time            0.04 seconds
+      
+
+725        
+726        
+727        ods html close;
+NOTE: SAS Institute Inc., SAS Campus Drive, Cary, NC USA 27513-2414
+NOTE: The SAS System used:
+      real time           41.93 seconds
+      cpu time            40.71 seconds
+      

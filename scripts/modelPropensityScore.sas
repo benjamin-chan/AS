@@ -70,7 +70,22 @@ proc sql;
            max(0, AA.indDiabetes       ) as indDiabetes,
            max(0, BB.indHT             ) as indHT,
            max(0, CC.indMetabSyn       ) as indMetabSyn,
-           max(0, DD.indNAFattyLiverDis) as indNAFattyLiverDis
+           max(0, DD.indNAFattyLiverDis) as indNAFattyLiverDis,
+           max(0, EE.indCOPDEmphysema  ) as indCOPDEmphysema,
+           case
+             when FF.meanPredEqDoseCat = "" then "None"
+             else FF.meanPredEqDoseCat
+             end as meanPredEqDoseCat,
+           max(0, GG.charlson) as charlson,
+           max(0, HH.ciras) as ciras,
+           HH.numinflamMarker > 0 as indInflamMarker, 
+           max(0, II.nsaid) as indRxNSAID, 
+           max(0, II.htn) as indRxHtn, 
+           max(0, II.narcotics) as indRxNarcotics, 
+           max(0, II.fungus) as indRxFungus, 
+           max(0, II.op_bisphosp) as indRxOP_bisphosp, 
+           max(0, II.thiazide) as indRxThiazide,
+           max(0, II.anticoagulant) as indRxAnticoagulant
     from 
       DT.indexLookup A left join
       (select indexID, 1 as indAmyloidosis      from DT.comorbidities      where indPrevPriorToIndex = 1 & prxmatch("/Amyloidosis/"                               , disease    )) B  on (A.indexID = B.indexID ) left join
@@ -99,8 +114,21 @@ proc sql;
       (select indexID, 1 as indDiabetes         from DT.comorbiditiesOther where                           prxmatch("/Diabetes/"                                  , comorbidity)) AA on (A.indexID = AA.indexID) left join
       (select indexID, 1 as indHT               from DT.comorbiditiesOther where                           prxmatch("/Hypertention/"                              , comorbidity)) BB on (A.indexID = BB.indexID) left join
       (select indexID, 1 as indMetabSyn         from DT.comorbiditiesOther where                           prxmatch("/Metabolic syndrome/"                        , comorbidity)) CC on (A.indexID = CC.indexID) left join
-      (select indexID, 1 as indNAFattyLiverDis  from DT.comorbiditiesOther where                           prxmatch("/Non-alcoholic fatty liver disease/"         , comorbidity)) DD on (A.indexID = DD.indexID) ;
+      (select indexID, 1 as indNAFattyLiverDis  from DT.comorbiditiesOther where                           prxmatch("/Non-alcoholic fatty liver disease/"         , comorbidity)) DD on (A.indexID = DD.indexID) left join
+      (select indexID, 1 as indCOPDEmphysema    from DT.comorbiditiesOther where                           prxmatch("/COPD or emphysema/"                         , comorbidity)) EE on (A.indexID = EE.indexID) left join
+      (select indexID, meanPredEqDoseCat        from DT.rxOralCorticosteroid                                                                                                    ) FF on (A.indexID = FF.indexID) left join
+      (select indexID, charlson from DT.charlsonIndex) GG on (A.indexID = GG.indexID) left join
+      (select indexID, ciras, numinflamMarker from DT.CIRAS) HH on (A.indexID = HH.indexID) left join
+      (select indexID, nsaid, htn, narcotics, fungus, op_bisphosp, thiazide, anticoagulant from DT.indRx) II on (A.indexID = II.indexID) 
+    order by A.database;
 quit;
+
+
+proc rank data = Work.allCovariates out = Work.allCovariates groups = 4;
+  by database;
+  var charlson ciras;
+  ranks quartileCharlson quartileCIRAS;
+run;
 
 
 proc means data = Work.allCovariates;
@@ -131,7 +159,22 @@ proc means data = Work.allCovariates;
       indDiabetes
       indHT
       indMetabSyn
-      indNAFattyLiverDis;
+      indNAFattyLiverDis
+      indCOPDEmphysema
+      charlson
+      quartileCharlson
+      ciras
+      indInflamMarker
+      indRxNSAID
+      indRxHtn
+      indRxNarcotics
+      indRxFungus
+      indRxOP_bisphosp
+      indRxThiazide
+      indRxAnticoagulant;
+run;
+proc freq data = Work.allCovariates;
+  table database * exposure3 * (meanPredEqDoseCat quartileCharlson quartileCIRAS) / list;
 run;
 proc sql;
   select database,
@@ -155,13 +198,13 @@ Fit separate models for each data source: MPCD, Marketscan, Medicare
 
 Some parameters blow up; exlude these from the model estimation
  */
+%let class = exposure3 (ref = "TNF") catAge (ref = "70+") sex (ref = "M") meanPredEqDoseCat (ref = "None") quartileCharlson (ref = first) quartileCIRAS (ref = first) / param = ref;
+
+
 %let db = MPCD;
 proc logistic data = Work.allCovariates outest = Work.psBetas3Level;
   where database = "&db";
-  class exposure3 (ref = "TNF") 
-        catAge (ref = "70+")
-        sex (ref = "M") 
-        / param = ref;
+  class &class;
   model exposure3 = catAge
                     sex
                     /* indAmyloidosis */
@@ -191,6 +234,17 @@ proc logistic data = Work.allCovariates outest = Work.psBetas3Level;
                     indHT
                     indMetabSyn
                     indNAFattyLiverDis
+                    indCOPDEmphysema
+                    meanPredEqDoseCat
+                    quartileCharlson
+                    indInflamMarker
+                    indRxNSAID
+                    indRxHtn
+                    indRxNarcotics
+                    indRxFungus
+                    indRxOP_bisphosp
+                    indRxThiazide
+                    indRxAnticoagulant
                     / link = glogit rsquare;
   output out = Work.ps3Level predicted = ps xbeta = xbeta;
 run;
@@ -202,10 +256,7 @@ run;
 %let db = Marketscan;
 proc logistic data = Work.allCovariates outest = Work.psBetas3Level;
   where database = "&db";
-  class exposure3 (ref = "TNF") 
-        catAge (ref = "70+")
-        sex (ref = "M") 
-        / param = ref;
+  class &class;
   model exposure3 = catAge
                     sex
                     /* indAmyloidosis */
@@ -235,6 +286,17 @@ proc logistic data = Work.allCovariates outest = Work.psBetas3Level;
                     indHT
                     indMetabSyn
                     indNAFattyLiverDis
+                    indCOPDEmphysema
+                    meanPredEqDoseCat
+                    quartileCharlson
+                    indInflamMarker
+                    indRxNSAID
+                    indRxHtn
+                    indRxNarcotics
+                    indRxFungus
+                    indRxOP_bisphosp
+                    indRxThiazide
+                    indRxAnticoagulant
                     / link = glogit rsquare;
   output out = Work.ps3Level predicted = ps xbeta = xbeta;
 run;
@@ -246,10 +308,7 @@ run;
 %let db = Medicare;
 proc logistic data = Work.allCovariates outest = Work.psBetas3Level;
   where database = "&db";
-  class exposure3 (ref = "TNF") 
-        catAge (ref = "70+")
-        sex (ref = "M") 
-        / param = ref;
+  class &class;
   model exposure3 = catAge
                     sex
                     indAmyloidosis
@@ -279,6 +338,17 @@ proc logistic data = Work.allCovariates outest = Work.psBetas3Level;
                     indHT
                     indMetabSyn
                     indNAFattyLiverDis
+                    indCOPDEmphysema
+                    meanPredEqDoseCat
+                    quartileCharlson
+                    indInflamMarker
+                    indRxNSAID
+                    indRxHtn
+                    indRxNarcotics
+                    indRxFungus
+                    indRxOP_bisphosp
+                    indRxThiazide
+                    indRxAnticoagulant
                     / link = glogit rsquare;
   output out = Work.ps3Level predicted = ps xbeta = xbeta;
 run;
@@ -354,11 +424,23 @@ Calculate IPTW
                indDiabetes,
                indHT,
                indMetabSyn,
-               indNAFattyLiverDis;
+               indNAFattyLiverDis,
+               indCOPDEmphysema,
+               meanPredEqDoseCat, 
+               quartileCharlson,
+               indInflamMarker,
+               indRxNSAID,
+               indRxHtn,
+               indRxNarcotics,
+               indRxFungus,
+               indRxOP_bisphosp,
+               indRxThiazide,
+               indRxAnticoagulant
+;
 proc sql;
   create table Work.ps as
     select "3-level exposure" as model, exposure3 as exposure, &varlist from Work.ps3Level 
-    order by indexID, model, exposure;
+    order by indexID, exposure;
   alter table Work.ps add iptw numeric;
   update Work.ps set iptw = (exposure  = _level_) / ps + (exposure ^= _level_) / (1 - ps);
 quit;
@@ -371,21 +453,21 @@ For propensity of TNF
 %let exposure = "TNF";
 proc means data = Work.ps n nmiss min max mean median stddev;
   where _level_ in (&exposure);
-  class model _level_ exposure;
+  class model database _level_ exposure;
   var ps;
 run;
 proc sql;
   create table Work.commonSupportRegion as
-    select model,
+    select model, database,
            max(minPS) as commonSupportLowerBound,
            min(maxPS) as commonSupportUpperBound
-    from (select model, exposure,
+    from (select model, database, exposure,
                  min(ps) as minPS,
                  max(ps) as maxPS
           from Work.ps
           where _level_ in (&exposure)
-          group by model, exposure)
-    group by model;
+          group by model, database, exposure)
+    group by model, database;
   select * from Work.commonSupportRegion;
   create table Work.temp as
     select * from Work.ps where _level_ in (&exposure);
@@ -399,8 +481,10 @@ proc sql;
              else 0
              end as indCommonSupport
     from Work.temp A inner join
-         Work.commonSupportRegion B on (A.model = B.model);
+         Work.commonSupportRegion B on (A.model = B.model &
+                                        A.database = B.database);
   select model,
+         database,
          exposure, 
          _level_, 
          sum(indCommonSupport = 1) as n1, 
@@ -408,7 +492,7 @@ proc sql;
          sum(indCommonSupport = 0) as n0, 
          sum(indCommonSupport = 0) / sum(^missing(indCommonSupport)) format = percent9.3 as prop0
     from Work.ps
-    group by model, exposure, _level_;
+    group by model, database, exposure, _level_;
 quit;
 
 
@@ -432,15 +516,18 @@ proc sql;
              as iptwStabilized
     from Work.temp A inner join
          (select model,
+                 database, 
                  exposure, 
                  _level_, 
                  mean(ps) as marginalPS 
           from Work.temp 
-          group by model, exposure, _level_) B on (A.model = B.model & A.exposure = B.exposure);
+          group by model, database, exposure, _level_) B on (A.model = B.model & 
+                                                             A.database = B.database & 
+                                                             A.exposure = B.exposure);
   drop table Work.temp;
 quit;
 proc means data = Work.ps n nmiss min max mean median stddev maxdec = 3;
-  class indCommonSupport model exposure _level_;
+  class indCommonSupport model database exposure _level_;
   var ps marginalPS iptw iptwStabilized;
 run;
 proc corr data = Work.ps;
@@ -494,7 +581,18 @@ proc sql;
            indDiabetes,
            indHT,
            indMetabSyn,
-           indNAFattyLiverDis
+           indNAFattyLiverDis,
+           indCOPDEmphysema,
+           meanPredEqDoseCat,
+           quartileCharlson,
+           indInflamMarker,
+           indRxNSAID,
+           indRxHtn,
+           indRxNarcotics,
+           indRxFungus,
+           indRxOP_bisphosp,
+           indRxThiazide,
+           indRxAnticoagulant
     from DT.ps;
 quit;
 proc export
