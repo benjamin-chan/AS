@@ -49,13 +49,15 @@ run;
 
 data felty; 
 set  UCB.tempPrevDxAll(where=(dx=:'7141' and enc_type in ('IP','IF','AV')));    
+  format prov_type;
 run; 
 
 data rh;
 set UCB.tempPrevDxAll(where=(enc_type in ('IP','IF','AV')));
-if prov_type = 66;
+  format prov_type;
+if prov_type = "66";
 run;
-	
+  
   %NumCnt(rh, admit_date);
   %NumCnt(inflamMarker, admit_date);
   %NumCnt(RehabVisit, admit_date);
