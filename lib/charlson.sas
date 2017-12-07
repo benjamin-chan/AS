@@ -153,6 +153,7 @@ length           &var_list 3 ; *<-- This is host-specific--are we sure we want t
 retain           &var_list ;
 keep   &idVar &indexdateVarName &var_list ;
 set _DxSubset;
+  format prov_type;
 by &idVar &indexdateVarName;
 if first.&indexdateVarName then do;
    do I=1 to dim(COMORB);
