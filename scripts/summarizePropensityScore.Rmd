@@ -46,6 +46,15 @@ indMetabSyn | Metabolic syndrome
 indNAFattyLiverDis | Non-alcoholic fatty liver disease
 indCOPDEmphysema | COPD or emphysema
 meanPredEqDoseCat | Categorized: None, Low (<2.5 mg/d), Medium-Low (2.5-5 mg/d), Medium-High (5-10 mg/d), High (10+ mg/d)
+quartileCharlson | Charlson comorbidity index: quartiles within data source
+indInflamMarker | Inflammatory marker
+indRxNSAID | Prescription drug indicator: NSAID
+indRxHtn | Prescription drug indicator: Antihypertensive
+indRxNarcotics | Prescription drug indicator: Narcotic
+indRxFungus | Prescription drug indicator: Antifungal
+indRxOP_bisphosp | Prescription drug indicator: Bisphosphonate
+indRxThiazide | Prescription drug indicator: Thiazide
+indRxAnticoagulant | Prescription drug indicator: Anticoagulant
 
 Model output is probability of exposure to TNF, DMARD, and NSAID or no exposure.
 For our purposes, we focus only on the propensity for TNF exposure.
@@ -308,6 +317,99 @@ df <-
   df %>%
   mutate(indOralCorticosteroid = meanPredEqDoseCat != "None")
 L <- covariateBalance("dichotomous", "indOralCorticosteroid", "% Any oral corticosteroid")
+ggsave(paste0("../figures/", f, ".png"), dpi = 300)
+ggsave(paste0("../figures/", f, ".svg"), dpi = 300)
+```
+
+![covarBalCharlsonDichot.png](../figures/covarBalCharlsonDichot.png)
+
+```{r, fig.show = "hide", warning = FALSE, message = FALSE}
+f <- "covarBalCharlsonDichot"
+df <-
+  df %>%
+  mutate(quartileCharlson23 = quartileCharlson %in% c(2, 3))
+L <- covariateBalance("dichotomous", "quartileCharlson23", "% Top 2 Charlson quartiles")
+ggsave(paste0("../figures/", f, ".png"), dpi = 300)
+ggsave(paste0("../figures/", f, ".svg"), dpi = 300)
+```
+
+![covarBalCharlsonCont.png](../figures/covarBalCharlsonCont.png)
+
+```{r, fig.show = "hide", warning = FALSE, message = FALSE}
+f <- "covarBalCharlsonCont"
+L <- covariateBalance("continuous", "charlson", "Charlson index, mean")
+ggsave(paste0("../figures/", f, ".png"), dpi = 300)
+ggsave(paste0("../figures/", f, ".svg"), dpi = 300)
+```
+
+![covarBalInflamMarker.png](../figures/covarBalInflamMarker.png)
+
+```{r, fig.show = "hide", warning = FALSE, message = FALSE}
+f <- "covarBalInflamMarker"
+L <- covariateBalance("dichotomous", "indInflamMarker", "% Inflammatory marker")
+ggsave(paste0("../figures/", f, ".png"), dpi = 300)
+ggsave(paste0("../figures/", f, ".svg"), dpi = 300)
+```
+
+![covarBalRxNSAID.png](../figures/covarBalRxNSAID.png)
+
+```{r, fig.show = "hide", warning = FALSE, message = FALSE}
+f <- "covarBalRxNSAID"
+L <- covariateBalance("dichotomous", "indRxNSAID", "% NSAID Rx")
+ggsave(paste0("../figures/", f, ".png"), dpi = 300)
+ggsave(paste0("../figures/", f, ".svg"), dpi = 300)
+```
+
+![covarBalRxHtn.png](../figures/covarBalRxHtn.png)
+
+```{r, fig.show = "hide", warning = FALSE, message = FALSE}
+f <- "covarBalRxHtn"
+L <- covariateBalance("dichotomous", "indRxHtn", "% Antihypertensive Rx")
+ggsave(paste0("../figures/", f, ".png"), dpi = 300)
+ggsave(paste0("../figures/", f, ".svg"), dpi = 300)
+```
+
+![covarBalRxNarcotics.png](../figures/covarBalRxNarcotics.png)
+
+```{r, fig.show = "hide", warning = FALSE, message = FALSE}
+f <- "covarBalRxNarcotics"
+L <- covariateBalance("dichotomous", "indRxNarcotics", "% Narcotics Rx")
+ggsave(paste0("../figures/", f, ".png"), dpi = 300)
+ggsave(paste0("../figures/", f, ".svg"), dpi = 300)
+```
+
+![covarBalRxFungus.png](../figures/covarBalRxFungus.png)
+
+```{r, fig.show = "hide", warning = FALSE, message = FALSE}
+f <- "covarBalRxFungus"
+L <- covariateBalance("dichotomous", "indRxFungus", "% Fungus Rx")
+ggsave(paste0("../figures/", f, ".png"), dpi = 300)
+ggsave(paste0("../figures/", f, ".svg"), dpi = 300)
+```
+
+![covarBalRxOP_bisphosp.png](../figures/covarBalRxOP_bisphosp.png)
+
+```{r, fig.show = "hide", warning = FALSE, message = FALSE}
+f <- "covarBalRxOP_bisphosp"
+L <- covariateBalance("dichotomous", "indRxOP_bisphosp", "% Bisphosphonate Rx")
+ggsave(paste0("../figures/", f, ".png"), dpi = 300)
+ggsave(paste0("../figures/", f, ".svg"), dpi = 300)
+```
+
+![covarBalRxThiazide.png](../figures/covarBalRxThiazide.png)
+
+```{r, fig.show = "hide", warning = FALSE, message = FALSE}
+f <- "covarBalRxThiazide"
+L <- covariateBalance("dichotomous", "indRxThiazide", "% Thiazide Rx")
+ggsave(paste0("../figures/", f, ".png"), dpi = 300)
+ggsave(paste0("../figures/", f, ".svg"), dpi = 300)
+```
+
+![covarBalRxAnticoagulant.png](../figures/covarBalRxAnticoagulant.png)
+
+```{r, fig.show = "hide", warning = FALSE, message = FALSE}
+f <- "covarBalRxAnticoagulant"
+L <- covariateBalance("dichotomous", "indRxAnticoagulant", "% Anticoagulant Rx")
 ggsave(paste0("../figures/", f, ".png"), dpi = 300)
 ggsave(paste0("../figures/", f, ".svg"), dpi = 300)
 ```
