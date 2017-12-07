@@ -442,7 +442,7 @@ Calculate IPTW
                indRxFungus,
                indRxOP_bisphosp,
                indRxThiazide,
-               indRxAnticoagulant
+               indRxAnticoagulant,
                indIPAdmit12mPrior
 ;
 proc sql;
