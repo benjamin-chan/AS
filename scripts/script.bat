@@ -21,6 +21,7 @@ rem call :execute queryIncidenceOutcomes
 call :execute generateNDCLookup
 call :execute queryOtherComorbidities
 call :execute modelPropensityScore
+rem Run summarizePropensityScore.Rmd to check propensity score model
 rem call :execute modelIncidenceOutcomes
 call :execute contentsWorkingDatasets
 
