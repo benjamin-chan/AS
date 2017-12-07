@@ -225,6 +225,19 @@ mg/d (medium dose), and 10 mg/d or more (high dose)
                   (A.indexDate - 183 <= (A.dispense_date + A.dispense_sup - 1) <= A.indexDate))) C
     group by C.database, C.patid, C.indexID;
 /* 
+Create diagnosis code indicators from inpatient admissions
+ */
+  create table DT.diagIndicatorsInpatient as
+    select A.database, A.patid, A.indexID,
+           count(distinct A.admit_date) as countIPAdmits,
+           case
+             when count(distinct A.admit_date) > 0 then 1
+             else 0
+             end as indIPAdmit12mPrior
+    from UCB.tempPrevDx12mPrior A
+    where A.enc_type = "IP"
+    group by A.database, A.patid, A.indexID;
+/* 
 Inhaled antibiotics
 
 IS A DAYS-SUPPLY CRITERION REQUIRED??

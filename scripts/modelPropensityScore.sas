@@ -85,7 +85,8 @@ proc sql;
            max(0, II.fungus) as indRxFungus, 
            max(0, II.op_bisphosp) as indRxOP_bisphosp, 
            max(0, II.thiazide) as indRxThiazide,
-           max(0, II.anticoagulant) as indRxAnticoagulant
+           max(0, II.anticoagulant) as indRxAnticoagulant,
+           max(0, JJ.indIPAdmit12mPrior) as indIPAdmit12mPrior
     from 
       DT.indexLookup A left join
       (select indexID, 1 as indAmyloidosis      from DT.comorbidities      where indPrevPriorToIndex = 1 & prxmatch("/Amyloidosis/"                               , disease    )) B  on (A.indexID = B.indexID ) left join
@@ -119,7 +120,8 @@ proc sql;
       (select indexID, meanPredEqDoseCat        from DT.rxOralCorticosteroid                                                                                                    ) FF on (A.indexID = FF.indexID) left join
       (select indexID, charlson from DT.charlsonIndex) GG on (A.indexID = GG.indexID) left join
       (select indexID, ciras, numinflamMarker from DT.CIRAS) HH on (A.indexID = HH.indexID) left join
-      (select indexID, nsaid, htn, narcotics, fungus, op_bisphosp, thiazide, anticoagulant from DT.indRx) II on (A.indexID = II.indexID) 
+      (select indexID, nsaid, htn, narcotics, fungus, op_bisphosp, thiazide, anticoagulant from DT.indRx) II on (A.indexID = II.indexID) left join
+      (select indexID, indIPAdmit12mPrior from DT.diagIndicatorsInpatient) JJ on (A.indexID = JJ.indexID) 
     order by A.database;
 quit;
 
@@ -171,7 +173,8 @@ proc means data = Work.allCovariates;
       indRxFungus
       indRxOP_bisphosp
       indRxThiazide
-      indRxAnticoagulant;
+      indRxAnticoagulant
+      indIPAdmit12mPrior;
 run;
 proc freq data = Work.allCovariates;
   table database * exposure3 * (meanPredEqDoseCat quartileCharlson quartileCIRAS) / list;
@@ -245,6 +248,7 @@ proc logistic data = Work.allCovariates outest = Work.psBetas3Level;
                     indRxOP_bisphosp
                     indRxThiazide
                     indRxAnticoagulant
+                    indIPAdmit12mPrior
                     / link = glogit rsquare;
   output out = Work.ps3Level predicted = ps xbeta = xbeta;
 run;
@@ -297,6 +301,7 @@ proc logistic data = Work.allCovariates outest = Work.psBetas3Level;
                     indRxOP_bisphosp
                     indRxThiazide
                     indRxAnticoagulant
+                    indIPAdmit12mPrior
                     / link = glogit rsquare;
   output out = Work.ps3Level predicted = ps xbeta = xbeta;
 run;
@@ -349,6 +354,7 @@ proc logistic data = Work.allCovariates outest = Work.psBetas3Level;
                     indRxOP_bisphosp
                     indRxThiazide
                     indRxAnticoagulant
+                    indIPAdmit12mPrior
                     / link = glogit rsquare;
   output out = Work.ps3Level predicted = ps xbeta = xbeta;
 run;
@@ -436,6 +442,7 @@ Calculate IPTW
                indRxOP_bisphosp,
                indRxThiazide,
                indRxAnticoagulant
+               indIPAdmit12mPrior
 ;
 proc sql;
   create table Work.ps as
@@ -592,7 +599,8 @@ proc sql;
            indRxFungus,
            indRxOP_bisphosp,
            indRxThiazide,
-           indRxAnticoagulant
+           indRxAnticoagulant,
+           indIPAdmit12mPrior
     from DT.ps;
 quit;
 proc export
