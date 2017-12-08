@@ -80,6 +80,26 @@ quit;
 
 /* 
 BEGIN Fenglong's comorbidities code
+
+From: Xie, Fenglong [mailto:fenglongxie@uabmc.edu] 
+Sent: Wednesday, November 29, 2017 1:32 PM
+To: Benjamin Chan <chanb@ohsu.edu>
+Subject: Attachment from my EndNote Library
+
+Hi, Ben
+
+Here are variable list included in our infection risk score model.
+
+Hinfect agec preddose cpd Invisit heartFailure diabs antidepres nsaid HTN narcotics fracture lipid malign dem outInfect 
+ulcer fungus sex op_bisphosp BENE_ENTLMT_RSN_ORIG thiazide Hypertension psa inflamMarker anticoagulant mammo;
+
+please refer to table 2 in the attached reference for full name of these variables and the attached text file for definition of these variables.
+
+Definition for some variables (such as ICD 9 codes for infection) may changed, please use most recent ICD 9 list. 
+
+Please let me know if you have any question.
+
+Fenglong
  */
 /* 
 Only use ICD-9 codes from previous 12 months for Charlson
@@ -204,6 +224,19 @@ mg/d (medium dose), and 10 mg/d or more (high dose)
                 ((A.indexDate - 183 <= A.dispense_date <= A.indexDate) | 
                   (A.indexDate - 183 <= (A.dispense_date + A.dispense_sup - 1) <= A.indexDate))) C
     group by C.database, C.patid, C.indexID;
+/* 
+Create diagnosis code indicators from inpatient admissions
+ */
+  create table DT.diagIndicatorsInpatient as
+    select A.database, A.patid, A.indexID,
+           count(distinct A.admit_date) as countIPAdmits,
+           case
+             when count(distinct A.admit_date) > 0 then 1
+             else 0
+             end as indIPAdmit12mPrior
+    from UCB.tempPrevDx12mPrior A
+    where A.enc_type = "IP"
+    group by A.database, A.patid, A.indexID;
 /* 
 Inhaled antibiotics
 
