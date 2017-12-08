@@ -55,6 +55,7 @@ indRxFungus | Prescription drug indicator: Antifungal
 indRxOP_bisphosp | Prescription drug indicator: Bisphosphonate
 indRxThiazide | Prescription drug indicator: Thiazide
 indRxAnticoagulant | Prescription drug indicator: Anticoagulant
+indIPAdmit12mPrior | Inpatient admission 12 months prior to exposure
 
 Model output is probability of exposure to TNF, DMARD, and NSAID or no exposure.
 For our purposes, we focus only on the propensity for TNF exposure.
