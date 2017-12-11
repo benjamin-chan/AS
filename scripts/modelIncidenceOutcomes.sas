@@ -139,7 +139,8 @@ quit;
   proc sql;
     create table Work.tempDisease as
       select distinct outcomeCategory, disease, length(disease) as len 
-      from DT.incidentDiseaseTimelines;
+      from DT.incidentDiseaseTimelines
+      where disease ^= "Apical Pulmonary fibrosis";
     create table Work.tempN as select count(*) as n, max(len) as maxlen from Work.tempDisease;
   quit;
   data _null_;
