@@ -192,7 +192,9 @@ proc sql;
              end as database,
            HazardRatio,
            RobustWaldLower,
-           RobustWaldUpper
+           RobustWaldUpper,
+           1e-3 < HazardRatio < 1e3 as indValidHR,
+           (1.0 < RobustWaldLower | RobustWaldUpper < 1.0) & (calculated indValidHR = 1) as indSigHR
     from Work.phregHazardRatios
     order by disease, model, calculated comparison, calculated database;
 quit;
