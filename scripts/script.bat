@@ -18,11 +18,11 @@ rem call :execute queryOutcomeOpportunisticInfection
 rem call :execute queryPrevalentComorbidities
 rem call :execute queryPrevalentComorbiditiesControl
 rem call :execute queryIncidenceOutcomes
-call :execute generateNDCLookup
-call :execute queryOtherComorbidities
-call :execute modelPropensityScore
+rem call :execute generateNDCLookup
+rem call :execute queryOtherComorbidities
+rem call :execute modelPropensityScore
 rem Run summarizePropensityScore.Rmd to check propensity score model
-rem call :execute modelIncidenceOutcomes
+call :execute modelIncidenceOutcomes
 call :execute contentsWorkingDatasets
 
 "C:\Program Files\7-Zip\7z.exe" d ..\output.zip ..\output\*
