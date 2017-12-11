@@ -83,58 +83,125 @@ proc sql;
              B.censor,
              B.patid,
              B.exposureStart;
+  select distinct outcomeCategory, disease from Work.analyticDataset;
 quit;
 
 
 
+
+%macro model(disease, len);
+  /* Weighted */
+  ods output HazardRatios = Work.temp;
+  proc phreg data = Work.analyticDataset covsandwich(aggregate);
+    where disease = "&disease";
+    class exposure (ref = "TNF")
+          database (ref = "Medicare");
+    model daysAtRisk * censor(1) = exposure database exposure*database
+      / ties = efron risklimits;
+    id patid;
+    weight iptw;
+    hazardratio exposure / at (database = all) diff = ref;
+  run;
+  proc sql;
+    alter table Work.temp add model varchar(47);
+    update Work.temp set model = "Weighted, no covariates";
+    alter table Work.temp add disease varchar(&len);
+    update Work.temp set disease = "&disease";
+  quit;
+  data Work.phregHazardRatios;
+    set Work.phregHazardRatios Work.temp;
+  run;
+  /* Weighted stabilized */
+  ods output HazardRatios = Work.temp;
+  proc phreg data = Work.analyticDataset covsandwich(aggregate);
+    where disease = "&disease";
+    class exposure (ref = "TNF")
+          database (ref = "Medicare");
+    model daysAtRisk * censor(1) = exposure database exposure*database
+      / ties = efron risklimits;
+    id patid;
+    weight iptwStabilized;
+    hazardratio exposure / at (database = all) diff = ref;
+  run;
+  proc sql;
+    alter table Work.temp add model varchar(47);
+    update Work.temp set model = "Weighted, stabilized, no covariates";
+    alter table Work.temp add disease varchar(&len);
+    update Work.temp set disease = "&disease";
+  quit;
+  data Work.phregHazardRatios;
+    set Work.phregHazardRatios Work.temp;
+  run;
+%mend model;
+
+
+%macro foo;
+  proc sql;
+    create table Work.tempDisease as
+      select distinct outcomeCategory, disease, length(disease) as len 
+      from DT.incidentDiseaseTimelines;
+    create table Work.tempN as select count(*) as n, max(len) as maxlen from Work.tempDisease;
+  quit;
+  data _null_;
+    set Work.tempN end = eof;
+    call symput("n", put(n, best2.));
+    call symput("maxlen", put(maxlen, best2.));
+  run;
+  proc sql;
+    create table Work.phregHazardRatios (model varchar(&maxlen));
+  quit;
+  %do i = 1 %to &n;
+    data _null_;
+      set Work.tempDisease;
+      if _n_ = &i then call symput("disease", disease);
+    run;
+    %put ********************************************************************************;
+    %put *** ITERATION &i OUT OF &n: &disease;
+    %put ********************************************************************************;
+    %model(&disease, &maxlen);
+  %end;
+  proc sql;
+    drop table Work.tempN;
+    drop table Work.tempDisease;
+  quit;
+%mend foo;
+
+%foo;
+
+
+proc datasets;
+  copy out = DT in = Work;
+  select phregHazardRatios;
+run;
 
 proc sql;
-  create table Work.phregHazardRatios (model varchar(47));
+  create table DT.phregHazardRatios as
+    select disease,
+           model,
+           case
+             when prxmatch("/DMARD vs TNF/", Description) then "DMARD vs TNF"
+             when prxmatch("/NSAID or no exposure vs TNF/", Description) then "NSAID or no exposure vs TNF"
+             else ""
+             end as comparison,
+           case
+             when prxmatch("/MPCD/", Description) then "MPCD"
+             when prxmatch("/Marketscan/", Description) then "Marketscan"
+             when prxmatch("/Medicare/", Description) then "Medicare"
+             else ""
+             end as database,
+           HazardRatio,
+           RobustWaldLower,
+           RobustWaldUpper
+    from Work.phregHazardRatios
+    order by disease, model, calculated comparison, calculated database;
 quit;
 
-
-%let disease = Hospitalized infection;
-/* 
-Weighted
- */
-ods output HazardRatios = Work.temp;
-proc phreg data = Work.analyticDataset covsandwich(aggregate);
-  where disease = "&disease";
-  class exposure (ref = "TNF")
-        database (ref = "Medicare");
-  model daysAtRisk * censor(1) = exposure database exposure*database
-    / ties = efron risklimits;
-  id patid;
-  weight iptw;
-  hazardratio exposure / at (database = all) diff = ref;
-run;
-proc sql;
-  alter table Work.temp add model varchar(47);
-  update Work.temp set model = "Weighted, no covariates";
-quit;
-data Work.phregHazardRatios;
-  set Work.phregHazardRatios Work.temp;
-run;
-/* 
-Weighted stabilized
- */
-ods output HazardRatios = Work.temp;
-proc phreg data = Work.analyticDataset covsandwich(aggregate);
-  where disease = "&disease";
-  class exposure (ref = "TNF")
-        database (ref = "Medicare");
-  model daysAtRisk * censor(1) = exposure database exposure*database
-    / ties = efron risklimits;
-  id patid;
-  weight iptwStabilized;
-  hazardratio exposure / at (database = all) diff = ref;
-run;
-proc sql;
-  alter table Work.temp add model varchar(47);
-  update Work.temp set model = "Weighted, stabilized, no covariates";
-quit;
-data Work.phregHazardRatios;
-  set Work.phregHazardRatios Work.temp;
+proc export
+  data = DT.phregHazardRatios
+  outfile = "data\processed\phregHazardRatios.csv"
+  dbms = csv
+  replace;
+  delimiter = ",";
 run;
 
 
