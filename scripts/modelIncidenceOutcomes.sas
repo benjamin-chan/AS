@@ -90,6 +90,28 @@ quit;
 
 
 %macro model(disease, len);
+  /* Unweighted */
+  ods output HazardRatios = Work.temp;
+  proc phreg data = Work.analyticDataset covsandwich(aggregate);
+    where disease = "&disease";
+    class exposure (ref = "TNF")
+          database (ref = "Medicare");
+    model daysAtRisk * censor(1) = exposure database exposure*database
+      / ties = efron risklimits;
+    id patid;
+    hazardratio exposure / at (database = all) diff = ref;
+  run;
+  proc sql;
+    alter table Work.temp add model varchar(47);
+    update Work.temp set model = "Unweighted, no covariates";
+    alter table Work.temp add outcomeCategory varchar(&len);
+    update Work.temp set outcomeCategory = "&outcomeCategory";
+    alter table Work.temp add disease varchar(&len);
+    update Work.temp set disease = "&disease";
+  quit;
+  data Work.phregHazardRatios;
+    set Work.phregHazardRatios Work.temp;
+  run;
   /* Weighted */
   ods output HazardRatios = Work.temp;
   proc phreg data = Work.analyticDataset covsandwich(aggregate);
@@ -200,7 +222,7 @@ proc sql;
 quit;
 
 proc export
-  data = DT.phregHazardRatios
+  data = DT.phregHazardRatios (where (model ^= "Unweighted, no covariates"))
   outfile = "data\processed\phregHazardRatios.csv"
   dbms = csv
   replace;
