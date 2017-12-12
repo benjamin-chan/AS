@@ -197,11 +197,6 @@ quit;
 %foo;
 
 
-proc datasets;
-  copy out = DT in = Work;
-  select phregHazardRatios;
-run;
-
 proc sql;
   create table DT.phregHazardRatios as
     select outcomeCategory,
