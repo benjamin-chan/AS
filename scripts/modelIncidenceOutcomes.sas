@@ -89,7 +89,7 @@ quit;
 
 
 
-%macro model(disease, len);
+%macro model(outcomeCategory, disease, len);
   /* Unweighted */
   ods output HazardRatios = Work.temp;
   proc phreg data = Work.analyticDataset covsandwich(aggregate);
@@ -127,6 +127,8 @@ quit;
   proc sql;
     alter table Work.temp add model varchar(47);
     update Work.temp set model = "Weighted, no covariates";
+    alter table Work.temp add outcomeCategory varchar(&len);
+    update Work.temp set outcomeCategory = "&outcomeCategory";
     alter table Work.temp add disease varchar(&len);
     update Work.temp set disease = "&disease";
   quit;
@@ -148,6 +150,8 @@ quit;
   proc sql;
     alter table Work.temp add model varchar(47);
     update Work.temp set model = "Weighted, stabilized, no covariates";
+    alter table Work.temp add outcomeCategory varchar(&len);
+    update Work.temp set outcomeCategory = "&outcomeCategory";
     alter table Work.temp add disease varchar(&len);
     update Work.temp set disease = "&disease";
   quit;
@@ -176,12 +180,13 @@ quit;
   %do i = 1 %to &n;
     data _null_;
       set Work.tempDisease;
+      if _n_ = &i then call symput("outcomeCategory", outcomeCategory);
       if _n_ = &i then call symput("disease", disease);
     run;
     %put ********************************************************************************;
-    %put *** ITERATION &i OUT OF &n: &disease;
+    %put *** ITERATION &i OUT OF &n: &outcomeCategory: &disease;
     %put ********************************************************************************;
-    %model(&disease, &maxlen);
+    %model(&outcomeCategory, &disease, &maxlen);
   %end;
   proc sql;
     drop table Work.tempN;
@@ -199,7 +204,8 @@ run;
 
 proc sql;
   create table DT.phregHazardRatios as
-    select disease,
+    select outcomeCategory,
+           disease,
            model,
            case
              when prxmatch("/DMARD vs TNF/", Description) then "DMARD vs TNF"
@@ -218,7 +224,7 @@ proc sql;
            1e-3 < HazardRatio < 1e3 as indValidHR,
            (1.0 < RobustWaldLower | RobustWaldUpper < 1.0) & (calculated indValidHR = 1) as indSigHR
     from Work.phregHazardRatios
-    order by disease, model, calculated comparison, calculated database;
+    order by outcomeCategory, disease, model, calculated comparison, calculated database;
 quit;
 
 proc export
