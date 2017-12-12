@@ -208,8 +208,8 @@ proc sql;
            disease,
            model,
            case
-             when prxmatch("/DMARD vs TNF/", Description) then "DMARD vs TNF"
-             when prxmatch("/NSAID or no exposure vs TNF/", Description) then "NSAID or no exposure vs TNF"
+             when prxmatch("/DMARD vs TNF/", Description) then "TNF vs DMARD"
+             when prxmatch("/NSAID or no exposure vs TNF/", Description) then "TNF vs NSAID or no exposure"
              else ""
              end as comparison,
            case
@@ -218,9 +218,9 @@ proc sql;
              when prxmatch("/Medicare/", Description) then "Medicare"
              else ""
              end as database,
-           HazardRatio,
-           RobustWaldLower,
-           RobustWaldUpper,
+           1 / HazardRatio as HazardRatio,
+           1 / RobustWaldUpper as RobustWaldLower,
+           1 / RobustWaldLower as RobustWaldUpper,
            1e-3 < HazardRatio < 1e3 as indValidHR,
            (1.0 < RobustWaldLower | RobustWaldUpper < 1.0) & (calculated indValidHR = 1) as indSigHR
     from Work.phregHazardRatios
