@@ -111,15 +111,21 @@ proc sql;
            disease,
            database,
            exposure,
-           count(distinct patid) as n
+           count(distinct patid) as nPatid,
+           count(*) as nExposures,
+           sum(censor = 0) as nEvents,
+           sum(daysAtRisk) / 365.25 as personYears,
+           calculated nEvents / calculated personYears as incidenceRate
     from Work.analyticDataset
     group by outcomeCategory, disease, database, exposure;
   create table Work.temp2 as
     select "exposure " || strip(A.exposure) || " vs " || strip(B.exposure) || " At database=" || strip(coalesce(A.database, B.database)) as description,
            coalesce(A.outcomeCategory, B.outcomeCategory) as outcomeCategory,
            coalesce(A.disease, B.disease) as disease,
-           A.n as n1,
-           B.n as n2
+           A.nPatid as n1,
+           B.nPatid as n2,
+           A.incidenceRate as incidenceRate1,
+           B.incidenceRate as incidenceRate2
     from Work.temp1 A inner join
          Work.temp1 B on (A.outcomeCategory = B.outcomeCategory &
                           A.disease = B.disease &
@@ -162,7 +168,7 @@ quit;
     alter table Work.temp add disease varchar(&len);
     update Work.temp set disease = "&disease";
     create table Work.temp3 as
-      select A.*, B.n1, B.n2
+      select A.*, B.n1, B.n2, B.incidenceRate1, B.incidenceRate2
       from Work.temp A inner join
            Work.temp2 B on (A.description = B.description & 
                             A.outcomeCategory = B.outcomeCategory & 
@@ -191,7 +197,7 @@ quit;
     alter table Work.temp add disease varchar(&len);
     update Work.temp set disease = "&disease";
     create table Work.temp3 as
-      select A.*, B.n1, B.n2
+      select A.*, B.n1, B.n2, B.incidenceRate1, B.incidenceRate2
       from Work.temp A inner join
            Work.temp2 B on (A.description = B.description & 
                             A.outcomeCategory = B.outcomeCategory & 
