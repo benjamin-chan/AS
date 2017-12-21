@@ -76,7 +76,30 @@ proc sql;
          Work.incidentDiseaseTimelines B on (A.database = B.database &
                                              A.indexID = B.indexID &
                                              A.exposure = B.exposure3)
-    where A.indCommonSupport = 1
+    where A.indCommonSupport = 1 &
+          ((B.disease = "Amyloidosis" & indAmyloidosis ^= 1) |
+           (B.disease = "Aortic Insufficiency/Aortic Regurgitation" & indAortInsuffRegurg ^= 1) |
+           (B.disease = "Apical Pulmonary fibrosis" & indApicalPulmFib ^= 1) |
+           (B.disease = "Cauda Equina syndrome" & indCaudaEquina ^= 1) |
+           (B.disease = "Clinical vertebral fracture" & indVertFrac ^= 1) |
+           (B.disease = "Conduction Block" & indConductBlock ^= 1) |
+           (B.disease = "Crohn’s Disease" & indCrohnsDis ^= 1) |
+           (B.disease = "Hematologic Cancer" & indHematCa ^= 1) |
+           (B.disease = "Hospitalized infection" /* & indHospInf ^= 1 */) |
+           (B.disease = "IgA nephropathy" & indIgANeph ^= 1) |
+           (B.disease = "Interstitial lung disease" & indInterstLungDis ^= 1) |
+           (B.disease = "Myocardial infarction" & indMI ^= 1) |
+           (B.disease = "Nephrotic syndrome" & indNephSyn ^= 1) |
+           (B.disease = "Non Melanoma Skin Cancer" /* & indNMSC ^= 1 */) |
+           (B.disease = "Non-vertebral osteoporotic fracture" & indNonVertOsFrac ^= 1) |
+           (B.disease = "Opportunistic infection" /* & indOppInf ^= 1 */) |
+           (B.disease = "Psoriasis" & indPsoriasis ^= 1) |
+           (B.disease = "Psoriatic arthritis" & indPSA ^= 1) |
+           (B.disease = "Restrictive lung disease " & indRestrictLungDis ^= 1) |
+           (B.disease = "Solid Cancer" & indSolidCa ^= 1) |
+           (B.disease = "Spinal Cord compression" & indSpinalCordComp ^= 1) |
+           (B.disease = "Ulcerative Colitis" & indUlcerColitis ^= 1) |
+           (B.disease = "Uveitis" & indUveitis ^= 1) )
     order by B.outcomeCategory,
              B.disease,
              calculated database,
@@ -84,6 +107,16 @@ proc sql;
              B.patid,
              B.exposureStart;
   select distinct outcomeCategory, disease from Work.analyticDataset;
+/* Check */
+  /* select "Check exclusions for any prior solid cancer (yes, exclude) and NMSC (no, don't exclude)" as table,
+         disease,
+         censor,
+         indSolidCa,
+         indNMSC,
+         count(*) as n
+  from Work.analyticDataset
+  where disease = "Uveitis"
+  group by disease, censor, indSolidCa, indNMSC; */
 quit;
 
 
