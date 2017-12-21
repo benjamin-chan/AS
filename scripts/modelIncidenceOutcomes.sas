@@ -237,7 +237,7 @@ proc sql;
              else ""
              end as database,
            n2 as nTNF,
-           n1 as nComparitor,
+           n1 as nComparator,
            1 / HazardRatio as HazardRatio,
            1 / RobustWaldUpper as RobustWaldLower,
            1 / RobustWaldLower as RobustWaldUpper,
