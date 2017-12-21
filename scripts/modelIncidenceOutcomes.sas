@@ -106,7 +106,7 @@ proc sql;
              B.censor,
              B.patid,
              B.exposureStart;
-  create table Work.temp1 as
+  create table Work.incidence as
     select outcomeCategory,
            disease,
            database,
@@ -118,7 +118,7 @@ proc sql;
            calculated nEvents / calculated personYears as incidenceRate
     from Work.analyticDataset
     group by outcomeCategory, disease, database, exposure;
-  create table Work.temp2 as
+  create table Work.incidence2 as
     select "exposure " || strip(A.exposure) || " vs " || strip(B.exposure) || " At database=" || strip(coalesce(A.database, B.database)) as description,
            coalesce(A.outcomeCategory, B.outcomeCategory) as outcomeCategory,
            coalesce(A.disease, B.disease) as disease,
@@ -126,8 +126,8 @@ proc sql;
            B.nPatid as n2,
            A.incidenceRate as incidenceRate1,
            B.incidenceRate as incidenceRate2
-    from Work.temp1 A inner join
-         Work.temp1 B on (A.outcomeCategory = B.outcomeCategory &
+    from Work.incidence A inner join
+         Work.incidence B on (A.outcomeCategory = B.outcomeCategory &
                           A.disease = B.disease &
                           A.database = B.database &
                           A.exposure ^= B.exposure)
@@ -170,9 +170,9 @@ quit;
     create table Work.temp3 as
       select A.*, B.n1, B.n2, B.incidenceRate1, B.incidenceRate2
       from Work.temp A inner join
-           Work.temp2 B on (A.description = B.description & 
-                            A.outcomeCategory = B.outcomeCategory & 
-                            A.disease = B.disease);
+           Work.incidence2 B on (A.description = B.description & 
+                                 A.outcomeCategory = B.outcomeCategory & 
+                                 A.disease = B.disease);
   quit;
   data Work.phregHazardRatios;
     set Work.phregHazardRatios Work.temp3;
