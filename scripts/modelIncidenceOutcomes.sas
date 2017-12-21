@@ -128,9 +128,9 @@ proc sql;
            B.incidenceRate as incidenceRate2
     from Work.incidence A inner join
          Work.incidence B on (A.outcomeCategory = B.outcomeCategory &
-                          A.disease = B.disease &
-                          A.database = B.database &
-                          A.exposure ^= B.exposure)
+                              A.disease = B.disease &
+                              A.database = B.database &
+                              A.exposure ^= B.exposure)
     where B.exposure = "TNF";
 /* Check */
   /* select "Check exclusions for any prior solid cancer (yes, exclude) and NMSC (no, don't exclude)" as table,
@@ -250,6 +250,13 @@ quit;
 proc export
   data = DT.phregHazardRatios (where = (model ^= "Unweighted, no covariates"))
   outfile = "data\processed\phregHazardRatios.csv"
+  dbms = csv
+  replace;
+  delimiter = ",";
+run;
+proc export
+  data = Work.incidence
+  outfile = "data\processed\crudeIncidence.csv"
   dbms = csv
   replace;
   delimiter = ",";
