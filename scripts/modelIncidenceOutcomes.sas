@@ -95,7 +95,7 @@ proc sql;
            (B.disease = "Opportunistic infection" /* & indOppInf ^= 1 */) |
            (B.disease = "Psoriasis" & indPsoriasis ^= 1) |
            (B.disease = "Psoriatic arthritis" & indPSA ^= 1) |
-           (B.disease = "Restrictive lung disease " & indRestrictLungDis ^= 1) |
+           (prxmatch("/Restrictive lung disease/", B.disease) & indRestrictLungDis ^= 1) |
            (B.disease = "Solid Cancer" & indSolidCa ^= 1) |
            (B.disease = "Spinal Cord compression" & indSpinalCordComp ^= 1) |
            (B.disease = "Ulcerative Colitis" & indUlcerColitis ^= 1) |
