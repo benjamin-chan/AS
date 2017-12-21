@@ -106,7 +106,26 @@ proc sql;
              B.censor,
              B.patid,
              B.exposureStart;
-  select distinct outcomeCategory, disease from Work.analyticDataset;
+  create table Work.temp1 as
+    select outcomeCategory,
+           disease,
+           database,
+           exposure,
+           count(distinct patid) as n
+    from Work.analyticDataset
+    group by outcomeCategory, disease, database, exposure;
+  create table Work.temp2 as
+    select "exposure " || strip(A.exposure) || " vs " || strip(B.exposure) || " At database=" || strip(coalesce(A.database, B.database)) as description,
+           coalesce(A.outcomeCategory, B.outcomeCategory) as outcomeCategory,
+           coalesce(A.disease, B.disease) as disease,
+           A.n as n1,
+           B.n as n2
+    from Work.temp1 A inner join
+         Work.temp1 B on (A.outcomeCategory = B.outcomeCategory &
+                          A.disease = B.disease &
+                          A.database = B.database &
+                          A.exposure ^= B.exposure)
+    where B.exposure = "TNF";
 /* Check */
   /* select "Check exclusions for any prior solid cancer (yes, exclude) and NMSC (no, don't exclude)" as table,
          disease,
@@ -142,9 +161,15 @@ quit;
     update Work.temp set outcomeCategory = "&outcomeCategory";
     alter table Work.temp add disease varchar(&len);
     update Work.temp set disease = "&disease";
+    create table Work.temp3 as
+      select A.*, B.n1, B.n2
+      from Work.temp A inner join
+           Work.temp2 B on (A.description = B.description & 
+                            A.outcomeCategory = B.outcomeCategory & 
+                            A.disease = B.disease);
   quit;
   data Work.phregHazardRatios;
-    set Work.phregHazardRatios Work.temp;
+    set Work.phregHazardRatios Work.temp3;
   run;
   /* Weighted stabilized */
   ods output HazardRatios = Work.temp;
@@ -165,9 +190,15 @@ quit;
     update Work.temp set outcomeCategory = "&outcomeCategory";
     alter table Work.temp add disease varchar(&len);
     update Work.temp set disease = "&disease";
+    create table Work.temp3 as
+      select A.*, B.n1, B.n2
+      from Work.temp A inner join
+           Work.temp2 B on (A.description = B.description & 
+                            A.outcomeCategory = B.outcomeCategory & 
+                            A.disease = B.disease);
   quit;
   data Work.phregHazardRatios;
-    set Work.phregHazardRatios Work.temp;
+    set Work.phregHazardRatios Work.temp3;
   run;
 %mend model;
 
@@ -224,6 +255,8 @@ proc sql;
              when prxmatch("/Medicare/", Description) then "Medicare"
              else ""
              end as database,
+           n2 as nTNF,
+           n1 as nComparitor,
            1 / HazardRatio as HazardRatio,
            1 / RobustWaldUpper as RobustWaldLower,
            1 / RobustWaldLower as RobustWaldUpper,
