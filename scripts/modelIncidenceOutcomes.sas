@@ -83,7 +83,7 @@ proc sql;
            (B.disease = "Cauda Equina syndrome" & indCaudaEquina ^= 1) |
            (B.disease = "Clinical vertebral fracture" & indVertFrac ^= 1) |
            (B.disease = "Conduction Block" & indConductBlock ^= 1) |
-           (B.disease = "Crohn’s Disease" & indCrohnsDis ^= 1) |
+           (prxmatch("/Crohn.s Disease/", B.disease) & indCrohnsDis ^= 1) |
            (B.disease = "Hematologic Cancer" & indHematCa ^= 1) |
            (B.disease = "Hospitalized infection" /* & indHospInf ^= 1 */) |
            (B.disease = "IgA nephropathy" & indIgANeph ^= 1) |
