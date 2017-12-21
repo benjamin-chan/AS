@@ -73,10 +73,11 @@ DT comorbiditiesOther
 DT outcome_cancer
 DT Outcome_cancer_nmsc
 DT lookupJcodes
-DT summaryLookupNDC
-DT summaryOralSteroids
 DT lookupNDC
 DT rxOralCorticosteroid
+DT ps
+DT phregHazardRatios
+DT crudeIncidence
   ;
 run;
 proc sort data = Work.WorkingDatasets;
