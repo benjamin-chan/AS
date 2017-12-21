@@ -147,8 +147,7 @@ quit;
 
 
 
-%macro model(outcomeCategory, disease, len);
-  /* Weighted */
+%macro model(model, outcomeCategory, disease, len, weight);
   ods output HazardRatios = Work.temp;
   proc phreg data = Work.analyticDataset covsandwich(aggregate);
     where disease = "&disease";
@@ -157,12 +156,12 @@ quit;
     model daysAtRisk * censor(1) = exposure database exposure*database
       / ties = efron risklimits;
     id patid;
-    weight iptw;
+    weight &weight;
     hazardratio exposure / at (database = all) diff = ref;
   run;
   proc sql;
     alter table Work.temp add model varchar(47);
-    update Work.temp set model = "Weighted, no covariates";
+    update Work.temp set model = "&model";
     alter table Work.temp add outcomeCategory varchar(&len);
     update Work.temp set outcomeCategory = "&outcomeCategory";
     alter table Work.temp add disease varchar(&len);
@@ -177,35 +176,10 @@ quit;
   data Work.phregHazardRatios;
     set Work.phregHazardRatios Work.temp3;
   run;
-  /* Weighted stabilized */
-  ods output HazardRatios = Work.temp;
-  proc phreg data = Work.analyticDataset covsandwich(aggregate);
-    where disease = "&disease";
-    class exposure (ref = "TNF")
-          database (ref = "Medicare");
-    model daysAtRisk * censor(1) = exposure database exposure*database
-      / ties = efron risklimits;
-    id patid;
-    weight iptwStabilized;
-    hazardratio exposure / at (database = all) diff = ref;
-  run;
   proc sql;
-    alter table Work.temp add model varchar(47);
-    update Work.temp set model = "Weighted, stabilized, no covariates";
-    alter table Work.temp add outcomeCategory varchar(&len);
-    update Work.temp set outcomeCategory = "&outcomeCategory";
-    alter table Work.temp add disease varchar(&len);
-    update Work.temp set disease = "&disease";
-    create table Work.temp3 as
-      select A.*, B.n1, B.n2, B.incidenceRate1, B.incidenceRate2
-      from Work.temp A inner join
-           Work.temp2 B on (A.description = B.description & 
-                            A.outcomeCategory = B.outcomeCategory & 
-                            A.disease = B.disease);
+    drop table Work.temp;
+    drop table Work.temp3;
   quit;
-  data Work.phregHazardRatios;
-    set Work.phregHazardRatios Work.temp3;
-  run;
 %mend model;
 
 
@@ -234,7 +208,8 @@ quit;
     %put ********************************************************************************;
     %put *** ITERATION &i OUT OF &n: &outcomeCategory: &disease;
     %put ********************************************************************************;
-    %model(&outcomeCategory, &disease, &maxlen);
+    %model(%quote(Weighted, no covariates), &outcomeCategory, &disease, &maxlen, iptw);
+    %model(%quote(Weighted, stabilized, no covariates), &outcomeCategory, &disease, &maxlen, iptwStabilized);
   %end;
   proc sql;
     drop table Work.tempN;
