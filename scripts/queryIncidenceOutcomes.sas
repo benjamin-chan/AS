@@ -303,13 +303,4 @@ proc sql;
 quit;
 
 
-proc export
-  data = Work.incidence
-  outfile = "data\processed\&cmt..csv"
-  dbms = csv
-  replace;
-  delimiter = ",";
-run;
-
-
 ods html close;
