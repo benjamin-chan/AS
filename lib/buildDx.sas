@@ -2,8 +2,9 @@ proc sql;
   
   create table UCB.tempLookupMPCD as &selectfrom3 where database = "MPCD";
   create table UCB.temp0710 as &select2 from MPSTD.DX_07_10 A &where2;
+  alter table UCB.temp0710 modify prov_type format = $3.;
   create table UCB.temp&type.DxMPCD as
-    &select1 from UCB.tempLookupMPCD A inner join UCB.temp0710 B &on1;
+    &select1, B.prov_type as prov_type2 from UCB.tempLookupMPCD A inner join UCB.temp0710 B &on1;
   drop table UCB.temp0710;
 
   create table UCB.tempLookupMarketscan as &selectfrom3 where database = "Marketscan";
