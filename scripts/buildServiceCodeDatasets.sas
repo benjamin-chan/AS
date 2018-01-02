@@ -109,10 +109,10 @@ unlike non-fracture service code data sets
  */
 %let type = Frac;
 %let select1 = select A.*, 
-                      B.encounterID, B.enc_type, B.admit_date, B.begin_date, B.discharge_date, B.end_date, B.dx_type, B.dx, B.pdx, "ICD9-DX" as codeType, B.dx as code,
+                      B.encounterID, B.enc_type, B.admit_date, B.begin_date, B.discharge_date, B.end_date, B.dx_type, B.dx, B.pdx, "ICD9-DX" as codeType, B.dx as code, B.prov_type,
                       B.diagCodeType;
 %let on1 = on (A.patid = B.patid);
-%let select2 = select A.patid, A.encounterID, A.enc_type, A.admit_date, A.begin_date, A.discharge_date, A.end_date, A.dx_type, A.dx, A.pdx,
+%let select2 = select A.patid, A.encounterID, A.enc_type, A.admit_date, A.begin_date, A.discharge_date, A.end_date, A.dx_type, A.dx, A.pdx, A.prov_type,
                       case
                         when '800' <= substr(A.dx, 1, 3) <= '829' or substr(A.dx, 1, 4) = '7331' then "Fracture code"
                         when substr(A.dx, 1, 4) in ('V541' 'V542') then "Extended care code"
