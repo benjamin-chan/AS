@@ -1,0 +1,342 @@
+1                                                          The SAS System                           11:23 Wednesday, January 3, 2018
+
+NOTE: Copyright (c) 2002-2012 by SAS Institute Inc., Cary, NC, USA. 
+NOTE: SAS (r) Proprietary Software 9.4 (TS1M1) 
+      Licensed to UNIVERSITY OF ALABAMA AT BIRMINGHAM - SFA - T&R, Site 70058223.
+NOTE: This session is executing on the W32_ES08R2  platform.
+
+
+
+NOTE: Updated analytical products:
+      
+      SAS/STAT 13.1
+      SAS/ETS 13.1
+      SAS/OR 13.1
+      SAS/IML 13.1
+      SAS/QC 13.1
+
+NOTE: Additional host information:
+
+ W32_ES08R2 WIN 6.1.7601 Service Pack 1 Server
+
+--- PEER News and Updates ---
+
+: SECURITY REMINDER :
+Please remember not to copy any data files that contain PHI (protected health identifiers) to any of the shared folders.
+
+ 
+
+
+NOTE: SAS initialization used:
+      real time           0.32 seconds
+      cpu time            0.14 seconds
+      
+1          *  University of Alabama at Birmingham                               *
+2          *  AS project                                            *
+3          **********************************************************************;
+4          options pagesize=74 linesize=150 pageno=1 missing=' ' date FORMCHAR="|----|+|---+=|-/\<>*";
+5          * Programmer    : Benjamin Chan <chanb@ohsu.edu>
+6          * Creation date :
+7          * Modify date   :
+8          ;
+9          %let cmt=calculateASPrevalence; * type the name of your program here (without the filename extension);
+10         %let pgm=&cmt..sas;
+11         %include "lib\libname.sas" ;
+NOTE: Libref STDC5P was successfully assigned as follows: 
+      Engine:        SPDE 
+      Physical Name: H:\studies\osteo\data\STD_files\5pct\
+NOTE: Libref STD_SABR was successfully assigned as follows: 
+      Engine:        SPDE 
+      Physical Name: q:\data\std_SABER\
+NOTE: Libref MPSTD was successfully assigned as follows: 
+      Engine:        SPDE 
+      Physical Name: h:\studies\mpcd\data\stddata\
+NOTE: Libref UCBSTD was successfully assigned as follows: 
+      Engine:        SPDE 
+      Physical Name: q:\studies\AS\data\stddata\
+NOTE: Libref UCB was successfully assigned as follows: 
+      Engine:        SPDE 
+      Physical Name: q:\studies\AS\data\UCB\
+NOTE: Libref DT was successfully assigned as follows: 
+      Engine:        V9 
+      Physical Name: V:\studies\AS\data
+NOTE: Libref NDC was successfully assigned as follows: 
+      Engine:        V9 
+      Physical Name: W:\onenote\references\drug ndcs\sas data
+127        footnote "&pgm.";
+128        * footnote2 "%sysfunc(datetime(),datetime14.)";
+129        title1 '--- AS project ---';
+130        **********************************************************************;
+131        options macrogen mlogic mprint symbolgen;
+132        options nomacrogen nomlogic nomprint nosymbolgen;
+133        
+134        
+135        ods html
+2                                                                   The SAS System                                    11:23 Wednesday, January 3, 2018
+
+136          body = "output\&cmt..html"
+137          style = Statistical;
+NOTE: Writing HTML Body file: output\calculateASPrevalence.html
+138        
+139        
+140        
+141        
+142        proc sql;
+143          create table Work.temp0 as
+144            select "AS" as cohort, database, patid, min(year(indexDate)) as year  /* Only count the first instance of AS cohort membership */
+145            from DT.indexLookup
+146            where database in ("MPCD", "Medicare")
+147            group by database, patid
+148            union corr
+149            select cohort, database, patid, year(indexDate) as year
+150            from DT.controlLookup;
+NOTE: Table WORK.TEMP0 created, with 3009512 rows and 4 columns.
+
+151          create table Work.temp1 as
+152            select database,
+153                   count(distinct patid) as n
+154            from Work.temp0
+155            group by database;
+NOTE: Table WORK.TEMP1 created, with 2 rows and 2 columns.
+
+156          create table Work.temp2 as
+157            select database,
+158                   year,
+159                   count(distinct patid) as n
+160            from Work.temp0
+161            group by database, year;
+NOTE: Table WORK.TEMP2 created, with 13 rows and 3 columns.
+
+162          create table Work.temp3 as
+163            select cohort,
+164                   database,
+165                   count(distinct patid) as n
+166            from Work.temp0
+167            where cohort = "AS"
+168            group by cohort, database;
+NOTE: Table WORK.TEMP3 created, with 2 rows and 3 columns.
+
+169          create table Work.temp4 as
+170            select cohort,
+171                   database,
+172                   year,
+173                   count(distinct patid) as n
+174            from Work.temp0
+175            where cohort = "AS"
+176            group by cohort, database, year;
+NOTE: Table WORK.TEMP4 created, with 13 rows and 4 columns.
+
+177          create table Work.temp5 as
+178            select coalesce(A.database, B.database) as database,
+179                   "OVERALL" as year,
+180                   B.n as y,
+181                   A.n as n,
+182                   B.n / A.n as prevalence
+183            from Work.temp1 A inner join
+184                 Work.temp3 B on (A.database = B.database)
+185            union corr
+186            select coalesce(A.database, B.database) as database,
+187                   put(coalesce(A.year, B.year), 4.) as year,
+188                   B.n as y,
+189                   A.n as n,
+190                   B.n / A.n as prevalence
+191            from Work.temp2 A inner join
+192                 Work.temp4 B on (A.database = B.database & A.year = B.year);
+NOTE: Table WORK.TEMP5 created, with 15 rows and 5 columns.
+
+193          select database,
+194                 year,
+3                                                                   The SAS System                                    11:23 Wednesday, January 3, 2018
+
+195                 y format = comma12.0,
+196                 n format = comma12.0,
+197                 prevalence format = percent8.2
+198            from Work.temp5;
+                                                                  --- AS project ---                              11:23 Wednesday, January 3, 2018   1
+
+                                             database    year                y             n  prevalence
+                                             -----------------------------------------------------------
+                                             MPCD        2007              679       795,142      0.09% 
+                                             MPCD        2008              834       166,538      0.50% 
+                                             MPCD        2009              849       127,596      0.67% 
+                                             MPCD        2010              638        52,949      1.20% 
+                                             MPCD        OVERALL         3,000     1,142,225      0.26% 
+                                             Medicare    2006            1,758       874,987      0.20% 
+                                             Medicare    2007            1,766       128,431      1.38% 
+                                             Medicare    2008            1,699        96,175      1.77% 
+                                             Medicare    2009            1,647        92,429      1.78% 
+                                             Medicare    2010            1,884         1,884     100.0% 
+                                             Medicare    2011            2,176       194,411      1.12% 
+                                             Medicare    2012            3,110       131,297      2.37% 
+                                             Medicare    2013            4,344       213,125      2.04% 
+                                             Medicare    2014            4,200       134,548      3.12% 
+                                             Medicare    OVERALL        22,584     1,867,287      1.21% 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+                                                              calculateASPrevalence.sas
+199        quit;
+NOTE: The PROCEDURE SQL printed page 1.
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           14.41 seconds
+      cpu time            18.81 seconds
+      
+
+200        
+201        
+202        proc export
+203          data = Work.temp5
+204          outfile = "data\processed\prevalenceAS.csv"
+205          dbms = csv
+206          replace;
+207          delimiter = ",";
+208        run;
+
+209         /**********************************************************************
+210         *   PRODUCT:   SAS
+211         *   VERSION:   9.4
+212         *   CREATOR:   External File Interface
+213         *   DATE:      03JAN18
+214         *   DESC:      Generated SAS Datastep Code
+215         *   TEMPLATE SOURCE:  (None Specified.)
+216         ***********************************************************************/
+217            data _null_;
+218            %let _EFIERR_ = 0; /* set the ERROR detection macro variable */
+219            %let _EFIREC_ = 0;     /* clear export record count macro variable */
+220            file 'data\processed\prevalenceAS.csv' delimiter=',' DSD DROPOVER lrecl=32767;
+221            if _n_ = 1 then        /* write column names or labels */
+222             do;
+223               put
+224                  "database"
+225               ','
+226                  "year"
+227               ','
+228                  "y"
+229               ','
+230                  "n"
+231               ','
+232                  "prevalence"
+233               ;
+234             end;
+235           set  WORK.TEMP5   end=EFIEOD;
+236               format database $10. ;
+237               format year $7. ;
+238               format y best12. ;
+239               format n best12. ;
+240               format prevalence best12. ;
+241             do;
+242               EFIOUT + 1;
+243               put database $ @;
+244               put year $ @;
+245               put y @;
+246               put n @;
+247               put prevalence ;
+248               ;
+249             end;
+250            if _ERROR_ then call symputx('_EFIERR_',1);  /* set ERROR detection macro variable */
+251            if EFIEOD then call symputx('_EFIREC_',EFIOUT);
+252            run;
+
+NOTE: The file 'data\processed\prevalenceAS.csv' is:
+      Filename=U:\studies\AS\pgms\bchan\data\processed\prevalenceAS.csv,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=03Jan2018:11:24:09,
+      Create Time=02Jan2018:13:24:14
+
+4                                                                   The SAS System                                    11:23 Wednesday, January 3, 2018
+
+NOTE: 16 records were written to the file 'data\processed\prevalenceAS.csv'.
+      The minimum record length was 25.
+      The maximum record length was 43.
+NOTE: There were 15 observations read from the data set WORK.TEMP5.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.00 seconds
+      
+
+15 records created in data\processed\prevalenceAS.csv from WORK.TEMP5.
+  
+  
+NOTE: "data\processed\prevalenceAS.csv" file was successfully created.
+NOTE: PROCEDURE EXPORT used (Total process time):
+      real time           0.07 seconds
+      cpu time            0.06 seconds
+      
+
+253        
+254        /*
+255        libname UCB spde "q:\studies\AS\data\UCB"
+256                         datapath=("q:\studies\AS\data\UCB"
+257                                   "r:\studies\AS\data\UCB"
+258                                   "s:\studies\AS\data\UCB"
+259                                   "t:\studies\AS\data\UCB"
+260                                   "u:\studies\AS\data\UCB"
+261                                   "v:\studies\AS\data\UCB")
+262                         indexpath=("t:\studies\AS\data\UCB"
+263                                    "u:\studies\AS\data\UCB"
+264                                    "v:\studies\AS\data\UCB")
+265                         bysort=no;
+266        
+267        proc freq data = UCB.cntlCohortStdC5P;
+268          format indexDate enr_start_date enr_end_date year4.;
+269          table indexDate enr_start_date enr_end_date;
+270        run;
+271         */
+272        
+273        ods html close;
+NOTE: SAS Institute Inc., SAS Campus Drive, Cary, NC USA 27513-2414
+NOTE: The SAS System used:
+      real time           15.10 seconds
+      cpu time            19.25 seconds
+      
