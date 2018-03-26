@@ -38,7 +38,7 @@ Table of **prevalence %**
 foo <- function(db) {
     col <- which(names(df) %in% c("database", "outcomeCategory", "timeWindow", "disease", "prevPct", "denomPatid"))
     df %>% 
-      filter(timeWindow == "12 months") %>% 
+      # filter(timeWindow == "12 months") %>% 
       filter(database == db) %>% 
       mutate(lower = prevCI(numer, denomPatid)[, "lower"] * 100,
              upper = prevCI(numer, denomPatid)[, "upper"] * 100) %>% 
@@ -96,7 +96,7 @@ Table of **prevalence %**
 foo <- function(db, exp) {
     col <- which(names(df) %in% c("database", "outcomeCategory", "timeWindow", "disease", "prevPct", "denomIndexExp"))
     df %>% 
-      filter(timeWindow == "12 months") %>% 
+      # filter(timeWindow == "12 months") %>% 
       filter(database == db) %>% 
       filter(exposure == exp) %>% 
       mutate(lower = prevCI(numer, denomIndexExp)[, "lower"] * 100,
