@@ -115,6 +115,7 @@ proc sql;
            A.iptw,
            A.indCommonSupport,
            A.iptwStabilized,
+           A.meanPredEqDoseCat,
            B.outcomeCategory,
            B.disease,
            B.censor,
@@ -198,13 +199,14 @@ quit;
 
 
 
-%macro model(model, outcomeCategory, disease, len, weight);
+%macro model(model, outcomeCategory, disease, len, weight, covar);
   ods output HazardRatios = Work.temp;
   proc phreg data = Work.analyticDataset covsandwich(aggregate);
     where disease = "&disease";
     class exposure (ref = "TNF")
-          database (ref = "Medicare");
-    model daysAtRisk * censor(1) = exposure database exposure*database
+          database (ref = "Medicare")
+          meanPredEqDoseCat (ref = "None");
+    model daysAtRisk * censor(1) = exposure database exposure*database &covar
       / ties = efron risklimits;
     id patid;
     weight &weight;
@@ -259,8 +261,10 @@ quit;
     %put ********************************************************************************;
     %put *** ITERATION &i OUT OF &n: &outcomeCategory: &disease;
     %put ********************************************************************************;
-    %model(%quote(Weighted, no covariates), &outcomeCategory, &disease, &maxlen, iptw);
-    %model(%quote(Weighted, stabilized, no covariates), &outcomeCategory, &disease, &maxlen, iptwStabilized);
+    %model(%quote(a Weighted, no covariates), &outcomeCategory, &disease, &maxlen, iptw, );
+    %model(%quote(b Weighted, stabilized, no covariates), &outcomeCategory, &disease, &maxlen, iptwStabilized, );
+    %model(%quote(c Weighted, covariates (6-month daily steroid dose)), &outcomeCategory, &disease, &maxlen, iptw, meanPredEqDoseCat);
+    %model(%quote(d Weighted, stabilized, covariates (6-month daily steroid dose)), &outcomeCategory, &disease, &maxlen, iptwStabilized, meanPredEqDoseCat);
   %end;
   proc sql;
     drop table Work.tempN;
