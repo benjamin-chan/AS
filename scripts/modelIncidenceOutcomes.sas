@@ -41,7 +41,41 @@ hospital infection Outcome yet?
 --------------------------------------------------------------------------------
 
 * Check diagnosis codes for OI
+                                                                  Cumulative  Cumulative
+  Infection_Category                          Frequency  Percent   Frequency    Percent
+  --------------------------------------------------------------------------------------
+  Candidiasis                                        9     0.38           9       0.38  
+  HSV                                                4     0.17          13       0.54  
+  aspergillosis                                    140     5.87         153       6.41  
+  blastomycosis                                     43     1.80         196       8.21  
+  candidiasis                                     1106    46.33        1302      54.55  
+  cat-scratch                                        5     0.21        1307      54.75  
+  coccidioidomycosis                               129     5.40        1436      60.16  
+  cryptococcosis                                     9     0.38        1445      60.54  
+  encephalitis                                       4     0.17        1449      60.70  
+  endemic mycosis                                   23     0.96        1472      61.67  
+  endocarditis                                       7     0.29        1479      61.96  
+  filarial or other parasitis                        1     0.04        1480      62.00  
+  gastroenteritis                                   13     0.54        1493      62.55  
+  herpes                                             6     0.25        1499      62.80  
+  histoplasmosis                                   146     6.12        1645      68.91  
+  invasive mold                                    231     9.68        1876      78.59  
+  listeriosis                                        1     0.04        1877      78.63  
+  nontuberculosis mycobacteria                     435    18.22        2312      96.86  
+  pneumocystsis                                     42     1.76        2354      98.62  
+  progressive multifocal leukoencephalopathy         9     0.38        2363      98.99  
+  sporotrichosis                                     8     0.34        2371      99.33  
+  toxoplasmosis                                     16     0.67        2387     100.00  
+                                Frequency Missing = 92
+
 * Check if double counting Hosp Inf.  
+  CONFIRMED: No double-counting of outcomes
+ */
+
+
+
+
+/* 
 Prepare analytic data set
  */
 proc sql;
