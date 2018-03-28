@@ -25,6 +25,23 @@ ods html
 
 
 /* 
+Focusing on the infections (hospitalized and opportunistic) and fractures outcomes,
+add corticosteroids to the model (include and exclude from PS model)
+
+From: Kevin Winthrop 
+Sent: Friday, January 12, 2018 1:44 PM
+To: Benjamin Chan <chanb@ohsu.edu>
+Subject: Re: EULAR abstract V9; Final?
+
+What about pulling out AGE and using as a discrete covariate in the model?
+Like we discussed doing with steroids. Have you played around with the
+hospital infection Outcome yet?
+
+
+--------------------------------------------------------------------------------
+
+* Check diagnosis codes for OI
+* Check if double counting Hosp Inf.  
 Prepare analytic data set
  */
 proc sql;
