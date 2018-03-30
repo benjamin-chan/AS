@@ -205,7 +205,8 @@ quit;
     where disease = "&disease";
     class exposure (ref = "TNF")
           database (ref = "Medicare")
-          meanPredEqDoseCat (ref = "None");
+          meanPredEqDoseCat (ref = "None")
+          catAge (ref = "60-69");
     model daysAtRisk * censor(1) = exposure database exposure*database &covar
       / ties = efron risklimits;
     id patid;
@@ -213,7 +214,7 @@ quit;
     hazardratio exposure / at (database = all) diff = ref;
   run;
   proc sql;
-    alter table Work.temp add model varchar(47);
+    alter table Work.temp add model varchar(56);
     update Work.temp set model = "&model";
     alter table Work.temp add outcomeCategory varchar(&len);
     update Work.temp set outcomeCategory = "&outcomeCategory";
@@ -250,7 +251,7 @@ quit;
     call symput("maxlen", put(maxlen, best2.));
   run;
   proc sql;
-    create table Work.phregHazardRatios (model varchar(&maxlen));
+    create table Work.phregHazardRatios (disease varchar(&maxlen), model varchar(56));
   quit;
   %do i = 1 %to &n;
     data _null_;
@@ -262,7 +263,9 @@ quit;
     %put *** ITERATION &i OUT OF &n: &outcomeCategory: &disease;
     %put ********************************************************************************;
     %model(%quote(a Weighted, no covariates), &outcomeCategory, &disease, &maxlen, iptw, );
-    %model(%quote(c Weighted, covariates (6-month daily steroid dose)), &outcomeCategory, &disease, &maxlen, iptw, meanPredEqDoseCat);
+    %model(%quote(b Weighted, covariates (6-month daily steroid dose)), &outcomeCategory, &disease, &maxlen, iptw, meanPredEqDoseCat);
+    %model(%quote(c Weighted, covariates (age)), &outcomeCategory, &disease, &maxlen, iptw, catAge);
+    %model(%quote(d Weighted, covariates (6-month daily steroid dose, age)), &outcomeCategory, &disease, &maxlen, iptw, meanPredEqDoseCat catAge);
   %end;
   proc sql;
     drop table Work.tempN;
