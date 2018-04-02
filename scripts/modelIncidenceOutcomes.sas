@@ -210,7 +210,9 @@ quit;
     model daysAtRisk * censor(1) = exposure database exposure*database &covar
       / ties = efron risklimits;
     id patid;
-    weight &weight;
+    %if %length(&weight) ^= 0 %then %do;
+      weight &weight;
+    %end;
     hazardratio exposure / at (database = all) diff = ref;
   run;
   proc sql;
@@ -242,7 +244,8 @@ quit;
     create table Work.tempDisease as
       select distinct outcomeCategory, disease, length(disease) as len 
       from DT.incidentDiseaseTimelines
-      where disease ^= "Apical Pulmonary fibrosis";
+      where disease ^= "Amyloidosis" &
+            disease ^= "Apical Pulmonary fibrosis" ;
     create table Work.tempN as select count(*) as n, max(len) as maxlen from Work.tempDisease;
   quit;
   data _null_;
@@ -262,6 +265,7 @@ quit;
     %put ********************************************************************************;
     %put *** ITERATION &i OUT OF &n: &outcomeCategory: &disease;
     %put ********************************************************************************;
+    %model(%quote(0 Unweighted, no covariates), &outcomeCategory, &disease, &maxlen, , );
     %model(%quote(a Weighted, no covariates), &outcomeCategory, &disease, &maxlen, iptw, );
     %model(%quote(b Weighted, covariates (6-month daily steroid dose)), &outcomeCategory, &disease, &maxlen, iptw, meanPredEqDoseCat);
     %model(%quote(c Weighted, covariates (age)), &outcomeCategory, &disease, &maxlen, iptw, catAge);
@@ -304,7 +308,7 @@ proc sql;
 quit;
 
 proc export
-  data = DT.phregHazardRatios (where = (model ^= "Unweighted, no covariates"))
+  data = DT.phregHazardRatios
   outfile = "data\processed\phregHazardRatios.csv"
   dbms = csv
   replace;
