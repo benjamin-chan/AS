@@ -69,6 +69,66 @@ proc copy out = Work in = DT;
 run;
 
 
+/* 
+Override OI designation of some of the infection categories
+Source lookup table is "W:\Users\lchen\lookupdata\AHRQ_CCS.xlsx",
+which was converted to CSV as "U:\studies\AS\pgms\bchan\data\raw\AHRQ_CCS.csv"
+See commit ceaac8
+ */
+proc sql;
+  select "Work.icd9_infection" as table, "BEFORE" as when, upcase(oi) as oi, upcase(infection_category) as infection_category, count(*) as records
+    from Work.icd9_infection
+    where upcase(infection_category) = "TUBERCULOSIS" |
+          upcase(infection_category) = "ACTINOMYCOSIS" |
+          upcase(infection_category) = "ZOSTER" |
+          icd_9_cm_code = "48284" |
+          prxmatch("/^003((1)|(2[1234]))/", icd_9_cm_code)
+    group by calculated oi, calculated infection_category;
+  update Work.icd9_infection
+    set oi = case
+               when upcase(infection_category) = "TUBERCULOSIS" then "OI"
+               when upcase(infection_category) = "ACTINOMYCOSIS" then "OI"
+               when upcase(infection_category) = "ZOSTER" then "OI"
+               when icd_9_cm_code = "48284" then "OI"
+               when prxmatch("/^003((1)|(2[1234]))/", icd_9_cm_code) then "OI"
+               else oi
+               end;
+  select "Work.icd9_infection" as table, "AFTER" as when, upcase(oi) as oi, upcase(infection_category) as infection_category, count(*) as records
+    from Work.icd9_infection
+    where upcase(infection_category) = "TUBERCULOSIS" |
+          upcase(infection_category) = "ACTINOMYCOSIS" |
+          upcase(infection_category) = "ZOSTER" |
+          icd_9_cm_code = "48284" |
+          prxmatch("/^003((1)|(2[1234]))/", icd_9_cm_code)
+    group by calculated oi, calculated infection_category;
+  select "Work.outcome_infection_dx" as table, "BEFORE" as when, upcase(oi) as oi, upcase(infection_category) as infection_category, count(*) as records
+    from Work.outcome_infection_dx
+    where upcase(infection_category) = "TUBERCULOSIS" |
+          upcase(infection_category) = "ACTINOMYCOSIS" |
+          upcase(infection_category) = "ZOSTER" |
+          icd_9_cm_code = "48284" |
+          prxmatch("/^003((1)|(2[1234]))/", icd_9_cm_code)
+    group by calculated oi, calculated infection_category;
+  update Work.outcome_infection_dx
+    set oi = case
+               when upcase(infection_category) = "TUBERCULOSIS" then "OI"
+               when upcase(infection_category) = "ACTINOMYCOSIS" then "OI"
+               when upcase(infection_category) = "ZOSTER" then "OI"
+               when icd_9_cm_code = "48284" then "OI"
+               when prxmatch("/^003((1)|(2[1234]))/", icd_9_cm_code) then "OI"
+               else oi
+               end;
+  select "Work.outcome_infection_dx" as table, "AFTER" as when, upcase(oi) as oi, upcase(infection_category) as infection_category, count(*) as records
+    from Work.outcome_infection_dx
+    where upcase(infection_category) = "TUBERCULOSIS" |
+          upcase(infection_category) = "ACTINOMYCOSIS" |
+          upcase(infection_category) = "ZOSTER" |
+          icd_9_cm_code = "48284" |
+          prxmatch("/^003((1)|(2[1234]))/", icd_9_cm_code)
+    group by calculated oi, calculated infection_category;
+quit;
+
+
 proc freq data=icd9_infection; tables Infection_Category Infection_Location OI ;
 tables Infection_Category*description/missing list;
 where OI^=" " and OI^="N" and OI^="NO";
