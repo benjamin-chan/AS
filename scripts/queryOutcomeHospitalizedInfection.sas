@@ -149,7 +149,16 @@ set NDC.TB_ALL_2016;
 where gnn="PYRAZINAMIDE";
 run;
 
-data outcome_infection_rx(drop=rc:)  outcome_rx_TB(drop=rc:);
+data Work.ndc_zoster;
+  set NDC.ndc_antiviral;
+  where zoster = 1;
+run;
+proc freq data = Work.ndc_zoster;
+  table zoster * gnn / list;
+run;
+
+
+data outcome_infection_rx(drop=rc:)  outcome_rx_TB(drop=rc:) outcome_rx_zoster (drop = rc);
     if _N_=1 then do;
         declare hash HRX(dataset:"NDC.Antibiotics_parenteral_ndc");
         rc = HRX.definekey("NDC");
@@ -161,17 +170,23 @@ data outcome_infection_rx(drop=rc:)  outcome_rx_TB(drop=rc:);
 /*        rc = HTB.definedata(all:"YES");*/
         rc=HTB.definedone();
 
+        declare hash Hzos(dataset:"Work.ndc_zoster");
+        rc = Hzos.definekey("code");
+/*        rc = HTB.definedata(all:"YES");*/
+        rc=Hzos.definedone();
     end;
-if 0 then set NDC.Antibiotics_parenteral_ndc(keep=NDC) NDC_PYRAZINAMIDE(keep=code);
+if 0 then set NDC.Antibiotics_parenteral_ndc(keep=NDC) NDC_PYRAZINAMIDE(keep=code) Work.ndc_zoster (keep = code);
 set &inrxdat. ;
 by database exposure patid exposureStart exposureEnd exposureID DISPENSE_DATE;
 /*length outcome $20 outcome_date 4;*/
 /*format outcome_date mmddyy10.;*/
         rc1 =HRX.find(key:NDC);
         rc2 =HTB.find(key:NDC);
+        rc3 = Hzos.find(key:NDC);
 
         if rc1=0 then output outcome_infection_rx;
         if rc2=0 then output outcome_rx_TB;
+        if rc3=0 then output outcome_rx_zoster;
 run;
 
 
