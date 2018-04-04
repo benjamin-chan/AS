@@ -75,9 +75,9 @@ outcome_infection
 ;
 quit;
  */
-proc import datafile='W:\Users\lchen\lookupdata\AHRQ_CCS.xlsx' 
-    out=icd9_infection replace;
-    sheet="AHRQ_CCS";
+proc import datafile='U:\studies\AS\pgms\bchan\data\raw\AHRQ_CCS.csv' 
+    out=icd9_infection dbms = csv replace;
+    guessingrows = 1000;
 run;
 data icd9_infection;
 set icd9_infection;
