@@ -229,6 +229,22 @@ outcome="OI";
 run;
 
 
+/* 
+Check
+ */
+proc sql;
+  select "Summary of Work.outcome_oi" as table,
+         A.database,
+         A.infection_category,
+         count(distinct A.patid) as countDistinctPatid,
+         count(*) as countRows,
+         count(*) / denom format = percent8.1 as pctWithinDatabase
+    from Work.outcome_oi A inner join
+         (select database, count(*) as denom from Work.outcome_oi group by database) B  on (A.database = B.database)
+    group by A.database, A.infection_category;
+quit;
+
+
 proc datasets nolist; delete 
 outcome_OI_dx
 outcome_OI_dx_mycobacteria
