@@ -510,7 +510,9 @@ Calculate IPTW
                indRxAnticoagulant,
                indIPAdmit12mPrior,
                indERVisit12mPrior,
+               ciras,
                quartileCIRAS,
+               countAVPhysEncounters,
                quartileAVPhysEncounters
 ;
 proc sql;
@@ -672,7 +674,9 @@ proc sql;
            indRxAnticoagulant,
            indIPAdmit12mPrior,
            indERVisit12mPrior,
+           ciras,
            quartileCIRAS,
+           countAVPhysEncounters,
            quartileAVPhysEncounters
     from DT.ps;
 quit;
