@@ -1,4 +1,4 @@
-1                                         The SAS System             14:01 Thursday, April 5, 2018
+1                                         The SAS System               15:39 Friday, April 6, 2018
 
 NOTE: Copyright (c) 2016 by SAS Institute Inc., Cary, NC, USA. 
 NOTE: SAS (r) Proprietary Software 9.4 (TS1M5) 
@@ -28,8 +28,8 @@ of the shared folders.
 
 
 NOTE: SAS initialization used:
-      real time           4.46 seconds
-      cpu time            0.29 seconds
+      real time           5.75 seconds
+      cpu time            0.21 seconds
       
 1          *  University of Alabama at Birmingham                               *
 2          *  AS project                                            *
@@ -72,7 +72,7 @@ NOTE: Libref NDC was successfully assigned as follows:
 133        
 134        
 135        ods html
-2                                                                   The SAS System                                       14:01 Thursday, April 5, 2018
+2                                                                   The SAS System                                         15:39 Friday, April 6, 2018
 
 136          body = "output\&cmt..html"
 137          style = Statistical;
@@ -95,8 +95,8 @@ NOTE: One or more variables were converted because the data type is not supporte
 NOTE: The import data set has 1112 observations and 6 variables.
 NOTE: WORK.COMORBIDITYLOOKUP data set was successfully created.
 NOTE: PROCEDURE IMPORT used (Total process time):
-      real time           0.31 seconds
-      cpu time            0.21 seconds
+      real time           0.28 seconds
+      cpu time            0.23 seconds
       
 
 150        proc sql;
@@ -133,7 +133,7 @@ NOTE: 13 rows were inserted into WORK.COMORBIDITYLOOKUP.
 
 173        quit;
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           0.51 seconds
+      real time           0.35 seconds
       cpu time            0.06 seconds
       
 
@@ -146,7 +146,7 @@ NOTE: PROCEDURE SQL used (Total process time):
 180          create table DT.comorbiditiesOther as
 181            select distinct
 182                   C.database, C.exposure, C.patid, C.ASCohortDate, C.indexGNN, C.indexDate, C.indexID,
-3                                                                   The SAS System                                       14:01 Thursday, April 5, 2018
+3                                                                   The SAS System                                         15:39 Friday, April 6, 2018
 
 183                   C.age, C.sex,
 184                   C.comorbidity,
@@ -161,7 +161,7 @@ NOTE: Table DT.COMORBIDITIESOTHER created, with 75789 rows and 11 columns.
 188          select comorbidity, database, exposure, sum(indPreExposure) as sumIndPreExposure
 189            from DT.comorbiditiesOther
 190            group by comorbidity, database, exposure;
-                                                                  --- AS project ---                                 14:01 Thursday, April 5, 2018   1
+                                                                  --- AS project ---                                   15:39 Friday, April 6, 2018   1
 
                                                                                                       sumIndPre
                                        Comorbidity                        database    exposure         Exposure
@@ -239,8 +239,8 @@ NOTE: Table DT.COMORBIDITIESOTHER created, with 75789 rows and 11 columns.
 192        quit;
 NOTE: The PROCEDURE SQL printed page 1.
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           25.56 seconds
-      cpu time            19.85 seconds
+      real time           14.91 seconds
+      cpu time            16.67 seconds
       
 
 193        
@@ -273,1596 +273,261 @@ NOTE: PROCEDURE SQL used (Total process time):
 219        /*
 220        Only use ICD-9 codes from previous 12 months for Charlson
 221         */
-222        proc sql;
-223          create table UCB.tempPrevDx12mPrior as
-224            select *
-225            from UCB.tempPrevDxAll
-226            where intnx("year", indexDate, -1, "same") < begin_date <= indexDate
-227            order by indexID, indexDate;
-NOTE: Data set UCB.TEMPPREVDXALL is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
+222        /*
+223        Last execution: 1/2/2018 (commit 56f369)
+224        DO NOT EXECUTE AGAIN
+225        Due to server upgrade (32-bit to 64-bit SAS), subsequent execution results in error:
+226        "ERROR: Foreign datasets cannot be modified."
+227         */
+228        /*
+229        proc sql;
+230          create table UCB.tempPrevDx12mPrior as
+231            select *
+232            from UCB.tempPrevDxAll
+233            where intnx("year", indexDate, -1, "same") < begin_date <= indexDate
+234            order by indexID, indexDate;
+235          create table UCB.tempPrevPx12mPrior as
+236            select *
+237            from UCB.tempPrevPxAll
+238            where intnx("year", indexDate, -1, "same") < px_date <= indexDate
+239            order by indexID, indexDate;
+240          create table UCB.tempPrevRx12mPrior as
+241            select A.*, B.etc_name, B.source
+242            from UCB.tempPrevRxAll A left join
+4                                                                   The SAS System                                         15:39 Friday, April 6, 2018
+
+243                 DT.lookupNDC B on (A.ndc = B.ndc)
+244            where intnx("year", indexDate, -1, "same") < dispense_date <= indexDate
+245            order by indexID, indexDate;
+246        quit;
+247        
+248        %include "lib\charlson.sas" / source2;
+249        %include "lib\indicationDx.sas" / source2;
+250        %include "lib\indicationPx.sas" / source2;
+251        %include "lib\indicationRx.sas" / source2;
+252        %include "lib\NumCnt.sas" / source2;
+253        %include "lib\ciras.sas" / source2;
+254        
+255        %let CovariateListDx= hepatitisC fluVaccineDx JointSurgDx ulcer obese smoke
+256                              lipidDx uveitis growthFail mammoDx PSAdx PapDx endoDx Sjogrens MI heartFailure stroke TIA EAM
+257                              fistula_abscessDx hemaCa solidCa
+258                              Hypertension angina fracture osteo icd7100; *covariate in 3rd line are from malignancy WG;
+259        %indicationDx(indexID, indexDate);
+260        
+261        %let CovariateListPx = InflamMarker RehabVisit RF platelet LFT FluVaccine jointSurg lipidPx Coronary_Revas
+262                               intraArticularInj MammoPx PSApx PAPpx endoPx FOBT J3490
+263                               fistula_abscessPx ercpPx barium_ugiPx barium_colonPx;
+264        %indicationPx(indexID, indexDate);
+265        
+266        %let CovariateListRx= chemo lipid dm folate fungus HTN naproxen narcotics nsaid sedative steroid tb thyroid viral
+267                             dementia statin NSAIDcox BBlocker op_PPI op_bisphosp op_other
+268                             thiazide thiazolidinedione anticoagulant
+269                   antithrom antibiotics antipsych antidepres anticonvul calcium Adrenergic;
+270        %indicationRx(indexID, indexDate);
+271        proc means data = Work.indRx;
+272          var &CovariateListRx;
+273        run;
+274        
+275        %charlson(inputds = ,
+276                  idVar = indexID,
+277                  IndexDateVarName = indexDate,
+278                  outputds = CCI,
+279                  IndexVarName = Charlson,
+280                  inpatonly = B,
+281                  malig = N);
+282        
+283        %ciras(DT.indexLookup, indexID, indexDate);
+284        
+285        
+286        proc sql;
+287          create table DT.charlsonIndex as select * from Work._WithCharlson;
+288          create table DT.CIRAS as select * from Work.CIRAS;
+289          create table DT.indRx as select * from Work.indRx;
+290        quit;
+291        proc contents data = DT.charlsonIndex order = varnum;
+292        run;
+293        proc contents data = DT.CIRAS order = varnum;
+294        run;
+295        proc contents data = DT.indRx order = varnum;
+296        run;
+297         */
+298        /*
+299        END Fenglong's comorbidities code
+300         */
+301        
+302        
+303        
+304        
+305        proc sql;
+306        /*
+307        Oral corticosteroid use
+308        Mean outpatient prescribed daily dose of prednisone equivalents in the 6
+309        months prior to index date: less than 5 mg/d (low dose), 5 to less than 10
+310        mg/d (medium dose), and 10 mg/d or more (high dose)
+311         */
+312          create table DT.rxOralCorticosteroid as
+313            select C.database, C.patid, C.indexID,
+314                   1 as indOralCorticosteroid,
+5                                                                   The SAS System                                         15:39 Friday, April 6, 2018
+
+315                   sum(C.daysAtRisk * C.prednisodeEquivalentDose) as sumPredEq,
+316                   sum(C.daysAtRisk) as sumDaysSupply,
+317                   sum(C.daysAtRisk * C.prednisodeEquivalentDose) / 183 as meanPredEqDose,
+318                   case
+319                     when 0 <= sum(C.daysAtRisk * C.prednisodeEquivalentDose) / 183 < 2.5 then "Low (<2.5 mg/d)"
+320                     when 2.5 <= sum(C.daysAtRisk * C.prednisodeEquivalentDose) / 183 < 5 then "Medium-Low (2.5-5 mg/d)"
+321                     when 5 <= sum(C.daysAtRisk * C.prednisodeEquivalentDose) / 183 < 10 then "Medium-High (5-10 mg/d)"
+322                     when 10 <= sum(C.daysAtRisk * C.prednisodeEquivalentDose) / 183 then "High (10+ mg/d)"
+323                     else ""
+324                     end as meanPredEqDoseCat
+325            from (select A.database, A.patid, A.indexID,
+326                         A.indexDate - 183 format = mmddyy10. as riskStart,
+327                         A.indexDate,
+328                         A.dispense_date,
+329                         A.dispense_date + A.dispense_sup - 1 format = mmddyy10. as dispense_end,
+330                         A.dispense_sup,
+331                         case
+332                           /* Rx completely in at-risk period */
+333                           when (A.indexDate - 183 <= A.dispense_date) & ((A.dispense_date + A.dispense_sup - 1) <= A.indexDate)
+334                             then A.dispense_sup
+335                           /* Rx begins before at-risk period */
+336                           when (A.dispense_date < A.indexDate - 183)
+337                             then A.dispense_sup - (A.indexDate - 183 - A.dispense_date)
+338                           /* Rx ends after at-risk period */
+339                           when (A.indexDate < (A.dispense_date + A.dispense_sup - 1))
+340                             then A.dispense_sup - (A.dispense_date + A.dispense_sup - 1 - A.indexDate)
+341                           else .
+342                           end as daysAtRisk,
+343                         B.prednisodeEquivalentDose
+344                  from UCB.tempPrevRxAll A inner join
+345                       DT.lookupNDC B on (A.ndc = B.ndc)
+346                  where ^missing(B.prednisodeEquivalentDose) &
+347                        ((A.indexDate - 183 <= A.dispense_date <= A.indexDate) |
+348                          (A.indexDate - 183 <= (A.dispense_date + A.dispense_sup - 1) <= A.indexDate))) C
+349            group by C.database, C.patid, C.indexID;
+NOTE: Data set UCB.TEMPPREVRXALL is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
       additional CPU resources and may reduce performance.
-ERROR: Foreign datasets cannot be modified.
+The SAS supervisor will process queries for foreign datasets. No parallel where-clause processing will occur.
+NOTE: Table DT.RXORALCORTICOSTEROID created, with 18717 rows and 8 columns.
 
-NOTE: PROC SQL set option NOEXEC and will continue to check the syntax of statements.
-228          create table UCB.tempPrevPx12mPrior as
-229            select *
-230            from UCB.tempPrevPxAll
-231            where intnx("year", indexDate, -1, "same") < px_date <= indexDate
-232            order by indexID, indexDate;
-NOTE: Statement not executed due to NOEXEC option.
-233          create table UCB.tempPrevRx12mPrior as
-234            select A.*, B.etc_name, B.source
-235            from UCB.tempPrevRxAll A left join
-236                 DT.lookupNDC B on (A.ndc = B.ndc)
-4                                                                   The SAS System                                       14:01 Thursday, April 5, 2018
-
-237            where intnx("year", indexDate, -1, "same") < dispense_date <= indexDate
-238            order by indexID, indexDate;
-NOTE: Statement not executed due to NOEXEC option.
-239        quit;
-NOTE: The SAS System stopped processing this step because of errors.
-NOTE: SAS set option OBS=0 and will continue to check statements. This might cause NOTE: No observations in data set.
-NOTE: PROCEDURE SQL used (Total process time):
-      real time           0.03 seconds
-      cpu time            0.01 seconds
-      
-240        
-241        %include "lib\charlson.sas" / source2;
-NOTE: %INCLUDE (level 1) file lib\charlson.sas is file U:\studies\AS\pgms\bchan\lib\charlson.sas.
-242       +/*
-243       +From: Xie, Fenglong [mailto:fenglongxie@uabmc.edu]
-244       +Sent: Wednesday, November 29, 2017 1:32 PM
-245       +To: Benjamin Chan <chanb@ohsu.edu>
-246       +Subject: Attachment from my EndNote Library
-247       +
-248       +Hi, Ben
-249       +
-250       +Here are variable list included in our infection risk score model.
-251       +
-252       +Hinfect agec preddose cpd Invisit heartFailure diabs antidepres nsaid HTN narcotics fracture lipid malign dem outInfect
-253       +ulcer fungus sex op_bisphosp BENE_ENTLMT_RSN_ORIG thiazide Hypertension psa inflamMarker anticoagulant mammo;
-254       +
-255       +please refer to table 2 in the attached reference for full name of these variables and the attached text file for definition of these
-255      !+variables.
-256       +
-257       +Definition for some variables (such as ICD 9 codes for infection) may changed, please use most recent ICD 9 list.
-258       +
-259       +Please let me know if you have any question.
-260       +
-261       +
-262       +Fenglong
-263       + */
-264       +
-265       +
-266       +%macro charlson(inputds=,idVar=, IndexDateVarName=, outputds=,IndexVarName=, inpatonly=, malig=);/*Dr. Curtis ask to change from I to B*/
-267       +
-268       +**********************************************/
-269       +/*Define and format diagnosis codes           */
-270       +/**********************************************/;
-271       +
-272       +PROC FORMAT;
-273       +   VALUE $ICD9CF(multilabel)
-274       +/* Myocardial infarction */
-275       +	"410"-"41099",
-276       +	"412"-"42199" = "MI"
-277       +/* Coronary heart disease *//*changed according to Dr. Curtis"*/
-278       +    "410"-"41099",/*changed according to Dr. Curtis"*/
-279       +	"411"-"41499",        /*changed according to Dr. Curtis"*/
-280       +	"4292"-"42929"= "CHD"
-281       +/* Peripheral vascular disorder */
-282       +	"44020"-"44024",
-283       +	"44031"-"44032",
-284       +	"4408"-"44089",
-285       +	"4409"-"44099",
-286       +	"4439"-"44399",
-287       +	"441"-"44199",
-288       +	"7854"-"78549",
-289       +    "V434"-"V4349",
-290       +  "V434"-"V4349"= "PVD"
-291       +/* Cerebrovascular disease */
-292       +    "430"-"43899" = "CVD"
-293       +/* Dementia */
-294       +	"290"-"29099" = "DEM"
-295       +/* Chronic pulmonary disease */
-296       +	"490"-"49699",
-297       +	"500"-"50599",
-298       +	"5064"-"50649" =  "CPD"
-299       +/* Rheumatologic disease */
-5                                                                   The SAS System                                       14:01 Thursday, April 5, 2018
-
-300       +	"7100"-"71009",
-301       +    "7101"-"71019",
-302       + 	"7104"-"71049",
-303       +   /* "714.0 "-"714.2 ",
-304       +    "714.81", exclude RA*/
-305       +    "725"-"72599" = "RHD"
-306       +/* Peptic ulcer disease */
-307       +	"531"-"53499" = "PUD"
-308       +/* Mild liver disease */
-309       +	"5712"-"57129",
-310       +	"5715"-"57159",
-311       +	"5716"-"57169",
-312       +	"5714"-"57149" = "MLIVD"
-313       +/* Diabetes */
-314       +	"250"-"25039",
-315       +	"2507"-"25079" = "DIAB"
-316       +/* Diabetes with chronic complications */
-317       +	"2504"-"25069" = "DIABC"
-318       +/* Hemiplegia or paraplegia */
-319       +	"3441"-"34419",
-320       +	"342"-"34299" = "PLEGIA"
-321       +/* Renal Disease */
-322       +	"582"-"58299",
-323       +	"583"-"58379",
-324       +	"585"-"58599",
-325       +	"586"-"58699",
-326       +	"588"-"58899" = "REN"
-327       +/*Malignancy, including leukemia and lymphoma */
-328       +	"140"-"17299",
-329       +	"174"-"19589",
-330       +	"200"-"20899" = "MALIGN"
-331       +/* Moderate or severe liver disease */
-332       +	"5722"-"57289",
-333       +	"4560"-"45621" = "SLIVD"
-334       +/* Metastatic solid tumor */
-335       +	"196"-"19919" = "MST"
-336       +/* AIDS */
-337       +	"042"-"04499" = "AIDS"
-338       +/* Other */
-339       +   other   = "other"
-340       +;
-341       +run;
-342       +
-343       +* For debugging. ;
-344       +%let sqlopts = feedback sortmsg stimer ;
-345       +%*let sqlopts = ;
-346       +
-347       +**********************************************************************************************;
-348       +*subset to the utilization data of interest (add the people with no visits back at the end   *;
-349       +**********************************************************************************************;
-350       +
-351       +**********************************************;
-352       +* implement the Inpatient and Outpatient Flags;
-353       +********************************************** ;
-354       +%if &inpatonly =I %then %let inpatout=('IP');
-355       +%else %if &inpatonly =B %then %let inpatout=('IP','IF','AV');
-356       +%else %Put ERROR in Inpatonly flag.  Valid values are I for Inpatient and B for both Inpatient and Outpatient;
-357       +
-358       +proc sql;
-359       +  create table  _DxSubset as
-360       +  select *, put(dx, $icd9cf.) as CodedDx
-361       +  from UCB.tempPrevDx12mPrior
-362       +  where  enc_type in &inpatout.
-363       +  ;
-364       +
-365       +   create table _PxSubset as
-366       +  select*
-367       +  from UCB.tempPrevPx12mPrior
-368       +  /* where enc_type in &inpatout. */
-369       +  ;
-370       +
-371       +quit ;
-6                                                                   The SAS System                                       14:01 Thursday, April 5, 2018
-
-372       +
-373       +proc sort data = _DxSubset ;
-374       +   by &idVar &indexdateVarName;
-375       +run ;
-376       +
-377       +proc sort data = _PxSubset ;
-378       +   by &idVar &indexdateVarName;
-379       +run ;
-380       +
-381       +/**********************************************/
-382       +/*** Assing DX based flagsts                ***/
-383       +/***                                        ***/
-384       +/***                                        ***/
-385       +/**********************************************/
-386       +
-387       +%let var_list = MI CHD PVD CVD DEM CPD RHD PUD MLIVD DIAB DIABC PLEGIA REN MALIGN SLIVD MST AIDS ;
-388       +
-389       +data _DxAssign ;
-390       +array COMORB (*) &var_list ;
-391       +
-392       +length           &var_list 3 ; *<-- This is host-specific--are we sure we want to do this? ;
-393       +
-394       +retain           &var_list ;
-395       +keep   &idVar &indexdateVarName &var_list ;
-396       +set _DxSubset;
-397       +  format prov_type;
-398       +by &idVar &indexdateVarName;
-399       +if first.&indexdateVarName then do;
-400       +   do I=1 to dim(COMORB);
-401       +      COMORB(I) = 0 ;
-402       +   end;
-403       +end;
-404       +select (CodedDx);
-405       +   when ('MI')    MI     = 1;
-406       +   when ('CHD')   CHD    = 1;
-407       +   when ('PVD')   PVD    = 1;
-408       +   when ('CVD')   CVD    = 1;
-409       +   when ('DEM')   DEM    = 1;
-410       +   when ('CPD')   CPD    = 1;
-411       +   when ('RHD')   RHD    = 1;
-412       +   when ('PUD')   PUD    = 1;
-413       +   when ('MLIVD') MLIVD  = 1;
-414       +   when ('DIAB')  DIAB   = 1;
-415       +   when ('DIABC') DIABC  = 1;
-416       +   when ('PLEGIA')PLEGIA = 1;
-417       +   when ('REN')   REN    = 1;
-418       +   when ('MALIGN')MALIGN = 1;
-419       +   when ('SLIVD') SLIVD  = 1;
-420       +   when ('MST')   MST    = 1;
-421       +   when ('AIDS')  AIDS   = 1;
-422       +   otherwise ;
-423       +end;
-424       +if last.&indexdateVarName then output;
-425       +run;
-426       +
-427       +/** Procedures: Peripheral vascular disorder **/
-428       +data _PxAssign;
-429       +   set _PxSubset;
-430       +   by &idVar &indexdateVarName;
-431       +   keep &idVar &indexdateVarName PVD;
-432       +   if first.&indexdateVarName then PVD = 0;
-433       +   if    (codeType = "ICD9-PX" & PX= "3848") or
-434       +         (codeType = "CPT" & PX ="93668") or
-435       +         (codeType = "CPT" &
-436       +                   PX in ("34201","34203","35454","35456","35459","35470") or
-437       +                          "35355" <= PX <= "35381") or
-438       +         (codeType = "CPT" &
-439       +                   PX in ("35473","35474","35482","35483","35485","35492","35493",
-440       +                          "35495","75962","75992")) or
-441       +         (codeType = "CPT" &
-442       +                  PX in ("35521","35533","35541","35546","35548","35549","35551",
-443       +                         "35556","35558","35563","35565","35566","35571","35582","35583",
-7                                                                   The SAS System                                       14:01 Thursday, April 5, 2018
-
-444       +                         "35584","35585","35586","35587","35621","35623","35641","35646",
-445       +                         "35647","35651","35654","35656","35661","35663","35665","35666","35671"))
-446       +         then PVD=1;
-447       +   if last.&indexdateVarName then output;
-448       +run;
-449       +
-450       +/** Connect DXs and PROCs together  **/
-451       +proc sql &sqlopts ;
-452       +  create table _DxPxAssign as
-453       +   select  coalesce(D.&idVar, P.&idVar) as &idVar
-454       +         , coalesce(D.&indexdateVarName, P.&indexdateVarName) as &indexdateVarName		
-455       +         , D.MI
-456       +         , D.CHD
-457       +         , max(D.PVD, P.PVD) as PVD
-458       +         , D.CVD
-459       +         , D.DEM
-460       +         , D.CPD
-461       +         , D.RHD
-462       +         , D.PUD
-463       +         , D.MLIVD
-464       +         , D.DIAB
-465       +         , D.DIABC
-466       +         , D.PLEGIA
-467       +         , D.REN
-468       +         , D.MALIGN
-469       +         , D.SLIVD
-470       +         , D.MST
-471       +         , D.AIDS
-472       +   from  _DXASSIGN as D full outer join
-473       +         _PXASSIGN P
-474       +   on    D.&idVar = P.&idVar and
-475       +         D.&indexdateVarName=P.&indexdateVarName
-476       +   ;
-477       +quit ;
-478       +
-479       +*****************************************************;
-480       +* Assign the weights and compute the index
-481       +*****************************************************;
-482       +
-483       +Data _WithCharlson;
-484       +  set _DxPxAssign;
-485       +  M1=1;M2=1;M3=1;
-486       +
-487       +* implement the MALIG flag;
-488       +   %if &malig =N %then %do; O1=1;O2=1; %end;
-489       +   %else %if &malig =Y %then  %do; O1=0; O2=0; %end;
-490       +   %else %Put ERROR in MALIG flag.  Valid values are Y (Cancer study. Zero weight the cancer vars)  and N (treat cancer normally);
-491       +
-492       +  if SLIVD=1 then M1=0;
-493       +  if DIABC=1 then M2=0;
-494       +  if MST=1 then M3=0;
-495       +
-496       +&IndexVarName =   MI + CHD + PVD + CVD + DEM + CPD + RHD +
-497       +                  PUD + M1*MLIVD + M2*DIAB + 2*DIABC + 2*PLEGIA + 2*REN +
-498       +                  O1*2*M3*MALIGN + 3*SLIVD + O2*6*MST + 6*AIDS;
-499       +
-500       +Label
-501       +MI= "Myocardial Infarction: "
-502       +CHD="Coronary heart disease:" /* "Congestive heart disease: " relabeled */
-503       +PVD= "Peripheral vascular disorder: "
-504       +CVD= "Cerebrovascular disease: "
-505       +DEM= "Dementia: "
-506       +CPD= "Chronic pulmonary disease: "
-507       +RHD= "Rheumatologic disease: "
-508       +PUD= "Peptic ulcer disease: "
-509       +MLIVD= "Mild liver disease: "
-510       +DIAB= "Diabetes: "
-511       +DIABC= "Diabetes with chronic complications: "
-512       +PLEGIA= "Hemiplegia or paraplegia: "
-513       +REN= "Renal Disease: "
-514       +MALIGN= "Malignancy, including leukemia and lymphoma: "
-515       +SLIVD= "Moderate or severe liver disease: "
-8                                                                   The SAS System                                       14:01 Thursday, April 5, 2018
-
-516       +MST= "Metastatic solid tumor: "
-517       +AIDS= "AIDS: "
-518       +&IndexVarName= "Charlson score: "
-519       +;
-520       +
-521       +keep &idVar &indexdateVarName &var_list &IndexVarName ;
-522       +
-523       +run;
-524       +
-525       +/* add the people with no visits back in, and create the final dataset */
-526       +/* people with no visits or no comorbidity DXs have all vars set to zero */
-527       +
-528       +proc sql &sqlopts ;
-529       +  create table &outputds as
-530       +  select distinct w.&idVar
-531       +      , w.&IndexDateVarName
-532       +      , coalesce(w.MI           , 0) as  MI            label = "Myocardial Infarction: "
-533       +      , coalesce(w.CHD          , 0) as  CHD           label = "Congestive heart disease: "
-534       +      , coalesce(w.PVD          , 0) as  PVD           label = "Peripheral vascular disorder: "
-535       +      , coalesce(w.CVD          , 0) as  CVD           label = "Cerebrovascular disease: "
-536       +      , coalesce(w.DEM          , 0) as  DEM           label = "Dementia: "
-537       +      , coalesce(w.CPD          , 0) as  CPD           label = "Chronic pulmonary disease: "
-538       +      , coalesce(w.RHD          , 0) as  RHD           label = "Rheumatologic disease: "
-539       +      , coalesce(w.PUD          , 0) as  PUD           label = "Peptic ulcer disease: "
-540       +      , coalesce(w.MLIVD        , 0) as  MLIVD         label = "Mild liver disease: "
-541       +      , coalesce(w.DIAB         , 0) as  DIAB          label = "Diabetes: "
-542       +      , coalesce(w.DIABC        , 0) as  DIABC         label = "Diabetes with chronic complications: "
-543       +      , coalesce(w.PLEGIA       , 0) as  PLEGIA        label = "Hemiplegia or paraplegia: "
-544       +      , coalesce(w.REN          , 0) as  REN           label = "Renal Disease: "
-545       +      , coalesce(w.MALIGN       , 0) as  MALIGN        label = "Malignancy, including leukemia and lymphoma: "
-546       +      , coalesce(w.SLIVD        , 0) as  SLIVD         label = "Moderate or severe liver disease: "
-547       +      , coalesce(w.MST          , 0) as  MST           label = "Metastatic solid tumor: "
-548       +      , coalesce(w.AIDS         , 0) as  AIDS          label = "AIDS: "
-549       +      , coalesce(w.&IndexVarName, 0) as  &IndexVarName label = "Charlson score: "
-550       +      , (w.&idVar is null)              as  NoVisitFlag   label = "No visits for this person"
-551       +  from  _WithCharlson as w
-552       +  ;
-553       +
-554       +/* clean up work sas datasets */
-555       +/*proc datasets nolist ;
-556       + delete _DxSubset
-557       +        _PxSubset
-558       +        _DxAssign
-559       +        _PxAssign
-560       +        _DxPxAssign
-561       +        _NoVisit
-562       + 		_WithCharlson
-563       +        ;*/
-564       +%mend charlson;
-NOTE: %INCLUDE (level 1) ending.
-565        %include "lib\indicationDx.sas" / source2;
-NOTE: %INCLUDE (level 1) file lib\indicationDx.sas is file U:\studies\AS\pgms\bchan\lib\indicationDx.sas.
-566       +/*
-567       +From: Xie, Fenglong [mailto:fenglongxie@uabmc.edu]
-568       +Sent: Wednesday, November 29, 2017 1:32 PM
-569       +To: Benjamin Chan <chanb@ohsu.edu>
-570       +Subject: Attachment from my EndNote Library
-571       +
-572       +Hi, Ben
-573       +
-574       +Here are variable list included in our infection risk score model.
-575       +
-576       +Hinfect agec preddose cpd Invisit heartFailure diabs antidepres nsaid HTN narcotics fracture lipid malign dem outInfect
-577       +ulcer fungus sex op_bisphosp BENE_ENTLMT_RSN_ORIG thiazide Hypertension psa inflamMarker anticoagulant mammo;
-578       +
-579       +please refer to table 2 in the attached reference for full name of these variables and the attached text file for definition of these
-579      !+variables.
-580       +
-581       +Definition for some variables (such as ICD 9 codes for infection) may changed, please use most recent ICD 9 list.
-582       +
-583       +Please let me know if you have any question.
-584       +
-9                                                                   The SAS System                                       14:01 Thursday, April 5, 2018
-
-585       +
-586       +Fenglong
-587       + */
-588       +
-589       +
-590       +%macro indicationDx(idVar,IndexDateVarName);
-591       +data indDx(drop=i dx enc_type admit_date discharge_date pdx age);  *one record per MRN,index_generic,index_dt;
-592       +  length &CovariateListDx 3;
-593       + set UCB.tempPrevDx12mPrior(keep=&idVar &IndexDateVarName dx enc_type admit_date discharge_date pdx age where=(enc_type in
-593      !+('IP','IF','AV')));
-594       +by &idVar &IndexDateVarName;
-595       +  retain &CovariateListDx;
-596       +  array vars (*) &CovariateListDx;
-597       +     if first.&IndexDateVarName then do;
-598       +     do i=1 to dim(vars);
-599       +	      vars(i)=0;
-600       +     end;
-601       +  end;
-602       +  * age=int((adate-birth_date)/365.25);
-603       +  if        dx      in :('07041','07044','07051','07054','V0262') then hepatitisC  =1;
-604       +  if        dx      in :('V0481','V066','V0382')                    then fluVaccineDx=1;
-605       +  if substr(dx,1,5) in ('7184','7185','7249','7385')              then JointSurgDx =1;
-606       +  if        dx      in :('7070')                                      then ulcer       =1;
-607       +  if substr(dx,1,5) in ('3640')                                      then uveitis     =1;
-608       +  if        dx      in :('78343')                                     then growthFail  =1;
-609       +  if        dx      in :('V761','V7610','V7611','V7612') and age>=40 then mammoDx     =1;
-610       +  if        dx      in :('V7644') and age>=50                         then PSAdx       =1;
-611       +  if        dx      in :('V723','V7230','V7231','V7232','V762','V7620') & age>=50 then PapDx=1;
-612       +  if        dx      in :('V7641','V7651')                            then EndoDx      =1;
-613       +  if        dx      in :('V852')                                      then obese   =1; *Body Mass Index between 25-29, adult;
-614       +  if        dx      in :('27802')                                     then obese   =2; *overweight;
-615       +  if        dx      in :('27800','27801')                            then obese   =3; *obesity;
-616       +  if        dx      in :('79391','V853','V854')                     then obese   =4; *BMI>=30;
-617       +  if        dx      in :('30513','V1582')                            then smoke   =1; *ex;      else
-618       +  if        dx      =:'3051'                                          then smoke   =2; *current;
-619       +  if        dx      in :('V810' )                                     then lipidDx =1; /*, 'V81.1', 'V82.2' dr. Curtis ask to remove*/
-620       +  if        dx      in :('7102')                                      then Sjogrens=1;
-621       +  if dx in :('41001','41011','41021','41031','41041','41051','41061',
-622       +            '41071','41081','41091') & 3<=(discharge_date - admit_date)<=180       then mi=1;
-623       +  if dx=:'428' /*and pdx='P' */                                           then heartFailure=1;
-624       +  if dx in :('7102', '7141'/*,'782.2',*/ ,'71481','7142' /*,'793.1', '518.89'*/) then EAM=1; /* Extra-articular manifestations */
-625       +  if dx=:'4359' then TIA=1;
-626       +  if substr(dx,1,3) in ('436', '435') or
-627       +     substr(dx,1,5) in ('4371', '4379') or
-628       +    (substr(dx,1,3) in ('433', '434') and substr(dx,6,1)='1')        then Stroke =1;
-629       +  if substr(dx,1,3) in ('401', '402', '403', '404', '405') then Hypertension=1;
-630       +  if substr(dx,1,3)='411' then Angina=1;
-631       +
-632       +  if '200'<=dx<='20892'                                             then hemaCA =1;
-633       +  if '140'<=dx<='19919'                                              then solidCA=1;
-634       +
-635       +  if dx in :('5374','5651','566','5672','5672','56721','56722','56723','56729',
-636       +          '5695','5696','56969','56981','5961','6191','566') then fistula_abscessDx=1;
-637       +
-638       +  if '800'<=dx<='82999' or dx=:'7331' then fracture=1;
-639       +  if dx=:'7330' then osteo=1;
-640       +
-641       +  if last.&IndexDateVarName ;
-642       +label hepatitisC='hepatitisC DX'
-643       +      fluVaccineDx='fluVaccine DX'
-644       +      JointSurgDx='Joint Surgery DX'
-645       +      ulcer='Ulcer DX'
-646       +      uveitis='Uveitis DX'
-647       +      growthFail='Growth Fail DX'
-648       +      mammoDx='Breast Cancer Screening DX'
-649       +      PSAdx='Prostate cancer Screen DX'
-650       +      PapDx='Gynecological examination';
-651       +
-652       +run;
-653       +
-654       +%mend indicationDx;
-NOTE: %INCLUDE (level 1) ending.
-10                                                                  The SAS System                                       14:01 Thursday, April 5, 2018
-
-655        %include "lib\indicationPx.sas" / source2;
-NOTE: %INCLUDE (level 1) file lib\indicationPx.sas is file U:\studies\AS\pgms\bchan\lib\indicationPx.sas.
-656       +/*
-657       +From: Xie, Fenglong [mailto:fenglongxie@uabmc.edu]
-658       +Sent: Wednesday, November 29, 2017 1:32 PM
-659       +To: Benjamin Chan <chanb@ohsu.edu>
-660       +Subject: Attachment from my EndNote Library
-661       +
-662       +Hi, Ben
-663       +
-664       +Here are variable list included in our infection risk score model.
-665       +
-666       +Hinfect agec preddose cpd Invisit heartFailure diabs antidepres nsaid HTN narcotics fracture lipid malign dem outInfect
-667       +ulcer fungus sex op_bisphosp BENE_ENTLMT_RSN_ORIG thiazide Hypertension psa inflamMarker anticoagulant mammo;
-668       +
-669       +please refer to table 2 in the attached reference for full name of these variables and the attached text file for definition of these
-669      !+variables.
-670       +
-671       +Definition for some variables (such as ICD 9 codes for infection) may changed, please use most recent ICD 9 list.
-672       +
-673       +Please let me know if you have any question.
-674       +
-675       +
-676       +Fenglong
-677       + */
-678       +
-679       +
-680       +%macro indicationPx(idVar,IndexDateVarName);
-681       +data indPx(drop=admit_date px_date px age i);
-682       +  length &CovariateListPx 3;
-683       +set UCB.tempPrevPx12mPrior(keep=&idVar &IndexDateVarName admit_date px_date codeType px age);
-684       +by &idVar &IndexDateVarName ;
-685       +  * age=int((adate-birth_date)/365.25);
-686       +  retain &CovariateListPx;
-687       +  array vars (*) &CovariateListPx ;
-688       +  do i=1 to dim(vars);
-689       +     if first.&IndexDateVarName then vars(i)=0;
-690       +  end;
-691       +
-692       +  *lab data for claim-based RA severity score (CIRAS);
-693       +  if codeType = "HCPCS" &
-694       +     px in ('J3490','J3590', 'J7799', 'C9399','Q4082') then J3490=1;
-695       +  if codeType = "CPT" &
-696       +     px in ('85652','86141')                                                        then inflamMarker=1;
-697       +  if codeType in ("CPT", "HCPCS") &
-698       +     px in ('11040','29405','92598','97020','97504','11041','29445','95831','97022','97520','11042','29505',
-699       +            '95832','97024','97530','11043','29515','95833','97026','97535','11044','29520','95834','97028',
-700       +            '97537','29065','29530','95851','97032','97542','29075','29540','95852','97033','97545','29085',
-701       +            '29550','96105','97034','97546','29105','29580','96110','97035','97703','29125','29590','96111',
-702       +            '97036','97750','29126','64550','96115','97039','97770','29130','90901','97001','97110','97799',
-703       +            '29131','90911','97002','97112','V5362','29200','92506','97003','97113','V5363','29220','92507',
-704       +            '97004','97116','V5364','29240','92508','97010','97124','29260','92510','97012','97139','29280',
-705       +            '92525','97014','97140','29345','92526','97016','97150','29365','92597','97018','97250')
-706       +			                                                                        then RehabVisit=1;
-707       +   if codeType = "CPT" &
-708       +      px in ('86430','86431','86200','80072')                                       then RF=1;
-709       +   if codeType = "CPT" &
-710       +      px in ('85025','85032','85049','85590','85595')                               then platelet+1;
-711       +   if codeType = "CPT" &
-712       +      px in ('80047','80049','80058','80051','80054')                               then lft+1;
-713       +   if codeType in ("CPT", "HCPCS") &
-714       +      px in (/* '99.52', */'90659','90660','90656','90658','G0008','4037F','90732','G0009','4040F',
-715       +             'V0481','G8108') or '90655'<=px<='90663'                              then FluVaccine=1; *2nd line by JimL;
-716       +   if codeType = "ICD9-PX" &
-717       +      px in ('9952'/* ,'90659','90660','90656','90658','G0008','4037F','90732','G0009','4040F',
-718       +             'V0481','G8108' */) /* or '90655'<=px<='90663' */                     then FluVaccine=1; *2nd line by JimL;
-719       +   if (codeType = "ICD9-PX" & ('800'<=px<='8049' or
-720       +            '806'<=px<='8099' or
-721       +            '811'<=px<='8129' or
-722       +          '814'<=px<='8159' or
-723       +          '817'<=px<='8199')) or
-724       +   (codeType = "CPT" &
-11                                                                  The SAS System                                       14:01 Thursday, April 5, 2018
-
-725       +    px in :("22532","22808","23802","25443","26357","26842","27440","28086","28730","29838",
-726       +    "22533","22810","23929","25444","26358","26843","27441","28088","28735","29840",
-727       +    "22534","22812","24102","25445","26370","26844","27442","28260","28737","29844",
-728       +    "22548","22818","24360","25446","26372","26850","27443","28261","28740","29845",
-729       +    "22554","22819","24361","25447","26373","26852","27445","28262","28750","29848",
-730       +    "22556","22840","24362","25800","26418","26860","27446","28264","28755","29860",
-731       +    "22558","22841","24363","25805","26420","26861","27447","28270","28760","29861",
-732       +    "22585","22842","24365","25810","26426","26862","27580","28272","28899","29863",
-733       +    "22590","22843","24366","25820","26428","26863","27599","28290","29805","29870",
-734       +    "22595","22844","24800","25825","26432","26989","27625","28292","29806","29873",
-735       +    "22600","22845","24802","25830","26433","27054","27626","28293","29820","29875",
-736       +    "22610","22846","24999","25999","26434","27130","27700","28294","29821","29876",
-737       +    "22612","22847","25105","26130","26437","27284","27702","28296","29822","29884",
-738       +    "22614","22851","25118","26135","26530","27286","27703","28297","29823","29895",
-739       +    "22630","22899","25119","26140","26531","27299","27870","28298","29827","29897",
-740       +    "22632","23105","25332","26145","26535","27334","27871","28299","29830","29898",
-741       +    "22800","23470","25337","26350","26536","27335","27899","28705","29835","29899",
-742       +    "22802","23472","25441","26352","26820","27437","28070","28715","29836","29900",
-743       +    "22804","23800","25442","26356","26841","27438","28072","28725","29837","29901" ))
-744       +                                                                                    then JointSurg=1;
-745       +
-746       +   if codeType = "CPT" &
-747       +      px in ('80061', '82465', '83700', '83701', '83704', '83718', '83719', '83721', '84478') then lipidPx=1;
-748       +   if codeType = "ICD9-PX" &
-749       +      px in ('8192')                                                               then intraArticularInj=1;
-750       +   if codeType in ("CPT", "HCPCS") &
-751       +      px in (/* '87.36','87.37', */'76083','76092','77052','77057','G8111','G0202') and age>=40 then mammoPx=1;
-752       +   if codeType = "ICD9-PX" &
-753       +      px in ('8736','8737'/* ,'76083','76092','77052','77057','G8111','G0202' */) and age>=40 then mammoPx=1;
-754       +   if codeType in ("CPT", "HCPCS") &
-755       +      px in ('84152','84153','84154','G0103') and age>=50                          then PSApx=1;
-756       +   if codeType in ("CPT", "HCPCS") &
-757       +      px in (/* '91.46', */'88156','P3000','P3001','Q0091', 'G0101','G0123','G0124','G0141',
-758       +             'G0143','G0144','G0145','G0147', 'G0148') or '88141'<=px<='88154'      then PAPpx=1;
-759       +   if codeType = "ICD9-PX" &
-760       +      px in ('9146'/* ,'88156','P3000','P3001','Q0091', 'G0101','G0123','G0124','G0141',
-761       +             'G0143','G0144','G0145','G0147', 'G0148' */) /* or '88141'<=px<='88154' */      then PAPpx=1;
-762       +   if codeType in ("CPT", "HCPCS") &
-763       +      px in (/* '45.24','45.23','45.25', */'45330','45331','45333','45338','45378','45380',
-764       +             '45384','45385','G0104','G0105','G0121')                               then endopx=1;
-765       +   if codeType = "ICD9-PX" &
-766       +      px in ('4524','4523','4525'/* ,'45330','45331','45333','45338','45378','45380',
-767       +             '45384','45385','G0104','G0105','G0121' */)                               then endopx=1;
-768       +   if codeType in ("CPT", "HCPCS") &
-769       +      px in ('82270','82271','82272','82273','82274','G0107','G0328') & age>=50     then FOBT=1;
-770       +
-771       +   if platelet>=4 then platelet=4; *CIRAS definition;
-772       +   if lft>=5 then lft=5;           *CIRAS definition;
-773       +
-774       +   *2009-09-21 malignancy WG-specific covariates;
-775       +if codeType = "CPT" &
-776       +   px in (/* '42.84','46.72','46.74','46.76','48.73','48.81','48.93','49.01','49.02','49.11',
-777       + '49.12','54.21','57.83','57.84','69.42', */'45000','45005','45020','45990',
-778       + '46020','46040','46045','46050','46060','46270','46275','46280','46285','46288',
-779       + '46706','46710','46712') then fistula_abscessPx=1;
-780       +if codeType = "ICD9-PX" &
-781       +   px in ('4284','4672','4674','4676','4873','4881','4893','4901','4902','4911',
-782       + '4912','5421','5783','5784','6942'/* ,'45000','45005','45020','45990',
-783       + '46020','46040','46045','46050','46060','46270','46275','46280','46285','46288',
-784       + '46706','46710','46712' */) then fistula_abscessPx=1;
-785       +if codeType = "CPT" &
-786       +   px in ('43260','43261','43262','43263','43264','43265','43267','43268','43269','43271','43272') then ercpPx=1;
-787       +if codeType = "CPT" &
-788       +   px in (/* '87.62','87.63', */'74240','74241','74245','74246','74247','74249','74250','74251') then barium_ugiPx=1;
-789       +if codeType = "ICD9-PX" &
-790       +   px in ('8762','8763'/* ,'74240','74241','74245','74246','74247','74249','74250','74251' */) then barium_ugiPx=1;
-791       +if codeType = "CPT" &
-792       +   px in (/* '87.64', */'74270','74280') then barium_colonPx=1;
-793       +if codeType = "ICD9-PX" &
-794       +   px in ('8764'/* ,'74270','74280' */) then barium_colonPx=1;
-795       +
-796       +*2009-11-05 CVD WG;
-12                                                                  The SAS System                                       14:01 Thursday, April 5, 2018
-
-797       +if codeType = "CPT" &
-798       +   PX in ('92974', '92980', '92981', '92982', '92984', '92995', '92996', '33521', '33522', '33523', '33530',
-799       +          '33510', '33511', '33512', '33513', '33514', '33516', '33517', '33518', '33519', '33521', '33522',
-800       +          '33523', '33530', '33533', '33534', '33535', '33536') then Coronary_Revas=1;
-801       +
-802       +   if last.&IndexDateVarName;
-803       +run;
-804       +%mend indicationPx;
-NOTE: %INCLUDE (level 1) ending.
-805        %include "lib\indicationRx.sas" / source2;
-NOTE: %INCLUDE (level 1) file lib\indicationRx.sas is file U:\studies\AS\pgms\bchan\lib\indicationRx.sas.
-806       +/*
-807       +From: Xie, Fenglong [mailto:fenglongxie@uabmc.edu]
-808       +Sent: Wednesday, November 29, 2017 1:32 PM
-809       +To: Benjamin Chan <chanb@ohsu.edu>
-810       +Subject: Attachment from my EndNote Library
-811       +
-812       +Hi, Ben
-813       +
-814       +Here are variable list included in our infection risk score model.
-815       +
-816       +Hinfect agec preddose cpd Invisit heartFailure diabs antidepres nsaid HTN narcotics fracture lipid malign dem outInfect
-817       +ulcer fungus sex op_bisphosp BENE_ENTLMT_RSN_ORIG thiazide Hypertension psa inflamMarker anticoagulant mammo;
-818       +
-819       +please refer to table 2 in the attached reference for full name of these variables and the attached text file for definition of these
-819      !+variables.
-820       +
-821       +Definition for some variables (such as ICD 9 codes for infection) may changed, please use most recent ICD 9 list.
-822       +
-823       +Please let me know if you have any question.
-824       +
-825       +
-826       +Fenglong
-827       + */
-828       +
-829       +
-830       +%macro indicationRx(idVar,IndexDateVarName);
-831       +data indRx(keep=&idVar &IndexDateVarName &CovariateListRx);
-832       +  set UCB.tempPrevRx12mPrior;
-833       +  by &idVar &IndexDateVarName;
-834       +  retain  &CovariateListRx ;
-835       +  length  &CovariateListRx  3 ;
-836       +  array vars (*) ImminentDeathRx &CovariateListRx ;
-837       +  do i=1 to dim(vars);
-838       +    if first.&IndexDateVarName then vars(i)=0;
-839       +  end;
-840       +
-841       +  * if lowcase(etc_name)=:'chemo'     then chemo=1; *Note to cancer WG: chemo includes chemo and chemo2;
-842       +  * if lowcase(etc_name)=:'lipid'     then lipid=1; *changed from clop to lipid on Nov. 29, 09;
-843       +  if source = "NDC_INSULIN" then dm=1;
-844       +  * if lowcase(etc_name)=:'folate'    then folate=1;
-845       +  if source = "NDC_ANTI_FUNGAL" then fungus=1;
-846       +  if source = "NDC_ANTI_HYPERTENSIVE" then htn=1;
-847       +  * if lowcase(etc_name)=:'naproxen'  then naproxen=1;
-848       +  if source = "NDC_NARCOTICS" then narcotics=1;
-849       +  if source in ("NDC_NSAIDCOX", "NDC_NSAIDNONCOX") then nsaid=1;
-850       +
-851       +  if source = "NDC_PPIS" then op_PPI=1;
-852       +  if source = "NDC_BISPHOSPHONATES" then op_bisphosp=1;
-853       +
-854       +  * if lowcase(etc_name)=:'op_other'  then op_other=1;
-855       +  * if lowcase(etc_name)=:'sedative'  then sedative=1;
-856       +  if source in ("NDC_STEROIDS", "NDC_TOPICALSTEROIDS") then steroid=1;
-857       +  if source = "NDC_TB" then tb=1;
-858       +  * if lowcase(etc_name)=:'thyroid'   then thyroid=1;
-859       +  if source = "NDC_ANTIVIRAL" then viral=1;
-860       +  * if lowcase(etc_name)=:'dementia'  then dementia=1;
-861       +  if source = "NDC_STATIN" then statin=1;
-862       +  if source = "NDC_NSAIDCOX" then nsaidcox=1;
-863       +  if source = "NDC_BETABLOCKERS" then BBlocker=1;
-864       +  * if lowcase(etc_name)=:'antithrom' then antithrom=1;
-865       +  if source = "NDC_ANTIBIOTICS" then antibiotics=1;
-13                                                                  The SAS System                                       14:01 Thursday, April 5, 2018
-
-866       +  * if lowcase(etc_name)=:'antipsych' then antipsych=1;
-867       +  * if lowcase(etc_name)=:'antidepre' then antidepres=1;
-868       +  * if lowcase(etc_name)=:'anticonvu' then anticonvul=1;
-869       +  * if lowcase(etc_name)=:'calcium'   then calcium=1;
-870       +  * if lowcase(etc_name)=:'Adrenergi' then Adrenergic=1;
-871       +
-872       +  if index(lowcase(gnn),'thiazide')     >0    then thiazide=1;
-873       +  if index(lowcase(gnn),'rosiglitazone')>0 or
-874       +	 index(lowcase(gnn),'troglitazone') >0 or
-875       +     index(lowcase(gnn),'pioglitazone') >0    then thiazolidinedione=1;
-876       +  if index(lowcase(gnn),'warfarin')     >0 or
-877       +	 index(lowcase(gnn),'heparin')      >0 or
-878       +     index(lowcase(gnn),'enoxaparin sodium')   then anticoagulant=1; /*Dr.curtis ask to add*/
-879       +  if last.&IndexDateVarName;
-880       +run;
-881       +%mend indicationRx;
-NOTE: %INCLUDE (level 1) ending.
-882        %include "lib\NumCnt.sas" / source2;
-NOTE: %INCLUDE (level 1) file lib\NumCnt.sas is file U:\studies\AS\pgms\bchan\lib\NumCnt.sas.
-883       +/*
-884       +From: Xie, Fenglong [mailto:fenglongxie@uabmc.edu]
-885       +Sent: Wednesday, November 29, 2017 1:32 PM
-886       +To: Benjamin Chan <chanb@ohsu.edu>
-887       +Subject: Attachment from my EndNote Library
-888       +
-889       +Hi, Ben
-890       +
-891       +Here are variable list included in our infection risk score model.
-892       +
-893       +Hinfect agec preddose cpd Invisit heartFailure diabs antidepres nsaid HTN narcotics fracture lipid malign dem outInfect
-894       +ulcer fungus sex op_bisphosp BENE_ENTLMT_RSN_ORIG thiazide Hypertension psa inflamMarker anticoagulant mammo;
-895       +
-896       +please refer to table 2 in the attached reference for full name of these variables and the attached text file for definition of these
-896      !+variables.
-897       +
-898       +Definition for some variables (such as ICD 9 codes for infection) may changed, please use most recent ICD 9 list.
-899       +
-900       +Please let me know if you have any question.
-901       +
-902       +
-903       +Fenglong
-904       + */
-905       +
-906       +
-907       +%macro NumCnt(dsn,DateVar);
-908       +  proc sort data=&dsn nodupkey out=num&dsn; by &idVar &indexDateVarName &dateVar; *note nodupkey, several dx on one day counted one
-908      !+visit/hosp;
-909       +  data num&dsn(keep=&idVar &indexDateVarName Num&dsn);
-910       +    set num&dsn;
-911       +	by &idVar &indexDateVarName;
-912       +	if first.&indexDateVarName then Num&dsn=0; Num&dsn+1;
-913       +	if last.&indexDateVarName;
-914       +  run;
-915       +%mend NumCnt;
-NOTE: %INCLUDE (level 1) ending.
-916        %include "lib\ciras.sas" / source2;
-NOTE: %INCLUDE (level 1) file lib\ciras.sas is file U:\studies\AS\pgms\bchan\lib\ciras.sas.
-917       +/*
-918       +From: Xie, Fenglong [mailto:fenglongxie@uabmc.edu]
-919       +Sent: Wednesday, November 29, 2017 1:32 PM
-920       +To: Benjamin Chan <chanb@ohsu.edu>
-921       +Subject: Attachment from my EndNote Library
-922       +
-923       +Hi, Ben
-924       +
-925       +Here are variable list included in our infection risk score model.
-926       +
-927       +Hinfect agec preddose cpd Invisit heartFailure diabs antidepres nsaid HTN narcotics fracture lipid malign dem outInfect
-928       +ulcer fungus sex op_bisphosp BENE_ENTLMT_RSN_ORIG thiazide Hypertension psa inflamMarker anticoagulant mammo;
-929       +
-930       +please refer to table 2 in the attached reference for full name of these variables and the attached text file for definition of these
-930      !+variables.
-14                                                                  The SAS System                                       14:01 Thursday, April 5, 2018
-
-931       +
-932       +Definition for some variables (such as ICD 9 codes for infection) may changed, please use most recent ICD 9 list.
-933       +
-934       +Please let me know if you have any question.
-935       +
-936       +
-937       +Fenglong
-938       + */
-939       +
-940       +
-941       +%macro ciras(cohort,idVar,indexDateVarName);
-942       +
-943       +data inflamMarker RehabVisit RF platelet lft;
-944       +  set UCB.tempPrevPxAll;
-945       +  if (codeType = "CPT" &
-946       +      px in ('85652','86141')) then output inflamMarker;
-947       +  if (codeType in ("CPT", "HCPCS") &
-948       +      px in ('11040','29405','92598','97020','97504','11041','29445','95831','97022','97520','11042','29505',
-949       +            '95832','97024','97530','11043','29515','95833','97026','97535','11044','29520','95834','97028',
-950       +            '97537','29065','29530','95851','97032','97542','29075','29540','95852','97033','97545','29085',
-951       +            '29550','96105','97034','97546','29105','29580','96110','97035','97703','29125','29590','96111',
-952       +            '97036','97750','29126','64550','96115','97039','97770','29130','90901','97001','97110','97799',
-953       +            '29131','90911','97002','97112','V5362','29200','92506','97003','97113','V5363','29220','92507',
-954       +            '97004','97116','V5364','29240','92508','97010','97124','29260','92510','97012','97139','29280',
-955       +            '92525','97014','97140','29345','92526','97016','97150','29365','92597','97018','97250'))
-956       +                        then output RehabVisit;
-957       +   if (codeType = "CPT" &
-958       +       px in ('86430','86431','86200','80072')) then output RF;
-959       +   if (codeType = "CPT" &
-960       +       px in ('85025','85032','85049','85590','85595')) then output platelet;
-961       +   if (codeType = "CPT" &
-962       +       px in ('80047','80049','80050','80053','80058','80051','80054')) then output lft;
-963       +
-964       +run;
-965       +
-966       +data felty;
-967       +set  UCB.tempPrevDxAll(where=(dx=:'7141' and enc_type in ('IP','IF','AV')));
-968       +  format prov_type;
-969       +run;
-970       +
-971       +data rh;
-972       +set UCB.tempPrevDxAll(where=(enc_type in ('IP','IF','AV')));
-973       +  format prov_type;
-974       +if prov_type = "66";
-975       +run;
-976       +
-977       +  %NumCnt(rh, admit_date);
-978       +  %NumCnt(inflamMarker, admit_date);
-979       +  %NumCnt(RehabVisit, admit_date);
-980       +  %NumCnt(lft, admit_date);
-981       +  %NumCnt(RF, admit_date);
-982       +  %NumCnt(platelet, admit_date);
-983       +  %NumCnt(felty, admit_date);
-984       +
-985       +data ciras(drop=j sex01 /* birth_date */ sex age);
-986       +merge &cohort(keep=&idVar &indexDateVarName  /* birth_date */ sex age in=a)
-987       +      numInflamMarker
-988       +	  numRehabVisit
-989       +	  numRF
-990       +	  numFelty
-991       +	  numPlatelet
-992       +	  numLft
-993       +	  numRh;
-994       +by &idVar &indexDateVarName;
-995       +if a;
-996       +/* age=(&indexDateVarName-birth_date)/365.25; */
-997       +if lowcase(sex)='m' then sex01=0; else sex01=1;
-998       +
-999       +array zero(*)   NumRh numinflamMarker NumRehabVisit NumRF Numplatelet Numlft Numfelty ;
-1000      +    do j=1 to dim(zero);
-1001      +	if zero(j)=. then zero(j)=0;
-1002      +	end;
-15                                                                  The SAS System                                       14:01 Thursday, April 5, 2018
-
-1003      +
-1004      +CIRAS=age*(-0.066) + sex01*(-0.092) + numinflamMarker*0.60 + NumRehabVisit*0.69+NumRF*2.1+
-1005      +        NumFelty*2.3 + Numplatelet*0.42  + NumLft*(-0.14)       + NumRh*0.52   + 6.5;
-1006      +run;
-1007      +
-1008      +proc datasets nolist;
-1009      +	delete NumRh numInflamMarker NumRehabVisit NumRF Numplatelet Numlft NumFelty
-1010      +              Rh    InflamMarker    RehabVisit    RF    Platelet    Lft    Felty ;
-1011      +quit;run;
-1012      +%mend ciras;
-NOTE: %INCLUDE (level 1) ending.
-1013       
-1014       %let CovariateListDx= hepatitisC fluVaccineDx JointSurgDx ulcer obese smoke
-1015                             lipidDx uveitis growthFail mammoDx PSAdx PapDx endoDx Sjogrens MI heartFailure stroke TIA EAM
-1016                             fistula_abscessDx hemaCa solidCa
-1017                             Hypertension angina fracture osteo icd7100; *covariate in 3rd line are from malignancy WG;
-1018       %indicationDx(indexID, indexDate);
-
-
+350        /*
+351        Create diagnosis code indicators from inpatient admissions
+352         */
+353          create table DT.diagIndicatorsInpatient as
+354            select A.database, A.patid, A.indexID,
+355                   count(distinct A.admit_date) as countIPAdmits,
+356                   case
+357                     when count(distinct A.admit_date) > 0 then 1
+358                     else 0
+359                     end as indIPAdmit12mPrior
+360            from UCB.tempPrevDx12mPrior A
+361            where A.enc_type = "IP"
+362            group by A.database, A.patid, A.indexID;
 NOTE: Data set UCB.TEMPPREVDX12MPRIOR is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
       additional CPU resources and may reduce performance.
 The SAS supervisor will process queries for foreign datasets. No parallel where-clause processing will occur.
+NOTE: Table DT.DIAGINDICATORSINPATIENT created, with 17714 rows and 5 columns.
 
-NOTE: The data set WORK.INDDX has 0 observations and 29 variables.
-NOTE: DATA statement used (Total process time):
-      real time           0.06 seconds
-      cpu time            0.03 seconds
-      
-
-1019       
-1020       %let CovariateListPx = InflamMarker RehabVisit RF platelet LFT FluVaccine jointSurg lipidPx Coronary_Revas
-1021                              intraArticularInj MammoPx PSApx PAPpx endoPx FOBT J3490
-1022                              fistula_abscessPx ercpPx barium_ugiPx barium_colonPx;
-1023       %indicationPx(indexID, indexDate);
-NOTE: Data set UCB.TEMPPREVPX12MPRIOR is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
+363        /*
+364        Count encounters
+365         */
+366          create table Work.countAVPhysEncounters as
+367            select B.database, B.patid, B.indexID,
+368                   sum(indAVPhysEncounter) as countAVPhysEncounters
+369            from (select distinct A.database, A.patid, A.indexID, A.begin_date,
+370                         prxmatch("/(0[1-9])|(1[0-46-8])|(2[02-9])|(3[0346-9])|(4[046])|(66)|(7[26-9])|(8[1-6])|(9[0-489])|(C[03])/",
+371                                 A.prov_type) > 0 as indAVPhysEncounter
+372                  from UCB.tempPrevDx12mPrior A
+373                  where A.enc_type = "AV" & not(missing(A.dx)) & calculated indAVPhysEncounter = 1) B
+374            group by B.database, B.patid, B.indexID;
+NOTE: Data set UCB.TEMPPREVDX12MPRIOR is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
       additional CPU resources and may reduce performance.
+6                                                                   The SAS System                                         15:39 Friday, April 6, 2018
 
-NOTE: The data set WORK.INDPX has 0 observations and 23 variables.
-NOTE: DATA statement used (Total process time):
-      real time           0.06 seconds
-      cpu time            0.03 seconds
-      
+The SAS supervisor will process queries for foreign datasets. No parallel where-clause processing will occur.
+NOTE: Table WORK.COUNTAVPHYSENCOUNTERS created, with 58986 rows and 4 columns.
 
-1024       
-1025       %let CovariateListRx= chemo lipid dm folate fungus HTN naproxen narcotics nsaid sedative steroid tb thyroid viral
-1026                            dementia statin NSAIDcox BBlocker op_PPI op_bisphosp op_other
-1027                            thiazide thiazolidinedione anticoagulant
-1028                  antithrom antibiotics antipsych antidepres anticonvul calcium Adrenergic;
-1029       %indicationRx(indexID, indexDate);
-NOTE: Data set UCB.TEMPPREVRX12MPRIOR is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
-      additional CPU resources and may reduce performance.
-
-NOTE: The data set WORK.INDRX has 0 observations and 33 variables.
-NOTE: DATA statement used (Total process time):
-      real time           0.06 seconds
-      cpu time            0.04 seconds
-      
-
-1030       proc means data = Work.indRx;
-1031         var &CovariateListRx;
-1032       run;
-
-NOTE: The SAS System stopped processing this step because of errors.
-NOTE: PROCEDURE MEANS used (Total process time):
-      real time           0.03 seconds
-      cpu time            0.00 seconds
-      
-1033       
-1034       %charlson(inputds = ,
-1035                 idVar = indexID,
-1036                 IndexDateVarName = indexDate,
-1037                 outputds = CCI,
-16                                                                  The SAS System                                       14:01 Thursday, April 5, 2018
-
-1038                 IndexVarName = Charlson,
-1039                 inpatonly = B,
-1040                 malig = N);
-
-
-
-WARNING: RUN statement ignored due to previous errors. Submit QUIT; to terminate the procedure.
-NOTE: PROCEDURE FORMAT used (Total process time):
-      real time           0.03 seconds
-      cpu time            0.00 seconds
-      
-
-NOTE: PROC SQL set option NOEXEC and will continue to check the syntax of statements.
-NOTE: Statement not executed due to NOEXEC option.
-NOTE: Statement not executed due to NOEXEC option.
-NOTE: The SAS System stopped processing this step because of errors.
-NOTE: PROCEDURE SQL used (Total process time):
-      real time           0.01 seconds
-      cpu time            0.00 seconds
-      
-
-
-ERROR: File WORK._DXSUBSET.DATA does not exist.
-ERROR: No data set open to look up variables.
-ERROR: No data set open to look up variables.
-
-NOTE: The SAS System stopped processing this step because of errors.
-NOTE: PROCEDURE SORT used (Total process time):
-      real time           0.00 seconds
-      cpu time            0.00 seconds
-      
-
-
-ERROR: File WORK._PXSUBSET.DATA does not exist.
-ERROR: No data set open to look up variables.
-ERROR: No data set open to look up variables.
-
-NOTE: The SAS System stopped processing this step because of errors.
-NOTE: PROCEDURE SORT used (Total process time):
-      real time           0.00 seconds
-      cpu time            0.00 seconds
-      
-
-
-ERROR: File WORK._DXSUBSET.DATA does not exist.
-
-NOTE: Character values have been converted to numeric values at the places given by: (Line):(Column).
-      1040:152   1040:182   1040:212   1040:242   1040:19    1040:49    1040:79    1040:109   1040:139   1040:169   1040:199   1040:229   1040:11
-      1040:41    1040:71    1040:101   1040:131   
-WARNING: The variable indexID in the DROP, KEEP, or RENAME list has never been referenced.
-WARNING: The variable indexDate in the DROP, KEEP, or RENAME list has never been referenced.
-NOTE: The SAS System stopped processing this step because of errors.
-WARNING: The data set WORK._DXASSIGN may be incomplete.  When this step was stopped there were 0 observations and 17 variables.
-NOTE: DATA statement used (Total process time):
-      real time           0.03 seconds
-      cpu time            0.01 seconds
-      
-
-
-ERROR: File WORK._PXSUBSET.DATA does not exist.
-
-WARNING: The variable indexID in the DROP, KEEP, or RENAME list has never been referenced.
-WARNING: The variable indexDate in the DROP, KEEP, or RENAME list has never been referenced.
-NOTE: The SAS System stopped processing this step because of errors.
-WARNING: The data set WORK._PXASSIGN may be incomplete.  When this step was stopped there were 0 observations and 1 variables.
-NOTE: DATA statement used (Total process time):
-      real time           0.03 seconds
-      cpu time            0.00 seconds
-      
-
-
-NOTE: PROC SQL set option NOEXEC and will continue to check the syntax of statements.
-17                                                                  The SAS System                                       14:01 Thursday, April 5, 2018
-
-NOTE: SQL Statement used (Total process time):
-      real time           0.00 seconds
-      cpu time            0.00 seconds
-      
-NOTE: Statement not executed due to NOEXEC option.
-NOTE: SQL Statement used (Total process time):
-      real time           0.00 seconds
-      cpu time            0.00 seconds
-      
-NOTE: The SAS System stopped processing this step because of errors.
-NOTE: PROCEDURE SQL used (Total process time):
-      real time           0.00 seconds
-      cpu time            0.00 seconds
-      
-
-
-ERROR: File WORK._DXPXASSIGN.DATA does not exist.
-
-WARNING: The variable indexID in the DROP, KEEP, or RENAME list has never been referenced.
-WARNING: The variable indexDate in the DROP, KEEP, or RENAME list has never been referenced.
-NOTE: The SAS System stopped processing this step because of errors.
-WARNING: The data set WORK._WITHCHARLSON may be incomplete.  When this step was stopped there were 0 observations and 18 variables.
-NOTE: DATA statement used (Total process time):
-      real time           0.04 seconds
-      cpu time            0.01 seconds
-      
-
-NOTE: PROC SQL set option NOEXEC and will continue to check the syntax of statements.
-NOTE: SQL Statement used (Total process time):
-      real time           0.00 seconds
-      cpu time            0.00 seconds
-      
-NOTE: Statement not executed due to NOEXEC option.
-NOTE: SQL Statement used (Total process time):
-      real time           0.00 seconds
-      cpu time            0.00 seconds
-      
-1041       
-1042       %ciras(DT.indexLookup, indexID, indexDate);
-NOTE: The SAS System stopped processing this step because of errors.
-NOTE: PROCEDURE SQL used (Total process time):
-      real time           0.00 seconds
-      cpu time            0.00 seconds
-      
-
-
-NOTE: Data set UCB.TEMPPREVPXALL is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
-      additional CPU resources and may reduce performance.
-
-NOTE: The data set WORK.INFLAMMARKER has 0 observations and 23 variables.
-NOTE: The data set WORK.REHABVISIT has 0 observations and 23 variables.
-NOTE: The data set WORK.RF has 0 observations and 23 variables.
-NOTE: The data set WORK.PLATELET has 0 observations and 23 variables.
-NOTE: The data set WORK.LFT has 0 observations and 23 variables.
-NOTE: DATA statement used (Total process time):
-      real time           0.20 seconds
-      cpu time            0.03 seconds
-      
-
-NOTE: Data set UCB.TEMPPREVDXALL is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
+375          create table Work.countEREncounters as
+376            select A.database, A.patid, A.indexID,
+377                   count(distinct A.begin_date) as countERVisits,
+378                   case
+379                     when count(distinct A.begin_date) > 0 then 1
+380                     else 0
+381                     end as indERVisit12mPrior
+382            from UCB.tempPrevDx12mPrior A
+383            where A.enc_type = "ED"
+384            group by A.database, A.patid, A.indexID;
+NOTE: Data set UCB.TEMPPREVDX12MPRIOR is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
       additional CPU resources and may reduce performance.
 The SAS supervisor will process queries for foreign datasets. No parallel where-clause processing will occur.
+NOTE: Table WORK.COUNTERENCOUNTERS created, with 24086 rows and 5 columns.
 
-NOTE: The data set WORK.FELTY has 0 observations and 25 variables.
-NOTE: DATA statement used (Total process time):
-      real time           0.06 seconds
-      cpu time            0.04 seconds
-      
+385          create table DT.countEncounters as
+386            select coalesce(A.database, B.database) as database,
+387                   coalesce(A.patid, B.patid) as patid,
+388                   coalesce(A.indexID, B.indexID) as indexID,
+389                   A.countAVPhysEncounters,
+390                   B.indERVisit12mPrior,
+391                   B.countERVisits
+392            from Work.countAVPhysEncounters A full join
+393                 Work.countEREncounters B on (A.indexID = B.indexID);
+NOTE: Table DT.COUNTENCOUNTERS created, with 59560 rows and 6 columns.
 
-NOTE: Data set UCB.TEMPPREVDXALL is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
-      additional CPU resources and may reduce performance.
-The SAS supervisor will process queries for foreign datasets. No parallel where-clause processing will occur.
-18                                                                  The SAS System                                       14:01 Thursday, April 5, 2018
-
-
-NOTE: The data set WORK.RH has 0 observations and 25 variables.
-NOTE: DATA statement used (Total process time):
-      real time           0.04 seconds
-      cpu time            0.01 seconds
-      
-
-NOTE: The data set WORK.NUMRH has 0 observations and 0 variables.
-NOTE: PROCEDURE SORT used (Total process time):
-      real time           0.03 seconds
-      cpu time            0.01 seconds
-      
-
-
-WARNING: The variable indexID in the DROP, KEEP, or RENAME list has never been referenced.
-WARNING: The variable indexDate in the DROP, KEEP, or RENAME list has never been referenced.
-NOTE: The data set WORK.NUMRH has 0 observations and 1 variables.
-WARNING: Data set WORK.NUMRH was not replaced because this step was stopped.
-NOTE: DATA statement used (Total process time):
-      real time           0.03 seconds
-      cpu time            0.01 seconds
-      
-
-NOTE: The data set WORK.NUMINFLAMMARKER has 0 observations and 0 variables.
-NOTE: PROCEDURE SORT used (Total process time):
-      real time           0.04 seconds
-      cpu time            0.00 seconds
-      
-
-
-WARNING: The variable indexID in the DROP, KEEP, or RENAME list has never been referenced.
-WARNING: The variable indexDate in the DROP, KEEP, or RENAME list has never been referenced.
-NOTE: The data set WORK.NUMINFLAMMARKER has 0 observations and 1 variables.
-WARNING: Data set WORK.NUMINFLAMMARKER was not replaced because this step was stopped.
-NOTE: DATA statement used (Total process time):
-      real time           0.03 seconds
-      cpu time            0.00 seconds
-      
-
-NOTE: The data set WORK.NUMREHABVISIT has 0 observations and 0 variables.
-NOTE: PROCEDURE SORT used (Total process time):
-      real time           0.03 seconds
-      cpu time            0.00 seconds
-      
-
-
-WARNING: The variable indexID in the DROP, KEEP, or RENAME list has never been referenced.
-WARNING: The variable indexDate in the DROP, KEEP, or RENAME list has never been referenced.
-NOTE: The data set WORK.NUMREHABVISIT has 0 observations and 1 variables.
-WARNING: Data set WORK.NUMREHABVISIT was not replaced because this step was stopped.
-NOTE: DATA statement used (Total process time):
-      real time           0.03 seconds
-      cpu time            0.01 seconds
-      
-
-NOTE: The data set WORK.NUMLFT has 0 observations and 0 variables.
-NOTE: PROCEDURE SORT used (Total process time):
-      real time           0.04 seconds
-      cpu time            0.00 seconds
-      
-
-
-WARNING: The variable indexID in the DROP, KEEP, or RENAME list has never been referenced.
-WARNING: The variable indexDate in the DROP, KEEP, or RENAME list has never been referenced.
-NOTE: The data set WORK.NUMLFT has 0 observations and 1 variables.
-WARNING: Data set WORK.NUMLFT was not replaced because this step was stopped.
-NOTE: DATA statement used (Total process time):
-      real time           0.01 seconds
-      cpu time            0.00 seconds
-      
-
-NOTE: The data set WORK.NUMRF has 0 observations and 0 variables.
-19                                                                  The SAS System                                       14:01 Thursday, April 5, 2018
-
-NOTE: PROCEDURE SORT used (Total process time):
-      real time           0.04 seconds
-      cpu time            0.00 seconds
-      
-
-
-WARNING: The variable indexID in the DROP, KEEP, or RENAME list has never been referenced.
-WARNING: The variable indexDate in the DROP, KEEP, or RENAME list has never been referenced.
-NOTE: The data set WORK.NUMRF has 0 observations and 1 variables.
-WARNING: Data set WORK.NUMRF was not replaced because this step was stopped.
-NOTE: DATA statement used (Total process time):
-      real time           0.01 seconds
-      cpu time            0.01 seconds
-      
-
-NOTE: The data set WORK.NUMPLATELET has 0 observations and 0 variables.
-NOTE: PROCEDURE SORT used (Total process time):
-      real time           0.04 seconds
-      cpu time            0.01 seconds
-      
-
-
-WARNING: The variable indexID in the DROP, KEEP, or RENAME list has never been referenced.
-WARNING: The variable indexDate in the DROP, KEEP, or RENAME list has never been referenced.
-NOTE: The data set WORK.NUMPLATELET has 0 observations and 1 variables.
-WARNING: Data set WORK.NUMPLATELET was not replaced because this step was stopped.
-NOTE: DATA statement used (Total process time):
-      real time           0.03 seconds
-      cpu time            0.01 seconds
-      
-
-NOTE: The data set WORK.NUMFELTY has 0 observations and 0 variables.
-NOTE: PROCEDURE SORT used (Total process time):
-      real time           0.04 seconds
-      cpu time            0.01 seconds
-      
-
-
-WARNING: The variable indexID in the DROP, KEEP, or RENAME list has never been referenced.
-WARNING: The variable indexDate in the DROP, KEEP, or RENAME list has never been referenced.
-NOTE: The data set WORK.NUMFELTY has 0 observations and 1 variables.
-WARNING: Data set WORK.NUMFELTY was not replaced because this step was stopped.
-NOTE: DATA statement used (Total process time):
-      real time           0.03 seconds
-      cpu time            0.03 seconds
-      
-
-
-NOTE: The data set WORK.CIRAS has 0 observations and 10 variables.
-NOTE: DATA statement used (Total process time):
-      real time           0.09 seconds
-      cpu time            0.01 seconds
-      
-
-
-NOTE: PROCEDURE DATASETS used (Total process time):
-      real time           0.04 seconds
-      cpu time            0.03 seconds
-      
-
-1043       
-1044       
-1045       proc sql;
-NOTE: PROC SQL set option NOEXEC and will continue to check the syntax of statements.
-1046         create table DT.charlsonIndex as select * from Work._WithCharlson;
-NOTE: Statement not executed due to NOEXEC option.
-1047         create table DT.CIRAS as select * from Work.CIRAS;
-NOTE: Statement not executed due to NOEXEC option.
-1048         create table DT.indRx as select * from Work.indRx;
-NOTE: Statement not executed due to NOEXEC option.
-1049       quit;
-NOTE: The SAS System stopped processing this step because of errors.
-20                                                                  The SAS System                                       14:01 Thursday, April 5, 2018
-
+394        /*
+395        Inhaled antibiotics
+396        
+397        IS A DAYS-SUPPLY CRITERION REQUIRED??
+398          create table Work.indInhaledAntibiotics0 as
+399            select A.patid, A.episodeID,
+400                   A.begin_date format = mmddyy10. as rxDate,
+401                   "HCPCS" as codeType,
+402                   A.px as drugCode,
+403                   "INJECTION" as drugRoute,
+404                   B.descript as drugName,
+405                   A.px_amt,
+406                   . as dispense_sup,
+407                   . as dispense_amt
+408              from WRK.proccodesHCPCS12mPrior A inner join
+409                   DT.lookupJcodes B on (A.px = B.code)
+410              where lower(category) = "inhaled antibiotic"
+411            union corr
+412            select D.patid, D.episodeID,
+413                   D.dispense_date format = mmddyy10. as rxDate,
+414                   "NDC" as codeType,
+415                   E.ndc as drugCode,
+416                   D.rt as drugRoute,
+417                   D.gnn as drugName,
+418                   . as px_amt,
+419                   D.dispense_sup,
+420                   D.dispense_amt
+421              from WRK.rx12mPrior D inner join
+422                   DT.lookupNDC E on (D.ndc = E.ndc)
+423              where (lower(E.etc_name) like '%antibiotic%' | lower(E.etc_name) like '%polymyxin%') &
+424                    lowcase(E.rt) in ("inhalation", "intraven", "injection");
+425          select codeType, drugRoute, drugName, count(distinct patid) as countDistinctPatid
+426            from Work.indInhaledAntibiotics0
+427            group by codeType, drugRoute, drugName;
+428          create table Work.indInhaledAntibiotics1 as
+429            select distinct
+430                   A.patid, A.episodeID,
+431                   1 as indInhaledAntibiotics
+432            from Work.indInhaledAntibiotics0 A;
+433         */
+434        quit;
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           0.00 seconds
-      cpu time            0.00 seconds
+      real time           13.13 seconds
+7                                                                   The SAS System                                         15:39 Friday, April 6, 2018
+
+      cpu time            15.80 seconds
       
 
-
-1050       proc contents data = DT.charlsonIndex order = varnum;
-1051       run;
-
-                                                                  --- AS project ---                                 14:01 Thursday, April 5, 2018   2
-
-                                                                The CONTENTS Procedure
-
-                                    Data Set Name        DT.CHARLSONINDEX              Observations          59944
-                                    Member Type          DATA                          Variables             20   
-                                    Engine               V9                            Indexes               0    
-                                    Created              12/30/2017 02:46:57           Observation Length    80   
-                                    Last Modified        12/30/2017 02:46:57           Deleted Observations  0    
-                                    Protection                                         Compressed            NO   
-                                    Data Set Type                                      Sorted                NO   
-                                    Label                                                                         
-                                    Data Representation  WINDOWS_32                                               
-                                    Encoding             wlatin1  Western (Windows)                               
-
-
-                                                          Engine/Host Dependent Information
-
-                                        Data Set Page Size          1048576                                  
-                                        Number of Data Set Pages    5                                        
-                                        First Data Page             1                                        
-                                        Max Obs per Page            13086                                    
-                                        Obs in First Data Page      13045                                    
-                                        Number of Data Set Repairs  0                                        
-                                        ExtendObsCounter            YES                                      
-                                        Filename                    V:\studies\AS\data\charlsonindex.sas7bdat
-                                        Release Created             9.0401M1                                 
-                                        Host Created                W32_ES08R2                               
-                                        Owner Name                  BUILTIN\Administrators                   
-                                        File Size                   6MB                                      
-                                        File Size (bytes)           6291456                                  
-
-
-                                                              Variables in Creation Order
- 
-                                     #    Variable     Type    Len    Label
-
-                                     1    indexID      Num       8                                                
-                                     2    indexDate    Num       8                                                
-                                     3    MI           Num       3    Myocardial Infarction:                      
-                                     4    CHD          Num       3    Coronary heart disease:                     
-                                     5    PVD          Num       8    Peripheral vascular disorder:               
-                                     6    CVD          Num       3    Cerebrovascular disease:                    
-                                     7    DEM          Num       3    Dementia:                                   
-                                     8    CPD          Num       3    Chronic pulmonary disease:                  
-                                     9    RHD          Num       3    Rheumatologic disease:                      
-                                    10    PUD          Num       3    Peptic ulcer disease:                       
-                                    11    MLIVD        Num       3    Mild liver disease:                         
-                                    12    DIAB         Num       3    Diabetes:                                   
-                                    13    DIABC        Num       3    Diabetes with chronic complications:        
-                                    14    PLEGIA       Num       3    Hemiplegia or paraplegia:                   
-                                    15    REN          Num       3    Renal Disease:                              
-                                    16    MALIGN       Num       3    Malignancy, including leukemia and lymphoma:
-                                    17    SLIVD        Num       3    Moderate or severe liver disease:           
-                                    18    MST          Num       3    Metastatic solid tumor:                     
-                                    19    AIDS         Num       3    AIDS:                                       
-                                    20    Charlson     Num       8    Charlson score:                             
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
-                                                             queryOtherComorbidities.sas
-NOTE: PROCEDURE CONTENTS used (Total process time):
-      real time           0.09 seconds
-      cpu time            0.03 seconds
-      
-NOTE: The PROCEDURE CONTENTS printed page 2.
-
-1052       proc contents data = DT.CIRAS order = varnum;
-1053       run;
-
-                                                                  --- AS project ---                                 14:01 Thursday, April 5, 2018   3
-
-                                                                The CONTENTS Procedure
-
-                                    Data Set Name        DT.CIRAS                      Observations          60010
-                                    Member Type          DATA                          Variables             10   
-                                    Engine               V9                            Indexes               0    
-                                    Created              12/30/2017 02:46:57           Observation Length    80   
-                                    Last Modified        12/30/2017 02:46:57           Deleted Observations  0    
-                                    Protection                                         Compressed            NO   
-                                    Data Set Type                                      Sorted                NO   
-                                    Label                                                                         
-                                    Data Representation  WINDOWS_32                                               
-                                    Encoding             wlatin1  Western (Windows)                               
-
-
-                                                          Engine/Host Dependent Information
-
-                                            Data Set Page Size          1048576                          
-                                            Number of Data Set Pages    5                                
-                                            First Data Page             1                                
-                                            Max Obs per Page            13086                            
-                                            Obs in First Data Page      13061                            
-                                            Number of Data Set Repairs  0                                
-                                            ExtendObsCounter            YES                              
-                                            Filename                    V:\studies\AS\data\ciras.sas7bdat
-                                            Release Created             9.0401M1                         
-                                            Host Created                W32_ES08R2                       
-                                            Owner Name                  BUILTIN\Administrators           
-                                            File Size                   6MB                              
-                                            File Size (bytes)           6291456                          
-
-
-                                                             Variables in Creation Order
- 
-                                                   #    Variable           Type    Len    Format
-
-                                                   1    indexDate          Num       8    MMDDYY10.
-                                                   2    indexID            Num       8             
-                                                   3    NuminflamMarker    Num       8             
-                                                   4    NumRehabVisit      Num       8             
-                                                   5    NumRF              Num       8             
-                                                   6    Numfelty           Num       8             
-                                                   7    Numplatelet        Num       8             
-                                                   8    Numlft             Num       8             
-                                                   9    Numrh              Num       8             
-                                                  10    CIRAS              Num       8             
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
-                                                             queryOtherComorbidities.sas
-NOTE: PROCEDURE CONTENTS used (Total process time):
-      real time           0.07 seconds
-      cpu time            0.04 seconds
-      
-NOTE: The PROCEDURE CONTENTS printed page 3.
-
-1054       proc contents data = DT.indRx order = varnum;
-1055       run;
-
-                                                                  --- AS project ---                                 14:01 Thursday, April 5, 2018   4
-
-                                                                The CONTENTS Procedure
-
-                                    Data Set Name        DT.INDRX                      Observations          57128
-                                    Member Type          DATA                          Variables             33   
-                                    Engine               V9                            Indexes               0    
-                                    Created              12/30/2017 02:46:57           Observation Length    112  
-                                    Last Modified        12/30/2017 02:46:57           Deleted Observations  0    
-                                    Protection                                         Compressed            NO   
-                                    Data Set Type                                      Sorted                NO   
-                                    Label                                                                         
-                                    Data Representation  WINDOWS_32                                               
-                                    Encoding             wlatin1  Western (Windows)                               
-
-
-                                                          Engine/Host Dependent Information
-
-                                            Data Set Page Size          1048576                          
-                                            Number of Data Set Pages    7                                
-                                            First Data Page             1                                
-                                            Max Obs per Page            9351                             
-                                            Obs in First Data Page      9314                             
-                                            Number of Data Set Repairs  0                                
-                                            ExtendObsCounter            YES                              
-                                            Filename                    V:\studies\AS\data\indrx.sas7bdat
-                                            Release Created             9.0401M1                         
-                                            Host Created                W32_ES08R2                       
-                                            Owner Name                  BUILTIN\Administrators           
-                                            File Size                   8MB                              
-                                            File Size (bytes)           8388608                          
-
-
-                                                             Variables in Creation Order
- 
-                                                  #    Variable             Type    Len    Format
-
-                                                  1    indexDate            Num       8    MMDDYY10.
-                                                  2    indexID              Num       8             
-                                                  3    chemo                Num       3             
-                                                  4    lipid                Num       3             
-                                                  5    dm                   Num       3             
-                                                  6    folate               Num       3             
-                                                  7    fungus               Num       3             
-                                                  8    HTN                  Num       3             
-                                                  9    naproxen             Num       3             
-                                                 10    narcotics            Num       3             
-                                                 11    nsaid                Num       3             
-                                                 12    sedative             Num       3             
-                                                 13    steroid              Num       3             
-                                                 14    tb                   Num       3             
-                                                 15    thyroid              Num       3             
-                                                 16    viral                Num       3             
-                                                 17    dementia             Num       3             
-                                                 18    statin               Num       3             
-                                                 19    NSAIDcox             Num       3             
-                                                 20    BBlocker             Num       3             
-                                                 21    op_PPI               Num       3             
-                                                 22    op_bisphosp          Num       3             
-                                                 23    op_other             Num       3             
-                                                 24    thiazide             Num       3             
-                                                 25    thiazolidinedione    Num       3             
-                                                 26    anticoagulant        Num       3             
-                                                 27    antithrom            Num       3             
-                                                 28    antibiotics          Num       3             
-                                                 29    antipsych            Num       3             
-                                                 30    antidepres           Num       3             
-                                                 31    anticonvul           Num       3             
-                                                 32    calcium              Num       3             
-                                                 33    Adrenergic           Num       3             
- 
- 
- 
-                                                             queryOtherComorbidities.sas
-NOTE: PROCEDURE CONTENTS used (Total process time):
-      real time           0.07 seconds
-      cpu time            0.06 seconds
-      
-NOTE: The PROCEDURE CONTENTS printed page 4.
-
-1056       /*
-1057       END Fenglong's comorbidities code
-1058        */
-1059       
-1060       
-1061       
-1062       
-1063       proc sql;
-NOTE: PROC SQL set option NOEXEC and will continue to check the syntax of statements.
-1064       /*
-1065       Oral corticosteroid use
-1066       Mean outpatient prescribed daily dose of prednisone equivalents in the 6
-1067       months prior to index date: less than 5 mg/d (low dose), 5 to less than 10
-1068       mg/d (medium dose), and 10 mg/d or more (high dose)
-1069        */
-1070         create table DT.rxOralCorticosteroid as
-1071           select C.database, C.patid, C.indexID,
-1072                  1 as indOralCorticosteroid,
-1073                  sum(C.daysAtRisk * C.prednisodeEquivalentDose) as sumPredEq,
-1074                  sum(C.daysAtRisk) as sumDaysSupply,
-1075                  sum(C.daysAtRisk * C.prednisodeEquivalentDose) / 183 as meanPredEqDose,
-1076                  case
-1077                    when 0 <= sum(C.daysAtRisk * C.prednisodeEquivalentDose) / 183 < 2.5 then "Low (<2.5 mg/d)"
-1078                    when 2.5 <= sum(C.daysAtRisk * C.prednisodeEquivalentDose) / 183 < 5 then "Medium-Low (2.5-5 mg/d)"
-1079                    when 5 <= sum(C.daysAtRisk * C.prednisodeEquivalentDose) / 183 < 10 then "Medium-High (5-10 mg/d)"
-1080                    when 10 <= sum(C.daysAtRisk * C.prednisodeEquivalentDose) / 183 then "High (10+ mg/d)"
-1081                    else ""
-1082                    end as meanPredEqDoseCat
-1083           from (select A.database, A.patid, A.indexID,
-1084                        A.indexDate - 183 format = mmddyy10. as riskStart,
-1085                        A.indexDate,
-1086                        A.dispense_date,
-1087                        A.dispense_date + A.dispense_sup - 1 format = mmddyy10. as dispense_end,
-1088                        A.dispense_sup,
-1089                        case
-1090                          /* Rx completely in at-risk period */
-1091                          when (A.indexDate - 183 <= A.dispense_date) & ((A.dispense_date + A.dispense_sup - 1) <= A.indexDate)
-1092                            then A.dispense_sup
-1093                          /* Rx begins before at-risk period */
-21                                                                  The SAS System                                       14:01 Thursday, April 5, 2018
-
-1094                          when (A.dispense_date < A.indexDate - 183)
-1095                            then A.dispense_sup - (A.indexDate - 183 - A.dispense_date)
-1096                          /* Rx ends after at-risk period */
-1097                          when (A.indexDate < (A.dispense_date + A.dispense_sup - 1))
-1098                            then A.dispense_sup - (A.dispense_date + A.dispense_sup - 1 - A.indexDate)
-1099                          else .
-1100                          end as daysAtRisk,
-1101                        B.prednisodeEquivalentDose
-1102                 from UCB.tempPrevRxAll A inner join
-1103                      DT.lookupNDC B on (A.ndc = B.ndc)
-1104                 where ^missing(B.prednisodeEquivalentDose) &
-1105                       ((A.indexDate - 183 <= A.dispense_date <= A.indexDate) |
-1106                         (A.indexDate - 183 <= (A.dispense_date + A.dispense_sup - 1) <= A.indexDate))) C
-1107           group by C.database, C.patid, C.indexID;
-NOTE: Statement not executed due to NOEXEC option.
-1108       /*
-1109       Create diagnosis code indicators from inpatient admissions
-1110        */
-1111         create table DT.diagIndicatorsInpatient as
-1112           select A.database, A.patid, A.indexID,
-1113                  count(distinct A.admit_date) as countIPAdmits,
-1114                  case
-1115                    when count(distinct A.admit_date) > 0 then 1
-1116                    else 0
-1117                    end as indIPAdmit12mPrior
-1118           from UCB.tempPrevDx12mPrior A
-1119           where A.enc_type = "IP"
-1120           group by A.database, A.patid, A.indexID;
-NOTE: Statement not executed due to NOEXEC option.
-1121       /*
-1122       Inhaled antibiotics
-1123       
-1124       IS A DAYS-SUPPLY CRITERION REQUIRED??
-1125         create table Work.indInhaledAntibiotics0 as
-1126           select A.patid, A.episodeID,
-1127                  A.begin_date format = mmddyy10. as rxDate,
-1128                  "HCPCS" as codeType,
-1129                  A.px as drugCode,
-1130                  "INJECTION" as drugRoute,
-1131                  B.descript as drugName,
-1132                  A.px_amt,
-1133                  . as dispense_sup,
-1134                  . as dispense_amt
-1135             from WRK.proccodesHCPCS12mPrior A inner join
-1136                  DT.lookupJcodes B on (A.px = B.code)
-1137             where lower(category) = "inhaled antibiotic"
-1138           union corr
-1139           select D.patid, D.episodeID,
-1140                  D.dispense_date format = mmddyy10. as rxDate,
-1141                  "NDC" as codeType,
-1142                  E.ndc as drugCode,
-1143                  D.rt as drugRoute,
-1144                  D.gnn as drugName,
-1145                  . as px_amt,
-1146                  D.dispense_sup,
-1147                  D.dispense_amt
-1148             from WRK.rx12mPrior D inner join
-1149                  DT.lookupNDC E on (D.ndc = E.ndc)
-1150             where (lower(E.etc_name) like '%antibiotic%' | lower(E.etc_name) like '%polymyxin%') &
-1151                   lowcase(E.rt) in ("inhalation", "intraven", "injection");
-1152         select codeType, drugRoute, drugName, count(distinct patid) as countDistinctPatid
-1153           from Work.indInhaledAntibiotics0
-1154           group by codeType, drugRoute, drugName;
-1155         create table Work.indInhaledAntibiotics1 as
-1156           select distinct
-1157                  A.patid, A.episodeID,
-1158                  1 as indInhaledAntibiotics
-1159           from Work.indInhaledAntibiotics0 A;
-1160        */
-1161       quit;
-NOTE: The SAS System stopped processing this step because of errors.
-NOTE: PROCEDURE SQL used (Total process time):
-22                                                                  The SAS System                                       14:01 Thursday, April 5, 2018
-
-      real time           0.00 seconds
-      cpu time            0.00 seconds
-      
-1162       
-1163       
-1164       
-1165       
-1166       ods html close;
-
-ERROR: Errors printed on pages 3,16,17.
-
+435        
+436        
+437        
+438        
+439        ods html close;
 NOTE: SAS Institute Inc., SAS Campus Drive, Cary, NC USA 27513-2414
 NOTE: The SAS System used:
-      real time           44.63 seconds
-      cpu time            21.44 seconds
+      real time           47.91 seconds
+      cpu time            33.38 seconds
       
