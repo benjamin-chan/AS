@@ -238,6 +238,37 @@ Create diagnosis code indicators from inpatient admissions
     where A.enc_type = "IP"
     group by A.database, A.patid, A.indexID;
 /* 
+Count encounters
+ */
+  create table Work.countAVPhysEncounters as
+    select B.database, B.patid, B.indexID,
+           sum(indAVPhysEncounter) as countAVPhysEncounters
+    from (select distinct A.database, A.patid, A.indexID, A.begin_date,
+                 prxmatch("/(0[1-9])|(1[0-46-8])|(2[02-9])|(3[0346-9])|(4[046])|(66)|(7[26-9])|(8[1-6])|(9[0-489])|(C[03])/",
+                         A.prov_type) > 0 as indAVPhysEncounter
+          from UCB.tempPrevDx12mPrior A
+          where A.enc_type = "AV" & not(missing(A.dx)) & calculated indAVPhysEncounter = 1) B
+    group by B.database, B.patid, B.indexID;
+  create table Work.countEREncounters as
+    select A.database, A.patid, A.indexID,
+           count(distinct A.begin_date) as countERVisits,
+           case
+             when count(distinct A.begin_date) > 0 then 1
+             else 0
+             end as indERVisit12mPrior
+    from UCB.tempPrevDx12mPrior A
+    where A.enc_type = "ED"
+    group by A.database, A.patid, A.indexID;
+  create table DT.countEncounters as
+    select coalesce(A.database, B.database) as database,
+           coalesce(A.patid, B.patid) as patid,
+           coalesce(A.indexID, B.indexID) as indexID,
+           A.countAVPhysEncounters,
+           B.indERVisit12mPrior,
+           B.countERVisits
+    from Work.countAVPhysEncounters A full join
+         Work.countEREncounters B on (A.indexID = B.indexID);
+/* 
 Inhaled antibiotics
 
 IS A DAYS-SUPPLY CRITERION REQUIRED??
