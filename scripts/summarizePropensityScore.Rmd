@@ -56,6 +56,9 @@ indRxOP_bisphosp | Prescription drug indicator: Bisphosphonate
 indRxThiazide | Prescription drug indicator: Thiazide
 indRxAnticoagulant | Prescription drug indicator: Anticoagulant
 indIPAdmit12mPrior | Inpatient admission 12 months prior to exposure
+indERVisit12mPrior | ER visit 12 months prior to exposure
+quartileCIRAS | CIRAS: quartiles within data source
+quartileAVPhysEncounters | Number of ambulatory office visits: quartiles within data source
 
 Model output is probability of exposure to TNF, DMARD, and NSAID or no exposure.
 For our purposes, we focus only on the propensity for TNF exposure.
@@ -424,6 +427,56 @@ ggsave(paste0("../figures/", f, ".png"), dpi = 300)
 ggsave(paste0("../figures/", f, ".svg"), dpi = 300)
 ```
 
+![covarBalERVisit12mPrior.png](../figures/covarBalERVisit12mPrior.png)
+
+```{r, fig.show = "hide", warning = FALSE, message = FALSE}
+f <- "covarBalERVisit12mPrior"
+L <- covariateBalance("dichotomous", "indERVisit12mPrior", "% ER visit in 12 months prior")
+ggsave(paste0("../figures/", f, ".png"), dpi = 300)
+ggsave(paste0("../figures/", f, ".svg"), dpi = 300)
+```
+
+![covarBalCIRASDichot.png](../figures/covarBalCIRASDichot.png)
+
+```{r, fig.show = "hide", warning = FALSE, message = FALSE}
+f <- "covarBalCIRASDichot"
+df <-
+  df %>%
+  mutate(quartileCIRAS23 = quartileCIRAS %in% c(2, 3))
+L <- covariateBalance("dichotomous", "quartileCIRAS23", "% Top 2 CIRAS quartiles")
+ggsave(paste0("../figures/", f, ".png"), dpi = 300)
+ggsave(paste0("../figures/", f, ".svg"), dpi = 300)
+```
+
+![covarBalCIRASCont.png](../figures/covarBalCIRASCont.png)
+
+```{r, fig.show = "hide", warning = FALSE, message = FALSE}
+f <- "covarBalCIRASCont"
+L <- covariateBalance("continuous", "ciras", "CIRAS, mean")
+ggsave(paste0("../figures/", f, ".png"), dpi = 300)
+ggsave(paste0("../figures/", f, ".svg"), dpi = 300)
+```
+
+![covarBalAVPhysEncDichot.png](../figures/covarBalAVPhysEncDichot.png)
+
+```{r, fig.show = "hide", warning = FALSE, message = FALSE}
+f <- "covarBalAVPhysEncDichot"
+df <-
+  df %>%
+  mutate(quartileAVPhysEnc23 = quartileAVPhysEncounters %in% c(2, 3))
+L <- covariateBalance("dichotomous", "quartileAVPhysEnc23", "% Top 2 ambulatory visit quartiles")
+ggsave(paste0("../figures/", f, ".png"), dpi = 300)
+ggsave(paste0("../figures/", f, ".svg"), dpi = 300)
+```
+
+![covarBalAVPhysEncCont.png](../figures/covarBalAVPhysEncCont.png)
+
+```{r, fig.show = "hide", warning = FALSE, message = FALSE}
+f <- "covarBalAVPhysEncCont"
+L <- covariateBalance("continuous", "countAVPhysEncounters", "Ambulatory visits in prior 12 months, mean")
+ggsave(paste0("../figures/", f, ".png"), dpi = 300)
+ggsave(paste0("../figures/", f, ".svg"), dpi = 300)
+```
 
 
 ### Comorbidities
