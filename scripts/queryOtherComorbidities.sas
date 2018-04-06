@@ -104,6 +104,13 @@ Fenglong
 /* 
 Only use ICD-9 codes from previous 12 months for Charlson
  */
+/* 
+Last execution: 1/2/2018 (commit 56f369)
+DO NOT EXECUTE AGAIN
+Due to server upgrade (32-bit to 64-bit SAS), subsequent execution results in error:
+"ERROR: Foreign datasets cannot be modified."
+ */
+/*  
 proc sql;
   create table UCB.tempPrevDx12mPrior as
     select * 
@@ -172,6 +179,7 @@ proc contents data = DT.CIRAS order = varnum;
 run;
 proc contents data = DT.indRx order = varnum;
 run;
+ */
 /* 
 END Fenglong's comorbidities code
  */
