@@ -1,4 +1,4 @@
-1                                         The SAS System               15:39 Friday, April 6, 2018
+1                                         The SAS System               16:07 Friday, April 6, 2018
 
 NOTE: Copyright (c) 2016 by SAS Institute Inc., Cary, NC, USA. 
 NOTE: SAS (r) Proprietary Software 9.4 (TS1M5) 
@@ -28,8 +28,8 @@ of the shared folders.
 
 
 NOTE: SAS initialization used:
-      real time           5.75 seconds
-      cpu time            0.21 seconds
+      real time           4.89 seconds
+      cpu time            0.23 seconds
       
 1          *  University of Alabama at Birmingham                               *
 2          *  AS project                                            *
@@ -72,7 +72,7 @@ NOTE: Libref NDC was successfully assigned as follows:
 133        
 134        
 135        ods html
-2                                                                   The SAS System                                         15:39 Friday, April 6, 2018
+2                                                                   The SAS System                                         16:07 Friday, April 6, 2018
 
 136          body = "output\&cmt..html"
 137          style = Statistical;
@@ -95,7 +95,7 @@ NOTE: One or more variables were converted because the data type is not supporte
 NOTE: The import data set has 1112 observations and 6 variables.
 NOTE: WORK.COMORBIDITYLOOKUP data set was successfully created.
 NOTE: PROCEDURE IMPORT used (Total process time):
-      real time           0.28 seconds
+      real time           0.24 seconds
       cpu time            0.23 seconds
       
 
@@ -133,8 +133,8 @@ NOTE: 13 rows were inserted into WORK.COMORBIDITYLOOKUP.
 
 173        quit;
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           0.35 seconds
-      cpu time            0.06 seconds
+      real time           0.32 seconds
+      cpu time            0.10 seconds
       
 
 174        
@@ -146,7 +146,7 @@ NOTE: PROCEDURE SQL used (Total process time):
 180          create table DT.comorbiditiesOther as
 181            select distinct
 182                   C.database, C.exposure, C.patid, C.ASCohortDate, C.indexGNN, C.indexDate, C.indexID,
-3                                                                   The SAS System                                         15:39 Friday, April 6, 2018
+3                                                                   The SAS System                                         16:07 Friday, April 6, 2018
 
 183                   C.age, C.sex,
 184                   C.comorbidity,
@@ -161,7 +161,7 @@ NOTE: Table DT.COMORBIDITIESOTHER created, with 75789 rows and 11 columns.
 188          select comorbidity, database, exposure, sum(indPreExposure) as sumIndPreExposure
 189            from DT.comorbiditiesOther
 190            group by comorbidity, database, exposure;
-                                                                  --- AS project ---                                   15:39 Friday, April 6, 2018   1
+                                                                  --- AS project ---                                   16:07 Friday, April 6, 2018   1
 
                                                                                                       sumIndPre
                                        Comorbidity                        database    exposure         Exposure
@@ -239,8 +239,8 @@ NOTE: Table DT.COMORBIDITIESOTHER created, with 75789 rows and 11 columns.
 192        quit;
 NOTE: The PROCEDURE SQL printed page 1.
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           14.91 seconds
-      cpu time            16.67 seconds
+      real time           11.98 seconds
+      cpu time            13.57 seconds
       
 
 193        
@@ -294,7 +294,7 @@ NOTE: PROCEDURE SQL used (Total process time):
 240          create table UCB.tempPrevRx12mPrior as
 241            select A.*, B.etc_name, B.source
 242            from UCB.tempPrevRxAll A left join
-4                                                                   The SAS System                                         15:39 Friday, April 6, 2018
+4                                                                   The SAS System                                         16:07 Friday, April 6, 2018
 
 243                 DT.lookupNDC B on (A.ndc = B.ndc)
 244            where intnx("year", indexDate, -1, "same") < dispense_date <= indexDate
@@ -368,7 +368,7 @@ NOTE: PROCEDURE SQL used (Total process time):
 312          create table DT.rxOralCorticosteroid as
 313            select C.database, C.patid, C.indexID,
 314                   1 as indOralCorticosteroid,
-5                                                                   The SAS System                                         15:39 Friday, April 6, 2018
+5                                                                   The SAS System                                         16:07 Friday, April 6, 2018
 
 315                   sum(C.daysAtRisk * C.prednisodeEquivalentDose) as sumPredEq,
 316                   sum(C.daysAtRisk) as sumDaysSupply,
@@ -442,7 +442,7 @@ NOTE: Table DT.DIAGINDICATORSINPATIENT created, with 17714 rows and 5 columns.
 374            group by B.database, B.patid, B.indexID;
 NOTE: Data set UCB.TEMPPREVDX12MPRIOR is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
       additional CPU resources and may reduce performance.
-6                                                                   The SAS System                                         15:39 Friday, April 6, 2018
+6                                                                   The SAS System                                         16:07 Friday, April 6, 2018
 
 The SAS supervisor will process queries for foreign datasets. No parallel where-clause processing will occur.
 NOTE: Table WORK.COUNTAVPHYSENCOUNTERS created, with 58986 rows and 4 columns.
@@ -515,10 +515,10 @@ NOTE: Table DT.COUNTENCOUNTERS created, with 59560 rows and 6 columns.
 433         */
 434        quit;
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           13.13 seconds
-7                                                                   The SAS System                                         15:39 Friday, April 6, 2018
+      real time           11.65 seconds
+7                                                                   The SAS System                                         16:07 Friday, April 6, 2018
 
-      cpu time            15.80 seconds
+      cpu time            13.86 seconds
       
 
 435        
@@ -528,6 +528,6 @@ NOTE: PROCEDURE SQL used (Total process time):
 439        ods html close;
 NOTE: SAS Institute Inc., SAS Campus Drive, Cary, NC USA 27513-2414
 NOTE: The SAS System used:
-      real time           47.91 seconds
-      cpu time            33.38 seconds
+      real time           41.23 seconds
+      cpu time            28.45 seconds
       
