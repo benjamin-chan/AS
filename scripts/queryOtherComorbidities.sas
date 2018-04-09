@@ -187,6 +187,57 @@ END Fenglong's comorbidities code
 
 
 
+proc import out = Work.biologicsLookup
+            datafile = "U:\studies\AS\pgms\bchan\data\raw\AS Project Codebooks - 20170410\AS Project Medicine - DMARDs & BIOs  - 20170409.xlsx" 
+            dbms = xlsx 
+            replace;
+  sheet = "Sheet1"; 
+  getnames = yes;
+  datarow = 2;
+run;
+proc sql;
+  delete from Work.biologicsLookup
+    where category ^= "Biologic";
+  select category, subcate as subcategory, gnn, count(*) as n
+    from Work.biologicsLookup
+    group by category, subcate, gnn;
+quit;
+proc sql;
+  create table Work.indBiologics0 as
+    select A.database, A.patid, A.indexID,
+           A.begin_date format = mmddyy10. as rxDate, 
+           "HCPCS" as codeType, 
+           A.px as drugCode, 
+           B.gnn as drugName, 
+           B.descript as drugDesc, 
+           . as dispense_sup
+      from UCB.tempPrevPx12mPrior A inner join 
+           Work.biologicsLookup B on (A.px = B.code)
+      where A.px_date < A.indexDate
+    union corr
+    select A.database, A.patid, A.indexID,
+           A.dispense_date format = mmddyy10. as rxDate, 
+           "NDC" as codeType, 
+           A.ndc as drugCode, 
+           B.gnn as drugName, 
+           B.descript as drugDesc, 
+           A.dispense_sup
+      from UCB.tempPrevRx12mPrior A inner join 
+           Work.biologicsLookup B on (A.ndc = B.code)
+      where A.dispense_date < A.indexDate;
+  select codeType, drugName, count(distinct patid) as countDistinctPatid
+    from Work.indBiologics0
+    group by codeType, drugName;
+  create table DT.indBiologics as
+    select distinct
+           A.database, A.patid, A.indexID,
+           1 as indBiologics12mPrior
+    from Work.indBiologics0 A;
+quit;
+
+
+
+
 proc sql;
 /* 
 Oral corticosteroid use
