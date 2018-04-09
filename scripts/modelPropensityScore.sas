@@ -97,7 +97,11 @@ proc sql;
              else ""
              end as catAVPhysEncounters,
            max(0, KK.countAVRheumEncounters) as countAVRheumEncounters,
-           max(0, min(1, KK.countAVRheumEncounters)) as indAVRheumEncounters,
+           case
+             when 0  = max(0, KK.countAVPhysEncounters) then 0
+             when 1 <= max(0, KK.countAVPhysEncounters) then 1
+             else .
+             end as indAVRheumEncounters,
            max(0, KK.indERVisit12mPrior) as indERVisit12mPrior,
            max(0, KK.countERVisits) as countERVisits,
            case
@@ -155,7 +159,7 @@ proc rank data = Work.allCovariates out = Work.allCovariates groups = 4;
 run;
 
 
-proc means data = Work.allCovariates;
+proc means data = Work.allCovariates maxdec = 2 nolabels;
   class database exposure3;
   var indAmyloidosis
       indAortInsuffRegurg
