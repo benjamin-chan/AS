@@ -110,7 +110,7 @@ proc sql;
              when 2 <= max(0, KK.countERVisits)       then "2+"
              else ""
              end as catERVisits,
-           max(0, LL.indBiologics12mPrior) as indBiologics12mPrior
+           max(0, LL.indRxBiologics) as indRxBiologics
     from 
       DT.indexLookup A left join
       (select indexID, 1 as indAmyloidosis      from DT.comorbidities      where indPrevPriorToIndex = 1 & prxmatch("/Amyloidosis/"                               , disease    )) B  on (A.indexID = B.indexID ) left join
@@ -147,7 +147,7 @@ proc sql;
       (select indexID, nsaid, htn, narcotics, fungus, op_bisphosp, thiazide, anticoagulant from DT.indRx) II on (A.indexID = II.indexID) left join
       (select indexID, indIPAdmit12mPrior from DT.diagIndicatorsInpatient) JJ on (A.indexID = JJ.indexID) left join
       (select indexID, countAVPhysEncounters, countAVRheumEncounters, indERVisit12mPrior, countERVisits from DT.countEncounters) KK on (A.indexID = KK.indexID) left join
-      (select indexID, indBiologics12mPrior from DT.indBiologics) LL on (A.indexID = LL.indexID) 
+      (select indexID, indRxBiologics from DT.indBiologics) LL on (A.indexID = LL.indexID) 
     order by A.database;
 quit;
 
@@ -203,7 +203,7 @@ proc means data = Work.allCovariates maxdec = 2 nolabels;
       indIPAdmit12mPrior
       indAVRheumEncounters
       indERVisit12mPrior
-      indBiologics12mPrior;
+      indRxBiologics;
 run;
 proc freq data = Work.allCovariates;
   table database * exposure3 * (meanPredEqDoseCat quartileCharlson quartileCIRAS quartileAVPhysEncounters quartileAVRheumEncounters catERVisits) / list;
@@ -333,7 +333,7 @@ proc logistic data = Work.allCovariates outest = Work.psBetas3Level;
                     indIPAdmit12mPrior
                     indERVisit12mPrior
                     indAVRheumEncounters
-                    indBiologics12mPrior
+                    indRxBiologics
                     / link = glogit rsquare;
   output out = Work.ps3Level predicted = ps xbeta = xbeta;
 run;
@@ -389,7 +389,7 @@ proc logistic data = Work.allCovariates outest = Work.psBetas3Level;
                     indIPAdmit12mPrior
                     indERVisit12mPrior
                     indAVRheumEncounters
-                    indBiologics12mPrior
+                    indRxBiologics
                     / link = glogit rsquare;
   output out = Work.ps3Level predicted = ps xbeta = xbeta;
 run;
@@ -445,7 +445,7 @@ proc logistic data = Work.allCovariates outest = Work.psBetas3Level;
                     indIPAdmit12mPrior
                     indERVisit12mPrior
                     indAVRheumEncounters
-                    indBiologics12mPrior
+                    indRxBiologics
                     / link = glogit rsquare;
   output out = Work.ps3Level predicted = ps xbeta = xbeta;
 run;
@@ -543,7 +543,7 @@ Calculate IPTW
                countAVRheumEncounters,
                quartileAVRheumEncounters,
                indAVRheumEncounters,
-               indBiologics12mPrior
+               indRxBiologics
 ;
 proc sql;
   create table Work.ps as
@@ -711,7 +711,7 @@ proc sql;
            countAVRheumEncounters,
            quartileAVRheumEncounters,
            indAVRheumEncounters,
-           indBiologics12mPrior
+           indRxBiologics
     from DT.ps;
 quit;
 proc export

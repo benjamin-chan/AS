@@ -211,7 +211,7 @@ proc sql;
            B.gnn as drugName, 
            B.descript as drugDesc, 
            . as dispense_sup
-      from UCB.tempPrevPx12mPrior A inner join 
+      from UCB.tempPrevPxAll A inner join 
            Work.biologicsLookup B on (A.px = B.code)
       where A.px_date < A.indexDate
     union corr
@@ -222,7 +222,7 @@ proc sql;
            B.gnn as drugName, 
            B.descript as drugDesc, 
            A.dispense_sup
-      from UCB.tempPrevRx12mPrior A inner join 
+      from UCB.tempPrevRxAll A inner join 
            Work.biologicsLookup B on (A.ndc = B.code)
       where A.dispense_date < A.indexDate;
   select codeType, drugName, count(distinct patid) as countDistinctPatid
@@ -231,7 +231,7 @@ proc sql;
   create table DT.indBiologics as
     select distinct
            A.database, A.patid, A.indexID,
-           1 as indBiologics12mPrior
+           1 as indRxBiologics
     from Work.indBiologics0 A;
 quit;
 
