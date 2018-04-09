@@ -77,7 +77,7 @@ proc sql;
   create table Work.temp0 as
     %foo(2006) union corr
     %foo(2007) union corr
-    %foo(2009) union corr
+    %foo(2008) union corr
     %foo(2009) union corr
     %foo(2010) union corr
     %foo(2011) union corr
