@@ -96,6 +96,8 @@ proc sql;
              when 20 <= max(0, KK.countAVPhysEncounters)       then "20+"
              else ""
              end as catAVPhysEncounters,
+           max(0, KK.countAVRheumEncounters) as countAVRheumEncounters,
+           max(0, min(1, KK.countAVRheumEncounters)) as indAVRheumEncounters,
            max(0, KK.indERVisit12mPrior) as indERVisit12mPrior,
            max(0, KK.countERVisits) as countERVisits,
            case
@@ -103,7 +105,8 @@ proc sql;
              when 1 <= max(0, KK.countERVisits) <=  1 then "1"
              when 2 <= max(0, KK.countERVisits)       then "2+"
              else ""
-             end as catERVisits
+             end as catERVisits,
+           max(0, LL.indBiologics12mPrior) as indBiologics12mPrior
     from 
       DT.indexLookup A left join
       (select indexID, 1 as indAmyloidosis      from DT.comorbidities      where indPrevPriorToIndex = 1 & prxmatch("/Amyloidosis/"                               , disease    )) B  on (A.indexID = B.indexID ) left join
@@ -139,15 +142,16 @@ proc sql;
       (select indexID, ciras, numinflamMarker from DT.CIRAS) HH on (A.indexID = HH.indexID) left join
       (select indexID, nsaid, htn, narcotics, fungus, op_bisphosp, thiazide, anticoagulant from DT.indRx) II on (A.indexID = II.indexID) left join
       (select indexID, indIPAdmit12mPrior from DT.diagIndicatorsInpatient) JJ on (A.indexID = JJ.indexID) left join
-      (select indexID, countAVPhysEncounters, indERVisit12mPrior, countERVisits from DT.countEncounters) KK on (A.indexID = KK.indexID) 
+      (select indexID, countAVPhysEncounters, countAVRheumEncounters, indERVisit12mPrior, countERVisits from DT.countEncounters) KK on (A.indexID = KK.indexID) left join
+      (select indexID, indBiologics12mPrior from DT.indBiologics) LL on (A.indexID = LL.indexID) 
     order by A.database;
 quit;
 
 
 proc rank data = Work.allCovariates out = Work.allCovariates groups = 4;
   by database;
-  var charlson ciras countAVPhysEncounters;
-  ranks quartileCharlson quartileCIRAS quartileAVPhysEncounters;
+  var charlson ciras countAVPhysEncounters countAVRheumEncounters;
+  ranks quartileCharlson quartileCIRAS quartileAVPhysEncounters quartileAVRheumEncounters;
 run;
 
 
@@ -193,15 +197,18 @@ proc means data = Work.allCovariates;
       indRxThiazide
       indRxAnticoagulant
       indIPAdmit12mPrior
-      indERVisit12mPrior;
+      indAVRheumEncounters
+      indERVisit12mPrior
+      indBiologics12mPrior;
 run;
 proc freq data = Work.allCovariates;
-  table database * exposure3 * (meanPredEqDoseCat quartileCharlson quartileCIRAS quartileAVPhysEncounters catERVisits) / list;
+  table database * exposure3 * (meanPredEqDoseCat quartileCharlson quartileCIRAS quartileAVPhysEncounters quartileAVRheumEncounters catERVisits) / list;
 run;
 proc sql;
   select database,
          catAge,
          min(age) as min,
+         mean(age) as mean,
          max(age) as max,
          count(*) as n,
          sum(exposure3 = "TNF") as nTNF,
@@ -212,6 +219,7 @@ proc sql;
   select database,
          quartileCharlson,
          min(charlson) as min,
+         mean(charlson) as mean,
          max(charlson) as max,
          count(*) as n,
          sum(exposure3 = "TNF") as nTNF,
@@ -222,6 +230,7 @@ proc sql;
   select database,
          quartileCIRAS,
          min(ciras) as min,
+         mean(ciras) as mean,
          max(ciras) as max,
          count(*) as n,
          sum(exposure3 = "TNF") as nTNF,
@@ -232,6 +241,7 @@ proc sql;
   select database,
          quartileAVPhysEncounters,
          min(countAVPhysEncounters) as min,
+         mean(countAVPhysEncounters) as mean,
          max(countAVPhysEncounters) as max,
          count(*) as n,
          sum(exposure3 = "TNF") as nTNF,
@@ -239,6 +249,17 @@ proc sql;
          sum(exposure3 = "NSAID or no exposure") as nNSAID
     from Work.AllCovariates
     group by database, quartileAVPhysEncounters;
+  select database,
+         quartileAVRheumEncounters,
+         min(quartileAVRheumEncounters) as min,
+         mean(quartileAVRheumEncounters) as mean,
+         max(quartileAVRheumEncounters) as max,
+         count(*) as n,
+         sum(exposure3 = "TNF") as nTNF,
+         sum(exposure3 = "DMARD") as nDMARD,
+         sum(exposure3 = "NSAID or no exposure") as nNSAID
+    from Work.AllCovariates
+    group by database, quartileAVRheumEncounters;
 quit;
 
 
@@ -257,6 +278,7 @@ Some parameters blow up; exlude these from the model estimation
              quartileCharlson (ref = first) 
              quartileCIRAS (ref = first) 
              quartileAVPhysEncounters (ref = first)
+             quartileAVRheumEncounters (ref = first)
              / param = ref;
 
 
@@ -306,8 +328,8 @@ proc logistic data = Work.allCovariates outest = Work.psBetas3Level;
                     indRxAnticoagulant
                     indIPAdmit12mPrior
                     indERVisit12mPrior
-                    quartileCIRAS
-                    quartileAVPhysEncounters
+                    indAVRheumEncounters
+                    indBiologics12mPrior
                     / link = glogit rsquare;
   output out = Work.ps3Level predicted = ps xbeta = xbeta;
 run;
@@ -362,8 +384,8 @@ proc logistic data = Work.allCovariates outest = Work.psBetas3Level;
                     indRxAnticoagulant
                     indIPAdmit12mPrior
                     indERVisit12mPrior
-                    quartileCIRAS
-                    quartileAVPhysEncounters
+                    indAVRheumEncounters
+                    indBiologics12mPrior
                     / link = glogit rsquare;
   output out = Work.ps3Level predicted = ps xbeta = xbeta;
 run;
@@ -418,8 +440,8 @@ proc logistic data = Work.allCovariates outest = Work.psBetas3Level;
                     indRxAnticoagulant
                     indIPAdmit12mPrior
                     indERVisit12mPrior
-                    quartileCIRAS
-                    quartileAVPhysEncounters
+                    indAVRheumEncounters
+                    indBiologics12mPrior
                     / link = glogit rsquare;
   output out = Work.ps3Level predicted = ps xbeta = xbeta;
 run;
@@ -513,7 +535,11 @@ Calculate IPTW
                ciras,
                quartileCIRAS,
                countAVPhysEncounters,
-               quartileAVPhysEncounters
+               quartileAVPhysEncounters,
+               countAVRheumEncounters,
+               quartileAVRheumEncounters,
+               indAVRheumEncounters,
+               indBiologics12mPrior
 ;
 proc sql;
   create table Work.ps as
@@ -677,7 +703,11 @@ proc sql;
            ciras,
            quartileCIRAS,
            countAVPhysEncounters,
-           quartileAVPhysEncounters
+           quartileAVPhysEncounters,
+           countAVRheumEncounters,
+           quartileAVRheumEncounters,
+           indAVRheumEncounters,
+           indBiologics12mPrior
     from DT.ps;
 quit;
 proc export
