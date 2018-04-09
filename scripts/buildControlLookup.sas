@@ -26,7 +26,7 @@ ods html
 proc sql;
   create table DT.controlLookup AS
     select "MPCD"       as database, "Non-AS" as cohort, &var from UCB.cntlCohortStdMPCD union corr
-    select "Medicare"   as database, "Non-AS" as cohort, &var from UCB.cntlCohortStdC5P ;
+    select "Medicare"   as database, "Non-AS" as cohort, &var from UCB.cntlCohortStdC5PN ;
   alter table DT.controlLookup add controlID numeric;
   update DT.controlLookup
     set controlID = monotonic();
