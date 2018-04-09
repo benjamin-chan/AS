@@ -257,6 +257,14 @@ Count encounters
           from UCB.tempPrevDx12mPrior A
           where A.enc_type = "AV" & not(missing(A.dx)) & calculated indAVPhysEncounter = 1) B
     group by B.database, B.patid, B.indexID;
+  create table Work.countAVRheumEncounters as
+    select B.database, B.patid, B.indexID,
+           sum(indAVRheumEncounter) as countAVRheumEncounters
+    from (select distinct A.database, A.patid, A.indexID, A.begin_date,
+                 A.prov_type = "66" as indAVRheumEncounter
+          from UCB.tempPrevDx12mPrior A
+          where A.enc_type = "AV" & not(missing(A.dx)) & calculated indAVRheumEncounter = 1) B
+    group by B.database, B.patid, B.indexID;
   create table Work.countEREncounters as
     select A.database, A.patid, A.indexID,
            count(distinct A.begin_date) as countERVisits,
@@ -268,14 +276,22 @@ Count encounters
     where A.enc_type = "ED"
     group by A.database, A.patid, A.indexID;
   create table DT.countEncounters as
-    select coalesce(A.database, B.database) as database,
-           coalesce(A.patid, B.patid) as patid,
-           coalesce(A.indexID, B.indexID) as indexID,
+    select coalesce(A.database, B.database, C.database) as database,
+           coalesce(A.patid, B.patid, C.patid) as patid,
+           coalesce(A.indexID, B.indexID, C.indexID) as indexID,
            A.countAVPhysEncounters,
-           B.indERVisit12mPrior,
-           B.countERVisits
+           B.countAVRheumEncounters,
+           C.indERVisit12mPrior,
+           C.countERVisits
     from Work.countAVPhysEncounters A full join
-         Work.countEREncounters B on (A.indexID = B.indexID);
+         Work.countAVRheumEncounters B on (A.indexID = B.indexID) full join
+         Work.countEREncounters C on (A.indexID = C.indexID | B.indexID = C.indexID);
+  select ^missing(countAVPhysEncounters) as a,
+         ^missing(countAVRheumEncounters) as b,
+         ^missing(indERVisit12mPrior) as c,
+         count(*) as n
+    from DT.countEncounters
+    group by calculated a, calculated b, calculated c;
 /* 
 Inhaled antibiotics
 
