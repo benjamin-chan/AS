@@ -1,4 +1,4 @@
-1                                                          The SAS System                                14:50 Monday, April 9, 2018
+1                                                          The SAS System                             11:54 Thursday, April 12, 2018
 
 NOTE: Unable to open SASUSER.REGSTRY. WORK.REGSTRY will be opened instead.
 NOTE: All registry changes will be lost at the end of the session.
@@ -35,8 +35,8 @@ of the shared folders.
 
 
 NOTE: SAS initialization used:
-      real time           5.08 seconds
-      cpu time            0.26 seconds
+      real time           4.57 seconds
+      cpu time            0.24 seconds
       
 1          *  University of Alabama at Birmingham                               *
 2          *  AS project                                            *
@@ -72,7 +72,7 @@ NOTE: Libref NDC was successfully assigned as follows:
       Physical Name: W:\onenote\references\drug ndcs\sas data
 127        footnote "&pgm.";
 128        * footnote2 "%sysfunc(datetime(),datetime14.)";
-2                                                                   The SAS System                                         14:50 Monday, April 9, 2018
+2                                                                   The SAS System                                      11:54 Thursday, April 12, 2018
 
 129        title1 '--- AS project ---';
 130        **********************************************************************;
@@ -88,14 +88,183 @@ NOTE: Writing HTML Body file: output\queryOtherComorbidities.html
 139        
 140        
 141        
-142        proc import out = Work.comorbidityLookup
-143                    datafile = "U:\studies\AS\pgms\bchan\data\raw\AS Project Codebooks - 20170410\AS Project Covariates Codebook-20170410.xlsx"
-144                    dbms = xlsx
-145                    replace;
-146          sheet = "Comorbidity";
-147          getnames = yes;
-148          datarow = 2;
-149        run;
+142        /*
+143        From: Yang, Shuo [mailto:shuoyang@uabmc.edu]
+144        Sent: Tuesday, April 10, 2018 8:28 AM
+145        To: Chen, Lang <langchen@uabmc.edu>; Benjamin Chan <chanb@ohsu.edu>
+146        Subject: RE: Marketscan provider codes
+147        
+148        Hi Ben,
+149        
+150        Please see below formats that I created from marketscan data dictionary.
+151        
+152        Best,
+153        
+154        Shawn
+155         */
+156        proc format;
+156      !                   /*<-- $PROVIDERTYPE. (from STDPROV) */
+157              value $providerType
+158                    '1'='Acute Care Hospital'
+159                    '10'='Birthing Center'
+160                    '100'='Pediatric Otolaryngology'
+161                    '105'='Pediatric Critical Care Med'
+162                    '120'='Chiropractor/DCM'
+163                    '130'='Podiatry'
+164                    '140'='Pain Mgmt/Pain Medicine'
+165                    '145'='Pediatric Anesthesiology'
+166                    '15'='Treatment Center'
+167                    '150'='Anesthesiology'
+168                    '160'='Nuclear Medicine'
+169                    '170'='Mental Health/Chemical Dep NEC'
+170                    '175'='Mental Health Facilities'
+171                    '180'='Chemical Depend Treatment Ctr'
+172                    '185'='Pediatric Radiology'
+173                    '20'='Mental Health/Chemical Dep NEC'
+174                    '200'='Medical Doctor - MD (NEC)'
+175                    '202'='Osteopathic Medicine'
+176                    '204'='Internal Medicine (NEC)'
+177                    '206'='MultiSpecialty Physician Group'
+178                    '208'='Convalescent Care Facility'
+179                    '21'='Pulmonary Disease'
+180                    '210'='Intermediate Care Facility'
+181                    '215'='Residential Treatment Center'
+182                    '22'='Rheumatology'
+183                    '220'='Emergency Medicine'
+184                    '225'='Hospitalist'
+185                    '227'='Palliative Medicine'
+186                    '23'='Mental Hlth/Chem Dep Day Care'
+187                    '230'='Allergy & Immunology'
+188                    '240'='Family Practice'
+189                    '245'='Special Care Facility (NEC)'
+190                    '25'='Rehabilitation Facilities'
+191                    '250'='Dentist - MD & DDS (NEC)'
+192                    '260'='Dental Specialist'
+193                    '265'='Critical Care Medicine'
+194                    '270'='Endocrinology & Metabolism'
+195                    '275'='Gastroenterology'
+196                    '280'='Hematology'
+197                    '285'='Infectious Disease'
+198                    '290'='Nephrology'
+3                                                                   The SAS System                                      11:54 Thursday, April 12, 2018
+
+199                    '295'='Pathology'
+200                    '30'='Longterm Care (NEC)'
+201                    '300'='Pediatric Pathology'
+202                    '31'='Extended Care Facility'
+203                    '32'='Geriatric Hospital'
+204                    '320'='Radiology'
+205                    '325'='Genetics'
+206                    '33'='Convalescent Care Facility'
+207                    '330'='Ophthalmology'
+208                    '34'='Preventative Medicine'
+209                    '340'='Otolaryngology'
+210                    '35'='Psychiatry'
+211                    '350'='Physical Medicine & Rehab'
+212                    '355'='Plastic/Maxillofacial Surgery'
+213                    '36'='Continuing Care Retirement Com'
+214                    '360'='Proctology'
+215                    '365'='Urology'
+216                    '37'='Day/Night Care Center'
+217                    '38'='Hospice Facility'
+218                    '380'='Dermatology'
+219                    '40'='Other Facility (NEC)'
+220                    '400'='Pediatrician (NEC)'
+221                    '41'='Infirmary'
+222                    '410'='Pediatric Specialist (NEC)'
+223                    '413'='Pediatric Nephrology'
+224                    '415'='Pediatric Ophthalmology'
+225                    '418'='Pediatric Orthopaedics'
+226                    '42'='Special Care Facility (NEC)'
+227                    '420'='Geriatric Medicine'
+228                    '423'='Cardiovascular Dis/Cardiology'
+229                    '425'='Neurology'
+230                    '428'='Pediatric Emergency Medicine'
+231                    '430'='Pediatric Allergy & Immunology'
+232                    '433'='Pediatric Endocrinology'
+233                    '435'='Neonatal-Perinatal Medicine'
+234                    '438'='Pediatric Gastroenterology'
+235                    '440'='Pediatric Cardiology'
+236                    '443'='Pediatric Hematology-Oncology'
+237                    '448'='Pediatric Infectious Diseases'
+238                    '450'='Pediatric Rheumatology'
+239                    '453'='Sports Medicine (Pediatrics)'
+240                    '455'='Pediatric Urology'
+241                    '458'='Child Psychiatry'
+242                    '460'='Pediatric Medical Toxicology'
+243                    '5'='Ambulatory Surgery Centers'
+244                    '500'='Surgeon (NEC)'
+245                    '505'='Surgical Specialist (NEC)'
+246                    '510'='Colon & Rectal Surgery'
+247                    '520'='Neurological Surgery'
+248                    '530'='Orthopaedic Surgery'
+249                    '535'='Abdominal Surgery'
+250                    '540'='Cardiovascular Surgery'
+251                    '545'='Dermatologic Surgery'
+252                    '550'='General Vascular Surgery'
+253                    '555'='Head and Neck Surgery'
+254                    '560'='Pediatric Surgery'
+255                    '565'='Surgical Critical Care'
+256                    '570'='Transplant Surgery'
+257                    '575'='Traumatic Surgery'
+258                    '580'='Cardiothoracic Surgery'
+259                    '585'='Thoracic Surgery'
+260                    '6'='Urgent Care Facility'
+261                    '805'='Dental Technician'
+262                    '810'='Dietitian'
+263                    '815'='Medical Technician'
+264                    '820'='Midwife'
+265                    '822'='Nursing Services'
+266                    '824'='Psychiatric Nurse'
+267                    '825'='Nurse Practitioner'
+268                    '827'='Nurse Anesthetist'
+269                    '830'='Optometrist'
+270                    '835'='Optician'
+4                                                                   The SAS System                                      11:54 Thursday, April 12, 2018
+
+271                    '840'='Pharmacist'
+272                    '845'='Physician Assistant'
+273                    '850'='Therapy (Physical)'
+274                    '853'='Therapists (Supportive)'
+275                    '855'='Therapists (Alternative)'
+276                    '857'='Renal Dialysis Therapy'
+277                    '860'='Psychologist'
+278                    '865'='Acupuncturist'
+279                    '870'='Spiritual Healers'
+280                    '900'='Health Educator/Agency'
+281                    '905'='Transportation'
+282                    '910'='Health Resort'
+283                    '915'='Hearing Labs'
+284                    '920'='Home Health Organiz/Agency'
+285                    '925'='Imaging Center'
+286                    '930'='Laboratory'
+287                    '935'='Pharmacy'
+288                    '940'='Supply Center'
+289                    '945'='Vision Center'
+290                    '950'='Public Health Agency'
+291                    '955'='Unknown Clinic'
+292                    '960'='Case Manager'
+293        ;
+NOTE: Format $PROVIDERTYPE has been output.
+294        run;
+
+NOTE: PROCEDURE FORMAT used (Total process time):
+      real time           0.06 seconds
+      cpu time            0.01 seconds
+      
+
+295        
+296        
+297        
+298        
+299        proc import out = Work.comorbidityLookup
+300                    datafile = "U:\studies\AS\pgms\bchan\data\raw\AS Project Codebooks - 20170410\AS Project Covariates Codebook-20170410.xlsx"
+301                    dbms = xlsx
+302                    replace;
+303          sheet = "Comorbidity";
+304          getnames = yes;
+305          datarow = 2;
+306        run;
 
 NOTE:    Variable Name Change.  Compact Definion -> Compact_Definion                
 NOTE: One or more variables were converted because the data type is not supported by the V9 engine. For more details, run with options MSGLEVEL=I.
@@ -103,72 +272,72 @@ NOTE: The import data set has 1112 observations and 6 variables.
 NOTE: WORK.COMORBIDITYLOOKUP data set was successfully created.
 NOTE: PROCEDURE IMPORT used (Total process time):
       real time           0.23 seconds
-      cpu time            0.21 seconds
+      cpu time            0.20 seconds
       
 
-150        proc sql;
-151          alter table Work.comorbidityLookup
-152            add code varchar;
+307        proc sql;
+308          alter table Work.comorbidityLookup
+309            add code varchar;
 NOTE: One or more variables were converted because the data type is not supported by the V9 engine. For more details, run with options MSGLEVEL=I.
 NOTE: Table WORK.COMORBIDITYLOOKUP has been modified, with 7 columns.
-153          update Work.comorbidityLookup
-154            set code = dequote(icd9_list);
+310          update Work.comorbidityLookup
+311            set code = dequote(icd9_list);
 NOTE: 1112 rows were updated in WORK.COMORBIDITYLOOKUP.
 
-155          alter table Work.comorbidityLookup
-156            drop compact_definion, icd9_list, billable, description, F;
+312          alter table Work.comorbidityLookup
+313            drop compact_definion, icd9_list, billable, description, F;
 NOTE: Table WORK.COMORBIDITYLOOKUP has been modified, with 2 columns.
-157          delete from Work.comorbidityLookup
-158            where missing(code);
+314          delete from Work.comorbidityLookup
+315            where missing(code);
 NOTE: 1009 rows were deleted from WORK.COMORBIDITYLOOKUP.
 
-159          insert into Work.comorbidityLookup
-160            values ("COPD or emphysema", "4910" )
-161            values ("COPD or emphysema", "4911" )
-162            values ("COPD or emphysema", "49120")
-163            values ("COPD or emphysema", "49121")
-164            values ("COPD or emphysema", "49122")
-165            values ("COPD or emphysema", "4918" )
-166            values ("COPD or emphysema", "4919" )
-167            values ("COPD or emphysema", "4920" )
-168            values ("COPD or emphysema", "4928" )
-169            values ("COPD or emphysema", "496"  )
-170            values ("COPD or emphysema", "49320")
-171            values ("COPD or emphysema", "49321")
-172            values ("COPD or emphysema", "49322");
+316          insert into Work.comorbidityLookup
+317            values ("COPD or emphysema", "4910" )
+318            values ("COPD or emphysema", "4911" )
+5                                                                   The SAS System                                      11:54 Thursday, April 12, 2018
+
+319            values ("COPD or emphysema", "49120")
+320            values ("COPD or emphysema", "49121")
+321            values ("COPD or emphysema", "49122")
+322            values ("COPD or emphysema", "4918" )
+323            values ("COPD or emphysema", "4919" )
+324            values ("COPD or emphysema", "4920" )
+325            values ("COPD or emphysema", "4928" )
+326            values ("COPD or emphysema", "496"  )
+327            values ("COPD or emphysema", "49320")
+328            values ("COPD or emphysema", "49321")
+329            values ("COPD or emphysema", "49322");
 NOTE: 13 rows were inserted into WORK.COMORBIDITYLOOKUP.
 
-173        quit;
+330        quit;
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           0.31 seconds
-      cpu time            0.06 seconds
+      real time           0.35 seconds
+      cpu time            0.10 seconds
       
 
-174        
-175        
-3                                                                   The SAS System                                         14:50 Monday, April 9, 2018
-
-176        proc sql;
-177        
-178          %let select1 = select A.*, B.comorbidity;
-179          %let join1 = inner join Work.comorbidityLookup B on (A.code = B.code);
-180          create table DT.comorbiditiesOther as
-181            select distinct
-182                   C.database, C.exposure, C.patid, C.ASCohortDate, C.indexGNN, C.indexDate, C.indexID,
-183                   C.age, C.sex,
-184                   C.comorbidity,
-185                   1 as indPreExposure
-186            from (&select1 from UCB.tempPrevDxAll A &join1) C;
+331        
+332        
+333        proc sql;
+334        
+335          %let select1 = select A.*, B.comorbidity;
+336          %let join1 = inner join Work.comorbidityLookup B on (A.code = B.code);
+337          create table DT.comorbiditiesOther as
+338            select distinct
+339                   C.database, C.exposure, C.patid, C.ASCohortDate, C.indexGNN, C.indexDate, C.indexID,
+340                   C.age, C.sex,
+341                   C.comorbidity,
+342                   1 as indPreExposure
+343            from (&select1 from UCB.tempPrevDxAll A &join1) C;
 NOTE: Data set UCB.TEMPPREVDXALL is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
       additional CPU resources and may reduce performance.
 The SAS supervisor will process queries for foreign datasets. No parallel where-clause processing will occur.
 NOTE: Table DT.COMORBIDITIESOTHER created, with 75789 rows and 11 columns.
 
-187        
-188          select comorbidity, database, exposure, sum(indPreExposure) as sumIndPreExposure
-189            from DT.comorbiditiesOther
-190            group by comorbidity, database, exposure;
-                                                                  --- AS project ---                                   14:50 Monday, April 9, 2018   1
+344        
+345          select comorbidity, database, exposure, sum(indPreExposure) as sumIndPreExposure
+346            from DT.comorbiditiesOther
+347            group by comorbidity, database, exposure;
+                                                                  --- AS project ---                                11:54 Thursday, April 12, 2018   1
 
                                                                                                       sumIndPre
                                        Comorbidity                        database    exposure         Exposure
@@ -242,140 +411,140 @@ NOTE: Table DT.COMORBIDITIESOTHER created, with 75789 rows and 11 columns.
  
  
                                                              queryOtherComorbidities.sas
-191        
-192        quit;
+348        
+349        quit;
 NOTE: The PROCEDURE SQL printed page 1.
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           16.20 seconds
-      cpu time            17.98 seconds
+      real time           15.66 seconds
+      cpu time            17.69 seconds
       
 
-193        
-194        
-195        
-196        /*
-197        BEGIN Fenglong's comorbidities code
-198        
-199        From: Xie, Fenglong [mailto:fenglongxie@uabmc.edu]
-200        Sent: Wednesday, November 29, 2017 1:32 PM
-201        To: Benjamin Chan <chanb@ohsu.edu>
-202        Subject: Attachment from my EndNote Library
-203        
-204        Hi, Ben
-205        
-206        Here are variable list included in our infection risk score model.
-207        
-208        Hinfect agec preddose cpd Invisit heartFailure diabs antidepres nsaid HTN narcotics fracture lipid malign dem outInfect
-209        ulcer fungus sex op_bisphosp BENE_ENTLMT_RSN_ORIG thiazide Hypertension psa inflamMarker anticoagulant mammo;
-210        
-211        please refer to table 2 in the attached reference for full name of these variables and the attached text file for definition of these
-211      ! variables.
-212        
-213        Definition for some variables (such as ICD 9 codes for infection) may changed, please use most recent ICD 9 list.
-214        
-215        Please let me know if you have any question.
-216        
-217        Fenglong
-218         */
-219        /*
-220        Only use ICD-9 codes from previous 12 months for Charlson
-221         */
-222        /*
-223        Last execution: 1/2/2018 (commit 56f369)
-224        DO NOT EXECUTE AGAIN
-225        Due to server upgrade (32-bit to 64-bit SAS), subsequent execution results in error:
-226        "ERROR: Foreign datasets cannot be modified."
-227         */
-228        /*
-229        proc sql;
-230          create table UCB.tempPrevDx12mPrior as
-231            select *
-232            from UCB.tempPrevDxAll
-233            where intnx("year", indexDate, -1, "same") < begin_date <= indexDate
-234            order by indexID, indexDate;
-235          create table UCB.tempPrevPx12mPrior as
-4                                                                   The SAS System                                         14:50 Monday, April 9, 2018
+350        
+351        
+352        
+353        /*
+354        BEGIN Fenglong's comorbidities code
+355        
+356        From: Xie, Fenglong [mailto:fenglongxie@uabmc.edu]
+357        Sent: Wednesday, November 29, 2017 1:32 PM
+358        To: Benjamin Chan <chanb@ohsu.edu>
+359        Subject: Attachment from my EndNote Library
+360        
+361        Hi, Ben
+362        
+363        Here are variable list included in our infection risk score model.
+364        
+365        Hinfect agec preddose cpd Invisit heartFailure diabs antidepres nsaid HTN narcotics fracture lipid malign dem outInfect
+366        ulcer fungus sex op_bisphosp BENE_ENTLMT_RSN_ORIG thiazide Hypertension psa inflamMarker anticoagulant mammo;
+367        
+368        please refer to table 2 in the attached reference for full name of these variables and the attached text file for definition of these
+368      ! variables.
+369        
+370        Definition for some variables (such as ICD 9 codes for infection) may changed, please use most recent ICD 9 list.
+371        
+6                                                                   The SAS System                                      11:54 Thursday, April 12, 2018
 
-236            select *
-237            from UCB.tempPrevPxAll
-238            where intnx("year", indexDate, -1, "same") < px_date <= indexDate
-239            order by indexID, indexDate;
-240          create table UCB.tempPrevRx12mPrior as
-241            select A.*, B.etc_name, B.source
-242            from UCB.tempPrevRxAll A left join
-243                 DT.lookupNDC B on (A.ndc = B.ndc)
-244            where intnx("year", indexDate, -1, "same") < dispense_date <= indexDate
-245            order by indexID, indexDate;
-246        quit;
-247        
-248        %include "lib\charlson.sas" / source2;
-249        %include "lib\indicationDx.sas" / source2;
-250        %include "lib\indicationPx.sas" / source2;
-251        %include "lib\indicationRx.sas" / source2;
-252        %include "lib\NumCnt.sas" / source2;
-253        %include "lib\ciras.sas" / source2;
-254        
-255        %let CovariateListDx= hepatitisC fluVaccineDx JointSurgDx ulcer obese smoke
-256                              lipidDx uveitis growthFail mammoDx PSAdx PapDx endoDx Sjogrens MI heartFailure stroke TIA EAM
-257                              fistula_abscessDx hemaCa solidCa
-258                              Hypertension angina fracture osteo icd7100; *covariate in 3rd line are from malignancy WG;
-259        %indicationDx(indexID, indexDate);
-260        
-261        %let CovariateListPx = InflamMarker RehabVisit RF platelet LFT FluVaccine jointSurg lipidPx Coronary_Revas
-262                               intraArticularInj MammoPx PSApx PAPpx endoPx FOBT J3490
-263                               fistula_abscessPx ercpPx barium_ugiPx barium_colonPx;
-264        %indicationPx(indexID, indexDate);
-265        
-266        %let CovariateListRx= chemo lipid dm folate fungus HTN naproxen narcotics nsaid sedative steroid tb thyroid viral
-267                             dementia statin NSAIDcox BBlocker op_PPI op_bisphosp op_other
-268                             thiazide thiazolidinedione anticoagulant
-269                   antithrom antibiotics antipsych antidepres anticonvul calcium Adrenergic;
-270        %indicationRx(indexID, indexDate);
-271        proc means data = Work.indRx;
-272          var &CovariateListRx;
-273        run;
-274        
-275        %charlson(inputds = ,
-276                  idVar = indexID,
-277                  IndexDateVarName = indexDate,
-278                  outputds = CCI,
-279                  IndexVarName = Charlson,
-280                  inpatonly = B,
-281                  malig = N);
-282        
-283        %ciras(DT.indexLookup, indexID, indexDate);
-284        
-285        
-286        proc sql;
-287          create table DT.charlsonIndex as select * from Work._WithCharlson;
-288          create table DT.CIRAS as select * from Work.CIRAS;
-289          create table DT.indRx as select * from Work.indRx;
-290        quit;
-291        proc contents data = DT.charlsonIndex order = varnum;
-292        run;
-293        proc contents data = DT.CIRAS order = varnum;
-294        run;
-295        proc contents data = DT.indRx order = varnum;
-296        run;
-297         */
-298        /*
-299        END Fenglong's comorbidities code
-300         */
-301        
-302        
-303        
-304        
-305        proc import out = Work.biologicsLookup
-306                    datafile = "U:\studies\AS\pgms\bchan\data\raw\AS Project Codebooks - 20170410\AS Project Medicine - DMARDs & BIOs  -
-306      ! 20170409.xlsx"
-5                                                                   The SAS System                                         14:50 Monday, April 9, 2018
+372        Please let me know if you have any question.
+373        
+374        Fenglong
+375         */
+376        /*
+377        Only use ICD-9 codes from previous 12 months for Charlson
+378         */
+379        /*
+380        Last execution: 1/2/2018 (commit 56f369)
+381        DO NOT EXECUTE AGAIN
+382        Due to server upgrade (32-bit to 64-bit SAS), subsequent execution results in error:
+383        "ERROR: Foreign datasets cannot be modified."
+384         */
+385        /*
+386        proc sql;
+387          create table UCB.tempPrevDx12mPrior as
+388            select *
+389            from UCB.tempPrevDxAll
+390            where intnx("year", indexDate, -1, "same") < begin_date <= indexDate
+391            order by indexID, indexDate;
+392          create table UCB.tempPrevPx12mPrior as
+393            select *
+394            from UCB.tempPrevPxAll
+395            where intnx("year", indexDate, -1, "same") < px_date <= indexDate
+396            order by indexID, indexDate;
+397          create table UCB.tempPrevRx12mPrior as
+398            select A.*, B.etc_name, B.source
+399            from UCB.tempPrevRxAll A left join
+400                 DT.lookupNDC B on (A.ndc = B.ndc)
+401            where intnx("year", indexDate, -1, "same") < dispense_date <= indexDate
+402            order by indexID, indexDate;
+403        quit;
+404        
+405        %include "lib\charlson.sas" / source2;
+406        %include "lib\indicationDx.sas" / source2;
+407        %include "lib\indicationPx.sas" / source2;
+408        %include "lib\indicationRx.sas" / source2;
+409        %include "lib\NumCnt.sas" / source2;
+410        %include "lib\ciras.sas" / source2;
+411        
+412        %let CovariateListDx= hepatitisC fluVaccineDx JointSurgDx ulcer obese smoke
+413                              lipidDx uveitis growthFail mammoDx PSAdx PapDx endoDx Sjogrens MI heartFailure stroke TIA EAM
+414                              fistula_abscessDx hemaCa solidCa
+415                              Hypertension angina fracture osteo icd7100; *covariate in 3rd line are from malignancy WG;
+416        %indicationDx(indexID, indexDate);
+417        
+418        %let CovariateListPx = InflamMarker RehabVisit RF platelet LFT FluVaccine jointSurg lipidPx Coronary_Revas
+419                               intraArticularInj MammoPx PSApx PAPpx endoPx FOBT J3490
+420                               fistula_abscessPx ercpPx barium_ugiPx barium_colonPx;
+421        %indicationPx(indexID, indexDate);
+422        
+423        %let CovariateListRx= chemo lipid dm folate fungus HTN naproxen narcotics nsaid sedative steroid tb thyroid viral
+424                             dementia statin NSAIDcox BBlocker op_PPI op_bisphosp op_other
+425                             thiazide thiazolidinedione anticoagulant
+426                   antithrom antibiotics antipsych antidepres anticonvul calcium Adrenergic;
+427        %indicationRx(indexID, indexDate);
+428        proc means data = Work.indRx;
+429          var &CovariateListRx;
+430        run;
+431        
+432        %charlson(inputds = ,
+433                  idVar = indexID,
+434                  IndexDateVarName = indexDate,
+435                  outputds = CCI,
+436                  IndexVarName = Charlson,
+437                  inpatonly = B,
+438                  malig = N);
+439        
+440        %ciras(DT.indexLookup, indexID, indexDate);
+441        
+442        
+443        proc sql;
+7                                                                   The SAS System                                      11:54 Thursday, April 12, 2018
 
-307                    dbms = xlsx
-308                    replace;
-309          sheet = "Sheet1";
-310          getnames = yes;
-311          datarow = 2;
-312        run;
+444          create table DT.charlsonIndex as select * from Work._WithCharlson;
+445          create table DT.CIRAS as select * from Work.CIRAS;
+446          create table DT.indRx as select * from Work.indRx;
+447        quit;
+448        proc contents data = DT.charlsonIndex order = varnum;
+449        run;
+450        proc contents data = DT.CIRAS order = varnum;
+451        run;
+452        proc contents data = DT.indRx order = varnum;
+453        run;
+454         */
+455        /*
+456        END Fenglong's comorbidities code
+457         */
+458        
+459        
+460        
+461        
+462        proc import out = Work.biologicsLookup
+463                    datafile = "U:\studies\AS\pgms\bchan\data\raw\AS Project Codebooks - 20170410\AS Project Medicine - DMARDs & BIOs  -
+463      ! 20170409.xlsx"
+464                    dbms = xlsx
+465                    replace;
+466          sheet = "Sheet1";
+467          getnames = yes;
+468          datarow = 2;
+469        run;
 
 NOTE: One or more variables were converted because the data type is not supported by the V9 engine. For more details, run with options MSGLEVEL=I.
 NOTE: The import data set has 789 observations and 8 variables.
@@ -385,15 +554,15 @@ NOTE: PROCEDURE IMPORT used (Total process time):
       cpu time            0.17 seconds
       
 
-313        proc sql;
-314          delete from Work.biologicsLookup
-315            where category ^= "Biologic";
+470        proc sql;
+471          delete from Work.biologicsLookup
+472            where category ^= "Biologic";
 NOTE: 715 rows were deleted from WORK.BIOLOGICSLOOKUP.
 
-316          select category, subcate as subcategory, gnn, count(*) as n
-317            from Work.biologicsLookup
-318            group by category, subcate, gnn;
-                                                                  --- AS project ---                                   14:50 Monday, April 9, 2018   2
+473          select category, subcate as subcategory, gnn, count(*) as n
+474            from Work.biologicsLookup
+475            group by category, subcate, gnn;
+                                                                  --- AS project ---                                11:54 Thursday, April 12, 2018   2
 
                                                    Category  SubCate   GNN                        n
                                                    ------------------------------------------------
@@ -467,74 +636,76 @@ NOTE: 715 rows were deleted from WORK.BIOLOGICSLOOKUP.
  
  
                                                              queryOtherComorbidities.sas
-319        quit;
+476        quit;
 NOTE: The PROCEDURE SQL printed page 2.
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           0.10 seconds
-      cpu time            0.04 seconds
+      real time           0.13 seconds
+      cpu time            0.03 seconds
       
 
-320        proc sql;
-321          create table Work.indBiologics0 as
-322            select A.database, A.patid, A.indexID,
-323                   A.begin_date format = mmddyy10. as rxDate,
-324                   "HCPCS" as codeType,
-325                   A.px as drugCode,
-326                   B.gnn as drugName,
-327                   B.descript as drugDesc,
-328                   . as dispense_sup
-329              from UCB.tempPrevPx12mPrior A inner join
-330                   Work.biologicsLookup B on (A.px = B.code)
-331              where A.px_date < A.indexDate
-332            union corr
-333            select A.database, A.patid, A.indexID,
-334                   A.dispense_date format = mmddyy10. as rxDate,
-335                   "NDC" as codeType,
-336                   A.ndc as drugCode,
-337                   B.gnn as drugName,
-338                   B.descript as drugDesc,
-339                   A.dispense_sup
-340              from UCB.tempPrevRx12mPrior A inner join
-341                   Work.biologicsLookup B on (A.ndc = B.code)
-342              where A.dispense_date < A.indexDate;
-NOTE: Data set UCB.TEMPPREVPX12MPRIOR is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
-      additional CPU resources and may reduce performance.
-NOTE: Data set UCB.TEMPPREVRX12MPRIOR is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
-      additional CPU resources and may reduce performance.
-The SAS supervisor will process queries for foreign datasets. No parallel where-clause processing will occur.
-The SAS supervisor will process queries for foreign datasets. No parallel where-clause processing will occur.
-The SAS supervisor will process queries for foreign datasets. No parallel where-clause processing will occur.
-The SAS supervisor will process queries for foreign datasets. No parallel where-clause processing will occur.
-NOTE: Table WORK.INDBIOLOGICS0 created, with 33750 rows and 9 columns.
+477        proc sql;
+478          create table Work.indBiologics0 as
+479            select A.database, A.patid, A.indexID,
+480                   A.begin_date format = mmddyy10. as rxDate,
+481                   "HCPCS" as codeType,
+482                   A.px as drugCode,
+483                   B.gnn as drugName,
+484                   B.descript as drugDesc,
+485                   . as dispense_sup
+486              from UCB.tempPrevPxAll A inner join
+487                   Work.biologicsLookup B on (A.px = B.code)
+488              where A.px_date < A.indexDate
+489            union corr
+490            select A.database, A.patid, A.indexID,
+491                   A.dispense_date format = mmddyy10. as rxDate,
+492                   "NDC" as codeType,
+493                   A.ndc as drugCode,
+494                   B.gnn as drugName,
+495                   B.descript as drugDesc,
+496                   A.dispense_sup
+497              from UCB.tempPrevRxAll A inner join
+8                                                                   The SAS System                                      11:54 Thursday, April 12, 2018
 
-343          select codeType, drugName, count(distinct patid) as countDistinctPatid
-344            from Work.indBiologics0
-345            group by codeType, drugName;
-                                                                  --- AS project ---                                   14:50 Monday, April 9, 2018   3
+498                   Work.biologicsLookup B on (A.ndc = B.code)
+499              where A.dispense_date < A.indexDate;
+NOTE: Data set UCB.TEMPPREVPXALL is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
+      additional CPU resources and may reduce performance.
+NOTE: Data set UCB.TEMPPREVRXALL is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
+      additional CPU resources and may reduce performance.
+The SAS supervisor will process queries for foreign datasets. No parallel where-clause processing will occur.
+The SAS supervisor will process queries for foreign datasets. No parallel where-clause processing will occur.
+The SAS supervisor will process queries for foreign datasets. No parallel where-clause processing will occur.
+The SAS supervisor will process queries for foreign datasets. No parallel where-clause processing will occur.
+NOTE: Table WORK.INDBIOLOGICS0 created, with 123147 rows and 9 columns.
+
+500          select codeType, drugName, count(distinct patid) as countDistinctPatid
+501            from Work.indBiologics0
+502            group by codeType, drugName;
+                                                                  --- AS project ---                                11:54 Thursday, April 12, 2018   3
 
                                                                                          count
                                                        code                           Distinct
                                                        Type   GNN                        Patid
                                                        ---------------------------------------
-                                                       HCPCS  ABATACEPT                    154
-                                                       HCPCS  ADALIMUMAB                    18
-                                                       HCPCS  CERTOLIZUMAB                  59
-                                                       HCPCS  ETANERCEPT                    40
+                                                       HCPCS  ABATACEPT                    349
+                                                       HCPCS  ADALIMUMAB                    37
+                                                       HCPCS  CERTOLIZUMAB                  80
+                                                       HCPCS  ETANERCEPT                    59
                                                        HCPCS  GOLIMUMAB                     14
-                                                       HCPCS  INFLIXIMAB                  1884
-                                                       HCPCS  RITUXIMAB                    114
-                                                       HCPCS  TOCILIZUMAB                   84
-                                                       HCPCS  USTEKINUMAB                    4
-                                                       NDC    ABATACEPT                     41
-                                                       NDC    ADALIMUMAB                  1854
-                                                       NDC    ANAKINRA                       6
-                                                       NDC    CERTOLIZUMAB                  90
-                                                       NDC    ETANERCEPT                  2301
-                                                       NDC    GOLIMUMAB                    327
-                                                       NDC    INFLIXIMAB                    94
-                                                       NDC    RITUXIMAB                      4
-                                                       NDC    TOCILIZUMAB                    8
-                                                       NDC    USTEKINUMAB                    8
+                                                       HCPCS  INFLIXIMAB                  2841
+                                                       HCPCS  RITUXIMAB                    227
+                                                       HCPCS  TOCILIZUMAB                  117
+                                                       HCPCS  USTEKINUMAB                    5
+                                                       NDC    ABATACEPT                     67
+                                                       NDC    ADALIMUMAB                  2683
+                                                       NDC    ANAKINRA                      19
+                                                       NDC    CERTOLIZUMAB                 124
+                                                       NDC    ETANERCEPT                  3088
+                                                       NDC    GOLIMUMAB                    431
+                                                       NDC    INFLIXIMAB                   155
+                                                       NDC    RITUXIMAB                      8
+                                                       NDC    TOCILIZUMAB                   10
+                                                       NDC    USTEKINUMAB                   11
  
  
  
@@ -584,172 +755,181 @@ NOTE: Table WORK.INDBIOLOGICS0 created, with 33750 rows and 9 columns.
  
  
                                                              queryOtherComorbidities.sas
-346          create table DT.indBiologics as
-347            select distinct
-348                   A.database, A.patid, A.indexID,
-349                   1 as indBiologics12mPrior
-350            from Work.indBiologics0 A;
-NOTE: Table DT.INDBIOLOGICS created, with 7552 rows and 4 columns.
-6                                                                   The SAS System                                         14:50 Monday, April 9, 2018
+503          create table DT.indBiologics as
+504            select distinct
+505                   A.database, A.patid, A.indexID,
+506                   1 as indRxBiologics
+507            from Work.indBiologics0 A;
+NOTE: Table DT.INDBIOLOGICS created, with 11150 rows and 4 columns.
 
-
-351        quit;
+508        quit;
 NOTE: The PROCEDURE SQL printed page 3.
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           5.74 seconds
-      cpu time            5.71 seconds
+      real time           24.83 seconds
+      cpu time            24.78 seconds
       
 
-352        
-353        
-354        
-355        
-356        proc sql;
-357        /*
-358        Oral corticosteroid use
-359        Mean outpatient prescribed daily dose of prednisone equivalents in the 6
-360        months prior to index date: less than 5 mg/d (low dose), 5 to less than 10
-361        mg/d (medium dose), and 10 mg/d or more (high dose)
-362         */
-363          create table DT.rxOralCorticosteroid as
-364            select C.database, C.patid, C.indexID,
-365                   1 as indOralCorticosteroid,
-366                   sum(C.daysAtRisk * C.prednisodeEquivalentDose) as sumPredEq,
-367                   sum(C.daysAtRisk) as sumDaysSupply,
-368                   sum(C.daysAtRisk * C.prednisodeEquivalentDose) / 183 as meanPredEqDose,
-369                   case
-370                     when 0 <= sum(C.daysAtRisk * C.prednisodeEquivalentDose) / 183 < 2.5 then "Low (<2.5 mg/d)"
-371                     when 2.5 <= sum(C.daysAtRisk * C.prednisodeEquivalentDose) / 183 < 5 then "Medium-Low (2.5-5 mg/d)"
-372                     when 5 <= sum(C.daysAtRisk * C.prednisodeEquivalentDose) / 183 < 10 then "Medium-High (5-10 mg/d)"
-373                     when 10 <= sum(C.daysAtRisk * C.prednisodeEquivalentDose) / 183 then "High (10+ mg/d)"
-374                     else ""
-375                     end as meanPredEqDoseCat
-376            from (select A.database, A.patid, A.indexID,
-377                         A.indexDate - 183 format = mmddyy10. as riskStart,
-378                         A.indexDate,
-379                         A.dispense_date,
-380                         A.dispense_date + A.dispense_sup - 1 format = mmddyy10. as dispense_end,
-381                         A.dispense_sup,
-382                         case
-383                           /* Rx completely in at-risk period */
-384                           when (A.indexDate - 183 <= A.dispense_date) & ((A.dispense_date + A.dispense_sup - 1) <= A.indexDate)
-385                             then A.dispense_sup
-386                           /* Rx begins before at-risk period */
-387                           when (A.dispense_date < A.indexDate - 183)
-388                             then A.dispense_sup - (A.indexDate - 183 - A.dispense_date)
-389                           /* Rx ends after at-risk period */
-390                           when (A.indexDate < (A.dispense_date + A.dispense_sup - 1))
-391                             then A.dispense_sup - (A.dispense_date + A.dispense_sup - 1 - A.indexDate)
-392                           else .
-393                           end as daysAtRisk,
-394                         B.prednisodeEquivalentDose
-395                  from UCB.tempPrevRxAll A inner join
-396                       DT.lookupNDC B on (A.ndc = B.ndc)
-397                  where ^missing(B.prednisodeEquivalentDose) &
-398                        ((A.indexDate - 183 <= A.dispense_date <= A.indexDate) |
-399                          (A.indexDate - 183 <= (A.dispense_date + A.dispense_sup - 1) <= A.indexDate))) C
-400            group by C.database, C.patid, C.indexID;
+509        
+510        
+511        
+512        
+513        proc sql;
+514        /*
+515        Oral corticosteroid use
+516        Mean outpatient prescribed daily dose of prednisone equivalents in the 6
+517        months prior to index date: less than 5 mg/d (low dose), 5 to less than 10
+518        mg/d (medium dose), and 10 mg/d or more (high dose)
+519         */
+520          create table DT.rxOralCorticosteroid as
+521            select C.database, C.patid, C.indexID,
+522                   1 as indOralCorticosteroid,
+523                   sum(C.daysAtRisk * C.prednisodeEquivalentDose) as sumPredEq,
+524                   sum(C.daysAtRisk) as sumDaysSupply,
+525                   sum(C.daysAtRisk * C.prednisodeEquivalentDose) / 183 as meanPredEqDose,
+526                   case
+527                     when 0 <= sum(C.daysAtRisk * C.prednisodeEquivalentDose) / 183 < 2.5 then "Low (<2.5 mg/d)"
+528                     when 2.5 <= sum(C.daysAtRisk * C.prednisodeEquivalentDose) / 183 < 5 then "Medium-Low (2.5-5 mg/d)"
+529                     when 5 <= sum(C.daysAtRisk * C.prednisodeEquivalentDose) / 183 < 10 then "Medium-High (5-10 mg/d)"
+530                     when 10 <= sum(C.daysAtRisk * C.prednisodeEquivalentDose) / 183 then "High (10+ mg/d)"
+531                     else ""
+532                     end as meanPredEqDoseCat
+533            from (select A.database, A.patid, A.indexID,
+534                         A.indexDate - 183 format = mmddyy10. as riskStart,
+535                         A.indexDate,
+536                         A.dispense_date,
+537                         A.dispense_date + A.dispense_sup - 1 format = mmddyy10. as dispense_end,
+538                         A.dispense_sup,
+539                         case
+540                           /* Rx completely in at-risk period */
+541                           when (A.indexDate - 183 <= A.dispense_date) & ((A.dispense_date + A.dispense_sup - 1) <= A.indexDate)
+542                             then A.dispense_sup
+543                           /* Rx begins before at-risk period */
+544                           when (A.dispense_date < A.indexDate - 183)
+545                             then A.dispense_sup - (A.indexDate - 183 - A.dispense_date)
+546                           /* Rx ends after at-risk period */
+547                           when (A.indexDate < (A.dispense_date + A.dispense_sup - 1))
+548                             then A.dispense_sup - (A.dispense_date + A.dispense_sup - 1 - A.indexDate)
+549                           else .
+550                           end as daysAtRisk,
+551                         B.prednisodeEquivalentDose
+9                                                                   The SAS System                                      11:54 Thursday, April 12, 2018
+
+552                  from UCB.tempPrevRxAll A inner join
+553                       DT.lookupNDC B on (A.ndc = B.ndc)
+554                  where ^missing(B.prednisodeEquivalentDose) &
+555                        ((A.indexDate - 183 <= A.dispense_date <= A.indexDate) |
+556                          (A.indexDate - 183 <= (A.dispense_date + A.dispense_sup - 1) <= A.indexDate))) C
+557            group by C.database, C.patid, C.indexID;
 NOTE: Data set UCB.TEMPPREVRXALL is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
       additional CPU resources and may reduce performance.
 The SAS supervisor will process queries for foreign datasets. No parallel where-clause processing will occur.
 NOTE: Table DT.RXORALCORTICOSTEROID created, with 18717 rows and 8 columns.
 
-401        /*
-402        Create diagnosis code indicators from inpatient admissions
-403         */
-404          create table DT.diagIndicatorsInpatient as
-405            select A.database, A.patid, A.indexID,
-406                   count(distinct A.admit_date) as countIPAdmits,
-407                   case
-408                     when count(distinct A.admit_date) > 0 then 1
-409                     else 0
-410                     end as indIPAdmit12mPrior
-7                                                                   The SAS System                                         14:50 Monday, April 9, 2018
-
-411            from UCB.tempPrevDx12mPrior A
-412            where A.enc_type = "IP"
-413            group by A.database, A.patid, A.indexID;
+558        /*
+559        Create diagnosis code indicators from inpatient admissions
+560         */
+561          create table DT.diagIndicatorsInpatient as
+562            select A.database, A.patid, A.indexID,
+563                   count(distinct A.admit_date) as countIPAdmits,
+564                   case
+565                     when count(distinct A.admit_date) > 0 then 1
+566                     else 0
+567                     end as indIPAdmit12mPrior
+568            from UCB.tempPrevDx12mPrior A
+569            where A.enc_type = "IP"
+570            group by A.database, A.patid, A.indexID;
 NOTE: Data set UCB.TEMPPREVDX12MPRIOR is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
       additional CPU resources and may reduce performance.
 The SAS supervisor will process queries for foreign datasets. No parallel where-clause processing will occur.
 NOTE: Table DT.DIAGINDICATORSINPATIENT created, with 17714 rows and 5 columns.
 
-414        /*
-415        Count encounters
-416         */
-417          create table Work.countAVPhysEncounters as
-418            select B.database, B.patid, B.indexID,
-419                   sum(indAVPhysEncounter) as countAVPhysEncounters
-420            from (select distinct A.database, A.patid, A.indexID, A.begin_date,
-421                         prxmatch("/(0[1-9])|(1[0-46-8])|(2[02-9])|(3[0346-9])|(4[046])|(66)|(7[26-9])|(8[1-6])|(9[0-489])|(C[03])/",
-422                                 A.prov_type) > 0 as indAVPhysEncounter
-423                  from UCB.tempPrevDx12mPrior A
-424                  where A.enc_type = "AV" & not(missing(A.dx)) & calculated indAVPhysEncounter = 1) B
-425            group by B.database, B.patid, B.indexID;
+571        /*
+572        Count encounters
+573         */
+574          create table Work.countAVPhysEncounters as
+575            select B.database, B.patid, B.indexID,
+576                   sum(indAVPhys12mPrior) as countAVPhys12mPrior
+577            from (select distinct A.database, A.patid, A.indexID, A.begin_date,
+578                         1 as indAVPhys12mPrior
+579                  from UCB.tempPrevPx12mPrior A
+580                  where A.codeType = "CPT" &
+581                        prxmatch("/^(992[0147][1-5])|(990((24)|(58)))/", A.code) &
+582                        calculated indAVPhys12mPrior = 1) B
+583            group by B.database, B.patid, B.indexID;
+NOTE: Data set UCB.TEMPPREVPX12MPRIOR is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
+      additional CPU resources and may reduce performance.
+The SAS supervisor will process queries for foreign datasets. No parallel where-clause processing will occur.
+NOTE: Table WORK.COUNTAVPHYSENCOUNTERS created, with 59281 rows and 4 columns.
+
+584          create table Work.countAVRheumEncounters as
+585            select B.database, B.patid, B.indexID,
+586                   sum(indAVRheum12mPrior) as countAVRheum12mPrior
+587            from (select distinct A.database, A.patid, A.indexID, A.begin_date,
+588                         case
+589                           when A.database = "MPCD" & B.prov_type = "66" then 1
+590                           when A.database = "Marketscan" & B.prov_type = "300" then 1
+591                           when A.database = "Medicare" & B.prov_type = "66" then 1
+592                           else .
+593                           end as indAVRheum12mPrior
+594                  from UCB.tempPrevPx12mPrior A inner join
+595                       UCB.tempPrevDx12mPrior B on (A.database = B.database & A.patid = B.patid & A.encounterID = B.encounterID)
+596                  where A.codeType = "CPT" &
+597                        prxmatch("/^(992[0147][1-5])|(990((24)|(58)))/", A.code) &
+598                        calculated indAVRheum12mPrior = 1) B
+599            group by B.database, B.patid, B.indexID;
+NOTE: Data set UCB.TEMPPREVPX12MPRIOR is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
+      additional CPU resources and may reduce performance.
 NOTE: Data set UCB.TEMPPREVDX12MPRIOR is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
       additional CPU resources and may reduce performance.
 The SAS supervisor will process queries for foreign datasets. No parallel where-clause processing will occur.
-NOTE: Table WORK.COUNTAVPHYSENCOUNTERS created, with 58986 rows and 4 columns.
+NOTE: Table WORK.COUNTAVRHEUMENCOUNTERS created, with 45326 rows and 4 columns.
 
-426          create table Work.countAVRheumEncounters as
-427            select B.database, B.patid, B.indexID,
-428                   sum(indAVRheumEncounter) as countAVRheumEncounters
-429            from (select distinct A.database, A.patid, A.indexID, A.begin_date,
-430                         A.prov_type = "66" as indAVRheumEncounter
-431                  from UCB.tempPrevDx12mPrior A
-432                  where A.enc_type = "AV" & not(missing(A.dx)) & calculated indAVRheumEncounter = 1) B
-433            group by B.database, B.patid, B.indexID;
-NOTE: Data set UCB.TEMPPREVDX12MPRIOR is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
+600          create table Work.countEREncounters as
+601            select A.database, A.patid, A.indexID,
+10                                                                  The SAS System                                      11:54 Thursday, April 12, 2018
+
+602                   count(distinct A.begin_date) as countERVisits,
+603                   case
+604                     when count(distinct A.begin_date) > 0 then 1
+605                     else 0
+606                     end as indERVisit12mPrior
+607            from UCB.tempPrevPx12mPrior A
+608            where A.codeType = "CPT" & prxmatch("/^9928[1-5]/", code)
+609            group by A.database, A.patid, A.indexID;
+NOTE: Data set UCB.TEMPPREVPX12MPRIOR is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
       additional CPU resources and may reduce performance.
 The SAS supervisor will process queries for foreign datasets. No parallel where-clause processing will occur.
-NOTE: Table WORK.COUNTAVRHEUMENCOUNTERS created, with 29196 rows and 4 columns.
+NOTE: Table WORK.COUNTERENCOUNTERS created, with 24309 rows and 5 columns.
 
-434          create table Work.countEREncounters as
-435            select A.database, A.patid, A.indexID,
-436                   count(distinct A.begin_date) as countERVisits,
-437                   case
-438                     when count(distinct A.begin_date) > 0 then 1
-439                     else 0
-440                     end as indERVisit12mPrior
-441            from UCB.tempPrevDx12mPrior A
-442            where A.enc_type = "ED"
-443            group by A.database, A.patid, A.indexID;
-NOTE: Data set UCB.TEMPPREVDX12MPRIOR is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
-      additional CPU resources and may reduce performance.
-The SAS supervisor will process queries for foreign datasets. No parallel where-clause processing will occur.
-NOTE: Table WORK.COUNTERENCOUNTERS created, with 24086 rows and 5 columns.
-
-444          create table DT.countEncounters as
-445            select coalesce(A.database, B.database, C.database) as database,
-446                   coalesce(A.patid, B.patid, C.patid) as patid,
-447                   coalesce(A.indexID, B.indexID, C.indexID) as indexID,
-448                   A.countAVPhysEncounters,
-449                   B.countAVRheumEncounters,
-450                   C.indERVisit12mPrior,
-451                   C.countERVisits
-452            from Work.countAVPhysEncounters A full join
-453                 Work.countAVRheumEncounters B on (A.indexID = B.indexID) full join
-454                 Work.countEREncounters C on (A.indexID = C.indexID | B.indexID = C.indexID);
+610          create table DT.countEncounters as
+611            select coalesce(A.database, B.database, C.database) as database,
+612                   coalesce(A.patid, B.patid, C.patid) as patid,
+613                   coalesce(A.indexID, B.indexID, C.indexID) as indexID,
+614                   A.countAVPhys12mPrior,
+615                   B.countAVRheum12mPrior,
+616                   C.indERVisit12mPrior,
+617                   C.countERVisits
+618            from Work.countAVPhysEncounters A full join
+619                 Work.countAVRheumEncounters B on (A.indexID = B.indexID) full join
+620                 Work.countEREncounters C on (A.indexID = C.indexID | B.indexID = C.indexID);
 NOTE: The execution of this query involves performing one or more Cartesian product joins that can not be optimized.
-NOTE: Table DT.COUNTENCOUNTERS created, with 59560 rows and 7 columns.
+NOTE: Table DT.COUNTENCOUNTERS created, with 59725 rows and 7 columns.
 
-455          select ^missing(countAVPhysEncounters) as a,
-456                 ^missing(countAVRheumEncounters) as b,
-457                 ^missing(indERVisit12mPrior) as c,
-458                 count(*) as n
-459            from DT.countEncounters
-8                                                                   The SAS System                                         14:50 Monday, April 9, 2018
-
-460            group by calculated a, calculated b, calculated c;
-                                                                  --- AS project ---                                   14:50 Monday, April 9, 2018   4
+621          select ^missing(countAVPhys12mPrior) as a,
+622                 ^missing(countAVRheum12mPrior) as b,
+623                 ^missing(indERVisit12mPrior) as c,
+624                 count(*) as n
+625            from DT.countEncounters
+626            group by calculated a, calculated b, calculated c;
+                                                                  --- AS project ---                                11:54 Thursday, April 12, 2018   4
 
                                                                a         b         c         n
                                                         --------------------------------------
-                                                               0         0         1       574
-                                                               1         0         0     17454
-                                                               1         0         1     12336
-                                                               1         1         0     18020
-                                                               1         1         1     11176
+                                                               0         0         1       444
+                                                               1         0         0      5444
+                                                               1         0         1      8511
+                                                               1         1         0     29972
+                                                               1         1         1     15354
  
  
  
@@ -815,60 +995,62 @@ NOTE: Table DT.COUNTENCOUNTERS created, with 59560 rows and 7 columns.
  
  
                                                              queryOtherComorbidities.sas
-461        /*
-462        Inhaled antibiotics
-463        
-464        IS A DAYS-SUPPLY CRITERION REQUIRED??
-465          create table Work.indInhaledAntibiotics0 as
-466            select A.patid, A.episodeID,
-467                   A.begin_date format = mmddyy10. as rxDate,
-468                   "HCPCS" as codeType,
-469                   A.px as drugCode,
-470                   "INJECTION" as drugRoute,
-471                   B.descript as drugName,
-472                   A.px_amt,
-473                   . as dispense_sup,
-474                   . as dispense_amt
-475              from WRK.proccodesHCPCS12mPrior A inner join
-476                   DT.lookupJcodes B on (A.px = B.code)
-477              where lower(category) = "inhaled antibiotic"
-478            union corr
-479            select D.patid, D.episodeID,
-480                   D.dispense_date format = mmddyy10. as rxDate,
-481                   "NDC" as codeType,
-482                   E.ndc as drugCode,
-483                   D.rt as drugRoute,
-484                   D.gnn as drugName,
-485                   . as px_amt,
-486                   D.dispense_sup,
-487                   D.dispense_amt
-488              from WRK.rx12mPrior D inner join
-489                   DT.lookupNDC E on (D.ndc = E.ndc)
-490              where (lower(E.etc_name) like '%antibiotic%' | lower(E.etc_name) like '%polymyxin%') &
-491                    lowcase(E.rt) in ("inhalation", "intraven", "injection");
-492          select codeType, drugRoute, drugName, count(distinct patid) as countDistinctPatid
-493            from Work.indInhaledAntibiotics0
-494            group by codeType, drugRoute, drugName;
-495          create table Work.indInhaledAntibiotics1 as
-496            select distinct
-497                   A.patid, A.episodeID,
-498                   1 as indInhaledAntibiotics
-499            from Work.indInhaledAntibiotics0 A;
-500         */
-501        quit;
+627        /*
+628        Inhaled antibiotics
+629        
+630        IS A DAYS-SUPPLY CRITERION REQUIRED??
+631          create table Work.indInhaledAntibiotics0 as
+632            select A.patid, A.episodeID,
+633                   A.begin_date format = mmddyy10. as rxDate,
+634                   "HCPCS" as codeType,
+635                   A.px as drugCode,
+636                   "INJECTION" as drugRoute,
+637                   B.descript as drugName,
+638                   A.px_amt,
+639                   . as dispense_sup,
+640                   . as dispense_amt
+641              from WRK.proccodesHCPCS12mPrior A inner join
+642                   DT.lookupJcodes B on (A.px = B.code)
+643              where lower(category) = "inhaled antibiotic"
+644            union corr
+645            select D.patid, D.episodeID,
+646                   D.dispense_date format = mmddyy10. as rxDate,
+647                   "NDC" as codeType,
+648                   E.ndc as drugCode,
+649                   D.rt as drugRoute,
+650                   D.gnn as drugName,
+651                   . as px_amt,
+652                   D.dispense_sup,
+653                   D.dispense_amt
+654              from WRK.rx12mPrior D inner join
+655                   DT.lookupNDC E on (D.ndc = E.ndc)
+656              where (lower(E.etc_name) like '%antibiotic%' | lower(E.etc_name) like '%polymyxin%') &
+657                    lowcase(E.rt) in ("inhalation", "intraven", "injection");
+658          select codeType, drugRoute, drugName, count(distinct patid) as countDistinctPatid
+659            from Work.indInhaledAntibiotics0
+660            group by codeType, drugRoute, drugName;
+661          create table Work.indInhaledAntibiotics1 as
+662            select distinct
+663                   A.patid, A.episodeID,
+664                   1 as indInhaledAntibiotics
+665            from Work.indInhaledAntibiotics0 A;
+11                                                                  The SAS System                                      11:54 Thursday, April 12, 2018
+
+666         */
+667        quit;
 NOTE: The PROCEDURE SQL printed page 4.
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           53.35 seconds
-      cpu time            56.12 seconds
+      real time           1:22.00
+      cpu time            1:25.38
       
 
-502        
-503        
-504        
-505        
-506        ods html close;
+668        
+669        
+670        
+671        
+672        ods html close;
 NOTE: SAS Institute Inc., SAS Campus Drive, Cary, NC USA 27513-2414
 NOTE: The SAS System used:
-      real time           1:33.70
-      cpu time            1:20.91
+      real time           2:20.44
+      cpu time            2:09.07
       
