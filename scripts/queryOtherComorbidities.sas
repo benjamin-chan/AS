@@ -470,7 +470,12 @@ Count encounters
     select B.database, B.patid, B.indexID,
            sum(indAVRheum12mPrior) as countAVRheum12mPrior
     from (select distinct A.database, A.patid, A.indexID, A.begin_date,
-                 A.prov_type = "66" as indAVRheumEncounter
+                 case
+                   when A.database = "MPCD" & B.prov_type = "66" then 1
+                   when A.database = "Marketscan" & B.prov_type = "300" then 1
+                   when A.database = "Medicare" & B.prov_type = "66" then 1
+                   else .
+                   end as indAVRheum12mPrior
           from UCB.tempPrevPx12mPrior A inner join
                UCB.tempPrevDx12mPrior B on (A.database = B.database & A.patid = B.patid & A.encounterID = B.encounterID)
           where A.codeType = "CPT" & 
