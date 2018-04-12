@@ -458,20 +458,24 @@ Count encounters
  */
   create table Work.countAVPhysEncounters as
     select B.database, B.patid, B.indexID,
-           sum(indAVPhysEncounter) as countAVPhysEncounters
+           sum(indAVPhys12mPrior) as countAVPhys12mPrior
     from (select distinct A.database, A.patid, A.indexID, A.begin_date,
-                 prxmatch("/(0[1-9])|(1[0-46-8])|(2[02-9])|(3[0346-9])|(4[046])|(66)|(7[26-9])|(8[1-6])|(9[0-489])|(C[03])/",
-                         A.prov_type) > 0 as indAVPhysEncounter
-          from UCB.tempPrevDx12mPrior A
-          where A.enc_type = "AV" & not(missing(A.dx)) & calculated indAVPhysEncounter = 1) B
+                 1 as indAVPhys12mPrior
+          from UCB.tempPrevPx12mPrior A
+          where A.codeType = "CPT" & 
+                prxmatch("/^(992[0147][1-5])|(990((24)|(58)))/", A.code) & 
+                calculated indAVPhys12mPrior = 1) B
     group by B.database, B.patid, B.indexID;
   create table Work.countAVRheumEncounters as
     select B.database, B.patid, B.indexID,
-           sum(indAVRheumEncounter) as countAVRheumEncounters
+           sum(indAVRheum12mPrior) as countAVRheum12mPrior
     from (select distinct A.database, A.patid, A.indexID, A.begin_date,
                  A.prov_type = "66" as indAVRheumEncounter
-          from UCB.tempPrevDx12mPrior A
-          where A.enc_type = "AV" & not(missing(A.dx)) & calculated indAVRheumEncounter = 1) B
+          from UCB.tempPrevPx12mPrior A inner join
+               UCB.tempPrevDx12mPrior B on (A.database = B.database & A.patid = B.patid & A.encounterID = B.encounterID)
+          where A.codeType = "CPT" & 
+                prxmatch("/^(992[0147][1-5])|(990((24)|(58)))/", A.code) & 
+                calculated indAVRheum12mPrior = 1) B
     group by B.database, B.patid, B.indexID;
   create table Work.countEREncounters as
     select A.database, A.patid, A.indexID,
@@ -480,22 +484,22 @@ Count encounters
              when count(distinct A.begin_date) > 0 then 1
              else 0
              end as indERVisit12mPrior
-    from UCB.tempPrevDx12mPrior A
-    where A.enc_type = "ED"
+    from UCB.tempPrevPx12mPrior A
+    where A.codeType = "CPT" & prxmatch("/^9928[1-5]/", code)
     group by A.database, A.patid, A.indexID;
   create table DT.countEncounters as
     select coalesce(A.database, B.database, C.database) as database,
            coalesce(A.patid, B.patid, C.patid) as patid,
            coalesce(A.indexID, B.indexID, C.indexID) as indexID,
-           A.countAVPhysEncounters,
-           B.countAVRheumEncounters,
+           A.countAVPhys12mPrior,
+           B.countAVRheum12mPrior,
            C.indERVisit12mPrior,
            C.countERVisits
     from Work.countAVPhysEncounters A full join
          Work.countAVRheumEncounters B on (A.indexID = B.indexID) full join
          Work.countEREncounters C on (A.indexID = C.indexID | B.indexID = C.indexID);
-  select ^missing(countAVPhysEncounters) as a,
-         ^missing(countAVRheumEncounters) as b,
+  select ^missing(countAVPhys12mPrior) as a,
+         ^missing(countAVRheum12mPrior) as b,
          ^missing(indERVisit12mPrior) as c,
          count(*) as n
     from DT.countEncounters
