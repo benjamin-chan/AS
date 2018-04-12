@@ -47,7 +47,7 @@ indNAFattyLiverDis | Non-alcoholic fatty liver disease
 indCOPDEmphysema | COPD or emphysema
 meanPredEqDoseCat | Categorized: None, Low (<2.5 mg/d), Medium-Low (2.5-5 mg/d), Medium-High (5-10 mg/d), High (10+ mg/d)
 quartileCharlson | Charlson comorbidity index: quartiles within data source
-indInflamMarker | Inflammatory marker
+indInflamMarker | 1+ Sedimentation rate, erythrocyte or C-reactive protein CPT code
 indRxNSAID | Prescription drug indicator: NSAID
 indRxHtn | Prescription drug indicator: Antihypertensive
 indRxNarcotics | Prescription drug indicator: Narcotic
@@ -57,7 +57,7 @@ indRxThiazide | Prescription drug indicator: Thiazide
 indRxAnticoagulant | Prescription drug indicator: Anticoagulant
 indIPAdmit12mPrior | Inpatient admission 12 months prior to exposure
 indERVisit12mPrior | ER visit 12 months prior to exposure
-indAVRheumEncounters | Outpatient rheumatologist encounter 12 months prior
+countAVRheum12mPrior | Number of rheumatologist visits 12 months prior
 indRxBiologics | Prescription drug indicator: Biologics
 
 Model output is probability of exposure to TNF, DMARD, and NSAID or no exposure.
@@ -438,11 +438,11 @@ ggsave(paste0("../figures/", f, ".png"), dpi = 300)
 ggsave(paste0("../figures/", f, ".svg"), dpi = 300)
 ```
 
-![covarBalAVRheumEncounters.png](../figures/covarBalAVRheumEncounters.png)
+![covarBalAVRheum12mPrior.png](../figures/covarBalAVRheum12mPrior.png)
 
 ```{r, fig.show = "hide", warning = FALSE, message = FALSE}
-f <- "covarBalAVRheumEncounters"
-L <- covariateBalance("dichotomous", "indAVRheumEncounters", "% Outpatient rheumatologist encounter in 12 months prior")
+f <- "covarBalAVRheum12mPrior"
+L <- covariateBalance("continuous", "countAVRheum12mPrior", "Number of rheumatologist visits in 12 months prior")
 ggsave(paste0("../figures/", f, ".png"), dpi = 300)
 ggsave(paste0("../figures/", f, ".svg"), dpi = 300)
 ```

@@ -333,7 +333,7 @@ proc logistic data = Work.allCovariates outest = Work.psBetas3Level;
                     indRxAnticoagulant
                     indIPAdmit12mPrior
                     indERVisit12mPrior
-                    indAVRheumEncounters
+                    countAVRheum12mPrior
                     indRxBiologics
                     / link = glogit rsquare;
   output out = Work.ps3Level predicted = ps xbeta = xbeta;
@@ -389,7 +389,7 @@ proc logistic data = Work.allCovariates outest = Work.psBetas3Level;
                     indRxAnticoagulant
                     indIPAdmit12mPrior
                     indERVisit12mPrior
-                    indAVRheumEncounters
+                    countAVRheum12mPrior
                     indRxBiologics
                     / link = glogit rsquare;
   output out = Work.ps3Level predicted = ps xbeta = xbeta;
@@ -445,7 +445,7 @@ proc logistic data = Work.allCovariates outest = Work.psBetas3Level;
                     indRxAnticoagulant
                     indIPAdmit12mPrior
                     indERVisit12mPrior
-                    indAVRheumEncounters
+                    countAVRheum12mPrior
                     indRxBiologics
                     / link = glogit rsquare;
   output out = Work.ps3Level predicted = ps xbeta = xbeta;
