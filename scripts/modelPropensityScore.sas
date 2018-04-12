@@ -78,6 +78,7 @@ proc sql;
              end as meanPredEqDoseCat,
            max(0, GG.charlson) as charlson,
            max(0, HH.ciras) as ciras,
+           max(0, HH.numinflamMarker) as numinflamMarker,
            HH.numinflamMarker > 0 as indInflamMarker, 
            max(0, II.nsaid) as indRxNSAID, 
            max(0, II.htn) as indRxHtn, 
@@ -87,21 +88,21 @@ proc sql;
            max(0, II.thiazide) as indRxThiazide,
            max(0, II.anticoagulant) as indRxAnticoagulant,
            max(0, JJ.indIPAdmit12mPrior) as indIPAdmit12mPrior,
-           max(0, KK.countAVPhysEncounters) as countAVPhysEncounters,
+           max(0, KK.countAVPhys12mPrior) as countAVPhys12mPrior,
            case
-             when  0 <= max(0, KK.countAVPhysEncounters) <=  4 then "0-4"
-             when  5 <= max(0, KK.countAVPhysEncounters) <=  9 then "5-9"
-             when 10 <= max(0, KK.countAVPhysEncounters) <= 14 then "10-14"
-             when 15 <= max(0, KK.countAVPhysEncounters) <= 19 then "15-19"
-             when 20 <= max(0, KK.countAVPhysEncounters)       then "20+"
+             when  0 <= max(0, KK.countAVPhys12mPrior) <=  4 then "0-4"
+             when  5 <= max(0, KK.countAVPhys12mPrior) <=  9 then "5-9"
+             when 10 <= max(0, KK.countAVPhys12mPrior) <= 14 then "10-14"
+             when 15 <= max(0, KK.countAVPhys12mPrior) <= 19 then "15-19"
+             when 20 <= max(0, KK.countAVPhys12mPrior)       then "20+"
              else ""
-             end as catAVPhysEncounters,
-           max(0, KK.countAVRheumEncounters) as countAVRheumEncounters,
+             end as catAVPhys12mPrior,
+           max(0, KK.countAVRheum12mPrior) as countAVRheum12mPrior,
            case
-             when 0  = max(0, KK.countAVPhysEncounters) then 0
-             when 1 <= max(0, KK.countAVPhysEncounters) then 1
+             when 0  = max(0, KK.countAVRheum12mPrior) then 0
+             when 1 <= max(0, KK.countAVRheum12mPrior) then 1
              else .
-             end as indAVRheumEncounters,
+             end as indAVRheum12mPrior,
            max(0, KK.indERVisit12mPrior) as indERVisit12mPrior,
            max(0, KK.countERVisits) as countERVisits,
            case
@@ -146,7 +147,7 @@ proc sql;
       (select indexID, ciras, numinflamMarker from DT.CIRAS) HH on (A.indexID = HH.indexID) left join
       (select indexID, nsaid, htn, narcotics, fungus, op_bisphosp, thiazide, anticoagulant from DT.indRx) II on (A.indexID = II.indexID) left join
       (select indexID, indIPAdmit12mPrior from DT.diagIndicatorsInpatient) JJ on (A.indexID = JJ.indexID) left join
-      (select indexID, countAVPhysEncounters, countAVRheumEncounters, indERVisit12mPrior, countERVisits from DT.countEncounters) KK on (A.indexID = KK.indexID) left join
+      (select indexID, countAVPhys12mPrior, countAVRheum12mPrior, indERVisit12mPrior, countERVisits from DT.countEncounters) KK on (A.indexID = KK.indexID) left join
       (select indexID, indRxBiologics from DT.indBiologics) LL on (A.indexID = LL.indexID) 
     order by A.database;
 quit;
@@ -154,8 +155,8 @@ quit;
 
 proc rank data = Work.allCovariates out = Work.allCovariates groups = 4;
   by database;
-  var charlson ciras countAVPhysEncounters countAVRheumEncounters;
-  ranks quartileCharlson quartileCIRAS quartileAVPhysEncounters quartileAVRheumEncounters;
+  var charlson ciras countAVPhys12mPrior countAVRheum12mPrior;
+  ranks quartileCharlson quartileCIRAS quartileAVPhys12mPrior quartileAVRheum12mPrior;
 run;
 
 
@@ -201,12 +202,12 @@ proc means data = Work.allCovariates maxdec = 2 nolabels;
       indRxThiazide
       indRxAnticoagulant
       indIPAdmit12mPrior
-      indAVRheumEncounters
+      indAVRheum12mPrior
       indERVisit12mPrior
       indRxBiologics;
 run;
 proc freq data = Work.allCovariates;
-  table database * exposure3 * (meanPredEqDoseCat quartileCharlson quartileCIRAS quartileAVPhysEncounters quartileAVRheumEncounters catERVisits) / list;
+  table database * exposure3 * (meanPredEqDoseCat quartileCharlson quartileCIRAS quartileAVPhys12mPrior quartileAVRheum12mPrior catERVisits) / list;
 run;
 proc sql;
   select database,
@@ -243,27 +244,27 @@ proc sql;
     from Work.AllCovariates
     group by database, quartileCIRAS;
   select database,
-         quartileAVPhysEncounters,
-         min(countAVPhysEncounters) as min,
-         mean(countAVPhysEncounters) as mean,
-         max(countAVPhysEncounters) as max,
+         quartileAVPhys12mPrior,
+         min(countAVPhys12mPrior) as min,
+         mean(countAVPhys12mPrior) as mean,
+         max(countAVPhys12mPrior) as max,
          count(*) as n,
          sum(exposure3 = "TNF") as nTNF,
          sum(exposure3 = "DMARD") as nDMARD,
          sum(exposure3 = "NSAID or no exposure") as nNSAID
     from Work.AllCovariates
-    group by database, quartileAVPhysEncounters;
+    group by database, quartileAVPhys12mPrior;
   select database,
-         quartileAVRheumEncounters,
-         min(quartileAVRheumEncounters) as min,
-         mean(quartileAVRheumEncounters) as mean,
-         max(quartileAVRheumEncounters) as max,
+         quartileAVRheum12mPrior,
+         min(countAVRheum12mPrior) as min,
+         mean(countAVRheum12mPrior) as mean,
+         max(countAVRheum12mPrior) as max,
          count(*) as n,
          sum(exposure3 = "TNF") as nTNF,
          sum(exposure3 = "DMARD") as nDMARD,
          sum(exposure3 = "NSAID or no exposure") as nNSAID
     from Work.AllCovariates
-    group by database, quartileAVRheumEncounters;
+    group by database, quartileAVRheum12mPrior;
 quit;
 
 
@@ -281,8 +282,8 @@ Some parameters blow up; exlude these from the model estimation
              meanPredEqDoseCat (ref = "None") 
              quartileCharlson (ref = first) 
              quartileCIRAS (ref = first) 
-             quartileAVPhysEncounters (ref = first)
-             quartileAVRheumEncounters (ref = first)
+             quartileAVPhys12mPrior (ref = first)
+             quartileAVRheum12mPrior (ref = first)
              / param = ref;
 
 
@@ -538,11 +539,11 @@ Calculate IPTW
                indERVisit12mPrior,
                ciras,
                quartileCIRAS,
-               countAVPhysEncounters,
-               quartileAVPhysEncounters,
-               countAVRheumEncounters,
-               quartileAVRheumEncounters,
-               indAVRheumEncounters,
+               countAVPhys12mPrior,
+               quartileAVPhys12mPrior,
+               countAVRheum12mPrior,
+               quartileAVRheum12mPrior,
+               indAVRheum12mPrior,
                indRxBiologics
 ;
 proc sql;
@@ -706,11 +707,11 @@ proc sql;
            indERVisit12mPrior,
            ciras,
            quartileCIRAS,
-           countAVPhysEncounters,
-           quartileAVPhysEncounters,
-           countAVRheumEncounters,
-           quartileAVRheumEncounters,
-           indAVRheumEncounters,
+           countAVPhys12mPrior,
+           quartileAVPhys12mPrior,
+           countAVRheum12mPrior,
+           quartileAVRheum12mPrior,
+           indAVRheum12mPrior,
            indRxBiologics
     from DT.ps;
 quit;
