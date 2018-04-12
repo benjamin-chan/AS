@@ -206,7 +206,8 @@ quit;
     class exposure (ref = "TNF")
           database (ref = "Medicare")
           meanPredEqDoseCat (ref = "None")
-          catAge (ref = "60-69");
+          catAge (ref = "60-69")
+          sex (ref = "M");
     model daysAtRisk * censor(1) = exposure database exposure*database &covar
       / ties = efron risklimits;
     id patid;
@@ -268,8 +269,8 @@ quit;
     %model(%quote(0 Unweighted, no covariates), &outcomeCategory, &disease, &maxlen, , );
     %model(%quote(a Weighted, no covariates), &outcomeCategory, &disease, &maxlen, iptw, );
     %model(%quote(b Weighted, covariates (6-month daily steroid dose)), &outcomeCategory, &disease, &maxlen, iptw, meanPredEqDoseCat);
-    %model(%quote(c Weighted, covariates (age)), &outcomeCategory, &disease, &maxlen, iptw, catAge);
-    %model(%quote(d Weighted, covariates (6-month daily steroid dose, age)), &outcomeCategory, &disease, &maxlen, iptw, meanPredEqDoseCat catAge);
+    %model(%quote(c Weighted, covariates (sex)), &outcomeCategory, &disease, &maxlen, iptw, sex);
+    %model(%quote(d Weighted, covariates (6-month daily steroid dose, sex)), &outcomeCategory, &disease, &maxlen, iptw, meanPredEqDoseCat sex);
   %end;
   proc sql;
     drop table Work.tempN;
