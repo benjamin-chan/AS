@@ -370,7 +370,7 @@ proc sql;
            . as dispense_sup
       from UCB.tempPrevPxAll A inner join 
            Work.biologicsLookup B on (A.px = B.code)
-      where A.px_date < A.indexDate
+      where A.px_date < A.indexDate - 183
     union corr
     select A.database, A.patid, A.indexID,
            A.dispense_date format = mmddyy10. as rxDate, 
@@ -381,7 +381,7 @@ proc sql;
            A.dispense_sup
       from UCB.tempPrevRxAll A inner join 
            Work.biologicsLookup B on (A.ndc = B.code)
-      where A.dispense_date < A.indexDate;
+      where A.dispense_date < A.indexDate - 183;
   select codeType, drugName, count(distinct patid) as countDistinctPatid
     from Work.indBiologics0
     group by codeType, drugName;
