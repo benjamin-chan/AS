@@ -349,7 +349,7 @@ proc logistic data = Work.allCovariates outest = Work.psBetas3Level;
                     indRxThiazide
                     indRxAnticoagulant
                     indRxAntibiotics
-                    countIPAdmit12mPrior
+                    countIPAdmits12mPrior
                     indERVisit12mPrior
                     countAVRheum12mPrior
                     indRxBiologics
@@ -407,7 +407,7 @@ proc logistic data = Work.allCovariates outest = Work.psBetas3Level;
                     indRxThiazide
                     indRxAnticoagulant
                     indRxAntibiotics
-                    countIPAdmit12mPrior
+                    countIPAdmits12mPrior
                     indERVisit12mPrior
                     countAVRheum12mPrior
                     indRxBiologics
@@ -465,7 +465,7 @@ proc logistic data = Work.allCovariates outest = Work.psBetas3Level;
                     indRxThiazide
                     indRxAnticoagulant
                     indRxAntibiotics
-                    countIPAdmit12mPrior
+                    countIPAdmits12mPrior
                     indERVisit12mPrior
                     countAVRheum12mPrior
                     indRxBiologics
@@ -560,7 +560,7 @@ Calculate IPTW
                indRxAnticoagulant,
                indRxAntibiotics,
                indIPAdmit12mPrior,
-               countIPAdmit12mPrior,
+               countIPAdmits12mPrior,
                indERVisit12mPrior,
                ciras,
                quartileCIRAS,
@@ -731,7 +731,7 @@ proc sql;
            indRxAnticoagulant,
            indIPAdmit12mPrior,
            indRxAntibiotics,
-           countIPAdmit12mPrior,
+           countIPAdmits12mPrior,
            indERVisit12mPrior,
            ciras,
            quartileCIRAS,
