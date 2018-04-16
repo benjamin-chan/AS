@@ -445,7 +445,7 @@ Create diagnosis code indicators from inpatient admissions
  */
   create table DT.diagIndicatorsInpatient as
     select A.database, A.patid, A.indexID,
-           count(distinct A.admit_date) as countIPAdmits,
+           count(distinct A.admit_date) as countIPAdmits12mPrior,
            case
              when count(distinct A.admit_date) > 0 then 1
              else 0
@@ -568,8 +568,8 @@ proc sql;
     select distinct 
            A.database, A.patid, A.indexID,
            1 as indOutpatientInfection
-          from UCB.tempPrevDxAll A inner join 
-               Work.defOutcomes B on (A.codeType = B.codeType & A.code = B.code) 
+    from UCB.tempPrevDxAll A inner join 
+         Work.defOutcomes B on (A.codeType = B.codeType & A.code = B.code)
     where A.enc_type = "AV" &
           B.disease in ("Hospitalized infection");
 quit;

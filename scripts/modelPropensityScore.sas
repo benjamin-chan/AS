@@ -88,6 +88,7 @@ proc sql;
            max(0, II.thiazide) as indRxThiazide,
            max(0, II.anticoagulant) as indRxAnticoagulant,
            max(0, JJ.indIPAdmit12mPrior) as indIPAdmit12mPrior,
+           max(0, JJ.countIPAdmits12mPrior) as countIPAdmits12mPrior,
            max(0, KK.countAVPhys12mPrior) as countAVPhys12mPrior,
            case
              when  0 <= max(0, KK.countAVPhys12mPrior) <=  4 then "0-4"
@@ -155,8 +156,8 @@ quit;
 
 proc rank data = Work.allCovariates out = Work.allCovariates groups = 4;
   by database;
-  var charlson ciras countAVPhys12mPrior countAVRheum12mPrior;
-  ranks quartileCharlson quartileCIRAS quartileAVPhys12mPrior quartileAVRheum12mPrior;
+  var charlson ciras countIPAdmits12mPrior countAVPhys12mPrior countAVRheum12mPrior;
+  ranks quartileCharlson quartileCIRAS quartileIPAdmits12mPrior quartileAVPhys12mPrior quartileAVRheum12mPrior;
 run;
 
 
@@ -207,7 +208,7 @@ proc means data = Work.allCovariates maxdec = 2 nolabels;
       indRxBiologics;
 run;
 proc freq data = Work.allCovariates;
-  table database * exposure3 * (meanPredEqDoseCat quartileCharlson quartileCIRAS quartileAVPhys12mPrior quartileAVRheum12mPrior catERVisits) / list;
+  table database * exposure3 * (meanPredEqDoseCat quartileCharlson quartileCIRAS quartileIPAdmits12mPrior quartileAVPhys12mPrior quartileAVRheum12mPrior catERVisits) / list;
 run;
 proc sql;
   select database,
@@ -243,6 +244,17 @@ proc sql;
          sum(exposure3 = "NSAID or no exposure") as nNSAID
     from Work.AllCovariates
     group by database, quartileCIRAS;
+  select database,
+         quartileIPAdmits12mPrior,
+         min(countIPAdmits12mPrior) as min,
+         mean(countIPAdmits12mPrior) as mean,
+         max(countIPAdmits12mPrior) as max,
+         count(*) as n,
+         sum(exposure3 = "TNF") as nTNF,
+         sum(exposure3 = "DMARD") as nDMARD,
+         sum(exposure3 = "NSAID or no exposure") as nNSAID
+    from Work.AllCovariates
+    group by database, quartileIPAdmits12mPrior;
   select database,
          quartileAVPhys12mPrior,
          min(countAVPhys12mPrior) as min,
@@ -331,7 +343,7 @@ proc logistic data = Work.allCovariates outest = Work.psBetas3Level;
                     indRxOP_bisphosp
                     indRxThiazide
                     indRxAnticoagulant
-                    indIPAdmit12mPrior
+                    countIPAdmit12mPrior
                     indERVisit12mPrior
                     countAVRheum12mPrior
                     indRxBiologics
@@ -387,7 +399,7 @@ proc logistic data = Work.allCovariates outest = Work.psBetas3Level;
                     indRxOP_bisphosp
                     indRxThiazide
                     indRxAnticoagulant
-                    indIPAdmit12mPrior
+                    countIPAdmit12mPrior
                     indERVisit12mPrior
                     countAVRheum12mPrior
                     indRxBiologics
@@ -443,7 +455,7 @@ proc logistic data = Work.allCovariates outest = Work.psBetas3Level;
                     indRxOP_bisphosp
                     indRxThiazide
                     indRxAnticoagulant
-                    indIPAdmit12mPrior
+                    countIPAdmit12mPrior
                     indERVisit12mPrior
                     countAVRheum12mPrior
                     indRxBiologics
@@ -536,6 +548,7 @@ Calculate IPTW
                indRxThiazide,
                indRxAnticoagulant,
                indIPAdmit12mPrior,
+               countIPAdmit12mPrior,
                indERVisit12mPrior,
                ciras,
                quartileCIRAS,
@@ -704,6 +717,7 @@ proc sql;
            indRxThiazide,
            indRxAnticoagulant,
            indIPAdmit12mPrior,
+           countIPAdmit12mPrior,
            indERVisit12mPrior,
            ciras,
            quartileCIRAS,
