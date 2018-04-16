@@ -552,6 +552,29 @@ IS A DAYS-SUPPLY CRITERION REQUIRED??
 quit;
 
 
+/* 
+Code for outpatient infections
+Use code for hospitalized infections
+See queryPrevalentComorbidities.sas
+ */
+proc sql;
+  create table Work.defOutcomes as
+    select * 
+    from DT.defOutcomes 
+    where disease ^in ("Interstitial lung disease");
+quit;
+proc sql;
+  create table DT.outpatientInfection as
+    select distinct 
+           A.database, A.patid, A.indexID,
+           1 as indOutpatientInfection
+          from UCB.tempPrevDxAll A inner join 
+               Work.defOutcomes B on (A.codeType = B.codeType & A.code = B.code) 
+    where A.enc_type = "AV" &
+          B.disease in ("Hospitalized infection");
+quit;
+
+
 
 
 ods html close;
