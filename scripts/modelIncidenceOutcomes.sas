@@ -218,7 +218,7 @@ quit;
     hazardratio exposure / at (database = all) diff = ref;
   run;
   proc sql;
-    alter table Work.temp add model varchar(56);
+    alter table Work.temp add model varchar(68);
     update Work.temp set model = "&model";
     alter table Work.temp add outcomeCategory varchar(&len);
     update Work.temp set outcomeCategory = "&outcomeCategory";
