@@ -116,7 +116,7 @@ proc sql;
            A.indCommonSupport,
            A.iptwStabilized,
            A.meanPredEqDoseCat,
-           A.indRxAntibiotics,
+           A.indHospInf,
            B.outcomeCategory,
            B.disease,
            B.censor,
@@ -256,7 +256,7 @@ quit;
     call symput("maxlen", put(maxlen, best2.));
   run;
   proc sql;
-    create table Work.phregHazardRatios (disease varchar(&maxlen), model varchar(56));
+    create table Work.phregHazardRatios (disease varchar(&maxlen), model varchar(68));
   quit;
   %do i = 1 %to &n;
     data _null_;
@@ -271,8 +271,8 @@ quit;
     %model(%quote(a Weighted, no covariates), &outcomeCategory, &disease, &maxlen, iptw, );
     %model(%quote(b Weighted, covariates (6-month daily steroid dose)), &outcomeCategory, &disease, &maxlen, iptw, meanPredEqDoseCat);
     %model(%quote(c Weighted, covariates (sex)), &outcomeCategory, &disease, &maxlen, iptw, sex);
-    %model(%quote(d Weighted, covariates (antibiotics)), &outcomeCategory, &disease, &maxlen, iptw, indRxAntibiotics);
-    %model(%quote(e Weighted, covariates (6-month daily steroid dose, sex, antibiotics)), &outcomeCategory, &disease, &maxlen, iptw, meanPredEqDoseCat sex indRxAntibiotics);
+    %model(%quote(d Weighted, covariates (indHospInf)), &outcomeCategory, &disease, &maxlen, iptw, indHospInf);
+    %model(%quote(e Weighted, covariates (6-month daily steroid dose, sex, indHospInf)), &outcomeCategory, &disease, &maxlen, iptw, meanPredEqDoseCat sex indHospInf);
   %end;
   proc sql;
     drop table Work.tempN;
