@@ -33,17 +33,18 @@ MPCD
 2007-2010 
 (only RA(SP) & Healthy(CP2) population from 'Commercial' (eg. not Medicaid) coverage included)  
  */
-libname MPSTD spde "h:\studies\mpcd\data\stddata"
-                 datapath=("p:\studies\mpcd\data\stddata"
-                           "i:\studies\mpcd\data\stddata"
-                           "j:\studies\mpcd\data\stddata"
-                           "k:\studies\mpcd\data\stddata"
-                           "l:\studies\mpcd\data\stddata"
-                           "m:\studies\mpcd\data\stddata")
-                 indexpath=("l:\studies\mpcd\data\stddata"
-                            "m:\studies\mpcd\data\stddata")
-                 partsize=500m
-                 bysort=yes;
+libname MPSTD spde "q:\studies\mpcd\data\stddata"
+                 datapath=("r:\studies\mpcd\data\stddata"
+                           "s:\studies\mpcd\data\stddata"
+                           "t:\studies\mpcd\data\stddata"
+                           "u:\studies\mpcd\data\stddata"
+                           "v:\studies\mpcd\data\stddata"
+                           "q:\studies\mpcd\data\stddata")
+                 indexpath=("s:\studies\mpcd\data\stddata"
+                            "t:\studies\mpcd\data\stddata")
+                 partsize=256m
+                 bysort=yes
+                 compress=binary;
 /* 
 MarketScan  
 2010-2014 
