@@ -22,31 +22,38 @@ ods html
   style = Statistical;
 
 
+proc sql;
+  create table Work.numerASCohort as
+    select "MPCD"       as database, count(distinct patid) as numerASCohort from UCB.cohortastdmpcd  union corr
+    select "Marketscan" as database, count(distinct patid) as numerASCohort from UCB.cohortastducb   union corr
+    select "Medicare"   as database, count(distinct patid) as numerASCohort from UCB.cohortastd_sabr ;
+  select * from Work.numerASCohort;
+quit;
 
 
 proc sql;
 /* Denominator enrolled at any time during year */
   create table Work.denom as
-    select "Medicare" as database, 2006 as year, count(distinct patid) * 20 as denom from stdc5p.std_enrollment where year(enr_start_date) <= 2006 <= year(enr_end_date) union corr
-    select "Medicare" as database, 2007 as year, count(distinct patid) * 20 as denom from stdc5p.std_enrollment where year(enr_start_date) <= 2007 <= year(enr_end_date) union corr
-    select "Medicare" as database, 2008 as year, count(distinct patid) * 20 as denom from stdc5p.std_enrollment where year(enr_start_date) <= 2008 <= year(enr_end_date) union corr
-    select "Medicare" as database, 2009 as year, count(distinct patid) * 20 as denom from stdc5p.std_enrollment where year(enr_start_date) <= 2009 <= year(enr_end_date) union corr
-    select "Medicare" as database, 2010 as year, count(distinct patid) * 20 as denom from stdc5p.std_enrollment where year(enr_start_date) <= 2010 <= year(enr_end_date) union corr
-    select "Medicare" as database, 2011 as year, count(distinct patid) * 20 as denom from stdc5p.std_enrollment where year(enr_start_date) <= 2011 <= year(enr_end_date) union corr
-    select "Medicare" as database, 2012 as year, count(distinct patid) * 20 as denom from stdc5p.std_enrollment where year(enr_start_date) <= 2012 <= year(enr_end_date) union corr
-    select "Medicare" as database, 2013 as year, count(distinct patid) * 20 as denom from stdc5p.std_enrollment where year(enr_start_date) <= 2013 <= year(enr_end_date) union corr
-    select "Medicare" as database, 2014 as year, count(distinct patid) * 20 as denom from stdc5p.std_enrollment where year(enr_start_date) <= 2014 <= year(enr_end_date) ;
+    select "Medicare" as database, 2006 as year, count(distinct patid) as denom from stdc5p.std_enrollment where 6 <= intck("month", max(enr_start_date, "01JAN2006"D), min("31DEC2006"D, enr_end_date)) union corr
+    select "Medicare" as database, 2007 as year, count(distinct patid) as denom from stdc5p.std_enrollment where 6 <= intck("month", max(enr_start_date, "01JAN2007"D), min("31DEC2007"D, enr_end_date)) union corr
+    select "Medicare" as database, 2008 as year, count(distinct patid) as denom from stdc5p.std_enrollment where 6 <= intck("month", max(enr_start_date, "01JAN2008"D), min("31DEC2008"D, enr_end_date)) union corr
+    select "Medicare" as database, 2009 as year, count(distinct patid) as denom from stdc5p.std_enrollment where 6 <= intck("month", max(enr_start_date, "01JAN2009"D), min("31DEC2009"D, enr_end_date)) union corr
+    select "Medicare" as database, 2010 as year, count(distinct patid) as denom from stdc5p.std_enrollment where 6 <= intck("month", max(enr_start_date, "01JAN2010"D), min("31DEC2010"D, enr_end_date)) union corr
+    select "Medicare" as database, 2011 as year, count(distinct patid) as denom from stdc5p.std_enrollment where 6 <= intck("month", max(enr_start_date, "01JAN2011"D), min("31DEC2011"D, enr_end_date)) union corr
+    select "Medicare" as database, 2012 as year, count(distinct patid) as denom from stdc5p.std_enrollment where 6 <= intck("month", max(enr_start_date, "01JAN2012"D), min("31DEC2012"D, enr_end_date)) union corr
+    select "Medicare" as database, 2013 as year, count(distinct patid) as denom from stdc5p.std_enrollment where 6 <= intck("month", max(enr_start_date, "01JAN2013"D), min("31DEC2013"D, enr_end_date)) union corr
+    select "Medicare" as database, 2014 as year, count(distinct patid) as denom from stdc5p.std_enrollment where 6 <= intck("month", max(enr_start_date, "01JAN2014"D), min("31DEC2014"D, enr_end_date)) ;
 /* Numerator is entered AS cohort on or before year & enrolled at any time during year */
   create table Work.numer as
-    select "Medicare" as database, 2006 as year, count(distinct patid) as numer from UCB.cohortastd_sabr where year(asDate) <= 2006 & year(enr_start_date) <= 2006 <= year(enr_end_date) union corr
-    select "Medicare" as database, 2007 as year, count(distinct patid) as numer from UCB.cohortastd_sabr where year(asDate) <= 2007 & year(enr_start_date) <= 2007 <= year(enr_end_date) union corr
-    select "Medicare" as database, 2008 as year, count(distinct patid) as numer from UCB.cohortastd_sabr where year(asDate) <= 2008 & year(enr_start_date) <= 2008 <= year(enr_end_date) union corr
-    select "Medicare" as database, 2009 as year, count(distinct patid) as numer from UCB.cohortastd_sabr where year(asDate) <= 2009 & year(enr_start_date) <= 2009 <= year(enr_end_date) union corr
-    select "Medicare" as database, 2010 as year, count(distinct patid) as numer from UCB.cohortastd_sabr where year(asDate) <= 2010 & year(enr_start_date) <= 2010 <= year(enr_end_date) union corr
-    select "Medicare" as database, 2011 as year, count(distinct patid) as numer from UCB.cohortastd_sabr where year(asDate) <= 2011 & year(enr_start_date) <= 2011 <= year(enr_end_date) union corr
-    select "Medicare" as database, 2012 as year, count(distinct patid) as numer from UCB.cohortastd_sabr where year(asDate) <= 2012 & year(enr_start_date) <= 2012 <= year(enr_end_date) union corr
-    select "Medicare" as database, 2013 as year, count(distinct patid) as numer from UCB.cohortastd_sabr where year(asDate) <= 2013 & year(enr_start_date) <= 2013 <= year(enr_end_date) union corr
-    select "Medicare" as database, 2014 as year, count(distinct patid) as numer from UCB.cohortastd_sabr where year(asDate) <= 2014 & year(enr_start_date) <= 2014 <= year(enr_end_date) ;
+    select "Medicare" as database, 2006 as year, count(distinct patid) as numer from STD_SABR.STD_DX_2006    where dx = "7200" union corr
+    select "Medicare" as database, 2007 as year, count(distinct patid) as numer from STD_SABR.STD_DX_2007    where dx = "7200" union corr
+    select "Medicare" as database, 2008 as year, count(distinct patid) as numer from STD_SABR.STD_DX_2008_V2 where dx = "7200" union corr
+    select "Medicare" as database, 2009 as year, count(distinct patid) as numer from STD_SABR.STD_DX_2009    where dx = "7200" union corr
+    select "Medicare" as database, 2010 as year, count(distinct patid) as numer from STD_SABR.STD_DX_2010    where dx = "7200" union corr
+    select "Medicare" as database, 2011 as year, count(distinct patid) as numer from STD_SABR.STD_DX_2011    where dx = "7200" union corr
+    select "Medicare" as database, 2012 as year, count(distinct patid) as numer from STD_SABR.STD_DX_2012    where dx = "7200" union corr
+    select "Medicare" as database, 2013 as year, count(distinct patid) as numer from STD_SABR.STD_DX_2013    where dx = "7200" union corr
+    select "Medicare" as database, 2014 as year, count(distinct patid) as numer from STD_SABR.STD_DX_2014    where dx = "7200" ;
   create table Work.prev as
     select A.database, A.year, A.numer, B.denom, A.numer / B.denom as prev
     from Work.numer A inner join
@@ -78,7 +85,7 @@ proc sql;
           select distinct 2012 as year, patid from stdc5p.std_dx_2012 where dx_type = "09" & dx = "7200" & enc_type ^in ("IF", "OT", "") & prov_type = "66" union corr
           select distinct 2013 as year, patid from stdc5p.std_dx_2013 where dx_type = "09" & dx = "7200" & enc_type ^in ("IF", "OT", "") & prov_type = "66" union corr
           select distinct 2014 as year, patid from stdc5p.std_dx_2014 where dx_type = "09" & dx = "7200" & enc_type ^in ("IF", "OT", "") & prov_type = "66" ) A inner join
-         Work.denom1 B on (A.patid = B.patid & A.year <= B.year)
+         Work.denom1 B on (A.patid = B.patid & A.year = B.year)
     order by B.patid, B.year;
   create table Work.prev1 as
     select "Medicare" as database, A.year, A.numer, B.denom, A.numer / B.denom as prev
@@ -119,6 +126,19 @@ Medicare  2011                      595     947,119     0.063%
 Medicare  2012                      700     993,250     0.070%
 Medicare  2013                      858   1,114,786     0.077%
 Medicare  2014                      952   1,135,170     0.084%
+Medicare  OVERALL 2006-2014       1,061   1,846,811     0.057%
+
+database  year                    numer       denom        prev
+---------------------------------------------------------------
+Medicare  2006                      188     866,963     0.022%
+Medicare  2007                      203     881,582     0.023%
+Medicare  2008                      225     892,067     0.025%
+Medicare  2009                      245     895,012     0.027%
+Medicare  2010                      283     912,148     0.031%
+Medicare  2011                      299     947,119     0.032%
+Medicare  2012                      334     993,250     0.034%
+Medicare  2013                      386   1,114,786     0.035%
+Medicare  2014                      411   1,135,170     0.036%
 Medicare  OVERALL 2006-2014       1,061   1,846,811     0.057%
  */
 
