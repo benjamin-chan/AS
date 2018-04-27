@@ -1,4 +1,4 @@
-1                                                          The SAS System                             12:11 Thursday, April 19, 2018
+1                                                          The SAS System                               10:34 Friday, April 27, 2018
 
 NOTE: Unable to open SASUSER.REGSTRY. WORK.REGSTRY will be opened instead.
 NOTE: All registry changes will be lost at the end of the session.
@@ -35,8 +35,8 @@ of the shared folders.
 
 
 NOTE: SAS initialization used:
-      real time           4.45 seconds
-      cpu time            0.34 seconds
+      real time           4.58 seconds
+      cpu time            0.40 seconds
       
 1          *  University of Alabama at Birmingham                               *
 2          *  AS project                                                        *
@@ -57,7 +57,7 @@ NOTE: Libref STD_SABR was successfully assigned as follows:
       Physical Name: q:\data\std_SABER\
 NOTE: Libref MPSTD was successfully assigned as follows: 
       Engine:        SPDE 
-      Physical Name: h:\studies\mpcd\data\stddata\
+      Physical Name: q:\studies\mpcd\data\stddata\
 NOTE: Libref UCBSTD was successfully assigned as follows: 
       Engine:        SPDE 
       Physical Name: q:\studies\AS\data\stddata\
@@ -70,266 +70,266 @@ NOTE: Libref DT was successfully assigned as follows:
 NOTE: Libref NDC was successfully assigned as follows: 
       Engine:        V9 
       Physical Name: W:\onenote\references\drug ndcs\sas data
-127        footnote "&pgm.";
-128        * footnote2 "%sysfunc(datetime(),datetime14.)";
-2                                                                   The SAS System                                      12:11 Thursday, April 19, 2018
+128        footnote "&pgm.";
+129        * footnote2 "%sysfunc(datetime(),datetime14.)";
+2                                                                   The SAS System                                        10:34 Friday, April 27, 2018
 
-129        title1 '--- AS project ---';
-130        **********************************************************************;
-131        options macrogen mlogic mprint symbolgen;
-132        options nomacrogen nomlogic nomprint nosymbolgen;
-133        
+130        title1 '--- AS project ---';
+131        **********************************************************************;
+132        options macrogen mlogic mprint symbolgen;
+133        options nomacrogen nomlogic nomprint nosymbolgen;
 134        
-135        ods html
-136          body = "output\&cmt..html"
-137          style = Statistical;
+135        
+136        ods html
+137          body = "output\&cmt..html"
+138          style = Statistical;
 NOTE: Writing HTML Body file: output\modelPropensityScore.html
-138        
 139        
-140        proc sql;
-141          create table Work.allCovariates as
-142            select A.database,
-143                   case
-144                     when A.exposure in ("No exposure", "NSAID") then "NSAID or no exposure"
-145                     else A.exposure
-146                     end as exposure3,
-147                   A.PATID,
-148                   A.age,
-149                   case
-150                     when age = 0 then "0"
-151                     when  1 <= age <= 18 then "1-18"
-152                     when 19 <= age <= 29 then "19-29"
-153                     when 30 <= age <= 39 then "30-39"
-154                     when 40 <= age <= 49 then "40-49"
-155                     when 50 <= age <= 59 then "50-59"
-156                     when 60 <= age <= 69 then "60-69"
-157                     when 70 <= age       then "70+"
-158                     else ""
-159                     end as catAge,
-160                   A.SEX,
-161                   A.indexID,
-162                   max(0, B.indAmyloidosis     ) as indAmyloidosis,
-163                   max(0, C.indAortInsuffRegurg) as indAortInsuffRegurg,
-164                   max(0, D.indApicalPulmFib   ) as indApicalPulmFib,
-165                   max(0, E.indCaudaEquina     ) as indCaudaEquina,
-166                   max(0, F.indVertFrac        ) as indVertFrac,
-167                   max(0, G.indConductBlock    ) as indConductBlock,
-168                   max(0, H.indCrohnsDis       ) as indCrohnsDis,
-169                   max(0, I.indHematCa         ) as indHematCa,
-170                   max(0, J.indHospInf         ) as indHospInf,
-171                   max(0, K.indIgANeph         ) as indIgANeph,
-172                   max(0, L.indInterstLungDis  ) as indInterstLungDis,
-173                   max(0, M.indMI              ) as indMI,
-174                   max(0, N.indNephSyn         ) as indNephSyn,
-175                   max(0, O.indNMSC            ) as indNMSC,
-176                   max(0, P.indNonVertOsFrac   ) as indNonVertOsFrac,
-177                   max(0, Q.indOppInf          ) as indOppInf,
-178                   max(0, R.indPsoriasis       ) as indPsoriasis,
-179                   max(0, S.indPSA             ) as indPSA,
-180                   max(0, T.indRestrictLungDis ) as indRestrictLungDis,
-181                   max(0, U.indSolidCa         ) as indSolidCa,
-182                   max(0, V.indSpinalCordComp  ) as indSpinalCordComp,
-183                   max(0, W.indUlcerColitis    ) as indUlcerColitis,
-184                   max(0, X.indUveitis         ) as indUveitis,
-185                   max(0, AA.indDiabetes       ) as indDiabetes,
-186                   max(0, BB.indHT             ) as indHT,
-187                   max(0, CC.indMetabSyn       ) as indMetabSyn,
-188                   max(0, DD.indNAFattyLiverDis) as indNAFattyLiverDis,
-189                   max(0, EE.indCOPDEmphysema  ) as indCOPDEmphysema,
-190                   case
-191                     when FF.meanPredEqDoseCat = "" then "None"
-192                     else FF.meanPredEqDoseCat
-193                     end as meanPredEqDoseCat,
-194                   max(0, GG.charlson) as charlson,
-195                   max(0, HH.ciras) as ciras,
-196                   max(0, HH.numinflamMarker) as numinflamMarker,
-197                   HH.numinflamMarker > 0 as indInflamMarker,
-198                   max(0, II.nsaid) as indRxNSAID,
-199                   max(0, II.htn) as indRxHtn,
-3                                                                   The SAS System                                      12:11 Thursday, April 19, 2018
+140        
+141        proc sql;
+142          create table Work.allCovariates as
+143            select A.database,
+144                   case
+145                     when A.exposure in ("No exposure", "NSAID") then "NSAID or no exposure"
+146                     else A.exposure
+147                     end as exposure3,
+148                   A.PATID,
+149                   A.age,
+150                   case
+151                     when age = 0 then "0"
+152                     when  1 <= age <= 18 then "1-18"
+153                     when 19 <= age <= 29 then "19-29"
+154                     when 30 <= age <= 39 then "30-39"
+155                     when 40 <= age <= 49 then "40-49"
+156                     when 50 <= age <= 59 then "50-59"
+157                     when 60 <= age <= 69 then "60-69"
+158                     when 70 <= age       then "70+"
+159                     else ""
+160                     end as catAge,
+161                   A.SEX,
+162                   A.indexID,
+163                   max(0, B.indAmyloidosis     ) as indAmyloidosis,
+164                   max(0, C.indAortInsuffRegurg) as indAortInsuffRegurg,
+165                   max(0, D.indApicalPulmFib   ) as indApicalPulmFib,
+166                   max(0, E.indCaudaEquina     ) as indCaudaEquina,
+167                   max(0, F.indVertFrac        ) as indVertFrac,
+168                   max(0, G.indConductBlock    ) as indConductBlock,
+169                   max(0, H.indCrohnsDis       ) as indCrohnsDis,
+170                   max(0, I.indHematCa         ) as indHematCa,
+171                   max(0, J.indHospInf         ) as indHospInf,
+172                   max(0, K.indIgANeph         ) as indIgANeph,
+173                   max(0, L.indInterstLungDis  ) as indInterstLungDis,
+174                   max(0, M.indMI              ) as indMI,
+175                   max(0, N.indNephSyn         ) as indNephSyn,
+176                   max(0, O.indNMSC            ) as indNMSC,
+177                   max(0, P.indNonVertOsFrac   ) as indNonVertOsFrac,
+178                   max(0, Q.indOppInf          ) as indOppInf,
+179                   max(0, R.indPsoriasis       ) as indPsoriasis,
+180                   max(0, S.indPSA             ) as indPSA,
+181                   max(0, T.indRestrictLungDis ) as indRestrictLungDis,
+182                   max(0, U.indSolidCa         ) as indSolidCa,
+183                   max(0, V.indSpinalCordComp  ) as indSpinalCordComp,
+184                   max(0, W.indUlcerColitis    ) as indUlcerColitis,
+185                   max(0, X.indUveitis         ) as indUveitis,
+186                   max(0, AA.indDiabetes       ) as indDiabetes,
+187                   max(0, BB.indHT             ) as indHT,
+188                   max(0, CC.indMetabSyn       ) as indMetabSyn,
+189                   max(0, DD.indNAFattyLiverDis) as indNAFattyLiverDis,
+190                   max(0, EE.indCOPDEmphysema  ) as indCOPDEmphysema,
+191                   case
+192                     when FF.meanPredEqDoseCat = "" then "None"
+193                     else FF.meanPredEqDoseCat
+194                     end as meanPredEqDoseCat,
+195                   max(0, GG.charlson) as charlson,
+196                   max(0, HH.ciras) as ciras,
+197                   max(0, HH.numinflamMarker) as numinflamMarker,
+198                   HH.numinflamMarker > 0 as indInflamMarker,
+199                   max(0, II.nsaid) as indRxNSAID,
+200                   max(0, II.htn) as indRxHtn,
+3                                                                   The SAS System                                        10:34 Friday, April 27, 2018
 
-200                   max(0, II.narcotics) as indRxNarcotics,
-201                   max(0, II.fungus) as indRxFungus,
-202                   max(0, II.op_bisphosp) as indRxOP_bisphosp,
-203                   max(0, II.thiazide) as indRxThiazide,
-204                   max(0, II.anticoagulant) as indRxAnticoagulant,
-205                   max(0, II.antibiotics) as indRxAntibiotics,
-206                   max(0, JJ.indIPAdmit12mPrior) as indIPAdmit12mPrior,
-207                   max(0, JJ.countIPAdmits12mPrior) as countIPAdmits12mPrior,
-208                   max(0, KK.countAVPhys12mPrior) as countAVPhys12mPrior,
-209                   case
-210                     when  0 <= max(0, KK.countAVPhys12mPrior) <=  4 then "0-4"
-211                     when  5 <= max(0, KK.countAVPhys12mPrior) <=  9 then "5-9"
-212                     when 10 <= max(0, KK.countAVPhys12mPrior) <= 14 then "10-14"
-213                     when 15 <= max(0, KK.countAVPhys12mPrior) <= 19 then "15-19"
-214                     when 20 <= max(0, KK.countAVPhys12mPrior)       then "20+"
-215                     else ""
-216                     end as catAVPhys12mPrior,
-217                   max(0, KK.countAVRheum12mPrior) as countAVRheum12mPrior,
-218                   case
-219                     when 0  = max(0, KK.countAVRheum12mPrior) then 0
-220                     when 1 <= max(0, KK.countAVRheum12mPrior) then 1
-221                     else .
-222                     end as indAVRheum12mPrior,
-223                   max(0, KK.indERVisit12mPrior) as indERVisit12mPrior,
-224                   max(0, KK.countERVisits) as countERVisits,
-225                   case
-226                     when 0  = max(0, KK.countERVisits)       then "0"
-227                     when 1 <= max(0, KK.countERVisits) <=  1 then "1"
-228                     when 2 <= max(0, KK.countERVisits)       then "2+"
-229                     else ""
-230                     end as catERVisits,
-231                   max(0, LL.indRxBiologics) as indRxBiologics,
-232                   max(0, MM.indOutpatientInfection) as indOutpatientInfection
-233            from
-234              DT.indexLookup A left join
-235              (select indexID, 1 as indAmyloidosis      from DT.comorbidities      where indPrevPriorToIndex = 1 & prxmatch("/Amyloidosis/"
-235      !                        , disease    )) B  on (A.indexID = B.indexID ) left join
-236              (select indexID, 1 as indAortInsuffRegurg from DT.comorbidities      where indPrevPriorToIndex = 1 & prxmatch("/Aortic
-236      ! Insufficiency\/Aortic Regurgitation/", disease    )) C  on (A.indexID = C.indexID ) left join
-237              (select indexID, 1 as indApicalPulmFib    from DT.comorbidities      where indPrevPriorToIndex = 1 & prxmatch("/Apical Pulmonary
-237      ! fibrosis/"                 , disease    )) D  on (A.indexID = D.indexID ) left join
-238              (select indexID, 1 as indCaudaEquina      from DT.comorbidities      where indPrevPriorToIndex = 1 & prxmatch("/Cauda Equina
-238      ! syndrome/"                     , disease    )) E  on (A.indexID = E.indexID ) left join
-239              (select indexID, 1 as indVertFrac         from DT.comorbidities      where indPrevPriorToIndex = 1 & prxmatch("/Clinical vertebral
-239      ! fracture/"               , disease    )) F  on (A.indexID = F.indexID ) left join
-240              (select indexID, 1 as indConductBlock     from DT.comorbidities      where indPrevPriorToIndex = 1 & prxmatch("/Conduction Block/"
-240      !                        , disease    )) G  on (A.indexID = G.indexID ) left join
-241              (select indexID, 1 as indCrohnsDis        from DT.comorbidities      where indPrevPriorToIndex = 1 & prxmatch("/Crohn/"
-241      !                        , disease    )) H  on (A.indexID = H.indexID ) left join
-242              (select indexID, 1 as indHematCa          from DT.comorbidities      where indPrevPriorToIndex = 1 & prxmatch("/Hematologic Cancer/"
-242      !                        , disease    )) I  on (A.indexID = I.indexID ) left join
-243              (select indexID, 1 as indHospInf          from DT.comorbidities      where indPrevPriorToIndex = 1 & prxmatch("/Hospitalized
-243      ! infection/"                    , disease    )) J  on (A.indexID = J.indexID ) left join
-244              (select indexID, 1 as indIgANeph          from DT.comorbidities      where indPrevPriorToIndex = 1 & prxmatch("/IgA nephropathy/"
-244      !                        , disease    )) K  on (A.indexID = K.indexID ) left join
-245              (select indexID, 1 as indInterstLungDis   from DT.comorbidities      where indPrevPriorToIndex = 1 & prxmatch("/Interstitial lung
-245      ! disease/"                 , disease    )) L  on (A.indexID = L.indexID ) left join
-246              (select indexID, 1 as indMI               from DT.comorbidities      where indPrevPriorToIndex = 1 & prxmatch("/Myocardial
-246      ! infarction/"                     , disease    )) M  on (A.indexID = M.indexID ) left join
-247              (select indexID, 1 as indNephSyn          from DT.comorbidities      where indPrevPriorToIndex = 1 & prxmatch("/Nephrotic syndrome/"
-247      !                        , disease    )) N  on (A.indexID = N.indexID ) left join
-248              (select indexID, 1 as indNMSC             from DT.comorbidities      where indPrevPriorToIndex = 1 & prxmatch("/Non Melanoma Skin
-248      ! Cancer/"                  , disease    )) O  on (A.indexID = O.indexID ) left join
-249              (select indexID, 1 as indNonVertOsFrac    from DT.comorbidities      where indPrevPriorToIndex = 1 & prxmatch("/Non-vertebral
-249      ! osteoporotic fracture/"       , disease    )) P  on (A.indexID = P.indexID ) left join
-250              (select indexID, 1 as indOppInf           from DT.comorbidities      where indPrevPriorToIndex = 1 & prxmatch("/Opportunistic
-250      ! infection/"                   , disease    )) Q  on (A.indexID = Q.indexID ) left join
-251              (select indexID, 1 as indPsoriasis        from DT.comorbidities      where indPrevPriorToIndex = 1 & prxmatch("/Psoriasis/"
-251      !                        , disease    )) R  on (A.indexID = R.indexID ) left join
-252              (select indexID, 1 as indPSA              from DT.comorbidities      where indPrevPriorToIndex = 1 & prxmatch("/Psoriatic arthritis/"
-252      !                        , disease    )) S  on (A.indexID = S.indexID ) left join
-253              (select indexID, 1 as indRestrictLungDis  from DT.comorbidities      where indPrevPriorToIndex = 1 & prxmatch("/Restrictive lung
-4                                                                   The SAS System                                      12:11 Thursday, April 19, 2018
+201                   max(0, II.narcotics) as indRxNarcotics,
+202                   max(0, II.fungus) as indRxFungus,
+203                   max(0, II.op_bisphosp) as indRxOP_bisphosp,
+204                   max(0, II.thiazide) as indRxThiazide,
+205                   max(0, II.anticoagulant) as indRxAnticoagulant,
+206                   max(0, II.antibiotics) as indRxAntibiotics,
+207                   max(0, JJ.indIPAdmit12mPrior) as indIPAdmit12mPrior,
+208                   max(0, JJ.countIPAdmits12mPrior) as countIPAdmits12mPrior,
+209                   max(0, KK.countAVPhys12mPrior) as countAVPhys12mPrior,
+210                   case
+211                     when  0 <= max(0, KK.countAVPhys12mPrior) <=  4 then "0-4"
+212                     when  5 <= max(0, KK.countAVPhys12mPrior) <=  9 then "5-9"
+213                     when 10 <= max(0, KK.countAVPhys12mPrior) <= 14 then "10-14"
+214                     when 15 <= max(0, KK.countAVPhys12mPrior) <= 19 then "15-19"
+215                     when 20 <= max(0, KK.countAVPhys12mPrior)       then "20+"
+216                     else ""
+217                     end as catAVPhys12mPrior,
+218                   max(0, KK.countAVRheum12mPrior) as countAVRheum12mPrior,
+219                   case
+220                     when 0  = max(0, KK.countAVRheum12mPrior) then 0
+221                     when 1 <= max(0, KK.countAVRheum12mPrior) then 1
+222                     else .
+223                     end as indAVRheum12mPrior,
+224                   max(0, KK.indERVisit12mPrior) as indERVisit12mPrior,
+225                   max(0, KK.countERVisits) as countERVisits,
+226                   case
+227                     when 0  = max(0, KK.countERVisits)       then "0"
+228                     when 1 <= max(0, KK.countERVisits) <=  1 then "1"
+229                     when 2 <= max(0, KK.countERVisits)       then "2+"
+230                     else ""
+231                     end as catERVisits,
+232                   max(0, LL.indRxBiologics) as indRxBiologics,
+233                   max(0, MM.indOutpatientInfection) as indOutpatientInfection
+234            from
+235              DT.indexLookup A left join
+236              (select indexID, 1 as indAmyloidosis      from DT.comorbidities      where indPrevPriorToIndex = 1 & prxmatch("/Amyloidosis/"
+236      !                        , disease    )) B  on (A.indexID = B.indexID ) left join
+237              (select indexID, 1 as indAortInsuffRegurg from DT.comorbidities      where indPrevPriorToIndex = 1 & prxmatch("/Aortic
+237      ! Insufficiency\/Aortic Regurgitation/", disease    )) C  on (A.indexID = C.indexID ) left join
+238              (select indexID, 1 as indApicalPulmFib    from DT.comorbidities      where indPrevPriorToIndex = 1 & prxmatch("/Apical Pulmonary
+238      ! fibrosis/"                 , disease    )) D  on (A.indexID = D.indexID ) left join
+239              (select indexID, 1 as indCaudaEquina      from DT.comorbidities      where indPrevPriorToIndex = 1 & prxmatch("/Cauda Equina
+239      ! syndrome/"                     , disease    )) E  on (A.indexID = E.indexID ) left join
+240              (select indexID, 1 as indVertFrac         from DT.comorbidities      where indPrevPriorToIndex = 1 & prxmatch("/Clinical vertebral
+240      ! fracture/"               , disease    )) F  on (A.indexID = F.indexID ) left join
+241              (select indexID, 1 as indConductBlock     from DT.comorbidities      where indPrevPriorToIndex = 1 & prxmatch("/Conduction Block/"
+241      !                        , disease    )) G  on (A.indexID = G.indexID ) left join
+242              (select indexID, 1 as indCrohnsDis        from DT.comorbidities      where indPrevPriorToIndex = 1 & prxmatch("/Crohn/"
+242      !                        , disease    )) H  on (A.indexID = H.indexID ) left join
+243              (select indexID, 1 as indHematCa          from DT.comorbidities      where indPrevPriorToIndex = 1 & prxmatch("/Hematologic Cancer/"
+243      !                        , disease    )) I  on (A.indexID = I.indexID ) left join
+244              (select indexID, 1 as indHospInf          from DT.comorbidities      where indPrevPriorToIndex = 1 & prxmatch("/Hospitalized
+244      ! infection/"                    , disease    )) J  on (A.indexID = J.indexID ) left join
+245              (select indexID, 1 as indIgANeph          from DT.comorbidities      where indPrevPriorToIndex = 1 & prxmatch("/IgA nephropathy/"
+245      !                        , disease    )) K  on (A.indexID = K.indexID ) left join
+246              (select indexID, 1 as indInterstLungDis   from DT.comorbidities      where indPrevPriorToIndex = 1 & prxmatch("/Interstitial lung
+246      ! disease/"                 , disease    )) L  on (A.indexID = L.indexID ) left join
+247              (select indexID, 1 as indMI               from DT.comorbidities      where indPrevPriorToIndex = 1 & prxmatch("/Myocardial
+247      ! infarction/"                     , disease    )) M  on (A.indexID = M.indexID ) left join
+248              (select indexID, 1 as indNephSyn          from DT.comorbidities      where indPrevPriorToIndex = 1 & prxmatch("/Nephrotic syndrome/"
+248      !                        , disease    )) N  on (A.indexID = N.indexID ) left join
+249              (select indexID, 1 as indNMSC             from DT.comorbidities      where indPrevPriorToIndex = 1 & prxmatch("/Non Melanoma Skin
+249      ! Cancer/"                  , disease    )) O  on (A.indexID = O.indexID ) left join
+250              (select indexID, 1 as indNonVertOsFrac    from DT.comorbidities      where indPrevPriorToIndex = 1 & prxmatch("/Non-vertebral
+250      ! osteoporotic fracture/"       , disease    )) P  on (A.indexID = P.indexID ) left join
+251              (select indexID, 1 as indOppInf           from DT.comorbidities      where indPrevPriorToIndex = 1 & prxmatch("/Opportunistic
+251      ! infection/"                   , disease    )) Q  on (A.indexID = Q.indexID ) left join
+252              (select indexID, 1 as indPsoriasis        from DT.comorbidities      where indPrevPriorToIndex = 1 & prxmatch("/Psoriasis/"
+252      !                        , disease    )) R  on (A.indexID = R.indexID ) left join
+253              (select indexID, 1 as indPSA              from DT.comorbidities      where indPrevPriorToIndex = 1 & prxmatch("/Psoriatic arthritis/"
+253      !                        , disease    )) S  on (A.indexID = S.indexID ) left join
+254              (select indexID, 1 as indRestrictLungDis  from DT.comorbidities      where indPrevPriorToIndex = 1 & prxmatch("/Restrictive lung
+4                                                                   The SAS System                                        10:34 Friday, April 27, 2018
 
-253      ! disease/"                  , disease    )) T  on (A.indexID = T.indexID ) left join
-254              (select indexID, 1 as indSolidCa          from DT.comorbidities      where indPrevPriorToIndex = 1 & prxmatch("/Solid Cancer/"
-254      !                        , disease    )) U  on (A.indexID = U.indexID ) left join
-255              (select indexID, 1 as indSpinalCordComp   from DT.comorbidities      where indPrevPriorToIndex = 1 & prxmatch("/Spinal Cord
-255      ! compression/"                   , disease    )) V  on (A.indexID = V.indexID ) left join
-256              (select indexID, 1 as indUlcerColitis     from DT.comorbidities      where indPrevPriorToIndex = 1 & prxmatch("/Ulcerative Colitis/"
-256      !                        , disease    )) W  on (A.indexID = W.indexID ) left join
-257              (select indexID, 1 as indUveitis          from DT.comorbidities      where indPrevPriorToIndex = 1 & prxmatch("/Uveitis/"
-257      !                        , disease    )) X  on (A.indexID = X.indexID ) left join
-258              (select indexID, 1 as indDiabetes         from DT.comorbiditiesOther where                           prxmatch("/Diabetes/"
-258      !                        , comorbidity)) AA on (A.indexID = AA.indexID) left join
-259              (select indexID, 1 as indHT               from DT.comorbiditiesOther where                           prxmatch("/Hypertention/"
-259      !                        , comorbidity)) BB on (A.indexID = BB.indexID) left join
-260              (select indexID, 1 as indMetabSyn         from DT.comorbiditiesOther where                           prxmatch("/Metabolic syndrome/"
-260      !                        , comorbidity)) CC on (A.indexID = CC.indexID) left join
-261              (select indexID, 1 as indNAFattyLiverDis  from DT.comorbiditiesOther where                           prxmatch("/Non-alcoholic fatty
-261      ! liver disease/"         , comorbidity)) DD on (A.indexID = DD.indexID) left join
-262              (select indexID, 1 as indCOPDEmphysema    from DT.comorbiditiesOther where                           prxmatch("/COPD or emphysema/"
-262      !                        , comorbidity)) EE on (A.indexID = EE.indexID) left join
-263              (select indexID, meanPredEqDoseCat        from DT.rxOralCorticosteroid
-263      !                                      ) FF on (A.indexID = FF.indexID) left join
-264              (select indexID, charlson from DT.charlsonIndex) GG on (A.indexID = GG.indexID) left join
-265              (select indexID, ciras, numinflamMarker from DT.CIRAS) HH on (A.indexID = HH.indexID) left join
-266              (select indexID, nsaid, htn, narcotics, fungus, op_bisphosp, thiazide, anticoagulant, antibiotics from DT.indRx) II on (A.indexID =
-266      ! II.indexID) left join
-267              (select indexID, indIPAdmit12mPrior, countIPAdmits12mPrior from DT.diagIndicatorsInpatient) JJ on (A.indexID = JJ.indexID) left join
-268              (select indexID, countAVPhys12mPrior, countAVRheum12mPrior, indERVisit12mPrior, countERVisits from DT.countEncounters) KK on
-268      ! (A.indexID = KK.indexID) left join
-269              (select indexID, indRxBiologics from DT.indBiologics) LL on (A.indexID = LL.indexID) left join
-270              (select indexID, indOutpatientInfection from DT.outpatientInfection) MM on (A.indexID = MM.indexID)
-271            order by A.database;
+254      ! disease/"                  , disease    )) T  on (A.indexID = T.indexID ) left join
+255              (select indexID, 1 as indSolidCa          from DT.comorbidities      where indPrevPriorToIndex = 1 & prxmatch("/Solid Cancer/"
+255      !                        , disease    )) U  on (A.indexID = U.indexID ) left join
+256              (select indexID, 1 as indSpinalCordComp   from DT.comorbidities      where indPrevPriorToIndex = 1 & prxmatch("/Spinal Cord
+256      ! compression/"                   , disease    )) V  on (A.indexID = V.indexID ) left join
+257              (select indexID, 1 as indUlcerColitis     from DT.comorbidities      where indPrevPriorToIndex = 1 & prxmatch("/Ulcerative Colitis/"
+257      !                        , disease    )) W  on (A.indexID = W.indexID ) left join
+258              (select indexID, 1 as indUveitis          from DT.comorbidities      where indPrevPriorToIndex = 1 & prxmatch("/Uveitis/"
+258      !                        , disease    )) X  on (A.indexID = X.indexID ) left join
+259              (select indexID, 1 as indDiabetes         from DT.comorbiditiesOther where                           prxmatch("/Diabetes/"
+259      !                        , comorbidity)) AA on (A.indexID = AA.indexID) left join
+260              (select indexID, 1 as indHT               from DT.comorbiditiesOther where                           prxmatch("/Hypertention/"
+260      !                        , comorbidity)) BB on (A.indexID = BB.indexID) left join
+261              (select indexID, 1 as indMetabSyn         from DT.comorbiditiesOther where                           prxmatch("/Metabolic syndrome/"
+261      !                        , comorbidity)) CC on (A.indexID = CC.indexID) left join
+262              (select indexID, 1 as indNAFattyLiverDis  from DT.comorbiditiesOther where                           prxmatch("/Non-alcoholic fatty
+262      ! liver disease/"         , comorbidity)) DD on (A.indexID = DD.indexID) left join
+263              (select indexID, 1 as indCOPDEmphysema    from DT.comorbiditiesOther where                           prxmatch("/COPD or emphysema/"
+263      !                        , comorbidity)) EE on (A.indexID = EE.indexID) left join
+264              (select indexID, meanPredEqDoseCat        from DT.rxOralCorticosteroid
+264      !                                      ) FF on (A.indexID = FF.indexID) left join
+265              (select indexID, charlson from DT.charlsonIndex) GG on (A.indexID = GG.indexID) left join
+266              (select indexID, ciras, numinflamMarker from DT.CIRAS) HH on (A.indexID = HH.indexID) left join
+267              (select indexID, nsaid, htn, narcotics, fungus, op_bisphosp, thiazide, anticoagulant, antibiotics from DT.indRx) II on (A.indexID =
+267      ! II.indexID) left join
+268              (select indexID, indIPAdmit12mPrior, countIPAdmits12mPrior from DT.diagIndicatorsInpatient) JJ on (A.indexID = JJ.indexID) left join
+269              (select indexID, countAVPhys12mPrior, countAVRheum12mPrior, indERVisit12mPrior, countERVisits from DT.countEncounters) KK on
+269      ! (A.indexID = KK.indexID) left join
+270              (select indexID, indRxBiologics from DT.indBiologics) LL on (A.indexID = LL.indexID) left join
+271              (select indexID, indOutpatientInfection from DT.outpatientInfection) MM on (A.indexID = MM.indexID)
+272            order by A.database;
 NOTE: Table WORK.ALLCOVARIATES created, with 60010 rows and 59 columns.
 
-272        quit;
+273        quit;
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           4.87 seconds
-      cpu time            4.89 seconds
+      real time           5.06 seconds
+      cpu time            5.41 seconds
       
 
-273        
 274        
-275        proc rank data = Work.allCovariates out = Work.allCovariates groups = 4;
-276          by database;
-277          var charlson ciras countIPAdmits12mPrior countAVPhys12mPrior countAVRheum12mPrior;
-278          ranks quartileCharlson quartileCIRAS quartileIPAdmits12mPrior quartileAVPhys12mPrior quartileAVRheum12mPrior;
-279        run;
+275        
+276        proc rank data = Work.allCovariates out = Work.allCovariates groups = 4;
+277          by database;
+278          var charlson ciras countIPAdmits12mPrior countAVPhys12mPrior countAVRheum12mPrior;
+279          ranks quartileCharlson quartileCIRAS quartileIPAdmits12mPrior quartileAVPhys12mPrior quartileAVRheum12mPrior;
+280        run;
 
 NOTE: There were 60010 observations read from the data set WORK.ALLCOVARIATES.
 NOTE: The data set WORK.ALLCOVARIATES has 60010 observations and 64 variables.
 NOTE: PROCEDURE RANK used (Total process time):
-      real time           0.37 seconds
-      cpu time            0.26 seconds
+      real time           0.40 seconds
+      cpu time            0.32 seconds
       
 
-280        
 281        
-282        proc means data = Work.allCovariates maxdec = 2 nolabels;
-283          class database exposure3;
-284          var indAmyloidosis
-285              indAortInsuffRegurg
-286              indApicalPulmFib
-287              indCaudaEquina
-288              indVertFrac
-289              indConductBlock
-290              indCrohnsDis
-291              indHematCa
-292              indHospInf
-293              indIgANeph
-294              indInterstLungDis
-295              indMI
-296              indNephSyn
-297              indNMSC
-5                                                                   The SAS System                                      12:11 Thursday, April 19, 2018
+282        
+283        proc means data = Work.allCovariates maxdec = 2 nolabels;
+284          class database exposure3;
+285          var indAmyloidosis
+286              indAortInsuffRegurg
+287              indApicalPulmFib
+288              indCaudaEquina
+289              indVertFrac
+290              indConductBlock
+291              indCrohnsDis
+292              indHematCa
+293              indHospInf
+294              indIgANeph
+295              indInterstLungDis
+296              indMI
+297              indNephSyn
+298              indNMSC
+5                                                                   The SAS System                                        10:34 Friday, April 27, 2018
 
-298              indNonVertOsFrac
-299              indOppInf
-300              indPsoriasis
-301              indPSA
-302              indRestrictLungDis
-303              indSolidCa
-304              indSpinalCordComp
-305              indUlcerColitis
-306              indUveitis
-307              indDiabetes
-308              indHT
-309              indMetabSyn
-310              indNAFattyLiverDis
-311              indCOPDEmphysema
-312              charlson
-313              quartileCharlson
-314              ciras
-315              indInflamMarker
-316              indRxNSAID
-317              indRxHtn
-318              indRxNarcotics
-319              indRxFungus
-320              indRxOP_bisphosp
-321              indRxThiazide
-322              indRxAnticoagulant
-323              indRxAntibiotics
-324              indIPAdmit12mPrior
-325              indAVRheum12mPrior
-326              indERVisit12mPrior
-327              indRxBiologics
-328              indOutpatientInfection;
-329        run;
+299              indNonVertOsFrac
+300              indOppInf
+301              indPsoriasis
+302              indPSA
+303              indRestrictLungDis
+304              indSolidCa
+305              indSpinalCordComp
+306              indUlcerColitis
+307              indUveitis
+308              indDiabetes
+309              indHT
+310              indMetabSyn
+311              indNAFattyLiverDis
+312              indCOPDEmphysema
+313              charlson
+314              quartileCharlson
+315              ciras
+316              indInflamMarker
+317              indRxNSAID
+318              indRxHtn
+319              indRxNarcotics
+320              indRxFungus
+321              indRxOP_bisphosp
+322              indRxThiazide
+323              indRxAnticoagulant
+324              indRxAntibiotics
+325              indIPAdmit12mPrior
+326              indAVRheum12mPrior
+327              indERVisit12mPrior
+328              indRxBiologics
+329              indOutpatientInfection;
+330        run;
 
-                                                                  --- AS project ---                                12:11 Thursday, April 19, 2018   1
+                                                                  --- AS project ---                                  10:34 Friday, April 27, 2018   1
 
                                                                  The MEANS Procedure
 
@@ -403,7 +403,7 @@ NOTE: PROCEDURE RANK used (Total process time):
     ----------------------------------------------------------------------------------------------------------------------------------------------
  
                                                                modelPropensityScore.sas
-                                                                  --- AS project ---                                12:11 Thursday, April 19, 2018   2
+                                                                  --- AS project ---                                  10:34 Friday, April 27, 2018   2
 
                                                                  The MEANS Procedure
 
@@ -477,7 +477,7 @@ NOTE: PROCEDURE RANK used (Total process time):
     ----------------------------------------------------------------------------------------------------------------------------------------------
  
                                                                modelPropensityScore.sas
-                                                                  --- AS project ---                                12:11 Thursday, April 19, 2018   3
+                                                                  --- AS project ---                                  10:34 Friday, April 27, 2018   3
 
                                                                  The MEANS Procedure
 
@@ -551,7 +551,7 @@ NOTE: PROCEDURE RANK used (Total process time):
     ----------------------------------------------------------------------------------------------------------------------------------------------
  
                                                                modelPropensityScore.sas
-                                                                  --- AS project ---                                12:11 Thursday, April 19, 2018   4
+                                                                  --- AS project ---                                  10:34 Friday, April 27, 2018   4
 
                                                                  The MEANS Procedure
 
@@ -625,7 +625,7 @@ NOTE: PROCEDURE RANK used (Total process time):
     ----------------------------------------------------------------------------------------------------------------------------------------------
  
                                                                modelPropensityScore.sas
-                                                                  --- AS project ---                                12:11 Thursday, April 19, 2018   5
+                                                                  --- AS project ---                                  10:34 Friday, April 27, 2018   5
 
                                                                  The MEANS Procedure
 
@@ -699,7 +699,7 @@ NOTE: PROCEDURE RANK used (Total process time):
     ----------------------------------------------------------------------------------------------------------------------------------------------
  
                                                                modelPropensityScore.sas
-                                                                  --- AS project ---                                12:11 Thursday, April 19, 2018   6
+                                                                  --- AS project ---                                  10:34 Friday, April 27, 2018   6
 
                                                                  The MEANS Procedure
 
@@ -773,7 +773,7 @@ NOTE: PROCEDURE RANK used (Total process time):
     ----------------------------------------------------------------------------------------------------------------------------------------------
  
                                                                modelPropensityScore.sas
-                                                                  --- AS project ---                                12:11 Thursday, April 19, 2018   7
+                                                                  --- AS project ---                                  10:34 Friday, April 27, 2018   7
 
                                                                  The MEANS Procedure
 
@@ -850,16 +850,16 @@ NOTE: PROCEDURE RANK used (Total process time):
 NOTE: There were 60010 observations read from the data set WORK.ALLCOVARIATES.
 NOTE: The PROCEDURE MEANS printed pages 1-7.
 NOTE: PROCEDURE MEANS used (Total process time):
-      real time           0.42 seconds
-      cpu time            1.46 seconds
+      real time           0.46 seconds
+      cpu time            1.52 seconds
       
 
-330        proc freq data = Work.allCovariates;
-331          table database * exposure3 * (meanPredEqDoseCat quartileCharlson quartileCIRAS quartileIPAdmits12mPrior quartileAVPhys12mPrior
-331      ! quartileAVRheum12mPrior catERVisits) / list;
-332        run;
+331        proc freq data = Work.allCovariates;
+332          table database * exposure3 * (meanPredEqDoseCat quartileCharlson quartileCIRAS quartileIPAdmits12mPrior quartileAVPhys12mPrior
+332      ! quartileAVRheum12mPrior catERVisits) / list;
+333        run;
 
-                                                                  --- AS project ---                                12:11 Thursday, April 19, 2018   8
+                                                                  --- AS project ---                                  10:34 Friday, April 27, 2018   8
 
                                                                   The FREQ Procedure
 
@@ -933,7 +933,7 @@ NOTE: PROCEDURE MEANS used (Total process time):
                      Medicare      DMARD                                  2         932        1.55         26832        44.71  
  
                                                                modelPropensityScore.sas
-                                                                  --- AS project ---                                12:11 Thursday, April 19, 2018   9
+                                                                  --- AS project ---                                  10:34 Friday, April 27, 2018   9
 
                                                                   The FREQ Procedure
 
@@ -1007,7 +1007,7 @@ NOTE: PROCEDURE MEANS used (Total process time):
                      Marketscan    NSAID or no exposure                   3        2487        4.14         16987        28.31  
  
                                                                modelPropensityScore.sas
-                                                                  --- AS project ---                                12:11 Thursday, April 19, 2018  10
+                                                                  --- AS project ---                                  10:34 Friday, April 27, 2018  10
 
                                                                   The FREQ Procedure
 
@@ -1081,7 +1081,7 @@ NOTE: PROCEDURE MEANS used (Total process time):
  
  
                                                                modelPropensityScore.sas
-                                                                  --- AS project ---                                12:11 Thursday, April 19, 2018  11
+                                                                  --- AS project ---                                  10:34 Friday, April 27, 2018  11
 
                                                                   The FREQ Procedure
 
@@ -1155,7 +1155,7 @@ NOTE: PROCEDURE MEANS used (Total process time):
                         Medicare      NSAID or no exposure    2+                 6443       10.74         54081        90.12  
  
                                                                modelPropensityScore.sas
-                                                                  --- AS project ---                                12:11 Thursday, April 19, 2018  12
+                                                                  --- AS project ---                                  10:34 Friday, April 27, 2018  12
 
                                                                   The FREQ Procedure
 
@@ -1232,23 +1232,23 @@ NOTE: PROCEDURE MEANS used (Total process time):
 NOTE: There were 60010 observations read from the data set WORK.ALLCOVARIATES.
 NOTE: The PROCEDURE FREQ printed pages 8-12.
 NOTE: PROCEDURE FREQ used (Total process time):
-      real time           1.27 seconds
-      cpu time            0.49 seconds
+      real time           1.41 seconds
+      cpu time            0.56 seconds
       
 
-333        proc sql;
-334          select database,
-335                 catAge,
-336                 min(age) as min,
-337                 mean(age) as mean,
-338                 max(age) as max,
-339                 count(*) as n,
-340                 sum(exposure3 = "TNF") as nTNF,
-341                 sum(exposure3 = "DMARD") as nDMARD,
-342                 sum(exposure3 = "NSAID or no exposure") as nNSAID
-343            from Work.AllCovariates
-344            group by database, catAge;
-                                                                  --- AS project ---                                12:11 Thursday, April 19, 2018  13
+334        proc sql;
+335          select database,
+336                 catAge,
+337                 min(age) as min,
+338                 mean(age) as mean,
+339                 max(age) as max,
+340                 count(*) as n,
+341                 sum(exposure3 = "TNF") as nTNF,
+342                 sum(exposure3 = "DMARD") as nDMARD,
+343                 sum(exposure3 = "NSAID or no exposure") as nNSAID
+344            from Work.AllCovariates
+345            group by database, catAge;
+                                                                  --- AS project ---                                  10:34 Friday, April 27, 2018  13
 
                                            cat
                                database    Age         min      mean       max         n      nTNF    nDMARD    nNSAID
@@ -1322,20 +1322,20 @@ NOTE: PROCEDURE FREQ used (Total process time):
  
  
                                                                modelPropensityScore.sas
-345          select database,
-346                 quartileCharlson,
-347                 min(charlson) as min,
-348                 mean(charlson) as mean,
-349                 max(charlson) as max,
-350                 count(*) as n,
-351                 sum(exposure3 = "TNF") as nTNF,
-352                 sum(exposure3 = "DMARD") as nDMARD,
-6                                                                   The SAS System                                      12:11 Thursday, April 19, 2018
+346          select database,
+347                 quartileCharlson,
+348                 min(charlson) as min,
+349                 mean(charlson) as mean,
+350                 max(charlson) as max,
+351                 count(*) as n,
+352                 sum(exposure3 = "TNF") as nTNF,
+353                 sum(exposure3 = "DMARD") as nDMARD,
+6                                                                   The SAS System                                        10:34 Friday, April 27, 2018
 
-353                 sum(exposure3 = "NSAID or no exposure") as nNSAID
-354            from Work.AllCovariates
-355            group by database, quartileCharlson;
-                                                                  --- AS project ---                                12:11 Thursday, April 19, 2018  14
+354                 sum(exposure3 = "NSAID or no exposure") as nNSAID
+355            from Work.AllCovariates
+356            group by database, quartileCharlson;
+                                                                  --- AS project ---                                  10:34 Friday, April 27, 2018  14
 
                                           Rank for
                                           Variable
@@ -1409,18 +1409,18 @@ NOTE: PROCEDURE FREQ used (Total process time):
  
  
                                                                modelPropensityScore.sas
-356          select database,
-357                 quartileCIRAS,
-358                 min(ciras) as min,
-359                 mean(ciras) as mean,
-360                 max(ciras) as max,
-361                 count(*) as n,
-362                 sum(exposure3 = "TNF") as nTNF,
-363                 sum(exposure3 = "DMARD") as nDMARD,
-364                 sum(exposure3 = "NSAID or no exposure") as nNSAID
-365            from Work.AllCovariates
-366            group by database, quartileCIRAS;
-                                                                  --- AS project ---                                12:11 Thursday, April 19, 2018  15
+357          select database,
+358                 quartileCIRAS,
+359                 min(ciras) as min,
+360                 mean(ciras) as mean,
+361                 max(ciras) as max,
+362                 count(*) as n,
+363                 sum(exposure3 = "TNF") as nTNF,
+364                 sum(exposure3 = "DMARD") as nDMARD,
+365                 sum(exposure3 = "NSAID or no exposure") as nNSAID
+366            from Work.AllCovariates
+367            group by database, quartileCIRAS;
+                                                                  --- AS project ---                                  10:34 Friday, April 27, 2018  15
 
                                           Rank for
                                           Variable
@@ -1494,18 +1494,18 @@ NOTE: PROCEDURE FREQ used (Total process time):
  
  
                                                                modelPropensityScore.sas
-367          select database,
-368                 quartileIPAdmits12mPrior,
-369                 min(countIPAdmits12mPrior) as min,
-370                 mean(countIPAdmits12mPrior) as mean,
-371                 max(countIPAdmits12mPrior) as max,
-372                 count(*) as n,
-373                 sum(exposure3 = "TNF") as nTNF,
-374                 sum(exposure3 = "DMARD") as nDMARD,
-375                 sum(exposure3 = "NSAID or no exposure") as nNSAID
-376            from Work.AllCovariates
-377            group by database, quartileIPAdmits12mPrior;
-                                                                  --- AS project ---                                12:11 Thursday, April 19, 2018  16
+368          select database,
+369                 quartileIPAdmits12mPrior,
+370                 min(countIPAdmits12mPrior) as min,
+371                 mean(countIPAdmits12mPrior) as mean,
+372                 max(countIPAdmits12mPrior) as max,
+373                 count(*) as n,
+374                 sum(exposure3 = "TNF") as nTNF,
+375                 sum(exposure3 = "DMARD") as nDMARD,
+376                 sum(exposure3 = "NSAID or no exposure") as nNSAID
+377            from Work.AllCovariates
+378            group by database, quartileIPAdmits12mPrior;
+                                                                  --- AS project ---                                  10:34 Friday, April 27, 2018  16
 
                                             Rank for
                                             Variable
@@ -1579,18 +1579,18 @@ NOTE: PROCEDURE FREQ used (Total process time):
  
  
                                                                modelPropensityScore.sas
-378          select database,
-379                 quartileAVPhys12mPrior,
-380                 min(countAVPhys12mPrior) as min,
-381                 mean(countAVPhys12mPrior) as mean,
-382                 max(countAVPhys12mPrior) as max,
-383                 count(*) as n,
-384                 sum(exposure3 = "TNF") as nTNF,
-385                 sum(exposure3 = "DMARD") as nDMARD,
-386                 sum(exposure3 = "NSAID or no exposure") as nNSAID
-387            from Work.AllCovariates
-388            group by database, quartileAVPhys12mPrior;
-                                                                  --- AS project ---                                12:11 Thursday, April 19, 2018  17
+379          select database,
+380                 quartileAVPhys12mPrior,
+381                 min(countAVPhys12mPrior) as min,
+382                 mean(countAVPhys12mPrior) as mean,
+383                 max(countAVPhys12mPrior) as max,
+384                 count(*) as n,
+385                 sum(exposure3 = "TNF") as nTNF,
+386                 sum(exposure3 = "DMARD") as nDMARD,
+387                 sum(exposure3 = "NSAID or no exposure") as nNSAID
+388            from Work.AllCovariates
+389            group by database, quartileAVPhys12mPrior;
+                                                                  --- AS project ---                                  10:34 Friday, April 27, 2018  17
 
                                             Rank for
                                             Variable
@@ -1664,18 +1664,18 @@ NOTE: PROCEDURE FREQ used (Total process time):
  
  
                                                                modelPropensityScore.sas
-389          select database,
-390                 quartileAVRheum12mPrior,
-391                 min(countAVRheum12mPrior) as min,
-392                 mean(countAVRheum12mPrior) as mean,
-393                 max(countAVRheum12mPrior) as max,
-394                 count(*) as n,
-395                 sum(exposure3 = "TNF") as nTNF,
-396                 sum(exposure3 = "DMARD") as nDMARD,
-397                 sum(exposure3 = "NSAID or no exposure") as nNSAID
-398            from Work.AllCovariates
-399            group by database, quartileAVRheum12mPrior;
-                                                                  --- AS project ---                                12:11 Thursday, April 19, 2018  18
+390          select database,
+391                 quartileAVRheum12mPrior,
+392                 min(countAVRheum12mPrior) as min,
+393                 mean(countAVRheum12mPrior) as mean,
+394                 max(countAVRheum12mPrior) as max,
+395                 count(*) as n,
+396                 sum(exposure3 = "TNF") as nTNF,
+397                 sum(exposure3 = "DMARD") as nDMARD,
+398                 sum(exposure3 = "NSAID or no exposure") as nNSAID
+399            from Work.AllCovariates
+400            group by database, quartileAVRheum12mPrior;
+                                                                  --- AS project ---                                  10:34 Friday, April 27, 2018  18
 
                                             Rank for
                                             Variable
@@ -1749,96 +1749,96 @@ NOTE: PROCEDURE FREQ used (Total process time):
  
  
                                                                modelPropensityScore.sas
-400        quit;
+401        quit;
 NOTE: The PROCEDURE SQL printed pages 13-18.
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           0.89 seconds
-      cpu time            1.13 seconds
+      real time           1.12 seconds
+      cpu time            1.29 seconds
       
 
-401        
 402        
-403        /*
-404        Fit 3-level model
-405        3 levels of treatment exposure: TNF, DMARD, NSAID or no exposure
-406        
-407        Fit separate models for each data source: MPCD, Marketscan, Medicare
-408        
-409        Some parameters blow up; exlude these from the model estimation
-410         */
-411        %let class = exposure3 (ref = "TNF")
-412                     catAge (ref = "70+")
-413                     sex (ref = "M")
-414                     meanPredEqDoseCat (ref = "None")
-415                     quartileCharlson (ref = first)
-416                     quartileCIRAS (ref = first)
-417                     quartileAVPhys12mPrior (ref = first)
-418                     quartileAVRheum12mPrior (ref = first)
-7                                                                   The SAS System                                      12:11 Thursday, April 19, 2018
+403        
+404        /*
+405        Fit 3-level model
+406        3 levels of treatment exposure: TNF, DMARD, NSAID or no exposure
+407        
+408        Fit separate models for each data source: MPCD, Marketscan, Medicare
+409        
+410        Some parameters blow up; exlude these from the model estimation
+411         */
+412        %let class = exposure3 (ref = "TNF")
+413                     catAge (ref = "70+")
+414                     sex (ref = "M")
+415                     meanPredEqDoseCat (ref = "None")
+416                     quartileCharlson (ref = first)
+417                     quartileCIRAS (ref = first)
+418                     quartileAVPhys12mPrior (ref = first)
+419                     quartileAVRheum12mPrior (ref = first)
+7                                                                   The SAS System                                        10:34 Friday, April 27, 2018
 
-419                     / param = ref;
-420        
+420                     / param = ref;
 421        
-422        %let db = MPCD;
-423        proc logistic data = Work.allCovariates outest = Work.psBetas3Level;
-424          where database = "&db";
-425          class &class;
-426          model exposure3 = catAge
-427                            sex
-428                            /* indAmyloidosis */
-429                            indAortInsuffRegurg
-430                            /* indApicalPulmFib */
-431                            /* indCaudaEquina */
-432                            indVertFrac
-433                            /* indConductBlock */
-434                            indCrohnsDis
-435                            indHematCa
-436                            indHospInf
-437                            indIgANeph
-438                            /* indInterstLungDis */
-439                            /* indMI */
-440                            /* indNephSyn */
-441                            /* indNMSC */
-442                            indNonVertOsFrac
-443                            indOppInf
-444                            indPsoriasis
-445                            indPSA
-446                            indRestrictLungDis
-447                            indSolidCa
-448                            /* indSpinalCordComp */
-449                            indUlcerColitis
-450                            indUveitis
-451                            indDiabetes
-452                            indHT
-453                            indMetabSyn
-454                            indNAFattyLiverDis
-455                            indCOPDEmphysema
-456                            meanPredEqDoseCat
-457                            quartileCharlson
-458                            indInflamMarker
-459                            indRxNSAID
-460                            indRxHtn
-461                            indRxNarcotics
-462                            indRxFungus
-463                            indRxOP_bisphosp
-464                            indRxThiazide
-465                            indRxAnticoagulant
-466                            indRxAntibiotics
-467                            countIPAdmits12mPrior
-468                            indERVisit12mPrior
-469                            countAVRheum12mPrior
-470                            indRxBiologics
-471                            indOutpatientInfection
-472                            / link = glogit rsquare;
-473          output out = Work.ps3Level predicted = ps xbeta = xbeta;
-474        run;
+422        
+423        %let db = MPCD;
+424        proc logistic data = Work.allCovariates outest = Work.psBetas3Level;
+425          where database = "&db";
+426          class &class;
+427          model exposure3 = catAge
+428                            sex
+429                            /* indAmyloidosis */
+430                            indAortInsuffRegurg
+431                            /* indApicalPulmFib */
+432                            /* indCaudaEquina */
+433                            indVertFrac
+434                            /* indConductBlock */
+435                            indCrohnsDis
+436                            indHematCa
+437                            indHospInf
+438                            indIgANeph
+439                            /* indInterstLungDis */
+440                            /* indMI */
+441                            /* indNephSyn */
+442                            /* indNMSC */
+443                            indNonVertOsFrac
+444                            indOppInf
+445                            indPsoriasis
+446                            indPSA
+447                            indRestrictLungDis
+448                            indSolidCa
+449                            /* indSpinalCordComp */
+450                            indUlcerColitis
+451                            indUveitis
+452                            indDiabetes
+453                            indHT
+454                            indMetabSyn
+455                            indNAFattyLiverDis
+456                            indCOPDEmphysema
+457                            meanPredEqDoseCat
+458                            quartileCharlson
+459                            indInflamMarker
+460                            indRxNSAID
+461                            indRxHtn
+462                            indRxNarcotics
+463                            indRxFungus
+464                            indRxOP_bisphosp
+465                            indRxThiazide
+466                            indRxAnticoagulant
+467                            indRxAntibiotics
+468                            countIPAdmits12mPrior
+469                            indERVisit12mPrior
+470                            countAVRheum12mPrior
+471                            indRxBiologics
+472                            indOutpatientInfection
+473                            / link = glogit rsquare;
+474          output out = Work.ps3Level predicted = ps xbeta = xbeta;
+475        run;
 
 NOTE: Some parameter names in OUTEST=WORK.PSBETAS3LEVEL have been changed to avoid collisions.
 NOTE: Variable meanPredEqDoseCatHigh__10__mg_d_ already exists on file WORK.PSBETAS3LEVEL, using meanPredEqDoseCatHigh__10__mg_d2 instead.
 NOTE: Variable meanPredEqDoseCatLow___2_5_mg_d_ already exists on file WORK.PSBETAS3LEVEL, using meanPredEqDoseCatLow___2_5_mg_d2 instead.
 NOTE: Variable meanPredEqDoseCatMedium_High__5_ already exists on file WORK.PSBETAS3LEVEL, using meanPredEqDoseCatMedium_High__52 instead.
 NOTE: Variable meanPredEqDoseCatMedium_Low__2_5 already exists on file WORK.PSBETAS3LEVEL, using meanPredEqDoseCatMedium_Low__2_2 instead.
-                                                                  --- AS project ---                                12:11 Thursday, April 19, 2018  19
+                                                                  --- AS project ---                                  10:34 Friday, April 27, 2018  19
 
                                                                 The LOGISTIC Procedure
 
@@ -1915,7 +1915,7 @@ NOTE: Convergence criterion (GCONV=1E-8) satisfied.
  
  
                                                                modelPropensityScore.sas
-                                                                  --- AS project ---                                12:11 Thursday, April 19, 2018  20
+                                                                  --- AS project ---                                  10:34 Friday, April 27, 2018  20
 
                                                                 The LOGISTIC Procedure
 
@@ -1989,7 +1989,7 @@ NOTE: Convergence criterion (GCONV=1E-8) satisfied.
             catAge               30-39                      DMARD                    1     -1.0370      0.3959        6.8598        0.0088
  
                                                                modelPropensityScore.sas
-                                                                  --- AS project ---                                12:11 Thursday, April 19, 2018  21
+                                                                  --- AS project ---                                  10:34 Friday, April 27, 2018  21
 
                                                                 The LOGISTIC Procedure
 
@@ -2063,7 +2063,7 @@ NOTE: Convergence criterion (GCONV=1E-8) satisfied.
             indRxHtn                                        NSAID or no exposure     1     -0.3928      0.1262        9.6879        0.0019
  
                                                                modelPropensityScore.sas
-                                                                  --- AS project ---                                12:11 Thursday, April 19, 2018  22
+                                                                  --- AS project ---                                  10:34 Friday, April 27, 2018  22
 
                                                                 The LOGISTIC Procedure
 
@@ -2137,7 +2137,7 @@ NOTE: Convergence criterion (GCONV=1E-8) satisfied.
                    indPSA                                                  NSAID or no exposure       0.305       0.178       0.525
  
                                                                modelPropensityScore.sas
-                                                                  --- AS project ---                                12:11 Thursday, April 19, 2018  23
+                                                                  --- AS project ---                                  10:34 Friday, April 27, 2018  23
 
                                                                 The LOGISTIC Procedure
 
@@ -2217,88 +2217,88 @@ NOTE: The data set WORK.PSBETAS3LEVEL has 1 observations and 98 variables.
 NOTE: The data set WORK.PS3LEVEL has 13059 observations and 67 variables.
 NOTE: The PROCEDURE LOGISTIC printed pages 19-23.
 NOTE: PROCEDURE LOGISTIC used (Total process time):
-      real time           0.87 seconds
-8                                                                   The SAS System                                      12:11 Thursday, April 19, 2018
+      real time           0.95 seconds
+8                                                                   The SAS System                                        10:34 Friday, April 27, 2018
 
       cpu time            0.79 seconds
       
 
-475        proc datasets library = work nolist;
-476          change psBetas3Level = psBetas3Level&db
-477                 ps3Level = ps3Level&db;
-478        run;
+476        proc datasets library = work nolist;
+477          change psBetas3Level = psBetas3Level&db
+478                 ps3Level = ps3Level&db;
+479        run;
 
 NOTE: Changing the name WORK.PSBETAS3LEVEL to WORK.PSBETAS3LEVELMPCD (memtype=DATA).
 NOTE: Changing the name WORK.PS3LEVEL to WORK.PS3LEVELMPCD (memtype=DATA).
-479        
-480        %let db = Marketscan;
+480        
+481        %let db = Marketscan;
 
 NOTE: PROCEDURE DATASETS used (Total process time):
-      real time           0.04 seconds
-      cpu time            0.01 seconds
+      real time           0.06 seconds
+      cpu time            0.04 seconds
       
 
-481        proc logistic data = Work.allCovariates outest = Work.psBetas3Level;
-482          where database = "&db";
-483          class &class;
-484          model exposure3 = catAge
-485                            sex
-486                            /* indAmyloidosis */
-487                            indAortInsuffRegurg
-488                            /* indApicalPulmFib */
-489                            /* indCaudaEquina */
-490                            indVertFrac
-491                            indConductBlock
-492                            indCrohnsDis
-493                            indHematCa
-494                            indHospInf
-495                            indIgANeph
-496                            indInterstLungDis
-497                            indMI
-498                            /* indNephSyn */
-499                            indNMSC
-500                            indNonVertOsFrac
-501                            indOppInf
-502                            indPsoriasis
-503                            indPSA
-504                            indRestrictLungDis
-505                            indSolidCa
-506                            indSpinalCordComp
-507                            indUlcerColitis
-508                            indUveitis
-509                            indDiabetes
-510                            indHT
-511                            indMetabSyn
-512                            indNAFattyLiverDis
-513                            indCOPDEmphysema
-514                            meanPredEqDoseCat
-515                            quartileCharlson
-516                            indInflamMarker
-517                            indRxNSAID
-518                            indRxHtn
-519                            indRxNarcotics
-520                            indRxFungus
-521                            indRxOP_bisphosp
-522                            indRxThiazide
-523                            indRxAnticoagulant
-524                            indRxAntibiotics
-525                            countIPAdmits12mPrior
-526                            indERVisit12mPrior
-527                            countAVRheum12mPrior
-528                            indRxBiologics
-529                            indOutpatientInfection
-530                            / link = glogit rsquare;
-531          output out = Work.ps3Level predicted = ps xbeta = xbeta;
-532        run;
+482        proc logistic data = Work.allCovariates outest = Work.psBetas3Level;
+483          where database = "&db";
+484          class &class;
+485          model exposure3 = catAge
+486                            sex
+487                            /* indAmyloidosis */
+488                            indAortInsuffRegurg
+489                            /* indApicalPulmFib */
+490                            /* indCaudaEquina */
+491                            indVertFrac
+492                            indConductBlock
+493                            indCrohnsDis
+494                            indHematCa
+495                            indHospInf
+496                            indIgANeph
+497                            indInterstLungDis
+498                            indMI
+499                            /* indNephSyn */
+500                            indNMSC
+501                            indNonVertOsFrac
+502                            indOppInf
+503                            indPsoriasis
+504                            indPSA
+505                            indRestrictLungDis
+506                            indSolidCa
+507                            indSpinalCordComp
+508                            indUlcerColitis
+509                            indUveitis
+510                            indDiabetes
+511                            indHT
+512                            indMetabSyn
+513                            indNAFattyLiverDis
+514                            indCOPDEmphysema
+515                            meanPredEqDoseCat
+516                            quartileCharlson
+517                            indInflamMarker
+518                            indRxNSAID
+519                            indRxHtn
+520                            indRxNarcotics
+521                            indRxFungus
+522                            indRxOP_bisphosp
+523                            indRxThiazide
+524                            indRxAnticoagulant
+525                            indRxAntibiotics
+526                            countIPAdmits12mPrior
+527                            indERVisit12mPrior
+528                            countAVRheum12mPrior
+529                            indRxBiologics
+530                            indOutpatientInfection
+531                            / link = glogit rsquare;
+532          output out = Work.ps3Level predicted = ps xbeta = xbeta;
+533        run;
 
 NOTE: Some parameter names in OUTEST=WORK.PSBETAS3LEVEL have been changed to avoid collisions.
-9                                                                   The SAS System                                      12:11 Thursday, April 19, 2018
+9                                                                   The SAS System                                        10:34 Friday, April 27, 2018
 
 NOTE: Variable meanPredEqDoseCatHigh__10__mg_d_ already exists on file WORK.PSBETAS3LEVEL, using meanPredEqDoseCatHigh__10__mg_d2 instead.
 NOTE: Variable meanPredEqDoseCatLow___2_5_mg_d_ already exists on file WORK.PSBETAS3LEVEL, using meanPredEqDoseCatLow___2_5_mg_d2 instead.
 NOTE: Variable meanPredEqDoseCatMedium_High__5_ already exists on file WORK.PSBETAS3LEVEL, using meanPredEqDoseCatMedium_High__52 instead.
 NOTE: Variable meanPredEqDoseCatMedium_Low__2_5 already exists on file WORK.PSBETAS3LEVEL, using meanPredEqDoseCatMedium_Low__2_2 instead.
-                                                                  --- AS project ---                                12:11 Thursday, April 19, 2018  24
+                                                                  --- AS project ---                                  10:34 Friday, April 27, 2018  24
 
                                                                 The LOGISTIC Procedure
 
@@ -2375,7 +2375,7 @@ NOTE: Convergence criterion (GCONV=1E-8) satisfied.
  
  
                                                                modelPropensityScore.sas
-                                                                  --- AS project ---                                12:11 Thursday, April 19, 2018  25
+                                                                  --- AS project ---                                  10:34 Friday, April 27, 2018  25
 
                                                                 The LOGISTIC Procedure
 
@@ -2449,7 +2449,7 @@ NOTE: Convergence criterion (GCONV=1E-8) satisfied.
  
  
                                                                modelPropensityScore.sas
-                                                                  --- AS project ---                                12:11 Thursday, April 19, 2018  26
+                                                                  --- AS project ---                                  10:34 Friday, April 27, 2018  26
 
                                                                 The LOGISTIC Procedure
 
@@ -2523,7 +2523,7 @@ NOTE: Convergence criterion (GCONV=1E-8) satisfied.
             indCOPDEmphysema                                DMARD                    1     -0.0448      0.1256        0.1273        0.7213
  
                                                                modelPropensityScore.sas
-                                                                  --- AS project ---                                12:11 Thursday, April 19, 2018  27
+                                                                  --- AS project ---                                  10:34 Friday, April 27, 2018  27
 
                                                                 The LOGISTIC Procedure
 
@@ -2597,7 +2597,7 @@ NOTE: Convergence criterion (GCONV=1E-8) satisfied.
                    indVertFrac                                             DMARD                      0.642       0.268       1.540
  
                                                                modelPropensityScore.sas
-                                                                  --- AS project ---                                12:11 Thursday, April 19, 2018  28
+                                                                  --- AS project ---                                  10:34 Friday, April 27, 2018  28
 
                                                                 The LOGISTIC Procedure
 
@@ -2671,7 +2671,7 @@ NOTE: Convergence criterion (GCONV=1E-8) satisfied.
                    indRxNarcotics                                          NSAID or no exposure       0.834       0.769       0.904
  
                                                                modelPropensityScore.sas
-                                                                  --- AS project ---                                12:11 Thursday, April 19, 2018  29
+                                                                  --- AS project ---                                  10:34 Friday, April 27, 2018  29
 
                                                                 The LOGISTIC Procedure
 
@@ -2751,86 +2751,86 @@ NOTE: The data set WORK.PSBETAS3LEVEL has 1 observations and 108 variables.
 NOTE: The data set WORK.PS3LEVEL has 55239 observations and 67 variables.
 NOTE: The PROCEDURE LOGISTIC printed pages 24-29.
 NOTE: PROCEDURE LOGISTIC used (Total process time):
-      real time           2.71 seconds
-      cpu time            2.49 seconds
+      real time           2.62 seconds
+      cpu time            2.44 seconds
       
 
-533        proc datasets library = work nolist;
-534          change psBetas3Level = psBetas3Level&db
-535                 ps3Level = ps3Level&db;
-536        run;
+534        proc datasets library = work nolist;
+535          change psBetas3Level = psBetas3Level&db
+536                 ps3Level = ps3Level&db;
+537        run;
 
 NOTE: Changing the name WORK.PSBETAS3LEVEL to WORK.PSBETAS3LEVELMARKETSCAN (memtype=DATA).
 NOTE: Changing the name WORK.PS3LEVEL to WORK.PS3LEVELMARKETSCAN (memtype=DATA).
-537        
-538        %let db = Medicare;
+538        
+539        %let db = Medicare;
 
 NOTE: PROCEDURE DATASETS used (Total process time):
-      real time           0.03 seconds
-      cpu time            0.03 seconds
+      real time           0.04 seconds
+      cpu time            0.01 seconds
       
 
-539        proc logistic data = Work.allCovariates outest = Work.psBetas3Level;
-540          where database = "&db";
-541          class &class;
-542          model exposure3 = catAge
-543                            sex
-544                            indAmyloidosis
-545                            indAortInsuffRegurg
-546                            /* indApicalPulmFib */
-547                            indCaudaEquina
-548                            indVertFrac
-549                            indConductBlock
-550                            indCrohnsDis
-551                            indHematCa
-552                            indHospInf
-553                            indIgANeph
-554                            indInterstLungDis
-555                            indMI
-556                            indNephSyn
-557                            indNMSC
-558                            indNonVertOsFrac
-559                            indOppInf
-560                            indPsoriasis
-561                            indPSA
-562                            indRestrictLungDis
-563                            indSolidCa
-564                            indSpinalCordComp
-565                            indUlcerColitis
-566                            indUveitis
-567                            indDiabetes
-568                            indHT
-569                            indMetabSyn
-570                            indNAFattyLiverDis
-571                            indCOPDEmphysema
-572                            meanPredEqDoseCat
-573                            quartileCharlson
-574                            indInflamMarker
-575                            indRxNSAID
-576                            indRxHtn
-577                            indRxNarcotics
-578                            indRxFungus
-10                                                                  The SAS System                                      12:11 Thursday, April 19, 2018
+540        proc logistic data = Work.allCovariates outest = Work.psBetas3Level;
+541          where database = "&db";
+542          class &class;
+543          model exposure3 = catAge
+544                            sex
+545                            indAmyloidosis
+546                            indAortInsuffRegurg
+547                            /* indApicalPulmFib */
+548                            indCaudaEquina
+549                            indVertFrac
+550                            indConductBlock
+551                            indCrohnsDis
+552                            indHematCa
+553                            indHospInf
+554                            indIgANeph
+555                            indInterstLungDis
+556                            indMI
+557                            indNephSyn
+558                            indNMSC
+559                            indNonVertOsFrac
+560                            indOppInf
+561                            indPsoriasis
+562                            indPSA
+563                            indRestrictLungDis
+564                            indSolidCa
+565                            indSpinalCordComp
+566                            indUlcerColitis
+567                            indUveitis
+568                            indDiabetes
+569                            indHT
+570                            indMetabSyn
+571                            indNAFattyLiverDis
+572                            indCOPDEmphysema
+573                            meanPredEqDoseCat
+574                            quartileCharlson
+575                            indInflamMarker
+576                            indRxNSAID
+577                            indRxHtn
+578                            indRxNarcotics
+579                            indRxFungus
+10                                                                  The SAS System                                        10:34 Friday, April 27, 2018
 
-579                            indRxOP_bisphosp
-580                            indRxThiazide
-581                            indRxAnticoagulant
-582                            indRxAntibiotics
-583                            countIPAdmits12mPrior
-584                            indERVisit12mPrior
-585                            countAVRheum12mPrior
-586                            indRxBiologics
-587                            indOutpatientInfection
-588                            / link = glogit rsquare;
-589          output out = Work.ps3Level predicted = ps xbeta = xbeta;
-590        run;
+580                            indRxOP_bisphosp
+581                            indRxThiazide
+582                            indRxAnticoagulant
+583                            indRxAntibiotics
+584                            countIPAdmits12mPrior
+585                            indERVisit12mPrior
+586                            countAVRheum12mPrior
+587                            indRxBiologics
+588                            indOutpatientInfection
+589                            / link = glogit rsquare;
+590          output out = Work.ps3Level predicted = ps xbeta = xbeta;
+591        run;
 
 NOTE: Some parameter names in OUTEST=WORK.PSBETAS3LEVEL have been changed to avoid collisions.
 NOTE: Variable meanPredEqDoseCatHigh__10__mg_d_ already exists on file WORK.PSBETAS3LEVEL, using meanPredEqDoseCatHigh__10__mg_d2 instead.
 NOTE: Variable meanPredEqDoseCatLow___2_5_mg_d_ already exists on file WORK.PSBETAS3LEVEL, using meanPredEqDoseCatLow___2_5_mg_d2 instead.
 NOTE: Variable meanPredEqDoseCatMedium_High__5_ already exists on file WORK.PSBETAS3LEVEL, using meanPredEqDoseCatMedium_High__52 instead.
 NOTE: Variable meanPredEqDoseCatMedium_Low__2_5 already exists on file WORK.PSBETAS3LEVEL, using meanPredEqDoseCatMedium_Low__2_2 instead.
-                                                                  --- AS project ---                                12:11 Thursday, April 19, 2018  30
+                                                                  --- AS project ---                                  10:34 Friday, April 27, 2018  30
 
                                                                 The LOGISTIC Procedure
 
@@ -2907,7 +2907,7 @@ NOTE: Convergence criterion (GCONV=1E-8) satisfied.
  
  
                                                                modelPropensityScore.sas
-                                                                  --- AS project ---                                12:11 Thursday, April 19, 2018  31
+                                                                  --- AS project ---                                  10:34 Friday, April 27, 2018  31
 
                                                                 The LOGISTIC Procedure
 
@@ -2981,7 +2981,7 @@ NOTE: Convergence criterion (GCONV=1E-8) satisfied.
  
  
                                                                modelPropensityScore.sas
-                                                                  --- AS project ---                                12:11 Thursday, April 19, 2018  32
+                                                                  --- AS project ---                                  10:34 Friday, April 27, 2018  32
 
                                                                 The LOGISTIC Procedure
 
@@ -3055,7 +3055,7 @@ NOTE: Convergence criterion (GCONV=1E-8) satisfied.
             indMetabSyn                                     DMARD                    1     -0.1317      0.1237        1.1345        0.2868
  
                                                                modelPropensityScore.sas
-                                                                  --- AS project ---                                12:11 Thursday, April 19, 2018  33
+                                                                  --- AS project ---                                  10:34 Friday, April 27, 2018  33
 
                                                                 The LOGISTIC Procedure
 
@@ -3129,7 +3129,7 @@ NOTE: Convergence criterion (GCONV=1E-8) satisfied.
                    catAge               60-69 vs 70+                       DMARD                      0.685       0.611       0.767
  
                                                                modelPropensityScore.sas
-                                                                  --- AS project ---                                12:11 Thursday, April 19, 2018  34
+                                                                  --- AS project ---                                  10:34 Friday, April 27, 2018  34
 
                                                                 The LOGISTIC Procedure
 
@@ -3203,7 +3203,7 @@ NOTE: Convergence criterion (GCONV=1E-8) satisfied.
                    meanPredEqDoseCat    Medium-High (5-10 mg/d) vs None    NSAID or no exposure       0.491       0.415       0.580
  
                                                                modelPropensityScore.sas
-                                                                  --- AS project ---                                12:11 Thursday, April 19, 2018  35
+                                                                  --- AS project ---                                  10:34 Friday, April 27, 2018  35
 
                                                                 The LOGISTIC Procedure
 
@@ -3283,57 +3283,57 @@ NOTE: The data set WORK.PSBETAS3LEVEL has 1 observations and 116 variables.
 NOTE: The data set WORK.PS3LEVEL has 111732 observations and 67 variables.
 NOTE: The PROCEDURE LOGISTIC printed pages 30-35.
 NOTE: PROCEDURE LOGISTIC used (Total process time):
-      real time           6.51 seconds
-      cpu time            6.25 seconds
+      real time           5.58 seconds
+      cpu time            5.42 seconds
       
 
-591        proc datasets library = work nolist;
-592          change psBetas3Level = psBetas3Level&db
-593                 ps3Level = ps3Level&db;
-594        run;
+592        proc datasets library = work nolist;
+593          change psBetas3Level = psBetas3Level&db
+594                 ps3Level = ps3Level&db;
+595        run;
 
 NOTE: Changing the name WORK.PSBETAS3LEVEL to WORK.PSBETAS3LEVELMEDICARE (memtype=DATA).
 NOTE: Changing the name WORK.PS3LEVEL to WORK.PS3LEVELMEDICARE (memtype=DATA).
-595        
+596        
 
 NOTE: PROCEDURE DATASETS used (Total process time):
-      real time           0.03 seconds
-      cpu time            0.01 seconds
+      real time           0.04 seconds
+      cpu time            0.03 seconds
       
 
-596        proc sql;
-597          create table Work.ps3Level as
-598            select * from ps3LevelMPCD union corr
-599            select * from ps3LevelMarketscan union corr
-600            select * from ps3LevelMedicare ;
+597        proc sql;
+598          create table Work.ps3Level as
+599            select * from ps3LevelMPCD union corr
+600            select * from ps3LevelMarketscan union corr
+601            select * from ps3LevelMedicare ;
 NOTE: Table WORK.PS3LEVEL created, with 180030 rows and 67 columns.
 
-601          create table Work.psBetas3Level as
-602            select "MPCD" as database, * from psBetas3LevelMPCD union corr
-603            select "Marketscan" as database, * from psBetas3LevelMarketscan union corr
-604            select "Medicare" as database, * from psBetas3LevelMedicare ;
+602          create table Work.psBetas3Level as
+603            select "MPCD" as database, * from psBetas3LevelMPCD union corr
+604            select "Marketscan" as database, * from psBetas3LevelMarketscan union corr
+605            select "Medicare" as database, * from psBetas3LevelMedicare ;
 NOTE: Table WORK.PSBETAS3LEVEL created, with 3 rows and 97 columns.
 
-605        quit;
+606        quit;
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           1.45 seconds
-      cpu time            2.37 seconds
+      real time           2.05 seconds
+      cpu time            3.19 seconds
       
 
-606        
 607        
-608        /*
-609        Check
-610         */
-611        proc sql;
-612          select database, indexID,
-613                 sum(ps) as sumPS
-11                                                                  The SAS System                                      12:11 Thursday, April 19, 2018
+608        
+609        /*
+610        Check
+611         */
+612        proc sql;
+613          select database, indexID,
+614                 sum(ps) as sumPS
+11                                                                  The SAS System                                        10:34 Friday, April 27, 2018
 
-614            from Work.ps3Level
-615            group by database, indexID
-616            having calculated sumPS < 1 - 1e-12;
-                                                                  --- AS project ---                                12:11 Thursday, April 19, 2018  36
+615            from Work.ps3Level
+616            group by database, indexID
+617            having calculated sumPS < 1 - 1e-12;
+                                                                  --- AS project ---                                  10:34 Friday, April 27, 2018  36
 
                                                             database     indexID     sumPS
                                                             ------------------------------
@@ -3407,125 +3407,125 @@ NOTE: PROCEDURE SQL used (Total process time):
  
  
                                                                modelPropensityScore.sas
-617        quit;
+618        quit;
 NOTE: The PROCEDURE SQL printed page 36.
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           0.26 seconds
-      cpu time            0.34 seconds
+      real time           0.32 seconds
+      cpu time            0.40 seconds
       
 
-618        
 619        
-620        /*
-621        Union model coefficients from the 4-level model and the 3-level model
-622         */
-623        proc sql;
-624          create table Work.psBetas as
-625            select * from Work.psBetas3Level ;
+620        
+621        /*
+622        Union model coefficients from the 4-level model and the 3-level model
+623         */
+624        proc sql;
+625          create table Work.psBetas as
+626            select * from Work.psBetas3Level ;
 NOTE: Table WORK.PSBETAS created, with 3 rows and 97 columns.
 
-626        quit;
+627        quit;
 NOTE: PROCEDURE SQL used (Total process time):
       real time           0.04 seconds
-      cpu time            0.01 seconds
+      cpu time            0.03 seconds
       
 
-627        
 628        
-629        /*
-630        Union propensity scores from the 4-level model and the 3-level model
-631        Calculate IPTW
-632         */
-633        %let varlist = indexID, database, _level_, ps,
-634                       age,
-635                       catAge,
-636                       sex,
-637                       indAmyloidosis,
-638                       indAortInsuffRegurg,
-639                       indApicalPulmFib,
-640                       indCaudaEquina,
-641                       indVertFrac,
-642                       indConductBlock,
-643                       indCrohnsDis,
-644                       indHematCa,
-645                       indHospInf,
-646                       indIgANeph,
-647                       indInterstLungDis,
-648                       indMI,
-649                       indNephSyn,
-650                       indNMSC,
-651                       indNonVertOsFrac,
-652                       indOppInf,
-653                       indPsoriasis,
-654                       indPSA,
-655                       indRestrictLungDis,
-656                       indSolidCa,
-657                       indSpinalCordComp,
-658                       indUlcerColitis,
-659                       indUveitis,
-660                       indDiabetes,
-661                       indHT,
-662                       indMetabSyn,
-663                       indNAFattyLiverDis,
-664                       indCOPDEmphysema,
-665                       meanPredEqDoseCat,
-666                       charlson,
-667                       quartileCharlson,
-668                       indInflamMarker,
-669                       indRxNSAID,
-670                       indRxHtn,
-671                       indRxNarcotics,
-672                       indRxFungus,
-12                                                                  The SAS System                                      12:11 Thursday, April 19, 2018
+629        
+630        /*
+631        Union propensity scores from the 4-level model and the 3-level model
+632        Calculate IPTW
+633         */
+634        %let varlist = indexID, database, _level_, ps,
+635                       age,
+636                       catAge,
+637                       sex,
+638                       indAmyloidosis,
+639                       indAortInsuffRegurg,
+640                       indApicalPulmFib,
+641                       indCaudaEquina,
+642                       indVertFrac,
+643                       indConductBlock,
+644                       indCrohnsDis,
+645                       indHematCa,
+646                       indHospInf,
+647                       indIgANeph,
+648                       indInterstLungDis,
+649                       indMI,
+650                       indNephSyn,
+651                       indNMSC,
+652                       indNonVertOsFrac,
+653                       indOppInf,
+654                       indPsoriasis,
+655                       indPSA,
+656                       indRestrictLungDis,
+657                       indSolidCa,
+658                       indSpinalCordComp,
+659                       indUlcerColitis,
+660                       indUveitis,
+661                       indDiabetes,
+662                       indHT,
+663                       indMetabSyn,
+664                       indNAFattyLiverDis,
+665                       indCOPDEmphysema,
+666                       meanPredEqDoseCat,
+667                       charlson,
+668                       quartileCharlson,
+669                       indInflamMarker,
+670                       indRxNSAID,
+671                       indRxHtn,
+672                       indRxNarcotics,
+673                       indRxFungus,
+12                                                                  The SAS System                                        10:34 Friday, April 27, 2018
 
-673                       indRxOP_bisphosp,
-674                       indRxThiazide,
-675                       indRxAnticoagulant,
-676                       indRxAntibiotics,
-677                       indIPAdmit12mPrior,
-678                       countIPAdmits12mPrior,
-679                       indERVisit12mPrior,
-680                       ciras,
-681                       quartileCIRAS,
-682                       countAVPhys12mPrior,
-683                       quartileAVPhys12mPrior,
-684                       countAVRheum12mPrior,
-685                       quartileAVRheum12mPrior,
-686                       indAVRheum12mPrior,
-687                       indRxBiologics,
-688                       indOutpatientInfection
-689        ;
-690        proc sql;
-691          create table Work.ps as
-692            select "3-level exposure" as model, exposure3 as exposure, &varlist from Work.ps3Level
-693            order by indexID, exposure;
+674                       indRxOP_bisphosp,
+675                       indRxThiazide,
+676                       indRxAnticoagulant,
+677                       indRxAntibiotics,
+678                       indIPAdmit12mPrior,
+679                       countIPAdmits12mPrior,
+680                       indERVisit12mPrior,
+681                       ciras,
+682                       quartileCIRAS,
+683                       countAVPhys12mPrior,
+684                       quartileAVPhys12mPrior,
+685                       countAVRheum12mPrior,
+686                       quartileAVRheum12mPrior,
+687                       indAVRheum12mPrior,
+688                       indRxBiologics,
+689                       indOutpatientInfection
+690        ;
+691        proc sql;
+692          create table Work.ps as
+693            select "3-level exposure" as model, exposure3 as exposure, &varlist from Work.ps3Level
+694            order by indexID, exposure;
 NOTE: Table WORK.PS created, with 180030 rows and 61 columns.
 
-694          alter table Work.ps add iptw numeric;
+695          alter table Work.ps add iptw numeric;
 NOTE: Table WORK.PS has been modified, with 62 columns.
-695          update Work.ps set iptw = (exposure  = _level_) / ps + (exposure ^= _level_) / (1 - ps);
+696          update Work.ps set iptw = (exposure  = _level_) / ps + (exposure ^= _level_) / (1 - ps);
 NOTE: 180030 rows were updated in WORK.PS.
 
-696        quit;
+697        quit;
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           1.35 seconds
-      cpu time            1.38 seconds
+      real time           1.85 seconds
+      cpu time            1.90 seconds
       
 
-697        
 698        
-699        /*
-700        Determine common support region
-701        For propensity of TNF
-702         */
-703        %let exposure = "TNF";
-704        proc means data = Work.ps n nmiss min max mean median stddev;
-705          where _level_ in (&exposure);
-706          class model database _level_ exposure;
-707          var ps;
-708        run;
+699        
+700        /*
+701        Determine common support region
+702        For propensity of TNF
+703         */
+704        %let exposure = "TNF";
+705        proc means data = Work.ps n nmiss min max mean median stddev;
+706          where _level_ in (&exposure);
+707          class model database _level_ exposure;
+708          var ps;
+709        run;
 
-                                                                  --- AS project ---                                12:11 Thursday, April 19, 2018  37
+                                                                  --- AS project ---                                  10:34 Friday, April 27, 2018  37
 
                                                                  The MEANS Procedure
 
@@ -3603,26 +3603,26 @@ NOTE: There were 60010 observations read from the data set WORK.PS.
       WHERE _level_='TNF';
 NOTE: The PROCEDURE MEANS printed page 37.
 NOTE: PROCEDURE MEANS used (Total process time):
-      real time           0.17 seconds
-      cpu time            0.31 seconds
+      real time           0.23 seconds
+      cpu time            0.32 seconds
       
 
-709        proc sql;
-710          create table Work.commonSupportRegion as
-711            select model, database,
-712                   max(minPS) as commonSupportLowerBound,
-713                   min(maxPS) as commonSupportUpperBound
-714            from (select model, database, exposure,
-715                         min(ps) as minPS,
-716                         max(ps) as maxPS
-717                  from Work.ps
-718                  where _level_ in (&exposure)
-719                  group by model, database, exposure)
-720            group by model, database;
+710        proc sql;
+711          create table Work.commonSupportRegion as
+712            select model, database,
+713                   max(minPS) as commonSupportLowerBound,
+714                   min(maxPS) as commonSupportUpperBound
+715            from (select model, database, exposure,
+716                         min(ps) as minPS,
+717                         max(ps) as maxPS
+718                  from Work.ps
+719                  where _level_ in (&exposure)
+720                  group by model, database, exposure)
+721            group by model, database;
 NOTE: Table WORK.COMMONSUPPORTREGION created, with 3 rows and 4 columns.
 
-721          select * from Work.commonSupportRegion;
-                                                                  --- AS project ---                                12:11 Thursday, April 19, 2018  38
+722          select * from Work.commonSupportRegion;
+                                                                  --- AS project ---                                  10:34 Friday, April 27, 2018  38
 
                                                                                    common        common
                                                                                   Support       Support
@@ -3696,37 +3696,37 @@ NOTE: Table WORK.COMMONSUPPORTREGION created, with 3 rows and 4 columns.
  
  
                                                                modelPropensityScore.sas
-722          create table Work.temp as
-723            select * from Work.ps where _level_ in (&exposure);
-13                                                                  The SAS System                                      12:11 Thursday, April 19, 2018
+723          create table Work.temp as
+724            select * from Work.ps where _level_ in (&exposure);
+13                                                                  The SAS System                                        10:34 Friday, April 27, 2018
 
 NOTE: Table WORK.TEMP created, with 60010 rows and 62 columns.
 
-724          create table Work.ps as
-725            select A.*,
-726                   B.commonSupportLowerBound,
-727                   B.commonSupportUpperBound,
-728                   case
-729                     when A.ps = . then .
-730                     when B.commonSupportLowerBound <= A.ps <= B.commonSupportUpperBound then 1
-731                     else 0
-732                     end as indCommonSupport
-733            from Work.temp A inner join
-734                 Work.commonSupportRegion B on (A.model = B.model &
-735                                                A.database = B.database);
+725          create table Work.ps as
+726            select A.*,
+727                   B.commonSupportLowerBound,
+728                   B.commonSupportUpperBound,
+729                   case
+730                     when A.ps = . then .
+731                     when B.commonSupportLowerBound <= A.ps <= B.commonSupportUpperBound then 1
+732                     else 0
+733                     end as indCommonSupport
+734            from Work.temp A inner join
+735                 Work.commonSupportRegion B on (A.model = B.model &
+736                                                A.database = B.database);
 NOTE: Table WORK.PS created, with 60010 rows and 65 columns.
 
-736          select model,
-737                 database,
-738                 exposure,
-739                 _level_,
-740                 sum(indCommonSupport = 1) as n1,
-741                 sum(indCommonSupport = 1) / sum(^missing(indCommonSupport)) format = percent9.3 as prop1,
-742                 sum(indCommonSupport = 0) as n0,
-743                 sum(indCommonSupport = 0) / sum(^missing(indCommonSupport)) format = percent9.3 as prop0
-744            from Work.ps
-745            group by model, database, exposure, _level_;
-                                                                  --- AS project ---                                12:11 Thursday, April 19, 2018  39
+737          select model,
+738                 database,
+739                 exposure,
+740                 _level_,
+741                 sum(indCommonSupport = 1) as n1,
+742                 sum(indCommonSupport = 1) / sum(^missing(indCommonSupport)) format = percent9.3 as prop1,
+743                 sum(indCommonSupport = 0) as n0,
+744                 sum(indCommonSupport = 0) / sum(^missing(indCommonSupport)) format = percent9.3 as prop0
+745            from Work.ps
+746            group by model, database, exposure, _level_;
+                                                                  --- AS project ---                                  10:34 Friday, April 27, 2018  39
 
                   model             database    exposure              Response Value              n1      prop1        n0      prop0
                   ------------------------------------------------------------------------------------------------------------------
@@ -3800,63 +3800,63 @@ NOTE: Table WORK.PS created, with 60010 rows and 65 columns.
  
  
                                                                modelPropensityScore.sas
-746        quit;
+747        quit;
 NOTE: The PROCEDURE SQL printed pages 38-39.
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           0.86 seconds
-      cpu time            0.78 seconds
+      real time           1.09 seconds
+      cpu time            1.02 seconds
       
 
-747        
 748        
-749        /*
-750        Stabilize weights
-751        
-752        See
-753        
-754        Austin, P. C., and Stuart, E. A. (2015) Moving towards best practice when
-755        using inverse probability of treatment weighting (IPTW) using the propensity
-756        score to estimate causal treatment effects in observational studies. Statist.
-757        Med., 34: 3661–3679. doi: 10.1002/sim.6607.
-758         */
-759        proc sql;
-760          create table Work.temp as select * from Work.ps;
+749        
+750        /*
+751        Stabilize weights
+752        
+753        See
+754        
+755        Austin, P. C., and Stuart, E. A. (2015) Moving towards best practice when
+756        using inverse probability of treatment weighting (IPTW) using the propensity
+757        score to estimate causal treatment effects in observational studies. Statist.
+758        Med., 34: 3661–3679. doi: 10.1002/sim.6607.
+759         */
+760        proc sql;
+761          create table Work.temp as select * from Work.ps;
 NOTE: Table WORK.TEMP created, with 60010 rows and 65 columns.
 
-761          create table Work.ps as
-762            select A.*,
-763                   B.marginalPS,
-764                   B.marginalPS * ((A.exposure  = A._level_) / A.ps +
-765                                   (A.exposure ^= A._level_) / (1 - A.ps))
-766                     as iptwStabilized
-767            from Work.temp A inner join
-768                 (select model,
-769                         database,
-770                         exposure,
-771                         _level_,
-772                         mean(ps) as marginalPS
-773                  from Work.temp
-774                  group by model, database, exposure, _level_) B on (A.model = B.model &
-775                                                                     A.database = B.database &
-776                                                                     A.exposure = B.exposure);
+762          create table Work.ps as
+763            select A.*,
+764                   B.marginalPS,
+765                   B.marginalPS * ((A.exposure  = A._level_) / A.ps +
+766                                   (A.exposure ^= A._level_) / (1 - A.ps))
+767                     as iptwStabilized
+768            from Work.temp A inner join
+769                 (select model,
+770                         database,
+771                         exposure,
+772                         _level_,
+773                         mean(ps) as marginalPS
+774                  from Work.temp
+775                  group by model, database, exposure, _level_) B on (A.model = B.model &
+776                                                                     A.database = B.database &
+777                                                                     A.exposure = B.exposure);
 NOTE: Table WORK.PS created, with 60010 rows and 67 columns.
 
-777          drop table Work.temp;
+778          drop table Work.temp;
 NOTE: Table WORK.TEMP has been dropped.
-778        quit;
+779        quit;
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           0.58 seconds
-14                                                                  The SAS System                                      12:11 Thursday, April 19, 2018
+      real time           0.81 seconds
+14                                                                  The SAS System                                        10:34 Friday, April 27, 2018
 
-      cpu time            0.46 seconds
+      cpu time            0.68 seconds
       
 
-779        proc means data = Work.ps n nmiss min max mean median stddev maxdec = 3;
-780          class indCommonSupport model database exposure _level_;
-781          var ps marginalPS iptw iptwStabilized;
-782        run;
+780        proc means data = Work.ps n nmiss min max mean median stddev maxdec = 3;
+781          class indCommonSupport model database exposure _level_;
+782          var ps marginalPS iptw iptwStabilized;
+783        run;
 
-                                                                  --- AS project ---                                12:11 Thursday, April 19, 2018  40
+                                                                  --- AS project ---                                  10:34 Friday, April 27, 2018  40
 
                                                                  The MEANS Procedure
 
@@ -3930,7 +3930,7 @@ NOTE: PROCEDURE SQL used (Total process time):
   --------------------------------------------------------------------------------------------------------------------------------------------------
  
                                                                modelPropensityScore.sas
-                                                                  --- AS project ---                                12:11 Thursday, April 19, 2018  41
+                                                                  --- AS project ---                                  10:34 Friday, April 27, 2018  41
 
                                                                  The MEANS Procedure
 
@@ -4004,7 +4004,7 @@ NOTE: PROCEDURE SQL used (Total process time):
  
  
                                                                modelPropensityScore.sas
-                                                                  --- AS project ---                                12:11 Thursday, April 19, 2018  42
+                                                                  --- AS project ---                                  10:34 Friday, April 27, 2018  42
 
                                                                  The MEANS Procedure
 
@@ -4078,7 +4078,7 @@ NOTE: PROCEDURE SQL used (Total process time):
  
  
                                                                modelPropensityScore.sas
-                                                                  --- AS project ---                                12:11 Thursday, April 19, 2018  43
+                                                                  --- AS project ---                                  10:34 Friday, April 27, 2018  43
 
                                                                  The MEANS Procedure
 
@@ -4152,7 +4152,7 @@ NOTE: PROCEDURE SQL used (Total process time):
   --------------------------------------------------------------------------------------------------------------------------------------------------
  
                                                                modelPropensityScore.sas
-                                                                  --- AS project ---                                12:11 Thursday, April 19, 2018  44
+                                                                  --- AS project ---                                  10:34 Friday, April 27, 2018  44
 
                                                                  The MEANS Procedure
 
@@ -4226,7 +4226,7 @@ NOTE: PROCEDURE SQL used (Total process time):
  
  
                                                                modelPropensityScore.sas
-                                                                  --- AS project ---                                12:11 Thursday, April 19, 2018  45
+                                                                  --- AS project ---                                  10:34 Friday, April 27, 2018  45
 
                                                                  The MEANS Procedure
 
@@ -4300,7 +4300,7 @@ NOTE: PROCEDURE SQL used (Total process time):
  
  
                                                                modelPropensityScore.sas
-                                                                  --- AS project ---                                12:11 Thursday, April 19, 2018  46
+                                                                  --- AS project ---                                  10:34 Friday, April 27, 2018  46
 
                                                                  The MEANS Procedure
 
@@ -4374,7 +4374,7 @@ NOTE: PROCEDURE SQL used (Total process time):
   --------------------------------------------------------------------------------------------------------------------------------------------------
  
                                                                modelPropensityScore.sas
-                                                                  --- AS project ---                                12:11 Thursday, April 19, 2018  47
+                                                                  --- AS project ---                                  10:34 Friday, April 27, 2018  47
 
                                                                  The MEANS Procedure
 
@@ -4448,7 +4448,7 @@ NOTE: PROCEDURE SQL used (Total process time):
  
  
                                                                modelPropensityScore.sas
-                                                                  --- AS project ---                                12:11 Thursday, April 19, 2018  48
+                                                                  --- AS project ---                                  10:34 Friday, April 27, 2018  48
 
                                                                  The MEANS Procedure
 
@@ -4525,15 +4525,15 @@ NOTE: PROCEDURE SQL used (Total process time):
 NOTE: There were 60010 observations read from the data set WORK.PS.
 NOTE: The PROCEDURE MEANS printed pages 40-48.
 NOTE: PROCEDURE MEANS used (Total process time):
-      real time           0.26 seconds
-      cpu time            0.42 seconds
+      real time           0.24 seconds
+      cpu time            0.37 seconds
       
 
-783        proc corr data = Work.ps;
-784          var iptw iptwStabilized;
-785        run;
+784        proc corr data = Work.ps;
+785          var iptw iptwStabilized;
+786        run;
 
-                                                                  --- AS project ---                                12:11 Thursday, April 19, 2018  49
+                                                                  --- AS project ---                                  10:34 Friday, April 27, 2018  49
 
                                                                   The CORR Procedure
 
@@ -4609,542 +4609,542 @@ NOTE: PROCEDURE MEANS used (Total process time):
                                                                modelPropensityScore.sas
 NOTE: The PROCEDURE CORR printed page 49.
 NOTE: PROCEDURE CORR used (Total process time):
-      real time           0.06 seconds
-      cpu time            0.06 seconds
+      real time           0.09 seconds
+      cpu time            0.09 seconds
       
 
-786        
 787        
-788        /*
-789        Save output data files
-790         */
-791        proc sql;
-792          create table DT.ps as
-793            select *
-794            from Work.ps;
+788        
+789        /*
+790        Save output data files
+791         */
+792        proc sql;
+793          create table DT.ps as
+794            select *
+795            from Work.ps;
 NOTE: Table DT.PS created, with 60010 rows and 67 columns.
 
-795          create table Work.psDeidentified as
-796            select model,
-797                   database,
-798                   exposure,
-799                   _level_,
-800                   ps,
-801                   indCommonSupport,
-802                   iptw,
-803                   marginalPS,
-804                   iptwStabilized,
-805                   age,
-806                   catAge,
-807                   sex,
-808                   indAmyloidosis,
-809                   indAortInsuffRegurg,
-810                   indApicalPulmFib,
-811                   indCaudaEquina,
-812                   indVertFrac,
-813                   indConductBlock,
-814                   indCrohnsDis,
-815                   indHematCa,
-816                   indHospInf,
-817                   indIgANeph,
-818                   indInterstLungDis,
-819                   indMI,
-820                   indNephSyn,
-821                   indNMSC,
-822                   indNonVertOsFrac,
-823                   indOppInf,
-824                   indPsoriasis,
-825                   indPSA,
-826                   indRestrictLungDis,
-827                   indSolidCa,
-828                   indSpinalCordComp,
-829                   indUlcerColitis,
-830                   indUveitis,
-15                                                                  The SAS System                                      12:11 Thursday, April 19, 2018
+796          create table Work.psDeidentified as
+797            select model,
+798                   database,
+799                   exposure,
+800                   _level_,
+801                   ps,
+802                   indCommonSupport,
+803                   iptw,
+804                   marginalPS,
+805                   iptwStabilized,
+806                   age,
+807                   catAge,
+808                   sex,
+809                   indAmyloidosis,
+810                   indAortInsuffRegurg,
+811                   indApicalPulmFib,
+812                   indCaudaEquina,
+813                   indVertFrac,
+814                   indConductBlock,
+815                   indCrohnsDis,
+816                   indHematCa,
+817                   indHospInf,
+818                   indIgANeph,
+819                   indInterstLungDis,
+820                   indMI,
+821                   indNephSyn,
+822                   indNMSC,
+823                   indNonVertOsFrac,
+824                   indOppInf,
+825                   indPsoriasis,
+826                   indPSA,
+827                   indRestrictLungDis,
+828                   indSolidCa,
+829                   indSpinalCordComp,
+830                   indUlcerColitis,
+831                   indUveitis,
+15                                                                  The SAS System                                        10:34 Friday, April 27, 2018
 
-831                   indDiabetes,
-832                   indHT,
-833                   indMetabSyn,
-834                   indNAFattyLiverDis,
-835                   indCOPDEmphysema,
-836                   meanPredEqDoseCat,
-837                   charlson,
-838                   quartileCharlson,
-839                   indInflamMarker,
-840                   indRxNSAID,
-841                   indRxHtn,
-842                   indRxNarcotics,
-843                   indRxFungus,
-844                   indRxOP_bisphosp,
-845                   indRxThiazide,
-846                   indRxAnticoagulant,
-847                   indIPAdmit12mPrior,
-848                   indRxAntibiotics,
-849                   countIPAdmits12mPrior,
-850                   indERVisit12mPrior,
-851                   ciras,
-852                   quartileCIRAS,
-853                   countAVPhys12mPrior,
-854                   quartileAVPhys12mPrior,
-855                   countAVRheum12mPrior,
-856                   quartileAVRheum12mPrior,
-857                   indAVRheum12mPrior,
-858                   indRxBiologics,
-859                   indOutpatientInfection
-860            from DT.ps;
+832                   indDiabetes,
+833                   indHT,
+834                   indMetabSyn,
+835                   indNAFattyLiverDis,
+836                   indCOPDEmphysema,
+837                   meanPredEqDoseCat,
+838                   charlson,
+839                   quartileCharlson,
+840                   indInflamMarker,
+841                   indRxNSAID,
+842                   indRxHtn,
+843                   indRxNarcotics,
+844                   indRxFungus,
+845                   indRxOP_bisphosp,
+846                   indRxThiazide,
+847                   indRxAnticoagulant,
+848                   indIPAdmit12mPrior,
+849                   indRxAntibiotics,
+850                   countIPAdmits12mPrior,
+851                   indERVisit12mPrior,
+852                   ciras,
+853                   quartileCIRAS,
+854                   countAVPhys12mPrior,
+855                   quartileAVPhys12mPrior,
+856                   countAVRheum12mPrior,
+857                   quartileAVRheum12mPrior,
+858                   indAVRheum12mPrior,
+859                   indRxBiologics,
+860                   indOutpatientInfection
+861            from DT.ps;
 NOTE: Table WORK.PSDEIDENTIFIED created, with 60010 rows and 64 columns.
 
-861        quit;
+862        quit;
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           0.28 seconds
-      cpu time            0.25 seconds
+      real time           0.43 seconds
+      cpu time            0.40 seconds
       
 
-862        proc export
-863          data = Work.psBetas
-864          outfile = "data\processed\psBetas.csv"
-865          dbms = csv
-866          replace;
-867          delimiter = ",";
-868        run;
+863        proc export
+864          data = Work.psBetas
+865          outfile = "data\processed\psBetas.csv"
+866          dbms = csv
+867          replace;
+868          delimiter = ",";
+869        run;
 
-869         /**********************************************************************
-870         *   PRODUCT:   SAS
-871         *   VERSION:   9.4
-872         *   CREATOR:   External File Interface
-873         *   DATE:      19APR18
-874         *   DESC:      Generated SAS Datastep Code
-875         *   TEMPLATE SOURCE:  (None Specified.)
-876         ***********************************************************************/
-877            data _null_;
-878            %let _EFIERR_ = 0; /* set the ERROR detection macro variable */
-879            %let _EFIREC_ = 0;     /* clear export record count macro variable */
-880            file 'data\processed\psBetas.csv' delimiter=',' DSD DROPOVER lrecl=32767;
-881            if _n_ = 1 then        /* write column names or labels */
-882             do;
-883               put
-884                  "database"
-885               ','
-886                  "_LINK_"
-887               ','
-888                  "_TYPE_"
-889               ','
-890                  "_STATUS_"
-891               ','
-892                  "_NAME_"
-893               ','
-894                  "Intercept_DMARD"
-16                                                                  The SAS System                                      12:11 Thursday, April 19, 2018
+870         /**********************************************************************
+871         *   PRODUCT:   SAS
+872         *   VERSION:   9.4
+873         *   CREATOR:   External File Interface
+874         *   DATE:      27APR18
+875         *   DESC:      Generated SAS Datastep Code
+876         *   TEMPLATE SOURCE:  (None Specified.)
+877         ***********************************************************************/
+878            data _null_;
+879            %let _EFIERR_ = 0; /* set the ERROR detection macro variable */
+880            %let _EFIREC_ = 0;     /* clear export record count macro variable */
+881            file 'data\processed\psBetas.csv' delimiter=',' DSD DROPOVER lrecl=32767;
+882            if _n_ = 1 then        /* write column names or labels */
+883             do;
+884               put
+885                  "database"
+886               ','
+887                  "_LINK_"
+888               ','
+889                  "_TYPE_"
+890               ','
+891                  "_STATUS_"
+892               ','
+893                  "_NAME_"
+894               ','
+895                  "Intercept_DMARD"
+16                                                                  The SAS System                                        10:34 Friday, April 27, 2018
 
-895               ','
-896                  "Intercept_NSAID_or_no_exposure"
-897               ','
-898                  "catAge19N29_DMARD"
-899               ','
-900                  "catAge19N29_NSAID_or_no_exposure"
-901               ','
-902                  "catAge30N39_DMARD"
-903               ','
-904                  "catAge30N39_NSAID_or_no_exposure"
-905               ','
-906                  "catAge40N49_DMARD"
-907               ','
-908                  "catAge40N49_NSAID_or_no_exposure"
-909               ','
-910                  "catAge50N59_DMARD"
-911               ','
-912                  "catAge50N59_NSAID_or_no_exposure"
-913               ','
-914                  "catAge60N69_DMARD"
-915               ','
-916                  "catAge60N69_NSAID_or_no_exposure"
-917               ','
-918                  "SEXF_DMARD"
-919               ','
-920                  "SEXF_NSAID_or_no_exposure"
-921               ','
-922                  "indAortInsuffRegurg_DMARD"
-923               ','
-924                  "indAortInsuffRegurg_NSAID_or_no"
-925               ','
-926                  "indVertFrac_DMARD"
-927               ','
-928                  "indVertFrac_NSAID_or_no_exposure"
-929               ','
-930                  "indCrohnsDis_DMARD"
-931               ','
-932                  "indCrohnsDis_NSAID_or_no_exposur"
-933               ','
-934                  "indHematCa_DMARD"
-935               ','
-936                  "indHematCa_NSAID_or_no_exposure"
-937               ','
-938                  "indHospInf_DMARD"
-939               ','
-940                  "indHospInf_NSAID_or_no_exposure"
-941               ','
-942                  "indIgANeph_DMARD"
-943               ','
-944                  "indIgANeph_NSAID_or_no_exposure"
-945               ','
-946                  "indNonVertOsFrac_DMARD"
-947               ','
-948                  "indNonVertOsFrac_NSAID_or_no_exp"
-949               ','
-950                  "indOppInf_DMARD"
-951               ','
-952                  "indOppInf_NSAID_or_no_exposure"
-953               ','
-954                  "indPsoriasis_DMARD"
-955               ','
-956                  "indPsoriasis_NSAID_or_no_exposur"
-957               ','
-958                  "indPSA_DMARD"
-959               ','
-960                  "indPSA_NSAID_or_no_exposure"
-961               ','
-962                  "indRestrictLungDis_DMARD"
-963               ','
-964                  "indRestrictLungDis_NSAID_or_no_e"
-965               ','
-966                  "indSolidCa_DMARD"
-17                                                                  The SAS System                                      12:11 Thursday, April 19, 2018
+896               ','
+897                  "Intercept_NSAID_or_no_exposure"
+898               ','
+899                  "catAge19N29_DMARD"
+900               ','
+901                  "catAge19N29_NSAID_or_no_exposure"
+902               ','
+903                  "catAge30N39_DMARD"
+904               ','
+905                  "catAge30N39_NSAID_or_no_exposure"
+906               ','
+907                  "catAge40N49_DMARD"
+908               ','
+909                  "catAge40N49_NSAID_or_no_exposure"
+910               ','
+911                  "catAge50N59_DMARD"
+912               ','
+913                  "catAge50N59_NSAID_or_no_exposure"
+914               ','
+915                  "catAge60N69_DMARD"
+916               ','
+917                  "catAge60N69_NSAID_or_no_exposure"
+918               ','
+919                  "SEXF_DMARD"
+920               ','
+921                  "SEXF_NSAID_or_no_exposure"
+922               ','
+923                  "indAortInsuffRegurg_DMARD"
+924               ','
+925                  "indAortInsuffRegurg_NSAID_or_no"
+926               ','
+927                  "indVertFrac_DMARD"
+928               ','
+929                  "indVertFrac_NSAID_or_no_exposure"
+930               ','
+931                  "indCrohnsDis_DMARD"
+932               ','
+933                  "indCrohnsDis_NSAID_or_no_exposur"
+934               ','
+935                  "indHematCa_DMARD"
+936               ','
+937                  "indHematCa_NSAID_or_no_exposure"
+938               ','
+939                  "indHospInf_DMARD"
+940               ','
+941                  "indHospInf_NSAID_or_no_exposure"
+942               ','
+943                  "indIgANeph_DMARD"
+944               ','
+945                  "indIgANeph_NSAID_or_no_exposure"
+946               ','
+947                  "indNonVertOsFrac_DMARD"
+948               ','
+949                  "indNonVertOsFrac_NSAID_or_no_exp"
+950               ','
+951                  "indOppInf_DMARD"
+952               ','
+953                  "indOppInf_NSAID_or_no_exposure"
+954               ','
+955                  "indPsoriasis_DMARD"
+956               ','
+957                  "indPsoriasis_NSAID_or_no_exposur"
+958               ','
+959                  "indPSA_DMARD"
+960               ','
+961                  "indPSA_NSAID_or_no_exposure"
+962               ','
+963                  "indRestrictLungDis_DMARD"
+964               ','
+965                  "indRestrictLungDis_NSAID_or_no_e"
+966               ','
+967                  "indSolidCa_DMARD"
+17                                                                  The SAS System                                        10:34 Friday, April 27, 2018
 
-967               ','
-968                  "indSolidCa_NSAID_or_no_exposure"
-969               ','
-970                  "indUlcerColitis_DMARD"
-971               ','
-972                  "indUlcerColitis_NSAID_or_no_expo"
-973               ','
-974                  "indUveitis_DMARD"
-975               ','
-976                  "indUveitis_NSAID_or_no_exposure"
-977               ','
-978                  "indDiabetes_DMARD"
-979               ','
-980                  "indDiabetes_NSAID_or_no_exposure"
-981               ','
-982                  "indHT_DMARD"
-983               ','
-984                  "indHT_NSAID_or_no_exposure"
-985               ','
-986                  "indMetabSyn_DMARD"
-987               ','
-988                  "indMetabSyn_NSAID_or_no_exposure"
-989               ','
-990                  "indNAFattyLiverDis_DMARD"
-991               ','
-992                  "indNAFattyLiverDis_NSAID_or_no_e"
-993               ','
-994                  "indCOPDEmphysema_DMARD"
-995               ','
-996                  "indCOPDEmphysema_NSAID_or_no_exp"
-997               ','
-998                  "meanPredEqDoseCatHigh__10__mg_d_"
-999               ','
-1000                 "meanPredEqDoseCatHigh__10__mg_d2"
-1001              ','
-1002                 "meanPredEqDoseCatLow___2_5_mg_d_"
-1003              ','
-1004                 "meanPredEqDoseCatLow___2_5_mg_d2"
-1005              ','
-1006                 "meanPredEqDoseCatMedium_High__5_"
-1007              ','
-1008                 "meanPredEqDoseCatMedium_High__52"
-1009              ','
-1010                 "meanPredEqDoseCatMedium_Low__2_5"
-1011              ','
-1012                 "meanPredEqDoseCatMedium_Low__2_2"
-1013              ','
-1014                 "quartileCharlson3_DMARD"
-1015              ','
-1016                 "quartileCharlson3_NSAID_or_no_ex"
-1017              ','
-1018                 "indInflamMarker_DMARD"
-1019              ','
-1020                 "indInflamMarker_NSAID_or_no_expo"
-1021              ','
-1022                 "indRxNSAID_DMARD"
-1023              ','
-1024                 "indRxNSAID_NSAID_or_no_exposure"
-1025              ','
-1026                 "indRxHtn_DMARD"
-1027              ','
-1028                 "indRxHtn_NSAID_or_no_exposure"
-1029              ','
-1030                 "indRxNarcotics_DMARD"
-1031              ','
-1032                 "indRxNarcotics_NSAID_or_no_expos"
-1033              ','
-1034                 "indRxFungus_DMARD"
-1035              ','
-1036                 "indRxFungus_NSAID_or_no_exposure"
-1037              ','
-1038                 "indRxOP_bisphosp_DMARD"
-18                                                                  The SAS System                                      12:11 Thursday, April 19, 2018
+968               ','
+969                  "indSolidCa_NSAID_or_no_exposure"
+970               ','
+971                  "indUlcerColitis_DMARD"
+972               ','
+973                  "indUlcerColitis_NSAID_or_no_expo"
+974               ','
+975                  "indUveitis_DMARD"
+976               ','
+977                  "indUveitis_NSAID_or_no_exposure"
+978               ','
+979                  "indDiabetes_DMARD"
+980               ','
+981                  "indDiabetes_NSAID_or_no_exposure"
+982               ','
+983                  "indHT_DMARD"
+984               ','
+985                  "indHT_NSAID_or_no_exposure"
+986               ','
+987                  "indMetabSyn_DMARD"
+988               ','
+989                  "indMetabSyn_NSAID_or_no_exposure"
+990               ','
+991                  "indNAFattyLiverDis_DMARD"
+992               ','
+993                  "indNAFattyLiverDis_NSAID_or_no_e"
+994               ','
+995                  "indCOPDEmphysema_DMARD"
+996               ','
+997                  "indCOPDEmphysema_NSAID_or_no_exp"
+998               ','
+999                  "meanPredEqDoseCatHigh__10__mg_d_"
+1000              ','
+1001                 "meanPredEqDoseCatHigh__10__mg_d2"
+1002              ','
+1003                 "meanPredEqDoseCatLow___2_5_mg_d_"
+1004              ','
+1005                 "meanPredEqDoseCatLow___2_5_mg_d2"
+1006              ','
+1007                 "meanPredEqDoseCatMedium_High__5_"
+1008              ','
+1009                 "meanPredEqDoseCatMedium_High__52"
+1010              ','
+1011                 "meanPredEqDoseCatMedium_Low__2_5"
+1012              ','
+1013                 "meanPredEqDoseCatMedium_Low__2_2"
+1014              ','
+1015                 "quartileCharlson3_DMARD"
+1016              ','
+1017                 "quartileCharlson3_NSAID_or_no_ex"
+1018              ','
+1019                 "indInflamMarker_DMARD"
+1020              ','
+1021                 "indInflamMarker_NSAID_or_no_expo"
+1022              ','
+1023                 "indRxNSAID_DMARD"
+1024              ','
+1025                 "indRxNSAID_NSAID_or_no_exposure"
+1026              ','
+1027                 "indRxHtn_DMARD"
+1028              ','
+1029                 "indRxHtn_NSAID_or_no_exposure"
+1030              ','
+1031                 "indRxNarcotics_DMARD"
+1032              ','
+1033                 "indRxNarcotics_NSAID_or_no_expos"
+1034              ','
+1035                 "indRxFungus_DMARD"
+1036              ','
+1037                 "indRxFungus_NSAID_or_no_exposure"
+1038              ','
+1039                 "indRxOP_bisphosp_DMARD"
+18                                                                  The SAS System                                        10:34 Friday, April 27, 2018
 
-1039              ','
-1040                 "indRxOP_bisphosp_NSAID_or_no_exp"
-1041              ','
-1042                 "indRxThiazide_DMARD"
-1043              ','
-1044                 "indRxThiazide_NSAID_or_no_exposu"
-1045              ','
-1046                 "indRxAnticoagulant_DMARD"
-1047              ','
-1048                 "indRxAnticoagulant_NSAID_or_no_e"
-1049              ','
-1050                 "indRxAntibiotics_DMARD"
-1051              ','
-1052                 "indRxAntibiotics_NSAID_or_no_exp"
-1053              ','
-1054                 "countIPAdmits12mPrior_DMARD"
-1055              ','
-1056                 "countIPAdmits12mPrior_NSAID_or_n"
-1057              ','
-1058                 "indERVisit12mPrior_DMARD"
-1059              ','
-1060                 "indERVisit12mPrior_NSAID_or_no_e"
-1061              ','
-1062                 "countAVRheum12mPrior_DMARD"
-1063              ','
-1064                 "countAVRheum12mPrior_NSAID_or_no"
-1065              ','
-1066                 "indRxBiologics_DMARD"
-1067              ','
-1068                 "indRxBiologics_NSAID_or_no_expos"
-1069              ','
-1070                 "indOutpatientInfection_DMARD"
-1071              ','
-1072                 "indOutpatientInfection_NSAID_or"
-1073              ','
-1074                 "_LNLIKE_"
-1075              ','
-1076                 "_ESTTYPE_"
-1077              ;
-1078            end;
-1079          set  WORK.PSBETAS   end=EFIEOD;
-1080              format database $10. ;
-1081              format _LINK_ $8. ;
-1082              format _TYPE_ $8. ;
-1083              format _STATUS_ $11. ;
-1084              format _NAME_ $9. ;
-1085              format Intercept_DMARD best12. ;
-1086              format Intercept_NSAID_or_no_exposure best12. ;
-1087              format catAge19N29_DMARD best12. ;
-1088              format catAge19N29_NSAID_or_no_exposure best12. ;
-1089              format catAge30N39_DMARD best12. ;
-1090              format catAge30N39_NSAID_or_no_exposure best12. ;
-1091              format catAge40N49_DMARD best12. ;
-1092              format catAge40N49_NSAID_or_no_exposure best12. ;
-1093              format catAge50N59_DMARD best12. ;
-1094              format catAge50N59_NSAID_or_no_exposure best12. ;
-1095              format catAge60N69_DMARD best12. ;
-1096              format catAge60N69_NSAID_or_no_exposure best12. ;
-1097              format SEXF_DMARD best12. ;
-1098              format SEXF_NSAID_or_no_exposure best12. ;
-1099              format indAortInsuffRegurg_DMARD best12. ;
-1100              format indAortInsuffRegurg_NSAID_or_no best12. ;
-1101              format indVertFrac_DMARD best12. ;
-1102              format indVertFrac_NSAID_or_no_exposure best12. ;
-1103              format indCrohnsDis_DMARD best12. ;
-1104              format indCrohnsDis_NSAID_or_no_exposur best12. ;
-1105              format indHematCa_DMARD best12. ;
-1106              format indHematCa_NSAID_or_no_exposure best12. ;
-1107              format indHospInf_DMARD best12. ;
-1108              format indHospInf_NSAID_or_no_exposure best12. ;
-1109              format indIgANeph_DMARD best12. ;
-1110              format indIgANeph_NSAID_or_no_exposure best12. ;
-19                                                                  The SAS System                                      12:11 Thursday, April 19, 2018
+1040              ','
+1041                 "indRxOP_bisphosp_NSAID_or_no_exp"
+1042              ','
+1043                 "indRxThiazide_DMARD"
+1044              ','
+1045                 "indRxThiazide_NSAID_or_no_exposu"
+1046              ','
+1047                 "indRxAnticoagulant_DMARD"
+1048              ','
+1049                 "indRxAnticoagulant_NSAID_or_no_e"
+1050              ','
+1051                 "indRxAntibiotics_DMARD"
+1052              ','
+1053                 "indRxAntibiotics_NSAID_or_no_exp"
+1054              ','
+1055                 "countIPAdmits12mPrior_DMARD"
+1056              ','
+1057                 "countIPAdmits12mPrior_NSAID_or_n"
+1058              ','
+1059                 "indERVisit12mPrior_DMARD"
+1060              ','
+1061                 "indERVisit12mPrior_NSAID_or_no_e"
+1062              ','
+1063                 "countAVRheum12mPrior_DMARD"
+1064              ','
+1065                 "countAVRheum12mPrior_NSAID_or_no"
+1066              ','
+1067                 "indRxBiologics_DMARD"
+1068              ','
+1069                 "indRxBiologics_NSAID_or_no_expos"
+1070              ','
+1071                 "indOutpatientInfection_DMARD"
+1072              ','
+1073                 "indOutpatientInfection_NSAID_or"
+1074              ','
+1075                 "_LNLIKE_"
+1076              ','
+1077                 "_ESTTYPE_"
+1078              ;
+1079            end;
+1080          set  WORK.PSBETAS   end=EFIEOD;
+1081              format database $10. ;
+1082              format _LINK_ $8. ;
+1083              format _TYPE_ $8. ;
+1084              format _STATUS_ $11. ;
+1085              format _NAME_ $9. ;
+1086              format Intercept_DMARD best12. ;
+1087              format Intercept_NSAID_or_no_exposure best12. ;
+1088              format catAge19N29_DMARD best12. ;
+1089              format catAge19N29_NSAID_or_no_exposure best12. ;
+1090              format catAge30N39_DMARD best12. ;
+1091              format catAge30N39_NSAID_or_no_exposure best12. ;
+1092              format catAge40N49_DMARD best12. ;
+1093              format catAge40N49_NSAID_or_no_exposure best12. ;
+1094              format catAge50N59_DMARD best12. ;
+1095              format catAge50N59_NSAID_or_no_exposure best12. ;
+1096              format catAge60N69_DMARD best12. ;
+1097              format catAge60N69_NSAID_or_no_exposure best12. ;
+1098              format SEXF_DMARD best12. ;
+1099              format SEXF_NSAID_or_no_exposure best12. ;
+1100              format indAortInsuffRegurg_DMARD best12. ;
+1101              format indAortInsuffRegurg_NSAID_or_no best12. ;
+1102              format indVertFrac_DMARD best12. ;
+1103              format indVertFrac_NSAID_or_no_exposure best12. ;
+1104              format indCrohnsDis_DMARD best12. ;
+1105              format indCrohnsDis_NSAID_or_no_exposur best12. ;
+1106              format indHematCa_DMARD best12. ;
+1107              format indHematCa_NSAID_or_no_exposure best12. ;
+1108              format indHospInf_DMARD best12. ;
+1109              format indHospInf_NSAID_or_no_exposure best12. ;
+1110              format indIgANeph_DMARD best12. ;
+1111              format indIgANeph_NSAID_or_no_exposure best12. ;
+19                                                                  The SAS System                                        10:34 Friday, April 27, 2018
 
-1111              format indNonVertOsFrac_DMARD best12. ;
-1112              format indNonVertOsFrac_NSAID_or_no_exp best12. ;
-1113              format indOppInf_DMARD best12. ;
-1114              format indOppInf_NSAID_or_no_exposure best12. ;
-1115              format indPsoriasis_DMARD best12. ;
-1116              format indPsoriasis_NSAID_or_no_exposur best12. ;
-1117              format indPSA_DMARD best12. ;
-1118              format indPSA_NSAID_or_no_exposure best12. ;
-1119              format indRestrictLungDis_DMARD best12. ;
-1120              format indRestrictLungDis_NSAID_or_no_e best12. ;
-1121              format indSolidCa_DMARD best12. ;
-1122              format indSolidCa_NSAID_or_no_exposure best12. ;
-1123              format indUlcerColitis_DMARD best12. ;
-1124              format indUlcerColitis_NSAID_or_no_expo best12. ;
-1125              format indUveitis_DMARD best12. ;
-1126              format indUveitis_NSAID_or_no_exposure best12. ;
-1127              format indDiabetes_DMARD best12. ;
-1128              format indDiabetes_NSAID_or_no_exposure best12. ;
-1129              format indHT_DMARD best12. ;
-1130              format indHT_NSAID_or_no_exposure best12. ;
-1131              format indMetabSyn_DMARD best12. ;
-1132              format indMetabSyn_NSAID_or_no_exposure best12. ;
-1133              format indNAFattyLiverDis_DMARD best12. ;
-1134              format indNAFattyLiverDis_NSAID_or_no_e best12. ;
-1135              format indCOPDEmphysema_DMARD best12. ;
-1136              format indCOPDEmphysema_NSAID_or_no_exp best12. ;
-1137              format meanPredEqDoseCatHigh__10__mg_d_ best12. ;
-1138              format meanPredEqDoseCatHigh__10__mg_d2 best12. ;
-1139              format meanPredEqDoseCatLow___2_5_mg_d_ best12. ;
-1140              format meanPredEqDoseCatLow___2_5_mg_d2 best12. ;
-1141              format meanPredEqDoseCatMedium_High__5_ best12. ;
-1142              format meanPredEqDoseCatMedium_High__52 best12. ;
-1143              format meanPredEqDoseCatMedium_Low__2_5 best12. ;
-1144              format meanPredEqDoseCatMedium_Low__2_2 best12. ;
-1145              format quartileCharlson3_DMARD best12. ;
-1146              format quartileCharlson3_NSAID_or_no_ex best12. ;
-1147              format indInflamMarker_DMARD best12. ;
-1148              format indInflamMarker_NSAID_or_no_expo best12. ;
-1149              format indRxNSAID_DMARD best12. ;
-1150              format indRxNSAID_NSAID_or_no_exposure best12. ;
-1151              format indRxHtn_DMARD best12. ;
-1152              format indRxHtn_NSAID_or_no_exposure best12. ;
-1153              format indRxNarcotics_DMARD best12. ;
-1154              format indRxNarcotics_NSAID_or_no_expos best12. ;
-1155              format indRxFungus_DMARD best12. ;
-1156              format indRxFungus_NSAID_or_no_exposure best12. ;
-1157              format indRxOP_bisphosp_DMARD best12. ;
-1158              format indRxOP_bisphosp_NSAID_or_no_exp best12. ;
-1159              format indRxThiazide_DMARD best12. ;
-1160              format indRxThiazide_NSAID_or_no_exposu best12. ;
-1161              format indRxAnticoagulant_DMARD best12. ;
-1162              format indRxAnticoagulant_NSAID_or_no_e best12. ;
-1163              format indRxAntibiotics_DMARD best12. ;
-1164              format indRxAntibiotics_NSAID_or_no_exp best12. ;
-1165              format countIPAdmits12mPrior_DMARD best12. ;
-1166              format countIPAdmits12mPrior_NSAID_or_n best12. ;
-1167              format indERVisit12mPrior_DMARD best12. ;
-1168              format indERVisit12mPrior_NSAID_or_no_e best12. ;
-1169              format countAVRheum12mPrior_DMARD best12. ;
-1170              format countAVRheum12mPrior_NSAID_or_no best12. ;
-1171              format indRxBiologics_DMARD best12. ;
-1172              format indRxBiologics_NSAID_or_no_expos best12. ;
-1173              format indOutpatientInfection_DMARD best12. ;
-1174              format indOutpatientInfection_NSAID_or best12. ;
-1175              format _LNLIKE_ best12. ;
-1176              format _ESTTYPE_ $4. ;
-1177            do;
-1178              EFIOUT + 1;
-1179              put database $ @;
-1180              put _LINK_ $ @;
-1181              put _TYPE_ $ @;
-1182              put _STATUS_ $ @;
-20                                                                  The SAS System                                      12:11 Thursday, April 19, 2018
+1112              format indNonVertOsFrac_DMARD best12. ;
+1113              format indNonVertOsFrac_NSAID_or_no_exp best12. ;
+1114              format indOppInf_DMARD best12. ;
+1115              format indOppInf_NSAID_or_no_exposure best12. ;
+1116              format indPsoriasis_DMARD best12. ;
+1117              format indPsoriasis_NSAID_or_no_exposur best12. ;
+1118              format indPSA_DMARD best12. ;
+1119              format indPSA_NSAID_or_no_exposure best12. ;
+1120              format indRestrictLungDis_DMARD best12. ;
+1121              format indRestrictLungDis_NSAID_or_no_e best12. ;
+1122              format indSolidCa_DMARD best12. ;
+1123              format indSolidCa_NSAID_or_no_exposure best12. ;
+1124              format indUlcerColitis_DMARD best12. ;
+1125              format indUlcerColitis_NSAID_or_no_expo best12. ;
+1126              format indUveitis_DMARD best12. ;
+1127              format indUveitis_NSAID_or_no_exposure best12. ;
+1128              format indDiabetes_DMARD best12. ;
+1129              format indDiabetes_NSAID_or_no_exposure best12. ;
+1130              format indHT_DMARD best12. ;
+1131              format indHT_NSAID_or_no_exposure best12. ;
+1132              format indMetabSyn_DMARD best12. ;
+1133              format indMetabSyn_NSAID_or_no_exposure best12. ;
+1134              format indNAFattyLiverDis_DMARD best12. ;
+1135              format indNAFattyLiverDis_NSAID_or_no_e best12. ;
+1136              format indCOPDEmphysema_DMARD best12. ;
+1137              format indCOPDEmphysema_NSAID_or_no_exp best12. ;
+1138              format meanPredEqDoseCatHigh__10__mg_d_ best12. ;
+1139              format meanPredEqDoseCatHigh__10__mg_d2 best12. ;
+1140              format meanPredEqDoseCatLow___2_5_mg_d_ best12. ;
+1141              format meanPredEqDoseCatLow___2_5_mg_d2 best12. ;
+1142              format meanPredEqDoseCatMedium_High__5_ best12. ;
+1143              format meanPredEqDoseCatMedium_High__52 best12. ;
+1144              format meanPredEqDoseCatMedium_Low__2_5 best12. ;
+1145              format meanPredEqDoseCatMedium_Low__2_2 best12. ;
+1146              format quartileCharlson3_DMARD best12. ;
+1147              format quartileCharlson3_NSAID_or_no_ex best12. ;
+1148              format indInflamMarker_DMARD best12. ;
+1149              format indInflamMarker_NSAID_or_no_expo best12. ;
+1150              format indRxNSAID_DMARD best12. ;
+1151              format indRxNSAID_NSAID_or_no_exposure best12. ;
+1152              format indRxHtn_DMARD best12. ;
+1153              format indRxHtn_NSAID_or_no_exposure best12. ;
+1154              format indRxNarcotics_DMARD best12. ;
+1155              format indRxNarcotics_NSAID_or_no_expos best12. ;
+1156              format indRxFungus_DMARD best12. ;
+1157              format indRxFungus_NSAID_or_no_exposure best12. ;
+1158              format indRxOP_bisphosp_DMARD best12. ;
+1159              format indRxOP_bisphosp_NSAID_or_no_exp best12. ;
+1160              format indRxThiazide_DMARD best12. ;
+1161              format indRxThiazide_NSAID_or_no_exposu best12. ;
+1162              format indRxAnticoagulant_DMARD best12. ;
+1163              format indRxAnticoagulant_NSAID_or_no_e best12. ;
+1164              format indRxAntibiotics_DMARD best12. ;
+1165              format indRxAntibiotics_NSAID_or_no_exp best12. ;
+1166              format countIPAdmits12mPrior_DMARD best12. ;
+1167              format countIPAdmits12mPrior_NSAID_or_n best12. ;
+1168              format indERVisit12mPrior_DMARD best12. ;
+1169              format indERVisit12mPrior_NSAID_or_no_e best12. ;
+1170              format countAVRheum12mPrior_DMARD best12. ;
+1171              format countAVRheum12mPrior_NSAID_or_no best12. ;
+1172              format indRxBiologics_DMARD best12. ;
+1173              format indRxBiologics_NSAID_or_no_expos best12. ;
+1174              format indOutpatientInfection_DMARD best12. ;
+1175              format indOutpatientInfection_NSAID_or best12. ;
+1176              format _LNLIKE_ best12. ;
+1177              format _ESTTYPE_ $4. ;
+1178            do;
+1179              EFIOUT + 1;
+1180              put database $ @;
+1181              put _LINK_ $ @;
+1182              put _TYPE_ $ @;
+1183              put _STATUS_ $ @;
+20                                                                  The SAS System                                        10:34 Friday, April 27, 2018
 
-1183              put _NAME_ $ @;
-1184              put Intercept_DMARD @;
-1185              put Intercept_NSAID_or_no_exposure @;
-1186              put catAge19N29_DMARD @;
-1187              put catAge19N29_NSAID_or_no_exposure @;
-1188              put catAge30N39_DMARD @;
-1189              put catAge30N39_NSAID_or_no_exposure @;
-1190              put catAge40N49_DMARD @;
-1191              put catAge40N49_NSAID_or_no_exposure @;
-1192              put catAge50N59_DMARD @;
-1193              put catAge50N59_NSAID_or_no_exposure @;
-1194              put catAge60N69_DMARD @;
-1195              put catAge60N69_NSAID_or_no_exposure @;
-1196              put SEXF_DMARD @;
-1197              put SEXF_NSAID_or_no_exposure @;
-1198              put indAortInsuffRegurg_DMARD @;
-1199              put indAortInsuffRegurg_NSAID_or_no @;
-1200              put indVertFrac_DMARD @;
-1201              put indVertFrac_NSAID_or_no_exposure @;
-1202              put indCrohnsDis_DMARD @;
-1203              put indCrohnsDis_NSAID_or_no_exposur @;
-1204              put indHematCa_DMARD @;
-1205              put indHematCa_NSAID_or_no_exposure @;
-1206              put indHospInf_DMARD @;
-1207              put indHospInf_NSAID_or_no_exposure @;
-1208              put indIgANeph_DMARD @;
-1209              put indIgANeph_NSAID_or_no_exposure @;
-1210              put indNonVertOsFrac_DMARD @;
-1211              put indNonVertOsFrac_NSAID_or_no_exp @;
-1212              put indOppInf_DMARD @;
-1213              put indOppInf_NSAID_or_no_exposure @;
-1214              put indPsoriasis_DMARD @;
-1215              put indPsoriasis_NSAID_or_no_exposur @;
-1216              put indPSA_DMARD @;
-1217              put indPSA_NSAID_or_no_exposure @;
-1218              put indRestrictLungDis_DMARD @;
-1219              put indRestrictLungDis_NSAID_or_no_e @;
-1220              put indSolidCa_DMARD @;
-1221              put indSolidCa_NSAID_or_no_exposure @;
-1222              put indUlcerColitis_DMARD @;
-1223              put indUlcerColitis_NSAID_or_no_expo @;
-1224              put indUveitis_DMARD @;
-1225              put indUveitis_NSAID_or_no_exposure @;
-1226              put indDiabetes_DMARD @;
-1227              put indDiabetes_NSAID_or_no_exposure @;
-1228              put indHT_DMARD @;
-1229              put indHT_NSAID_or_no_exposure @;
-1230              put indMetabSyn_DMARD @;
-1231              put indMetabSyn_NSAID_or_no_exposure @;
-1232              put indNAFattyLiverDis_DMARD @;
-1233              put indNAFattyLiverDis_NSAID_or_no_e @;
-1234              put indCOPDEmphysema_DMARD @;
-1235              put indCOPDEmphysema_NSAID_or_no_exp @;
-1236              put meanPredEqDoseCatHigh__10__mg_d_ @;
-1237              put meanPredEqDoseCatHigh__10__mg_d2 @;
-1238              put meanPredEqDoseCatLow___2_5_mg_d_ @;
-1239              put meanPredEqDoseCatLow___2_5_mg_d2 @;
-1240              put meanPredEqDoseCatMedium_High__5_ @;
-1241              put meanPredEqDoseCatMedium_High__52 @;
-1242              put meanPredEqDoseCatMedium_Low__2_5 @;
-1243              put meanPredEqDoseCatMedium_Low__2_2 @;
-1244              put quartileCharlson3_DMARD @;
-1245              put quartileCharlson3_NSAID_or_no_ex @;
-1246              put indInflamMarker_DMARD @;
-1247              put indInflamMarker_NSAID_or_no_expo @;
-1248              put indRxNSAID_DMARD @;
-1249              put indRxNSAID_NSAID_or_no_exposure @;
-1250              put indRxHtn_DMARD @;
-1251              put indRxHtn_NSAID_or_no_exposure @;
-1252              put indRxNarcotics_DMARD @;
-1253              put indRxNarcotics_NSAID_or_no_expos @;
-1254              put indRxFungus_DMARD @;
-21                                                                  The SAS System                                      12:11 Thursday, April 19, 2018
+1184              put _NAME_ $ @;
+1185              put Intercept_DMARD @;
+1186              put Intercept_NSAID_or_no_exposure @;
+1187              put catAge19N29_DMARD @;
+1188              put catAge19N29_NSAID_or_no_exposure @;
+1189              put catAge30N39_DMARD @;
+1190              put catAge30N39_NSAID_or_no_exposure @;
+1191              put catAge40N49_DMARD @;
+1192              put catAge40N49_NSAID_or_no_exposure @;
+1193              put catAge50N59_DMARD @;
+1194              put catAge50N59_NSAID_or_no_exposure @;
+1195              put catAge60N69_DMARD @;
+1196              put catAge60N69_NSAID_or_no_exposure @;
+1197              put SEXF_DMARD @;
+1198              put SEXF_NSAID_or_no_exposure @;
+1199              put indAortInsuffRegurg_DMARD @;
+1200              put indAortInsuffRegurg_NSAID_or_no @;
+1201              put indVertFrac_DMARD @;
+1202              put indVertFrac_NSAID_or_no_exposure @;
+1203              put indCrohnsDis_DMARD @;
+1204              put indCrohnsDis_NSAID_or_no_exposur @;
+1205              put indHematCa_DMARD @;
+1206              put indHematCa_NSAID_or_no_exposure @;
+1207              put indHospInf_DMARD @;
+1208              put indHospInf_NSAID_or_no_exposure @;
+1209              put indIgANeph_DMARD @;
+1210              put indIgANeph_NSAID_or_no_exposure @;
+1211              put indNonVertOsFrac_DMARD @;
+1212              put indNonVertOsFrac_NSAID_or_no_exp @;
+1213              put indOppInf_DMARD @;
+1214              put indOppInf_NSAID_or_no_exposure @;
+1215              put indPsoriasis_DMARD @;
+1216              put indPsoriasis_NSAID_or_no_exposur @;
+1217              put indPSA_DMARD @;
+1218              put indPSA_NSAID_or_no_exposure @;
+1219              put indRestrictLungDis_DMARD @;
+1220              put indRestrictLungDis_NSAID_or_no_e @;
+1221              put indSolidCa_DMARD @;
+1222              put indSolidCa_NSAID_or_no_exposure @;
+1223              put indUlcerColitis_DMARD @;
+1224              put indUlcerColitis_NSAID_or_no_expo @;
+1225              put indUveitis_DMARD @;
+1226              put indUveitis_NSAID_or_no_exposure @;
+1227              put indDiabetes_DMARD @;
+1228              put indDiabetes_NSAID_or_no_exposure @;
+1229              put indHT_DMARD @;
+1230              put indHT_NSAID_or_no_exposure @;
+1231              put indMetabSyn_DMARD @;
+1232              put indMetabSyn_NSAID_or_no_exposure @;
+1233              put indNAFattyLiverDis_DMARD @;
+1234              put indNAFattyLiverDis_NSAID_or_no_e @;
+1235              put indCOPDEmphysema_DMARD @;
+1236              put indCOPDEmphysema_NSAID_or_no_exp @;
+1237              put meanPredEqDoseCatHigh__10__mg_d_ @;
+1238              put meanPredEqDoseCatHigh__10__mg_d2 @;
+1239              put meanPredEqDoseCatLow___2_5_mg_d_ @;
+1240              put meanPredEqDoseCatLow___2_5_mg_d2 @;
+1241              put meanPredEqDoseCatMedium_High__5_ @;
+1242              put meanPredEqDoseCatMedium_High__52 @;
+1243              put meanPredEqDoseCatMedium_Low__2_5 @;
+1244              put meanPredEqDoseCatMedium_Low__2_2 @;
+1245              put quartileCharlson3_DMARD @;
+1246              put quartileCharlson3_NSAID_or_no_ex @;
+1247              put indInflamMarker_DMARD @;
+1248              put indInflamMarker_NSAID_or_no_expo @;
+1249              put indRxNSAID_DMARD @;
+1250              put indRxNSAID_NSAID_or_no_exposure @;
+1251              put indRxHtn_DMARD @;
+1252              put indRxHtn_NSAID_or_no_exposure @;
+1253              put indRxNarcotics_DMARD @;
+1254              put indRxNarcotics_NSAID_or_no_expos @;
+1255              put indRxFungus_DMARD @;
+21                                                                  The SAS System                                        10:34 Friday, April 27, 2018
 
-1255              put indRxFungus_NSAID_or_no_exposure @;
-1256              put indRxOP_bisphosp_DMARD @;
-1257              put indRxOP_bisphosp_NSAID_or_no_exp @;
-1258              put indRxThiazide_DMARD @;
-1259              put indRxThiazide_NSAID_or_no_exposu @;
-1260              put indRxAnticoagulant_DMARD @;
-1261              put indRxAnticoagulant_NSAID_or_no_e @;
-1262              put indRxAntibiotics_DMARD @;
-1263              put indRxAntibiotics_NSAID_or_no_exp @;
-1264              put countIPAdmits12mPrior_DMARD @;
-1265              put countIPAdmits12mPrior_NSAID_or_n @;
-1266              put indERVisit12mPrior_DMARD @;
-1267              put indERVisit12mPrior_NSAID_or_no_e @;
-1268              put countAVRheum12mPrior_DMARD @;
-1269              put countAVRheum12mPrior_NSAID_or_no @;
-1270              put indRxBiologics_DMARD @;
-1271              put indRxBiologics_NSAID_or_no_expos @;
-1272              put indOutpatientInfection_DMARD @;
-1273              put indOutpatientInfection_NSAID_or @;
-1274              put _LNLIKE_ @;
-1275              put _ESTTYPE_ $ ;
-1276              ;
-1277            end;
-1278           if _ERROR_ then call symputx('_EFIERR_',1);  /* set ERROR detection macro variable */
-1279           if EFIEOD then call symputx('_EFIREC_',EFIOUT);
-1280           run;
+1256              put indRxFungus_NSAID_or_no_exposure @;
+1257              put indRxOP_bisphosp_DMARD @;
+1258              put indRxOP_bisphosp_NSAID_or_no_exp @;
+1259              put indRxThiazide_DMARD @;
+1260              put indRxThiazide_NSAID_or_no_exposu @;
+1261              put indRxAnticoagulant_DMARD @;
+1262              put indRxAnticoagulant_NSAID_or_no_e @;
+1263              put indRxAntibiotics_DMARD @;
+1264              put indRxAntibiotics_NSAID_or_no_exp @;
+1265              put countIPAdmits12mPrior_DMARD @;
+1266              put countIPAdmits12mPrior_NSAID_or_n @;
+1267              put indERVisit12mPrior_DMARD @;
+1268              put indERVisit12mPrior_NSAID_or_no_e @;
+1269              put countAVRheum12mPrior_DMARD @;
+1270              put countAVRheum12mPrior_NSAID_or_no @;
+1271              put indRxBiologics_DMARD @;
+1272              put indRxBiologics_NSAID_or_no_expos @;
+1273              put indOutpatientInfection_DMARD @;
+1274              put indOutpatientInfection_NSAID_or @;
+1275              put _LNLIKE_ @;
+1276              put _ESTTYPE_ $ ;
+1277              ;
+1278            end;
+1279           if _ERROR_ then call symputx('_EFIERR_',1);  /* set ERROR detection macro variable */
+1280           if EFIEOD then call symputx('_EFIREC_',EFIOUT);
+1281           run;
 
 NOTE: The file 'data\processed\psBetas.csv' is:
       Filename=U:\studies\AS\pgms\bchan\data\processed\psBetas.csv,
       RECFM=V,LRECL=32767,File Size (bytes)=0,
-      Last Modified=19Apr2018:12:12:27,
-      Create Time=19Apr2018:12:12:27
+      Last Modified=27Apr2018:10:35:17,
+      Create Time=27Apr2018:10:35:17
 
 NOTE: 4 records were written to the file 'data\processed\psBetas.csv'.
       The minimum record length was 1215.
       The maximum record length was 2458.
 NOTE: There were 3 observations read from the data set WORK.PSBETAS.
 NOTE: DATA statement used (Total process time):
-      real time           0.04 seconds
+      real time           0.03 seconds
       cpu time            0.03 seconds
       
 
@@ -5153,320 +5153,320 @@ NOTE: DATA statement used (Total process time):
   
 NOTE: "data\processed\psBetas.csv" file was successfully created.
 NOTE: PROCEDURE EXPORT used (Total process time):
-      real time           0.31 seconds
+      real time           0.32 seconds
       cpu time            0.20 seconds
       
 
-1281       proc export
-1282         data = Work.psDeidentified
-1283         outfile = "data\processed\psDeidentified.csv"
-1284         dbms = csv
-1285         replace;
-1286         delimiter = ",";
-1287       run;
+1282       proc export
+1283         data = Work.psDeidentified
+1284         outfile = "data\processed\psDeidentified.csv"
+1285         dbms = csv
+1286         replace;
+1287         delimiter = ",";
+1288       run;
 
-1288        /**********************************************************************
-1289        *   PRODUCT:   SAS
-1290        *   VERSION:   9.4
-1291        *   CREATOR:   External File Interface
-1292        *   DATE:      19APR18
-1293        *   DESC:      Generated SAS Datastep Code
-1294        *   TEMPLATE SOURCE:  (None Specified.)
-1295        ***********************************************************************/
-1296           data _null_;
-1297           %let _EFIERR_ = 0; /* set the ERROR detection macro variable */
-1298           %let _EFIREC_ = 0;     /* clear export record count macro variable */
-1299           file 'data\processed\psDeidentified.csv' delimiter=',' DSD DROPOVER lrecl=32767;
-1300           if _n_ = 1 then        /* write column names or labels */
-22                                                                  The SAS System                                      12:11 Thursday, April 19, 2018
+1289        /**********************************************************************
+1290        *   PRODUCT:   SAS
+1291        *   VERSION:   9.4
+1292        *   CREATOR:   External File Interface
+1293        *   DATE:      27APR18
+1294        *   DESC:      Generated SAS Datastep Code
+1295        *   TEMPLATE SOURCE:  (None Specified.)
+1296        ***********************************************************************/
+1297           data _null_;
+1298           %let _EFIERR_ = 0; /* set the ERROR detection macro variable */
+1299           %let _EFIREC_ = 0;     /* clear export record count macro variable */
+1300           file 'data\processed\psDeidentified.csv' delimiter=',' DSD DROPOVER lrecl=32767;
+1301           if _n_ = 1 then        /* write column names or labels */
+22                                                                  The SAS System                                        10:34 Friday, April 27, 2018
 
-1301            do;
-1302              put
-1303                 "model"
-1304              ','
-1305                 "database"
-1306              ','
-1307                 "exposure"
-1308              ','
-1309                 "_LEVEL_"
-1310              ','
-1311                 "ps"
-1312              ','
-1313                 "indCommonSupport"
-1314              ','
-1315                 "iptw"
-1316              ','
-1317                 "marginalPS"
-1318              ','
-1319                 "iptwStabilized"
-1320              ','
-1321                 "age"
-1322              ','
-1323                 "catAge"
-1324              ','
-1325                 "SEX"
-1326              ','
-1327                 "indAmyloidosis"
-1328              ','
-1329                 "indAortInsuffRegurg"
-1330              ','
-1331                 "indApicalPulmFib"
-1332              ','
-1333                 "indCaudaEquina"
-1334              ','
-1335                 "indVertFrac"
-1336              ','
-1337                 "indConductBlock"
-1338              ','
-1339                 "indCrohnsDis"
-1340              ','
-1341                 "indHematCa"
-1342              ','
-1343                 "indHospInf"
-1344              ','
-1345                 "indIgANeph"
-1346              ','
-1347                 "indInterstLungDis"
-1348              ','
-1349                 "indMI"
-1350              ','
-1351                 "indNephSyn"
-1352              ','
-1353                 "indNMSC"
-1354              ','
-1355                 "indNonVertOsFrac"
-1356              ','
-1357                 "indOppInf"
-1358              ','
-1359                 "indPsoriasis"
-1360              ','
-1361                 "indPSA"
-1362              ','
-1363                 "indRestrictLungDis"
-1364              ','
-1365                 "indSolidCa"
-1366              ','
-1367                 "indSpinalCordComp"
-1368              ','
-1369                 "indUlcerColitis"
-1370              ','
-1371                 "indUveitis"
-1372              ','
-23                                                                  The SAS System                                      12:11 Thursday, April 19, 2018
+1302            do;
+1303              put
+1304                 "model"
+1305              ','
+1306                 "database"
+1307              ','
+1308                 "exposure"
+1309              ','
+1310                 "_LEVEL_"
+1311              ','
+1312                 "ps"
+1313              ','
+1314                 "indCommonSupport"
+1315              ','
+1316                 "iptw"
+1317              ','
+1318                 "marginalPS"
+1319              ','
+1320                 "iptwStabilized"
+1321              ','
+1322                 "age"
+1323              ','
+1324                 "catAge"
+1325              ','
+1326                 "SEX"
+1327              ','
+1328                 "indAmyloidosis"
+1329              ','
+1330                 "indAortInsuffRegurg"
+1331              ','
+1332                 "indApicalPulmFib"
+1333              ','
+1334                 "indCaudaEquina"
+1335              ','
+1336                 "indVertFrac"
+1337              ','
+1338                 "indConductBlock"
+1339              ','
+1340                 "indCrohnsDis"
+1341              ','
+1342                 "indHematCa"
+1343              ','
+1344                 "indHospInf"
+1345              ','
+1346                 "indIgANeph"
+1347              ','
+1348                 "indInterstLungDis"
+1349              ','
+1350                 "indMI"
+1351              ','
+1352                 "indNephSyn"
+1353              ','
+1354                 "indNMSC"
+1355              ','
+1356                 "indNonVertOsFrac"
+1357              ','
+1358                 "indOppInf"
+1359              ','
+1360                 "indPsoriasis"
+1361              ','
+1362                 "indPSA"
+1363              ','
+1364                 "indRestrictLungDis"
+1365              ','
+1366                 "indSolidCa"
+1367              ','
+1368                 "indSpinalCordComp"
+1369              ','
+1370                 "indUlcerColitis"
+1371              ','
+1372                 "indUveitis"
+1373              ','
+23                                                                  The SAS System                                        10:34 Friday, April 27, 2018
 
-1373                 "indDiabetes"
-1374              ','
-1375                 "indHT"
-1376              ','
-1377                 "indMetabSyn"
-1378              ','
-1379                 "indNAFattyLiverDis"
-1380              ','
-1381                 "indCOPDEmphysema"
-1382              ','
-1383                 "meanPredEqDoseCat"
-1384              ','
-1385                 "charlson"
-1386              ','
-1387                 "quartileCharlson"
-1388              ','
-1389                 "indInflamMarker"
-1390              ','
-1391                 "indRxNSAID"
-1392              ','
-1393                 "indRxHtn"
-1394              ','
-1395                 "indRxNarcotics"
-1396              ','
-1397                 "indRxFungus"
-1398              ','
-1399                 "indRxOP_bisphosp"
-1400              ','
-1401                 "indRxThiazide"
-1402              ','
-1403                 "indRxAnticoagulant"
-1404              ','
-1405                 "indIPAdmit12mPrior"
-1406              ','
-1407                 "indRxAntibiotics"
-1408              ','
-1409                 "countIPAdmits12mPrior"
-1410              ','
-1411                 "indERVisit12mPrior"
-1412              ','
-1413                 "ciras"
-1414              ','
-1415                 "quartileCIRAS"
-1416              ','
-1417                 "countAVPhys12mPrior"
-1418              ','
-1419                 "quartileAVPhys12mPrior"
-1420              ','
-1421                 "countAVRheum12mPrior"
-1422              ','
-1423                 "quartileAVRheum12mPrior"
-1424              ','
-1425                 "indAVRheum12mPrior"
-1426              ','
-1427                 "indRxBiologics"
-1428              ','
-1429                 "indOutpatientInfection"
-1430              ;
-1431            end;
-1432          set  WORK.PSDEIDENTIFIED   end=EFIEOD;
-1433              format model $16. ;
-1434              format database $10. ;
-1435              format exposure $20. ;
-1436              format _LEVEL_ $20. ;
-1437              format ps best12. ;
-1438              format indCommonSupport best12. ;
-1439              format iptw best12. ;
-1440              format marginalPS best12. ;
-1441              format iptwStabilized best12. ;
-1442              format age best12. ;
-1443              format catAge $5. ;
-1444              format SEX $2. ;
-24                                                                  The SAS System                                      12:11 Thursday, April 19, 2018
+1374                 "indDiabetes"
+1375              ','
+1376                 "indHT"
+1377              ','
+1378                 "indMetabSyn"
+1379              ','
+1380                 "indNAFattyLiverDis"
+1381              ','
+1382                 "indCOPDEmphysema"
+1383              ','
+1384                 "meanPredEqDoseCat"
+1385              ','
+1386                 "charlson"
+1387              ','
+1388                 "quartileCharlson"
+1389              ','
+1390                 "indInflamMarker"
+1391              ','
+1392                 "indRxNSAID"
+1393              ','
+1394                 "indRxHtn"
+1395              ','
+1396                 "indRxNarcotics"
+1397              ','
+1398                 "indRxFungus"
+1399              ','
+1400                 "indRxOP_bisphosp"
+1401              ','
+1402                 "indRxThiazide"
+1403              ','
+1404                 "indRxAnticoagulant"
+1405              ','
+1406                 "indIPAdmit12mPrior"
+1407              ','
+1408                 "indRxAntibiotics"
+1409              ','
+1410                 "countIPAdmits12mPrior"
+1411              ','
+1412                 "indERVisit12mPrior"
+1413              ','
+1414                 "ciras"
+1415              ','
+1416                 "quartileCIRAS"
+1417              ','
+1418                 "countAVPhys12mPrior"
+1419              ','
+1420                 "quartileAVPhys12mPrior"
+1421              ','
+1422                 "countAVRheum12mPrior"
+1423              ','
+1424                 "quartileAVRheum12mPrior"
+1425              ','
+1426                 "indAVRheum12mPrior"
+1427              ','
+1428                 "indRxBiologics"
+1429              ','
+1430                 "indOutpatientInfection"
+1431              ;
+1432            end;
+1433          set  WORK.PSDEIDENTIFIED   end=EFIEOD;
+1434              format model $16. ;
+1435              format database $10. ;
+1436              format exposure $20. ;
+1437              format _LEVEL_ $20. ;
+1438              format ps best12. ;
+1439              format indCommonSupport best12. ;
+1440              format iptw best12. ;
+1441              format marginalPS best12. ;
+1442              format iptwStabilized best12. ;
+1443              format age best12. ;
+1444              format catAge $5. ;
+1445              format SEX $2. ;
+24                                                                  The SAS System                                        10:34 Friday, April 27, 2018
 
-1445              format indAmyloidosis best12. ;
-1446              format indAortInsuffRegurg best12. ;
-1447              format indApicalPulmFib best12. ;
-1448              format indCaudaEquina best12. ;
-1449              format indVertFrac best12. ;
-1450              format indConductBlock best12. ;
-1451              format indCrohnsDis best12. ;
-1452              format indHematCa best12. ;
-1453              format indHospInf best12. ;
-1454              format indIgANeph best12. ;
-1455              format indInterstLungDis best12. ;
-1456              format indMI best12. ;
-1457              format indNephSyn best12. ;
-1458              format indNMSC best12. ;
-1459              format indNonVertOsFrac best12. ;
-1460              format indOppInf best12. ;
-1461              format indPsoriasis best12. ;
-1462              format indPSA best12. ;
-1463              format indRestrictLungDis best12. ;
-1464              format indSolidCa best12. ;
-1465              format indSpinalCordComp best12. ;
-1466              format indUlcerColitis best12. ;
-1467              format indUveitis best12. ;
-1468              format indDiabetes best12. ;
-1469              format indHT best12. ;
-1470              format indMetabSyn best12. ;
-1471              format indNAFattyLiverDis best12. ;
-1472              format indCOPDEmphysema best12. ;
-1473              format meanPredEqDoseCat $23. ;
-1474              format charlson best12. ;
-1475              format quartileCharlson best12. ;
-1476              format indInflamMarker best12. ;
-1477              format indRxNSAID best12. ;
-1478              format indRxHtn best12. ;
-1479              format indRxNarcotics best12. ;
-1480              format indRxFungus best12. ;
-1481              format indRxOP_bisphosp best12. ;
-1482              format indRxThiazide best12. ;
-1483              format indRxAnticoagulant best12. ;
-1484              format indIPAdmit12mPrior best12. ;
-1485              format indRxAntibiotics best12. ;
-1486              format countIPAdmits12mPrior best12. ;
-1487              format indERVisit12mPrior best12. ;
-1488              format ciras best12. ;
-1489              format quartileCIRAS best12. ;
-1490              format countAVPhys12mPrior best12. ;
-1491              format quartileAVPhys12mPrior best12. ;
-1492              format countAVRheum12mPrior best12. ;
-1493              format quartileAVRheum12mPrior best12. ;
-1494              format indAVRheum12mPrior best12. ;
-1495              format indRxBiologics best12. ;
-1496              format indOutpatientInfection best12. ;
-1497            do;
-1498              EFIOUT + 1;
-1499              put model $ @;
-1500              put database $ @;
-1501              put exposure $ @;
-1502              put _LEVEL_ $ @;
-1503              put ps @;
-1504              put indCommonSupport @;
-1505              put iptw @;
-1506              put marginalPS @;
-1507              put iptwStabilized @;
-1508              put age @;
-1509              put catAge $ @;
-1510              put SEX $ @;
-1511              put indAmyloidosis @;
-1512              put indAortInsuffRegurg @;
-1513              put indApicalPulmFib @;
-1514              put indCaudaEquina @;
-1515              put indVertFrac @;
-1516              put indConductBlock @;
-25                                                                  The SAS System                                      12:11 Thursday, April 19, 2018
+1446              format indAmyloidosis best12. ;
+1447              format indAortInsuffRegurg best12. ;
+1448              format indApicalPulmFib best12. ;
+1449              format indCaudaEquina best12. ;
+1450              format indVertFrac best12. ;
+1451              format indConductBlock best12. ;
+1452              format indCrohnsDis best12. ;
+1453              format indHematCa best12. ;
+1454              format indHospInf best12. ;
+1455              format indIgANeph best12. ;
+1456              format indInterstLungDis best12. ;
+1457              format indMI best12. ;
+1458              format indNephSyn best12. ;
+1459              format indNMSC best12. ;
+1460              format indNonVertOsFrac best12. ;
+1461              format indOppInf best12. ;
+1462              format indPsoriasis best12. ;
+1463              format indPSA best12. ;
+1464              format indRestrictLungDis best12. ;
+1465              format indSolidCa best12. ;
+1466              format indSpinalCordComp best12. ;
+1467              format indUlcerColitis best12. ;
+1468              format indUveitis best12. ;
+1469              format indDiabetes best12. ;
+1470              format indHT best12. ;
+1471              format indMetabSyn best12. ;
+1472              format indNAFattyLiverDis best12. ;
+1473              format indCOPDEmphysema best12. ;
+1474              format meanPredEqDoseCat $23. ;
+1475              format charlson best12. ;
+1476              format quartileCharlson best12. ;
+1477              format indInflamMarker best12. ;
+1478              format indRxNSAID best12. ;
+1479              format indRxHtn best12. ;
+1480              format indRxNarcotics best12. ;
+1481              format indRxFungus best12. ;
+1482              format indRxOP_bisphosp best12. ;
+1483              format indRxThiazide best12. ;
+1484              format indRxAnticoagulant best12. ;
+1485              format indIPAdmit12mPrior best12. ;
+1486              format indRxAntibiotics best12. ;
+1487              format countIPAdmits12mPrior best12. ;
+1488              format indERVisit12mPrior best12. ;
+1489              format ciras best12. ;
+1490              format quartileCIRAS best12. ;
+1491              format countAVPhys12mPrior best12. ;
+1492              format quartileAVPhys12mPrior best12. ;
+1493              format countAVRheum12mPrior best12. ;
+1494              format quartileAVRheum12mPrior best12. ;
+1495              format indAVRheum12mPrior best12. ;
+1496              format indRxBiologics best12. ;
+1497              format indOutpatientInfection best12. ;
+1498            do;
+1499              EFIOUT + 1;
+1500              put model $ @;
+1501              put database $ @;
+1502              put exposure $ @;
+1503              put _LEVEL_ $ @;
+1504              put ps @;
+1505              put indCommonSupport @;
+1506              put iptw @;
+1507              put marginalPS @;
+1508              put iptwStabilized @;
+1509              put age @;
+1510              put catAge $ @;
+1511              put SEX $ @;
+1512              put indAmyloidosis @;
+1513              put indAortInsuffRegurg @;
+1514              put indApicalPulmFib @;
+1515              put indCaudaEquina @;
+1516              put indVertFrac @;
+1517              put indConductBlock @;
+25                                                                  The SAS System                                        10:34 Friday, April 27, 2018
 
-1517              put indCrohnsDis @;
-1518              put indHematCa @;
-1519              put indHospInf @;
-1520              put indIgANeph @;
-1521              put indInterstLungDis @;
-1522              put indMI @;
-1523              put indNephSyn @;
-1524              put indNMSC @;
-1525              put indNonVertOsFrac @;
-1526              put indOppInf @;
-1527              put indPsoriasis @;
-1528              put indPSA @;
-1529              put indRestrictLungDis @;
-1530              put indSolidCa @;
-1531              put indSpinalCordComp @;
-1532              put indUlcerColitis @;
-1533              put indUveitis @;
-1534              put indDiabetes @;
-1535              put indHT @;
-1536              put indMetabSyn @;
-1537              put indNAFattyLiverDis @;
-1538              put indCOPDEmphysema @;
-1539              put meanPredEqDoseCat $ @;
-1540              put charlson @;
-1541              put quartileCharlson @;
-1542              put indInflamMarker @;
-1543              put indRxNSAID @;
-1544              put indRxHtn @;
-1545              put indRxNarcotics @;
-1546              put indRxFungus @;
-1547              put indRxOP_bisphosp @;
-1548              put indRxThiazide @;
-1549              put indRxAnticoagulant @;
-1550              put indIPAdmit12mPrior @;
-1551              put indRxAntibiotics @;
-1552              put countIPAdmits12mPrior @;
-1553              put indERVisit12mPrior @;
-1554              put ciras @;
-1555              put quartileCIRAS @;
-1556              put countAVPhys12mPrior @;
-1557              put quartileAVPhys12mPrior @;
-1558              put countAVRheum12mPrior @;
-1559              put quartileAVRheum12mPrior @;
-1560              put indAVRheum12mPrior @;
-1561              put indRxBiologics @;
-1562              put indOutpatientInfection ;
-1563              ;
-1564            end;
-1565           if _ERROR_ then call symputx('_EFIERR_',1);  /* set ERROR detection macro variable */
-1566           if EFIEOD then call symputx('_EFIREC_',EFIOUT);
-1567           run;
+1518              put indCrohnsDis @;
+1519              put indHematCa @;
+1520              put indHospInf @;
+1521              put indIgANeph @;
+1522              put indInterstLungDis @;
+1523              put indMI @;
+1524              put indNephSyn @;
+1525              put indNMSC @;
+1526              put indNonVertOsFrac @;
+1527              put indOppInf @;
+1528              put indPsoriasis @;
+1529              put indPSA @;
+1530              put indRestrictLungDis @;
+1531              put indSolidCa @;
+1532              put indSpinalCordComp @;
+1533              put indUlcerColitis @;
+1534              put indUveitis @;
+1535              put indDiabetes @;
+1536              put indHT @;
+1537              put indMetabSyn @;
+1538              put indNAFattyLiverDis @;
+1539              put indCOPDEmphysema @;
+1540              put meanPredEqDoseCat $ @;
+1541              put charlson @;
+1542              put quartileCharlson @;
+1543              put indInflamMarker @;
+1544              put indRxNSAID @;
+1545              put indRxHtn @;
+1546              put indRxNarcotics @;
+1547              put indRxFungus @;
+1548              put indRxOP_bisphosp @;
+1549              put indRxThiazide @;
+1550              put indRxAnticoagulant @;
+1551              put indIPAdmit12mPrior @;
+1552              put indRxAntibiotics @;
+1553              put countIPAdmits12mPrior @;
+1554              put indERVisit12mPrior @;
+1555              put ciras @;
+1556              put quartileCIRAS @;
+1557              put countAVPhys12mPrior @;
+1558              put quartileAVPhys12mPrior @;
+1559              put countAVRheum12mPrior @;
+1560              put quartileAVRheum12mPrior @;
+1561              put indAVRheum12mPrior @;
+1562              put indRxBiologics @;
+1563              put indOutpatientInfection ;
+1564              ;
+1565            end;
+1566           if _ERROR_ then call symputx('_EFIERR_',1);  /* set ERROR detection macro variable */
+1567           if EFIEOD then call symputx('_EFIREC_',EFIOUT);
+1568           run;
 
 NOTE: The file 'data\processed\psDeidentified.csv' is:
       Filename=U:\studies\AS\pgms\bchan\data\processed\psDeidentified.csv,
       RECFM=V,LRECL=32767,File Size (bytes)=0,
-      Last Modified=19Apr2018:12:12:27,
-      Create Time=19Apr2018:12:12:27
+      Last Modified=27Apr2018:10:35:17,
+      Create Time=27Apr2018:10:35:17
 
 NOTE: 60011 records were written to the file 'data\processed\psDeidentified.csv'.
       The minimum record length was 158.
       The maximum record length was 868.
 NOTE: There were 60010 observations read from the data set WORK.PSDEIDENTIFIED.
 NOTE: DATA statement used (Total process time):
-      real time           0.97 seconds
-      cpu time            0.95 seconds
+      real time           0.81 seconds
+      cpu time            0.79 seconds
       
 
 60010 records created in data\processed\psDeidentified.csv from WORK.PSDEIDENTIFIED.
@@ -5474,92 +5474,92 @@ NOTE: DATA statement used (Total process time):
   
 NOTE: "data\processed\psDeidentified.csv" file was successfully created.
 NOTE: PROCEDURE EXPORT used (Total process time):
-26                                                                  The SAS System                                      12:11 Thursday, April 19, 2018
+26                                                                  The SAS System                                        10:34 Friday, April 27, 2018
 
-      real time           1.14 seconds
-      cpu time            1.03 seconds
+      real time           0.99 seconds
+      cpu time            0.90 seconds
       
 
-1568       proc export
-1569         data = Work.commonSupportRegion
-1570         outfile = "data\processed\commonSupportRegion.csv"
-1571         dbms = csv
-1572         replace;
-1573         delimiter = ",";
-1574       run;
+1569       proc export
+1570         data = Work.commonSupportRegion
+1571         outfile = "data\processed\commonSupportRegion.csv"
+1572         dbms = csv
+1573         replace;
+1574         delimiter = ",";
+1575       run;
 
-1575        /**********************************************************************
-1576        *   PRODUCT:   SAS
-1577        *   VERSION:   9.4
-1578        *   CREATOR:   External File Interface
-1579        *   DATE:      19APR18
-1580        *   DESC:      Generated SAS Datastep Code
-1581        *   TEMPLATE SOURCE:  (None Specified.)
-1582        ***********************************************************************/
-1583           data _null_;
-1584           %let _EFIERR_ = 0; /* set the ERROR detection macro variable */
-1585           %let _EFIREC_ = 0;     /* clear export record count macro variable */
-1586           file 'data\processed\commonSupportRegion.csv' delimiter=',' DSD DROPOVER lrecl=32767;
-1587           if _n_ = 1 then        /* write column names or labels */
-1588            do;
-1589              put
-1590                 "model"
-1591              ','
-1592                 "database"
-1593              ','
-1594                 "commonSupportLowerBound"
-1595              ','
-1596                 "commonSupportUpperBound"
-1597              ;
-1598            end;
-1599          set  WORK.COMMONSUPPORTREGION   end=EFIEOD;
-1600              format model $16. ;
-1601              format database $10. ;
-1602              format commonSupportLowerBound best12. ;
-1603              format commonSupportUpperBound best12. ;
-1604            do;
-1605              EFIOUT + 1;
-1606              put model $ @;
-1607              put database $ @;
-1608              put commonSupportLowerBound @;
-1609              put commonSupportUpperBound ;
-1610              ;
-1611            end;
-1612           if _ERROR_ then call symputx('_EFIERR_',1);  /* set ERROR detection macro variable */
-1613           if EFIEOD then call symputx('_EFIREC_',EFIOUT);
-1614           run;
+1576        /**********************************************************************
+1577        *   PRODUCT:   SAS
+1578        *   VERSION:   9.4
+1579        *   CREATOR:   External File Interface
+1580        *   DATE:      27APR18
+1581        *   DESC:      Generated SAS Datastep Code
+1582        *   TEMPLATE SOURCE:  (None Specified.)
+1583        ***********************************************************************/
+1584           data _null_;
+1585           %let _EFIERR_ = 0; /* set the ERROR detection macro variable */
+1586           %let _EFIREC_ = 0;     /* clear export record count macro variable */
+1587           file 'data\processed\commonSupportRegion.csv' delimiter=',' DSD DROPOVER lrecl=32767;
+1588           if _n_ = 1 then        /* write column names or labels */
+1589            do;
+1590              put
+1591                 "model"
+1592              ','
+1593                 "database"
+1594              ','
+1595                 "commonSupportLowerBound"
+1596              ','
+1597                 "commonSupportUpperBound"
+1598              ;
+1599            end;
+1600          set  WORK.COMMONSUPPORTREGION   end=EFIEOD;
+1601              format model $16. ;
+1602              format database $10. ;
+1603              format commonSupportLowerBound best12. ;
+1604              format commonSupportUpperBound best12. ;
+1605            do;
+1606              EFIOUT + 1;
+1607              put model $ @;
+1608              put database $ @;
+1609              put commonSupportLowerBound @;
+1610              put commonSupportUpperBound ;
+1611              ;
+1612            end;
+1613           if _ERROR_ then call symputx('_EFIERR_',1);  /* set ERROR detection macro variable */
+1614           if EFIEOD then call symputx('_EFIREC_',EFIOUT);
+1615           run;
 
 NOTE: The file 'data\processed\commonSupportRegion.csv' is:
       Filename=U:\studies\AS\pgms\bchan\data\processed\commonSupportRegion.csv,
       RECFM=V,LRECL=32767,File Size (bytes)=0,
-      Last Modified=19Apr2018:12:12:28,
-      Create Time=19Apr2018:12:12:28
+      Last Modified=27Apr2018:10:35:18,
+      Create Time=27Apr2018:10:35:18
 
 NOTE: 4 records were written to the file 'data\processed\commonSupportRegion.csv'.
       The minimum record length was 46.
       The maximum record length was 62.
 NOTE: There were 3 observations read from the data set WORK.COMMONSUPPORTREGION.
 NOTE: DATA statement used (Total process time):
-      real time           0.01 seconds
-      cpu time            0.01 seconds
+      real time           0.00 seconds
+      cpu time            0.00 seconds
       
 
 3 records created in data\processed\commonSupportRegion.csv from WORK.COMMONSUPPORTREGION.
   
   
 NOTE: "data\processed\commonSupportRegion.csv" file was successfully created.
-27                                                                  The SAS System                                      12:11 Thursday, April 19, 2018
+27                                                                  The SAS System                                        10:34 Friday, April 27, 2018
 
 NOTE: PROCEDURE EXPORT used (Total process time):
-      real time           0.14 seconds
-      cpu time            0.04 seconds
+      real time           0.15 seconds
+      cpu time            0.06 seconds
       
 
-1615       
 1616       
-1617       ods html close;
+1617       
+1618       ods html close;
 NOTE: SAS Institute Inc., SAS Campus Drive, Cary, NC USA 27513-2414
 NOTE: The SAS System used:
-      real time           42.82 seconds
-      cpu time            26.47 seconds
+      real time           43.77 seconds
+      cpu time            28.56 seconds
       

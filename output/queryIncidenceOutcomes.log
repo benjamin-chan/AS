@@ -1,5 +1,12 @@
-1                                         The SAS System             13:59 Thursday, April 5, 2018
+1                                                          The SAS System                               10:31 Friday, April 27, 2018
 
+NOTE: Unable to open SASUSER.REGSTRY. WORK.REGSTRY will be opened instead.
+NOTE: All registry changes will be lost at the end of the session.
+
+WARNING: Unable to copy SASUSER registry to WORK registry. Because of this, you will not see registry customizations during this 
+         session.
+NOTE: Unable to open SASUSER.PROFILE. WORK.PROFILE will be opened instead.
+NOTE: All profile changes will be lost at the end of the session.
 NOTE: Copyright (c) 2016 by SAS Institute Inc., Cary, NC, USA. 
 NOTE: SAS (r) Proprietary Software 9.4 (TS1M5) 
       Licensed to UNIVERSITY OF ALABAMA AT BIRMINGHAM - SFA - T&R, Site 70086550.
@@ -28,8 +35,8 @@ of the shared folders.
 
 
 NOTE: SAS initialization used:
-      real time           6.17 seconds
-      cpu time            0.23 seconds
+      real time           5.00 seconds
+      cpu time            0.46 seconds
       
 1          *  University of Alabama at Birmingham                               *
 2          *  AS project                                            *
@@ -50,7 +57,7 @@ NOTE: Libref STD_SABR was successfully assigned as follows:
       Physical Name: q:\data\std_SABER\
 NOTE: Libref MPSTD was successfully assigned as follows: 
       Engine:        SPDE 
-      Physical Name: h:\studies\mpcd\data\stddata\
+      Physical Name: q:\studies\mpcd\data\stddata\
 NOTE: Libref UCBSTD was successfully assigned as follows: 
       Engine:        SPDE 
       Physical Name: q:\studies\AS\data\stddata\
@@ -63,149 +70,149 @@ NOTE: Libref DT was successfully assigned as follows:
 NOTE: Libref NDC was successfully assigned as follows: 
       Engine:        V9 
       Physical Name: W:\onenote\references\drug ndcs\sas data
-127        footnote "&pgm.";
-128        * footnote2 "%sysfunc(datetime(),datetime14.)";
-129        title1 '--- AS project ---';
-130        **********************************************************************;
-131        options macrogen mlogic mprint symbolgen;
-132        options nomacrogen nomlogic nomprint nosymbolgen;
-133        
+128        footnote "&pgm.";
+129        * footnote2 "%sysfunc(datetime(),datetime14.)";
+2                                                                   The SAS System                                        10:31 Friday, April 27, 2018
+
+130        title1 '--- AS project ---';
+131        **********************************************************************;
+132        options macrogen mlogic mprint symbolgen;
+133        options nomacrogen nomlogic nomprint nosymbolgen;
 134        
-135        ods html
-2                                                                   The SAS System                                       13:59 Thursday, April 5, 2018
-
-136          body = "output\&cmt..html"
-137          style = Statistical;
+135        
+136        ods html
+137          body = "output\&cmt..html"
+138          style = Statistical;
 NOTE: Writing HTML Body file: output\queryIncidenceOutcomes.html
-138        
 139        
-140        /*
-141        See the *Compact Outcome Definition* worksheet in `AS Project Cohort Outcome Codebook-20170410.xlsx`
-142         */
-143        
+140        
+141        /*
+142        See the *Compact Outcome Definition* worksheet in `AS Project Cohort Outcome Codebook-20170410.xlsx`
+143         */
 144        
-145        /*
-146        From: Xie, Fenglong [mailto:fenglongxie@uabmc.edu]
-147        Sent: Wednesday, May 17, 2017 7:03 AM
-148        To: Benjamin Chan <chanb@ohsu.edu>
-149        Subject: RE: AS project data
-150        
-151        Hi, Ben
-152        
-153        The data are stored at UCB library defined as below email.
-154        
-155        Attached please find the cohort list.
-156        
-157        No exclusion was done except excluded for higher level exposure in six month
-158        baseline.
-159        
-160        You need to do appropriate censor (such as censor for discontinues of
-161        exposure, switch to same level or higher lever exposure ...).
-162        
-163        If you have question, please let me know.
-164         */
-165        
+145        
+146        /*
+147        From: Xie, Fenglong [mailto:fenglongxie@uabmc.edu]
+148        Sent: Wednesday, May 17, 2017 7:03 AM
+149        To: Benjamin Chan <chanb@ohsu.edu>
+150        Subject: RE: AS project data
+151        
+152        Hi, Ben
+153        
+154        The data are stored at UCB library defined as below email.
+155        
+156        Attached please find the cohort list.
+157        
+158        No exclusion was done except excluded for higher level exposure in six month
+159        baseline.
+160        
+161        You need to do appropriate censor (such as censor for discontinues of
+162        exposure, switch to same level or higher lever exposure ...).
+163        
+164        If you have question, please let me know.
+165         */
 166        
-167        /*
-168        Call interstitial lung disease macro
-169         */
-170        %include "lib\IPP_2IPSOPplusPX_ILD.sas" / source2;
+167        
+168        /*
+169        Call interstitial lung disease macro
+170         */
+171        %include "lib\IPP_2IPSOPplusPX_ILD.sas" / source2;
 NOTE: %INCLUDE (level 1) file lib\IPP_2IPSOPplusPX_ILD.sas is file U:\studies\AS\pgms\bchan\lib\IPP_2IPSOPplusPX_ILD.sas.
-171       +/*
-172       +Interstitial lung disease;
-173       +1)  One or more diagnosis codes for ILD from primary discharge
-174       +Or
-175       +2)  (Two or more diagnosis codes for ILD from secondary discharge or physician EMM ) plus one or more diagnosis tests within 90 days prior
-175      !+to (inclusive) one of the diagnosis code for ILD
-176       +*/
-177       +%macro IPP_2IPSOPplusPX_ILD(outdata=,ids=,Dxs=, Pxs=);
-178       +*DXs=diagnosis code in followup, Pxs=CPT code in follow up;
-179       +*do not name outData as IPPILD dxIPSILD dxOPILD dxIPSOPILD pxILD dxpxIPSOPILD IPSOPILD;
-180       +
-181       +data IPPILD dxIPSILD dxOPILD;
-182       +set &dxs();
-183       +length dx1_date 4;
-184       +format dx1_date mmddyy10.;
-185       +dx1_date=min(ADMIT_DATE,  BEGIN_DATE);
-186       +
-187       +if dx in :('515','51630','51631','51632','51633','51634','51635','51636','51637',
-188       +           '5164','5165','5166','5168','5169','71481');
-189       +
-190       +if enc_type='IP' and pdx='P'
-191       +    then output IPPILD;
-192       +if enc_type='IP' and pdx ne 'P'
-193       +    then output dxIPSILD;
-194       +if enc_type not in ('IP','IF', 'OT', " ")
-195       +    then output dxOPILD;
-196       +run;
-197       +
-198       +data dxIPSOPILD; *ILD from secondary discharge or physician EMM;
-199       +set dxIPSILD dxOPILD;
-200       +run;
-201       +
-202       +data pxILD; *diagnosis tests;
-203       +set &pxs();
-204       +if (px_type='09' and px in ('8741','8742')) or
-3                                                                   The SAS System                                       13:59 Thursday, April 5, 2018
+172       +/*
+173       +Interstitial lung disease;
+174       +1)  One or more diagnosis codes for ILD from primary discharge
+175       +Or
+176       +2)  (Two or more diagnosis codes for ILD from secondary discharge or physician EMM ) plus one or more diagnosis tests within 90 days prior
+176      !+to (inclusive) one of the diagnosis code for ILD
+177       +*/
+178       +%macro IPP_2IPSOPplusPX_ILD(outdata=,ids=,Dxs=, Pxs=);
+179       +*DXs=diagnosis code in followup, Pxs=CPT code in follow up;
+180       +*do not name outData as IPPILD dxIPSILD dxOPILD dxIPSOPILD pxILD dxpxIPSOPILD IPSOPILD;
+181       +
+182       +data IPPILD dxIPSILD dxOPILD;
+183       +set &dxs();
+184       +length dx1_date 4;
+185       +format dx1_date mmddyy10.;
+186       +dx1_date=min(ADMIT_DATE,  BEGIN_DATE);
+187       +
+188       +if dx in :('515','51630','51631','51632','51633','51634','51635','51636','51637',
+189       +           '5164','5165','5166','5168','5169','71481');
+190       +
+191       +if enc_type='IP' and pdx='P'
+192       +    then output IPPILD;
+193       +if enc_type='IP' and pdx ne 'P'
+194       +    then output dxIPSILD;
+195       +if enc_type not in ('IP','IF', 'OT', " ")
+196       +    then output dxOPILD;
+197       +run;
+198       +
+3                                                                   The SAS System                                        10:31 Friday, April 27, 2018
 
-205       +   (px_type='C1' and px in ('71250','71260','71270','71275','31625','31628',
-206       +                             '31629','31632','31633','32095','32096','32097',
-207       +                             '32098','32400','32405','32604','32606','32607',
-208       +                             '32608','32609'));
-209       +run;
-210       +proc sort data=pxILD nodupkey; by &IDS px_date;run; * drop duplicate PX date and keep only one;
-211       +
-212       +proc sql;
-213       +/*one or more diagnosis tests within 90 days prior to (inclusive) one of the diagnosis code for ILD*/
-214       +create table dxpxIPSOPILD as
-215       +select a.* , b.px_date
-216       +from dxIPSOPILD as a
-217       +    ,
-218       +     pxILD as b
-219       +where a.&IDS=b.&IDS and
-220       +      min(b.ADMIT_DATE, b.BEGIN_DATE)-90<=b.px_date<=min(b.ADMIT_DATE, b.BEGIN_DATE);
-221       +
-222       +/* sencond DX code */
-223       +create table IPSOPILD as
-224       +select a.*, min(b.ADMIT_DATE, b.BEGIN_DATE) as DX2_date length=4 format mmddyy10.
-225       +from dxpxIPSOPILD as a
-226       +    ,
-227       +     dxIPSOPILD(drop=dx1_date) as b
-228       +where a.patid=b.patid and
-229       +      (a.ADMIT_DATE ne b.ADMIT_DATE and a.BEGIN_DATE ne b.BEGIN_DATE)
-230       +order by &IDS,ADMIT_DATE, BEGIN_DATE;
-231       +quit;
-232       +
+199       +data dxIPSOPILD; *ILD from secondary discharge or physician EMM;
+200       +set dxIPSILD dxOPILD;
+201       +run;
+202       +
+203       +data pxILD; *diagnosis tests;
+204       +set &pxs();
+205       +if (px_type='09' and px in ('8741','8742')) or
+206       +   (px_type='C1' and px in ('71250','71260','71270','71275','31625','31628',
+207       +                             '31629','31632','31633','32095','32096','32097',
+208       +                             '32098','32400','32405','32604','32606','32607',
+209       +                             '32608','32609'));
+210       +run;
+211       +proc sort data=pxILD nodupkey; by &IDS px_date;run; * drop duplicate PX date and keep only one;
+212       +
+213       +proc sql;
+214       +/*one or more diagnosis tests within 90 days prior to (inclusive) one of the diagnosis code for ILD*/
+215       +create table dxpxIPSOPILD as
+216       +select a.* , b.px_date
+217       +from dxIPSOPILD as a
+218       +    ,
+219       +     pxILD as b
+220       +where a.&IDS=b.&IDS and
+221       +      min(b.ADMIT_DATE, b.BEGIN_DATE)-90<=b.px_date<=min(b.ADMIT_DATE, b.BEGIN_DATE);
+222       +
+223       +/* sencond DX code */
+224       +create table IPSOPILD as
+225       +select a.*, min(b.ADMIT_DATE, b.BEGIN_DATE) as DX2_date length=4 format mmddyy10.
+226       +from dxpxIPSOPILD as a
+227       +    ,
+228       +     dxIPSOPILD(drop=dx1_date) as b
+229       +where a.patid=b.patid and
+230       +      (a.ADMIT_DATE ne b.ADMIT_DATE and a.BEGIN_DATE ne b.BEGIN_DATE)
+231       +order by &IDS,ADMIT_DATE, BEGIN_DATE;
+232       +quit;
 233       +
-234       +data &outData;
-235       +set IPPILD IPSOPILD;
-236       +length outcome $20 outcome_date outcome_start_date 4;
-237       +format outcome_date outcome_start_date mmddyy10.;
-238       +outcome="ILD";
-239       +outcome_date=max(dx1_date, dx2_date, px_date);
-240       +outcome_start_date=min(dx1_date, dx2_date, px_date);
-241       +drop ADMIT_DATE BEGIN_DATE DISCHARGE_DATE END_DATE;
-242       +run;
-243       +
-244       +proc sort data=&outData;
-245       +by &IDS outcome_date descending outcome_start_date descending Enc_type;
-246       +run;
-247       +
-248       +data &outData;
-249       +set &outData;
-250       +by &IDS outcome_date descending outcome_start_date;
-251       +if first.outcome_date;
-252       +run;
-253       +
-254       +proc datasets nolist;
-255       +delete IPPILD dxIPSILD dxOPILD dxIPSOPILD pxILD dxpxIPSOPILD IPSOPILD;
-256       +quit;run;
-257       +%mend IPP_2IPSOPplusPX_ILD;
+234       +
+235       +data &outData;
+236       +set IPPILD IPSOPILD;
+237       +length outcome $20 outcome_date outcome_start_date 4;
+238       +format outcome_date outcome_start_date mmddyy10.;
+239       +outcome="ILD";
+240       +outcome_date=max(dx1_date, dx2_date, px_date);
+241       +outcome_start_date=min(dx1_date, dx2_date, px_date);
+242       +drop ADMIT_DATE BEGIN_DATE DISCHARGE_DATE END_DATE;
+243       +run;
+244       +
+245       +proc sort data=&outData;
+246       +by &IDS outcome_date descending outcome_start_date descending Enc_type;
+247       +run;
+248       +
+249       +data &outData;
+250       +set &outData;
+251       +by &IDS outcome_date descending outcome_start_date;
+252       +if first.outcome_date;
+253       +run;
+254       +
+255       +proc datasets nolist;
+256       +delete IPPILD dxIPSILD dxOPILD dxIPSOPILD pxILD dxpxIPSOPILD IPSOPILD;
+257       +quit;run;
+258       +%mend IPP_2IPSOPplusPX_ILD;
 NOTE: %INCLUDE (level 1) ending.
-258        %IPP_2IPSOPplusPX_ILD(outdata = Work.outcome_ILD_All,
-259                              IDS = exposureID,
-260                              Dxs = UCB.tempIncDxAll,
-261                              Pxs = UCB.tempIncPxAll);
+259        %IPP_2IPSOPplusPX_ILD(outdata = Work.outcome_ILD_All,
+260                              IDS = exposureID,
+261                              Dxs = UCB.tempIncDxAll,
+262                              Pxs = UCB.tempIncPxAll);
 NOTE: Data set UCB.TEMPINCDXALL is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
       additional CPU resources and may reduce performance.
 
@@ -213,20 +220,20 @@ NOTE: There were 5928438 observations read from the data set UCB.TEMPINCDXALL.
 NOTE: The data set WORK.IPPILD has 90 observations and 24 variables.
 NOTE: The data set WORK.DXIPSILD has 1164 observations and 24 variables.
 NOTE: The data set WORK.DXOPILD has 4603 observations and 24 variables.
+4                                                                   The SAS System                                        10:31 Friday, April 27, 2018
+
 NOTE: DATA statement used (Total process time):
-      real time           7.58 seconds
-      cpu time            4.58 seconds
+      real time           2.04 seconds
+      cpu time            1.93 seconds
       
 
 
 NOTE: There were 1164 observations read from the data set WORK.DXIPSILD.
-4                                                                   The SAS System                                       13:59 Thursday, April 5, 2018
-
 NOTE: There were 4603 observations read from the data set WORK.DXOPILD.
 NOTE: The data set WORK.DXIPSOPILD has 5767 observations and 24 variables.
 NOTE: DATA statement used (Total process time):
-      real time           0.06 seconds
-      cpu time            0.04 seconds
+      real time           0.04 seconds
+      cpu time            0.01 seconds
       
 
 NOTE: Data set UCB.TEMPINCPXALL is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
@@ -235,8 +242,8 @@ NOTE: Data set UCB.TEMPINCPXALL is in a format that is native to another host. C
 NOTE: There were 8264248 observations read from the data set UCB.TEMPINCPXALL.
 NOTE: The data set WORK.PXILD has 17182 observations and 21 variables.
 NOTE: DATA statement used (Total process time):
-      real time           11.30 seconds
-      cpu time            4.91 seconds
+      real time           2.16 seconds
+      cpu time            2.15 seconds
       
 
 
@@ -244,7 +251,7 @@ NOTE: There were 17182 observations read from the data set WORK.PXILD.
 NOTE: 1549 observations with duplicate key values were deleted.
 NOTE: The data set WORK.PXILD has 15633 observations and 21 variables.
 NOTE: PROCEDURE SORT used (Total process time):
-      real time           0.15 seconds
+      real time           0.09 seconds
       cpu time            0.04 seconds
       
 
@@ -253,8 +260,8 @@ NOTE: Table WORK.DXPXIPSOPILD created, with 15757 rows and 25 columns.
 NOTE: Table WORK.IPSOPILD created, with 203891 rows and 26 columns.
 
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           1.02 seconds
-      cpu time            0.93 seconds
+      real time           0.76 seconds
+      cpu time            0.73 seconds
       
 
 
@@ -262,24 +269,24 @@ NOTE: There were 90 observations read from the data set WORK.IPPILD.
 NOTE: There were 203891 observations read from the data set WORK.IPSOPILD.
 NOTE: The data set WORK.OUTCOME_ILD_ALL has 203981 observations and 25 variables.
 NOTE: DATA statement used (Total process time):
-      real time           0.48 seconds
-      cpu time            0.45 seconds
+      real time           0.29 seconds
+      cpu time            0.28 seconds
       
 
 
 NOTE: There were 203981 observations read from the data set WORK.OUTCOME_ILD_ALL.
 NOTE: The data set WORK.OUTCOME_ILD_ALL has 203981 observations and 25 variables.
 NOTE: PROCEDURE SORT used (Total process time):
-      real time           0.54 seconds
-      cpu time            0.65 seconds
+      real time           0.49 seconds
+      cpu time            0.73 seconds
       
 
 
 NOTE: There were 203981 observations read from the data set WORK.OUTCOME_ILD_ALL.
 NOTE: The data set WORK.OUTCOME_ILD_ALL has 2145 observations and 25 variables.
 NOTE: DATA statement used (Total process time):
-      real time           0.26 seconds
-      cpu time            0.21 seconds
+      real time           0.21 seconds
+      cpu time            0.15 seconds
       
 
 
@@ -287,34 +294,34 @@ NOTE: Deleting WORK.IPPILD (memtype=DATA).
 NOTE: Deleting WORK.DXIPSILD (memtype=DATA).
 NOTE: Deleting WORK.DXOPILD (memtype=DATA).
 NOTE: Deleting WORK.DXIPSOPILD (memtype=DATA).
+5                                                                   The SAS System                                        10:31 Friday, April 27, 2018
+
 NOTE: Deleting WORK.PXILD (memtype=DATA).
 NOTE: Deleting WORK.DXPXIPSOPILD (memtype=DATA).
 NOTE: Deleting WORK.IPSOPILD (memtype=DATA).
 NOTE: PROCEDURE DATASETS used (Total process time):
-      real time           0.12 seconds
-      cpu time            0.03 seconds
+      real time           0.09 seconds
+      cpu time            0.04 seconds
       
-5                                                                   The SAS System                                       13:59 Thursday, April 5, 2018
 
-
-262        proc sql;
-263          create table Work.ILD as
-264            select database,
-265                   exposure,
-266                   patid,
-267                   exposureStart,
-268                   exposureEnd,
-269                   exposureID,
-270                   "Lung disease" as outcomeCategory,
-271                   "Interstitial lung disease" as disease,
-272                   outcome_start_date as begin_date
-273            from Work.outcome_ILD_All;
+263        proc sql;
+264          create table Work.ILD as
+265            select database,
+266                   exposure,
+267                   patid,
+268                   exposureStart,
+269                   exposureEnd,
+270                   exposureID,
+271                   "Lung disease" as outcomeCategory,
+272                   "Interstitial lung disease" as disease,
+273                   outcome_start_date as begin_date
+274            from Work.outcome_ILD_All;
 NOTE: Table WORK.ILD created, with 2145 rows and 9 columns.
 
-274          select database, exposure, disease, count(distinct exposureID) as n
-275            from Work.ILD
-276            group by database, exposure, disease;
-                                                                  --- AS project ---                                 13:59 Thursday, April 5, 2018   1
+275          select database, exposure, disease, count(distinct exposureID) as n
+276            from Work.ILD
+277            group by database, exposure, disease;
+                                                                  --- AS project ---                                  10:31 Friday, April 27, 2018   1
 
                                              database    exposure     disease                           n
                                              ------------------------------------------------------------
@@ -388,37 +395,37 @@ NOTE: Table WORK.ILD created, with 2145 rows and 9 columns.
  
  
                                                               queryIncidenceOutcomes.sas
-277        quit;
+278        quit;
 NOTE: The PROCEDURE SQL printed page 1.
 NOTE: PROCEDURE SQL used (Total process time):
       real time           0.15 seconds
-      cpu time            0.07 seconds
+      cpu time            0.01 seconds
       
 
-278        
 279        
-280        /*
-281        Process fracture episodes data set
-282         */
-283        proc sql;
-284          create table Work.fractures as
-285            select database,
-286                   exposure,
-287                   patid,
-288                   exposureStart,
-289                   exposureEnd,
-290                   exposureID,
-291                   "Osteoporotic fracture" as outcomeCategory,
-292                   fractureType as disease,
-293                   fractureEpisodeStart as begin_date
-294            from DT.fractureEpisodesInc
-295            where ^missing(fractureType);
+280        
+281        /*
+282        Process fracture episodes data set
+283         */
+284        proc sql;
+285          create table Work.fractures as
+286            select database,
+287                   exposure,
+288                   patid,
+289                   exposureStart,
+290                   exposureEnd,
+291                   exposureID,
+292                   "Osteoporotic fracture" as outcomeCategory,
+293                   fractureType as disease,
+294                   fractureEpisodeStart as begin_date
+295            from DT.fractureEpisodesInc
+296            where ^missing(fractureType);
 NOTE: Table WORK.FRACTURES created, with 6475 rows and 9 columns.
 
-296          select database, exposure, disease, count(distinct exposureID) as n
-297            from Work.fractures
-298            group by database, exposure, disease;
-                                                                  --- AS project ---                                 13:59 Thursday, April 5, 2018   2
+297          select database, exposure, disease, count(distinct exposureID) as n
+298            from Work.fractures
+299            group by database, exposure, disease;
+                                                                  --- AS project ---                                  10:31 Friday, April 27, 2018   2
 
                                         database    exposure     disease                                     n
                                         ----------------------------------------------------------------------
@@ -492,53 +499,53 @@ NOTE: Table WORK.FRACTURES created, with 6475 rows and 9 columns.
  
  
                                                               queryIncidenceOutcomes.sas
-299        quit;
+300        quit;
 NOTE: The PROCEDURE SQL printed page 2.
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           0.24 seconds
-      cpu time            0.14 seconds
+      real time           0.25 seconds
+      cpu time            0.12 seconds
       
 
-300        
 301        
-302        /*
-303        Process hospitalized infection data set
-304         */
-305        proc sql;
-306          create table Work.hospInf as
-307            select database,
-308                   exposure,
-309                   patid,
-310                   exposureStart,
-311                   exposureEnd,
-312                   exposureID,
-313                   "Infection" as outcomeCategory,
-314                   "Hospitalized infection" as disease,
-315                   outcome_start_date as begin_date
-316            from DT.hospitalizedInfectionEpisodesInc;
-6                                                                   The SAS System                                       13:59 Thursday, April 5, 2018
+302        
+303        /*
+304        Process hospitalized infection data set
+305         */
+306        proc sql;
+307          create table Work.hospInf as
+308            select database,
+309                   exposure,
+310                   patid,
+6                                                                   The SAS System                                        10:31 Friday, April 27, 2018
 
-NOTE: Table WORK.HOSPINF created, with 21840 rows and 9 columns.
+311                   exposureStart,
+312                   exposureEnd,
+313                   exposureID,
+314                   "Infection" as outcomeCategory,
+315                   "Hospitalized infection" as disease,
+316                   outcome_start_date as begin_date
+317            from DT.hospitalizedInfectionEpisodesInc;
+NOTE: Table WORK.HOSPINF created, with 21563 rows and 9 columns.
 
-317          select database, exposure, disease, count(distinct exposureID) as n
-318            from Work.hospInf
-319            group by database, exposure, disease;
-                                                                  --- AS project ---                                 13:59 Thursday, April 5, 2018   3
+318          select database, exposure, disease, count(distinct exposureID) as n
+319            from Work.hospInf
+320            group by database, exposure, disease;
+                                                                  --- AS project ---                                  10:31 Friday, April 27, 2018   3
 
                                               database    exposure     disease                        n
                                               ---------------------------------------------------------
-                                              MPCD        DMARD        Hospitalized infection        11
+                                              MPCD        DMARD        Hospitalized infection        10
                                               MPCD        NSAID        Hospitalized infection        16
-                                              MPCD        No exposure  Hospitalized infection       174
-                                              MPCD        TNF          Hospitalized infection        49
-                                              Marketscan  DMARD        Hospitalized infection       123
+                                              MPCD        No exposure  Hospitalized infection       173
+                                              MPCD        TNF          Hospitalized infection        48
+                                              Marketscan  DMARD        Hospitalized infection       121
                                               Marketscan  NSAID        Hospitalized infection       249
-                                              Marketscan  No exposure  Hospitalized infection       526
-                                              Marketscan  TNF          Hospitalized infection       371
-                                              Medicare    DMARD        Hospitalized infection      1115
-                                              Medicare    NSAID        Hospitalized infection      2406
-                                              Medicare    No exposure  Hospitalized infection      3563
-                                              Medicare    TNF          Hospitalized infection      1267
+                                              Marketscan  No exposure  Hospitalized infection       525
+                                              Marketscan  TNF          Hospitalized infection       367
+                                              Medicare    DMARD        Hospitalized infection      1106
+                                              Medicare    NSAID        Hospitalized infection      2395
+                                              Medicare    No exposure  Hospitalized infection      3539
+                                              Medicare    TNF          Hospitalized infection      1253
  
  
  
@@ -597,36 +604,36 @@ NOTE: Table WORK.HOSPINF created, with 21840 rows and 9 columns.
  
  
                                                               queryIncidenceOutcomes.sas
-320        quit;
+321        quit;
 NOTE: The PROCEDURE SQL printed page 3.
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           0.29 seconds
-      cpu time            0.14 seconds
+      real time           0.20 seconds
+      cpu time            0.12 seconds
       
 
-321        
 322        
-323        /*
-324        Process opportunistic infection data set
-325         */
-326        proc sql;
-327          create table Work.oppInf as
-328            select database,
-329                   exposure,
-330                   patid,
-331                   exposureStart,
-332                   exposureEnd,
-333                   exposureID,
-334                   "Infection" as outcomeCategory,
-335                   "Opportunistic infection" as disease,
-336                   outcome_start_date as begin_date
-337            from DT.opportunInfectionEpisodesInc;
+323        
+324        /*
+325        Process opportunistic infection data set
+326         */
+327        proc sql;
+328          create table Work.oppInf as
+329            select database,
+330                   exposure,
+331                   patid,
+332                   exposureStart,
+333                   exposureEnd,
+334                   exposureID,
+335                   "Infection" as outcomeCategory,
+336                   "Opportunistic infection" as disease,
+337                   outcome_start_date as begin_date
+338            from DT.opportunInfectionEpisodesInc;
 NOTE: Table WORK.OPPINF created, with 5993 rows and 9 columns.
 
-338          select database, exposure, disease, count(distinct exposureID) as n
-339            from Work.oppInf
-340            group by database, exposure, disease;
-                                                                  --- AS project ---                                 13:59 Thursday, April 5, 2018   4
+339          select database, exposure, disease, count(distinct exposureID) as n
+340            from Work.oppInf
+341            group by database, exposure, disease;
+                                                                  --- AS project ---                                  10:31 Friday, April 27, 2018   4
 
                                               database    exposure     disease                         n
                                               ----------------------------------------------------------
@@ -700,73 +707,73 @@ NOTE: Table WORK.OPPINF created, with 5993 rows and 9 columns.
  
  
                                                               queryIncidenceOutcomes.sas
-341        quit;
+342        quit;
 NOTE: The PROCEDURE SQL printed page 4.
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           0.18 seconds
-      cpu time            0.03 seconds
+      real time           0.15 seconds
+      cpu time            0.10 seconds
       
 
-342        
 343        
-344        /*
-345        Query for incident MI
-346        
-347        * Requires at least a 1-day inpatient admission
-348         */
-349        proc sql;
-350          create table Work.incidentMI as
-351            select C.database, C.exposureID, C.patid, C.exposure, C.exposureStart, C.exposureEnd,
-352                   C.outcomeCategory,
-353                   C.disease,
-354                   C.begin_date
-355            from (select A.*, B.outcomeCategory, B.disease
-356                  from UCB.tempIncDxAll A inner join
-357                       (select * from DT.defOutcomes where disease = "Myocardial infarction") B on (A.codeType = B.codeType & A.code = B.code)
-358                  where B.disease = "Myocardial infarction"  &
-359                        A.enc_type = "IP" &
-360                        . < A.admit_date < A.discharge_date) C
-361            order by C.database, C.exposureID, C.outcomeCategory, C.disease, C.begin_date;
+344        
+345        /*
+346        Query for incident MI
+347        
+348        * Requires at least a 1-day inpatient admission
+349         */
+350        proc sql;
+351          create table Work.incidentMI as
+352            select C.database, C.exposureID, C.patid, C.exposure, C.exposureStart, C.exposureEnd,
+353                   C.outcomeCategory,
+354                   C.disease,
+355                   C.begin_date
+356            from (select A.*, B.outcomeCategory, B.disease
+357                  from UCB.tempIncDxAll A inner join
+358                       (select * from DT.defOutcomes where disease = "Myocardial infarction") B on (A.codeType = B.codeType & A.code = B.code)
+359                  where B.disease = "Myocardial infarction"  &
+360                        A.enc_type = "IP" &
+361                        . < A.admit_date < A.discharge_date) C
+362            order by C.database, C.exposureID, C.outcomeCategory, C.disease, C.begin_date;
 NOTE: Data set UCB.TEMPINCDXALL is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
       additional CPU resources and may reduce performance.
 The SAS supervisor will process queries for foreign datasets. No parallel where-clause processing will occur.
 The SAS supervisor will process queries for foreign datasets. No parallel where-clause processing will occur.
+7                                                                   The SAS System                                        10:31 Friday, April 27, 2018
+
 NOTE: Table WORK.INCIDENTMI created, with 2000 rows and 9 columns.
 
-362        quit;
+363        quit;
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           2.43 seconds
-      cpu time            2.37 seconds
+      real time           1.32 seconds
+      cpu time            1.27 seconds
       
-7                                                                   The SAS System                                       13:59 Thursday, April 5, 2018
 
-
-363        
 364        
-365        /*
-366        Process the data sets created by the cancer scripts
-367         */
-368        proc sql;
-369          create table Work.cancer as
-370            select database,
-371                   exposure,
-372                   patid,
-373                   exposureStart,
-374                   exposureEnd,
-375                   exposureID,
-376                   "Cancer" as outcomeCategory,
-377                   cancer as disease,
-378                   outcome_start_date as begin_date
-379            from (select * from DT.cancerSetoguchiEpisodesInc union corr
-380                  select * from DT.cancerNMSCEpisodesInc );
+365        
+366        /*
+367        Process the data sets created by the cancer scripts
+368         */
+369        proc sql;
+370          create table Work.cancer as
+371            select database,
+372                   exposure,
+373                   patid,
+374                   exposureStart,
+375                   exposureEnd,
+376                   exposureID,
+377                   "Cancer" as outcomeCategory,
+378                   cancer as disease,
+379                   outcome_start_date as begin_date
+380            from (select * from DT.cancerSetoguchiEpisodesInc union corr
+381                  select * from DT.cancerNMSCEpisodesInc );
 NOTE: Table WORK.CANCER created, with 5086 rows and 9 columns.
 
-381          select database, exposure, disease,
-382                 count(distinct patid) as countDistinctPatid,
-383                 count(distinct exposureID) as countDistinctEpisodes
-384            from Work.cancer
-385            group by database, exposure, disease;
-                                                                  --- AS project ---                                 13:59 Thursday, April 5, 2018   5
+382          select database, exposure, disease,
+383                 count(distinct patid) as countDistinctPatid,
+384                 count(distinct exposureID) as countDistinctEpisodes
+385            from Work.cancer
+386            group by database, exposure, disease;
+                                                                  --- AS project ---                                  10:31 Friday, April 27, 2018   5
 
                                                                                               count         count
                                                                                            Distinct      Distinct
@@ -840,204 +847,204 @@ NOTE: Table WORK.CANCER created, with 5086 rows and 9 columns.
  
  
                                                               queryIncidenceOutcomes.sas
-386        quit;
+387        quit;
 NOTE: The PROCEDURE SQL printed page 5.
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           0.38 seconds
-      cpu time            0.21 seconds
+      real time           0.31 seconds
+      cpu time            0.29 seconds
       
 
-387        
 388        
-389        proc sql;
-390        
-391          create table Work.defOutcomes as
-392            select *
-393            from DT.defOutcomes
-394            where disease ^in ("Interstitial lung disease",
-395                               "Myocardial infarction",
-396                               "Hospitalized infection",
-397                               "Opportunistic infection");
+389        
+390        proc sql;
+391        
+392          create table Work.defOutcomes as
+393            select *
+394            from DT.defOutcomes
+395            where disease ^in ("Interstitial lung disease",
+396                               "Myocardial infarction",
+397                               "Hospitalized infection",
+398                               "Opportunistic infection");
 NOTE: Table WORK.DEFOUTCOMES created, with 750 rows and 6 columns.
 
-398          create table Work.lookupDisease as
-399            select distinct outcomeCategory, disease
-400            from DT.defOutcomes;
+399          create table Work.lookupDisease as
+400            select distinct outcomeCategory, disease
+401            from DT.defOutcomes;
 NOTE: Table WORK.LOOKUPDISEASE created, with 21 rows and 2 columns.
 
-401          insert into Work.lookupDisease (outcomeCategory, disease)
-402            values ("Osteoporotic fracture", "Clinical vertebral fracture")
-403            values ("Osteoporotic fracture", "Non-vertebral osteoporotic fracture");
+402          insert into Work.lookupDisease (outcomeCategory, disease)
+403            values ("Osteoporotic fracture", "Clinical vertebral fracture")
+404            values ("Osteoporotic fracture", "Non-vertebral osteoporotic fracture");
 NOTE: 2 rows were inserted into WORK.LOOKUPDISEASE.
 
-404        
-405          %let select1 = select A.*, B.outcomeCategory, B.disease;
-406          %let join1 = inner join Work.defOutcomes B on (A.codeType = B.codeType & A.code = B.code);
-407          create table Work.incidentDisease as
-408            select C.database, C.exposureID, C.patid, C.exposure, C.exposureStart, C.exposureEnd,
-409                   C.outcomeCategory,
-410                   C.disease,
-411                   C.begin_date
-412            from (&select1 from UCB.tempIncDxAll A &join1 union corr
-413                  &select1 from UCB.tempIncPxAll A &join1 union corr
-414                  select * from Work.cancer union corr
-415                  select * from Work.ILD union corr
-416                  select * from Work.incidentMI union corr
-417                  select * from Work.hospInf union corr
-418                  select * from Work.oppInf  union corr
-419                  select * from Work.fractures) C
-8                                                                   The SAS System                                       13:59 Thursday, April 5, 2018
+405        
+406          %let select1 = select A.*, B.outcomeCategory, B.disease;
+407          %let join1 = inner join Work.defOutcomes B on (A.codeType = B.codeType & A.code = B.code);
+408          create table Work.incidentDisease as
+409            select C.database, C.exposureID, C.patid, C.exposure, C.exposureStart, C.exposureEnd,
+410                   C.outcomeCategory,
+411                   C.disease,
+412                   C.begin_date
+413            from (&select1 from UCB.tempIncDxAll A &join1 union corr
+8                                                                   The SAS System                                        10:31 Friday, April 27, 2018
 
-420            order by C.database, C.exposureID, C.outcomeCategory, C.disease, C.begin_date;
+414                  &select1 from UCB.tempIncPxAll A &join1 union corr
+415                  select * from Work.cancer union corr
+416                  select * from Work.ILD union corr
+417                  select * from Work.incidentMI union corr
+418                  select * from Work.hospInf union corr
+419                  select * from Work.oppInf  union corr
+420                  select * from Work.fractures) C
+421            order by C.database, C.exposureID, C.outcomeCategory, C.disease, C.begin_date;
 NOTE: Data set UCB.TEMPINCDXALL is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
       additional CPU resources and may reduce performance.
 NOTE: Data set UCB.TEMPINCPXALL is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
       additional CPU resources and may reduce performance.
 The SAS supervisor will process queries for foreign datasets. No parallel where-clause processing will occur.
 The SAS supervisor will process queries for foreign datasets. No parallel where-clause processing will occur.
-NOTE: Table WORK.INCIDENTDISEASE created, with 142716 rows and 9 columns.
+NOTE: Table WORK.INCIDENTDISEASE created, with 142439 rows and 9 columns.
 
-421        quit;
+422        quit;
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           7.34 seconds
-      cpu time            7.69 seconds
+      real time           4.14 seconds
+      cpu time            4.32 seconds
       
 
-422        
-423        /*
-424        Take first occurrence of outcome
-425         */
-426        proc sort data = Work.incidentDisease nodupkey;
-427          by database exposureID outcomeCategory disease;
-428        run;
+423        
+424        /*
+425        Take first occurrence of outcome
+426         */
+427        proc sort data = Work.incidentDisease nodupkey;
+428          by database exposureID outcomeCategory disease;
+429        run;
 
-NOTE: There were 142716 observations read from the data set WORK.INCIDENTDISEASE.
-NOTE: 99437 observations with duplicate key values were deleted.
-NOTE: The data set WORK.INCIDENTDISEASE has 43279 observations and 9 variables.
+NOTE: There were 142439 observations read from the data set WORK.INCIDENTDISEASE.
+NOTE: 99228 observations with duplicate key values were deleted.
+NOTE: The data set WORK.INCIDENTDISEASE has 43211 observations and 9 variables.
 NOTE: PROCEDURE SORT used (Total process time):
-      real time           0.28 seconds
-      cpu time            0.38 seconds
+      real time           0.31 seconds
+      cpu time            0.35 seconds
       
 
-429        
-430        /*
-431        For all but NMSC and infection (hospitalized and opportunistic),
-432        keep first incident outcome within patient ID
-433         */
-434        data Work.incidentDiseaseSubsetA Work.incidentDiseaseSubsetB;
-435          set Work.incidentDisease;
-436          if disease in ("Non Melanoma Skin Cancer",
-437                         "Hospitalized infection") then output Work.incidentDiseaseSubsetA;
-438          else output Work.incidentDiseaseSubsetB;
-439        run;
+430        
+431        /*
+432        For all but NMSC and infection (hospitalized and opportunistic),
+433        keep first incident outcome within patient ID
+434         */
+435        data Work.incidentDiseaseSubsetA Work.incidentDiseaseSubsetB;
+436          set Work.incidentDisease;
+437          if disease in ("Non Melanoma Skin Cancer",
+438                         "Hospitalized infection") then output Work.incidentDiseaseSubsetA;
+439          else output Work.incidentDiseaseSubsetB;
+440        run;
 
-NOTE: There were 43279 observations read from the data set WORK.INCIDENTDISEASE.
-NOTE: The data set WORK.INCIDENTDISEASESUBSETA has 11598 observations and 9 variables.
+NOTE: There were 43211 observations read from the data set WORK.INCIDENTDISEASE.
+NOTE: The data set WORK.INCIDENTDISEASESUBSETA has 11530 observations and 9 variables.
 NOTE: The data set WORK.INCIDENTDISEASESUBSETB has 31681 observations and 9 variables.
 NOTE: DATA statement used (Total process time):
-      real time           0.13 seconds
-      cpu time            0.07 seconds
+      real time           0.12 seconds
+      cpu time            0.06 seconds
       
 
-440        proc sort data = Work.incidentDiseaseSubsetB;
-441          by database patid outcomeCategory disease begin_date;
-442        run;
+441        proc sort data = Work.incidentDiseaseSubsetB;
+442          by database patid outcomeCategory disease begin_date;
+443        run;
 
 NOTE: There were 31681 observations read from the data set WORK.INCIDENTDISEASESUBSETB.
 NOTE: The data set WORK.INCIDENTDISEASESUBSETB has 31681 observations and 9 variables.
 NOTE: PROCEDURE SORT used (Total process time):
-      real time           0.12 seconds
-      cpu time            0.09 seconds
+      real time           0.10 seconds
+      cpu time            0.04 seconds
       
 
-443        proc sort data = Work.incidentDiseaseSubsetB nodupkey;
-444          by database patid outcomeCategory disease;
-445        run;
+444        proc sort data = Work.incidentDiseaseSubsetB nodupkey;
+445          by database patid outcomeCategory disease;
+446        run;
+9                                                                   The SAS System                                        10:31 Friday, April 27, 2018
+
 
 NOTE: There were 31681 observations read from the data set WORK.INCIDENTDISEASESUBSETB.
 NOTE: 4607 observations with duplicate key values were deleted.
 NOTE: The data set WORK.INCIDENTDISEASESUBSETB has 27074 observations and 9 variables.
 NOTE: PROCEDURE SORT used (Total process time):
-      real time           0.12 seconds
-      cpu time            0.09 seconds
-9                                                                   The SAS System                                       13:59 Thursday, April 5, 2018
-
+      real time           0.09 seconds
+      cpu time            0.07 seconds
       
 
-446        proc sql;
-447          create table Work.incidentDisease as
-448            select * from Work.incidentDiseaseSubsetA union corr
-449            select * from Work.incidentDiseaseSubsetB ;
-NOTE: Table WORK.INCIDENTDISEASE created, with 38672 rows and 9 columns.
+447        proc sql;
+448          create table Work.incidentDisease as
+449            select * from Work.incidentDiseaseSubsetA union corr
+450            select * from Work.incidentDiseaseSubsetB ;
+NOTE: Table WORK.INCIDENTDISEASE created, with 38604 rows and 9 columns.
 
-450        quit;
+451        quit;
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           0.34 seconds
-      cpu time            0.26 seconds
+      real time           0.26 seconds
+      cpu time            0.20 seconds
       
 
-451        
 452        
-453        /*
-454        Join incident disease outcomes to exposure timelines
-455        Summarize
-456         */
-457        proc sql;
-458          create table DT.incidentDiseaseTimelines as
-459            select A.*,
-460                   D.begin_date format = mmddyy10. as outcomeDate,
-461                   F.earliestOutcome,
-462                   case
-463                     when ^missing(D.begin_date) & missing(F.earliestOutcome) then 0
-464                     when ^missing(D.begin_date) & A.exposureStart <= F.earliestOutcome <= A.exposureEnd then 0
-465                     when . < F.earliestOutcome < A.exposureStart then 1
-466                     when missing(D.begin_date) then 1
-467                     else .
-468                     end as censor,
-469                   case
-470                     when ^missing(D.begin_date) & missing(F.earliestOutcome) then D.begin_date - A.exposureStart + 1
-471                     when ^missing(D.begin_date) & A.exposureStart <= F.earliestOutcome <= A.exposureEnd then D.begin_date - A.exposureStart + 1
-472                     when . < F.earliestOutcome < A.exposureStart then 0
-473                     when missing(D.begin_date) then daysExposed
-474                     else .
-475                     end as daysAtRisk
-476            from (select B.*, C.*
-477                  from DT.exposureTimeline B,
-478                       Work.lookupDisease C) A left join
-479                 Work.incidentDisease D on (A.database = D.database &
-480                                            A.patid = D.patid &
-481                                            A.exposure = D.exposure &
-482                                            A.exposureStart = D.exposureStart &
-483                                            A.outcomeCategory = D.outcomeCategory &
-484                                            A.disease = D.disease) left join
-485                 (select E.database, E.patid, E.outcomeCategory, E.disease,
-486                         min(E.begin_date) format = mmddyy10. as earliestOutcome
-487                  from Work.incidentDisease E
-488                  where E.disease ^in ("Non Melanoma Skin Cancer",
-489                                       "Hospitalized infection")
-490                  group by E.database, E.patid, E.outcomeCategory, E.disease) F on (A.database = F.database &
-491                                                                                    A.patid = F.patid &
-492                                                                                    A.outcomeCategory = F.outcomeCategory &
-493                                                                                    A.disease = F.disease)
-494            order by A.database, A.patid, A.outcomeCategory, A.disease, A.exposureStart;
+453        
+454        /*
+455        Join incident disease outcomes to exposure timelines
+456        Summarize
+457         */
+458        proc sql;
+459          create table DT.incidentDiseaseTimelines as
+460            select A.*,
+461                   D.begin_date format = mmddyy10. as outcomeDate,
+462                   F.earliestOutcome,
+463                   case
+464                     when ^missing(D.begin_date) & missing(F.earliestOutcome) then 0
+465                     when ^missing(D.begin_date) & A.exposureStart <= F.earliestOutcome <= A.exposureEnd then 0
+466                     when . < F.earliestOutcome < A.exposureStart then 1
+467                     when missing(D.begin_date) then 1
+468                     else .
+469                     end as censor,
+470                   case
+471                     when ^missing(D.begin_date) & missing(F.earliestOutcome) then D.begin_date - A.exposureStart + 1
+472                     when ^missing(D.begin_date) & A.exposureStart <= F.earliestOutcome <= A.exposureEnd then D.begin_date - A.exposureStart + 1
+473                     when . < F.earliestOutcome < A.exposureStart then 0
+474                     when missing(D.begin_date) then daysExposed
+475                     else .
+476                     end as daysAtRisk
+477            from (select B.*, C.*
+478                  from DT.exposureTimeline B,
+479                       Work.lookupDisease C) A left join
+480                 Work.incidentDisease D on (A.database = D.database &
+481                                            A.patid = D.patid &
+482                                            A.exposure = D.exposure &
+483                                            A.exposureStart = D.exposureStart &
+484                                            A.outcomeCategory = D.outcomeCategory &
+485                                            A.disease = D.disease) left join
+486                 (select E.database, E.patid, E.outcomeCategory, E.disease,
+487                         min(E.begin_date) format = mmddyy10. as earliestOutcome
+488                  from Work.incidentDisease E
+489                  where E.disease ^in ("Non Melanoma Skin Cancer",
+490                                       "Hospitalized infection")
+491                  group by E.database, E.patid, E.outcomeCategory, E.disease) F on (A.database = F.database &
+492                                                                                    A.patid = F.patid &
+493                                                                                    A.outcomeCategory = F.outcomeCategory &
+494                                                                                    A.disease = F.disease)
+495            order by A.database, A.patid, A.outcomeCategory, A.disease, A.exposureStart;
 NOTE: The execution of this query involves performing one or more Cartesian product joins that can not be optimized.
 NOTE: Table DT.INCIDENTDISEASETIMELINES created, with 1380292 rows and 17 columns.
 
-495          create table Work.incidence as
-496            select database, exposure, outcomeCategory, disease,
-497                   count(distinct exposureID) as n,
-498                   sum(censor = 0) as incidence,
-499                   sum(daysAtRisk) / 365.25 as personYears,
-500                   100 as scale,
-501                   sum(censor = 0) / (sum(daysAtRisk) / 365.25) * calculated scale as incidenceRate
-502            from DT.incidentDiseaseTimelines
-503            group by database, exposure, outcomeCategory, disease;
+496          create table Work.incidence as
+497            select database, exposure, outcomeCategory, disease,
+498                   count(distinct exposureID) as n,
+499                   sum(censor = 0) as incidence,
+10                                                                  The SAS System                                        10:31 Friday, April 27, 2018
+
+500                   sum(daysAtRisk) / 365.25 as personYears,
+501                   100 as scale,
+502                   sum(censor = 0) / (sum(daysAtRisk) / 365.25) * calculated scale as incidenceRate
+503            from DT.incidentDiseaseTimelines
+504            group by database, exposure, outcomeCategory, disease;
 NOTE: Table WORK.INCIDENCE created, with 276 rows and 9 columns.
 
-10                                                                  The SAS System                                       13:59 Thursday, April 5, 2018
-
-504          select * from Work.incidence;
-                                                                  --- AS project ---                                 13:59 Thursday, April 5, 2018   6
+505          select * from Work.incidence;
+                                                                  --- AS project ---                                  10:31 Friday, April 27, 2018   6
 
                                                                                                                          person              incidence
 database    exposure     Disease Category            Disease                                           n  incidence       Years     scale         Rate
@@ -1048,7 +1055,7 @@ MPCD        DMARD        Cancer                      Solid Cancer               
 MPCD        DMARD        Cardiac disease             Aortic Insufficiency/Aortic Regurgitation       481          0    426.7899       100            0
 MPCD        DMARD        Cardiac disease             Conduction Block                                481          0    427.5565       100            0
 MPCD        DMARD        Cardiac disease             Myocardial infarction                           481          0    427.5565       100            0
-MPCD        DMARD        Infection                   Hospitalized infection                          481         11    420.4709       100     2.616114
+MPCD        DMARD        Infection                   Hospitalized infection                          481         10    420.5914       100     2.377605
 MPCD        DMARD        Infection                   Opportunistic infection                         481          5    420.9911       100     1.187674
 MPCD        DMARD        Inflammatory bowel disease  Crohn’s Disease                                 481          8     414.152       100     1.931658
 MPCD        DMARD        Inflammatory bowel disease  Ulcerative Colitis                              481          4      420.95       100     0.950232
@@ -1094,7 +1101,7 @@ MPCD        No exposure  Cancer                      Solid Cancer               
 MPCD        No exposure  Cardiac disease             Aortic Insufficiency/Aortic Regurgitation      1593         40    1809.925       100     2.210037
 MPCD        No exposure  Cardiac disease             Conduction Block                               1593         19    1851.912       100     1.025966
 MPCD        No exposure  Cardiac disease             Myocardial infarction                          1593         13    1863.031       100     0.697788
-MPCD        No exposure  Infection                   Hospitalized infection                         1593        174    1663.535       100     10.45966
+MPCD        No exposure  Infection                   Hospitalized infection                         1593        173    1664.654       100     10.39255
 MPCD        No exposure  Infection                   Opportunistic infection                        1593         12    1863.264       100     0.644031
 MPCD        No exposure  Inflammatory bowel disease  Crohn’s Disease                                1593         62    1810.029       100      3.42536
 MPCD        No exposure  Inflammatory bowel disease  Ulcerative Colitis                             1593         36    1823.332       100     1.974407
@@ -1111,7 +1118,7 @@ MPCD        No exposure  Osteoporotic fracture       Non-vertebral osteoporotic 
 MPCD        No exposure  PsO/PsA                     Psoriasis                                      1593         31     1830.45       100     1.693572
  
                                                               queryIncidenceOutcomes.sas
-                                                                  --- AS project ---                                 13:59 Thursday, April 5, 2018   7
+                                                                  --- AS project ---                                  10:31 Friday, April 27, 2018   7
 
                                                                                                                          person              incidence
 database    exposure     Disease Category            Disease                                           n  incidence       Years     scale         Rate
@@ -1124,7 +1131,7 @@ MPCD        TNF          Cancer                      Solid Cancer               
 MPCD        TNF          Cardiac disease             Aortic Insufficiency/Aortic Regurgitation      1279         16    1486.272       100     1.076519
 MPCD        TNF          Cardiac disease             Conduction Block                               1279          4    1502.292       100      0.26626
 MPCD        TNF          Cardiac disease             Myocardial infarction                          1279          5    1498.053       100     0.333766
-MPCD        TNF          Infection                   Hospitalized infection                         1279         49    1461.818       100     3.351991
+MPCD        TNF          Infection                   Hospitalized infection                         1279         48    1462.292       100     3.282519
 MPCD        TNF          Infection                   Opportunistic infection                        1279         20    1482.209       100     1.349337
 MPCD        TNF          Inflammatory bowel disease  Crohn’s Disease                                1279         54    1424.983       100     3.789519
 MPCD        TNF          Inflammatory bowel disease  Ulcerative Colitis                             1279         32      1457.9       100     2.194938
@@ -1147,7 +1154,7 @@ Marketscan  DMARD        Cancer                      Solid Cancer               
 Marketscan  DMARD        Cardiac disease             Aortic Insufficiency/Aortic Regurgitation      2045         18    1809.218       100     0.994905
 Marketscan  DMARD        Cardiac disease             Conduction Block                               2045         13    1810.075       100     0.718202
 Marketscan  DMARD        Cardiac disease             Myocardial infarction                          2045          5    1820.214       100     0.274693
-Marketscan  DMARD        Infection                   Hospitalized infection                         2045        125    1722.752       100     7.255834
+Marketscan  DMARD        Infection                   Hospitalized infection                         2045        123    1725.363       100     7.128933
 Marketscan  DMARD        Infection                   Opportunistic infection                        2045         37    1779.978       100     2.078677
 Marketscan  DMARD        Inflammatory bowel disease  Crohn’s Disease                                2045         41    1743.863       100     2.351102
 Marketscan  DMARD        Inflammatory bowel disease  Ulcerative Colitis                             2045         41    1772.318       100     2.313355
@@ -1185,7 +1192,7 @@ Marketscan  NSAID        Neurological Disease        Spinal Cord compression    
 Marketscan  NSAID        Osteoporotic fracture       Clinical vertebral fracture                    4893         36    4232.033       100     0.850655
  
                                                               queryIncidenceOutcomes.sas
-                                                                  --- AS project ---                                 13:59 Thursday, April 5, 2018   8
+                                                                  --- AS project ---                                  10:31 Friday, April 27, 2018   8
 
                                                                                                                          person              incidence
 database    exposure     Disease Category            Disease                                           n  incidence       Years     scale         Rate
@@ -1200,7 +1207,7 @@ Marketscan  No exposure  Cancer                      Solid Cancer               
 Marketscan  No exposure  Cardiac disease             Aortic Insufficiency/Aortic Regurgitation      5696         84    4823.888       100     1.741334
 Marketscan  No exposure  Cardiac disease             Conduction Block                               5696        101    4825.188       100     2.093183
 Marketscan  No exposure  Cardiac disease             Myocardial infarction                          5696         45    4895.097       100     0.919287
-Marketscan  No exposure  Infection                   Hospitalized infection                         5696        526    4442.349       100     11.84058
+Marketscan  No exposure  Infection                   Hospitalized infection                         5696        525    4442.519       100     11.81762
 Marketscan  No exposure  Infection                   Opportunistic infection                        5696         68    4860.964       100       1.3989
 Marketscan  No exposure  Inflammatory bowel disease  Crohn’s Disease                                5696        165    4795.828       100     3.440491
 Marketscan  No exposure  Inflammatory bowel disease  Ulcerative Colitis                             5696        125    4826.467       100     2.589886
@@ -1223,7 +1230,7 @@ Marketscan  TNF          Cancer                      Solid Cancer               
 Marketscan  TNF          Cardiac disease             Aortic Insufficiency/Aortic Regurgitation      5779         45    6644.942       100     0.677207
 Marketscan  TNF          Cardiac disease             Conduction Block                               5779         43    6659.844       100     0.645661
 Marketscan  TNF          Cardiac disease             Myocardial infarction                          5779         14    6707.745       100     0.208714
-Marketscan  TNF          Infection                   Hospitalized infection                         5779        371    6372.214       100     5.822153
+Marketscan  TNF          Infection                   Hospitalized infection                         5779        367    6376.665       100     5.755359
 Marketscan  TNF          Infection                   Opportunistic infection                        5779        112    6594.601       100     1.698359
 Marketscan  TNF          Inflammatory bowel disease  Crohn’s Disease                                5779        230    6379.491       100     3.605303
 Marketscan  TNF          Inflammatory bowel disease  Ulcerative Colitis                             5779        142    6512.939       100     2.180275
@@ -1246,7 +1253,7 @@ Medicare    DMARD        Cancer                      Solid Cancer               
 Medicare    DMARD        Cardiac disease             Aortic Insufficiency/Aortic Regurgitation      5193        215    8654.552       100     2.484242
 Medicare    DMARD        Cardiac disease             Conduction Block                               5193        198    8750.612       100     2.262699
 Medicare    DMARD        Cardiac disease             Myocardial infarction                          5193        106    9008.474       100      1.17667
-Medicare    DMARD        Infection                   Hospitalized infection                         5193       1149    7510.858       100     15.29785
+Medicare    DMARD        Infection                   Hospitalized infection                         5193       1140    7523.455       100     15.15261
 Medicare    DMARD        Infection                   Opportunistic infection                        5193        258    8566.626       100     3.011688
 Medicare    DMARD        Inflammatory bowel disease  Crohn’s Disease                                5193        161    8533.845       100     1.886606
 Medicare    DMARD        Inflammatory bowel disease  Ulcerative Colitis                             5193        119    8770.921       100     1.356756
@@ -1259,7 +1266,7 @@ Medicare    DMARD        Lung disease                Restrictive lung disease   
 Medicare    DMARD        Neurological Disease        Cauda Equina syndrome                          5193          1    9171.176       100     0.010904
  
                                                               queryIncidenceOutcomes.sas
-                                                                  --- AS project ---                                 13:59 Thursday, April 5, 2018   9
+                                                                  --- AS project ---                                  10:31 Friday, April 27, 2018   9
 
                                                                                                                          person              incidence
 database    exposure     Disease Category            Disease                                           n  incidence       Years     scale         Rate
@@ -1276,7 +1283,7 @@ Medicare    NSAID        Cancer                      Solid Cancer               
 Medicare    NSAID        Cardiac disease             Aortic Insufficiency/Aortic Regurgitation     12847        401    18653.19       100     2.149766
 Medicare    NSAID        Cardiac disease             Conduction Block                              12847        462    18610.22       100     2.482507
 Medicare    NSAID        Cardiac disease             Myocardial infarction                         12847        199    19462.64       100     1.022472
-Medicare    NSAID        Infection                   Hospitalized infection                        12847       2418    16574.68       100     14.58851
+Medicare    NSAID        Infection                   Hospitalized infection                        12847       2407    16601.76       100     14.49846
 Medicare    NSAID        Infection                   Opportunistic infection                       12847        512    18485.52       100     2.769736
 Medicare    NSAID        Inflammatory bowel disease  Crohn’s Disease                               12847        187    19066.86       100     0.980759
 Medicare    NSAID        Inflammatory bowel disease  Ulcerative Colitis                            12847        158    19301.73       100     0.818579
@@ -1299,7 +1306,7 @@ Medicare    No exposure  Cancer                      Solid Cancer               
 Medicare    No exposure  Cardiac disease             Aortic Insufficiency/Aortic Regurgitation     13275        840    17897.29       100     4.693449
 Medicare    No exposure  Cardiac disease             Conduction Block                              13275        862    18009.89       100     4.786258
 Medicare    No exposure  Cardiac disease             Myocardial infarction                         13275        388    18709.15       100     2.073852
-Medicare    No exposure  Infection                   Hospitalized infection                        13275       3563    14737.93       100     24.17571
+Medicare    No exposure  Infection                   Hospitalized infection                        13275       3539    14766.21       100     23.96689
 Medicare    No exposure  Infection                   Opportunistic infection                       13275        534    18409.99       100     2.900599
 Medicare    No exposure  Inflammatory bowel disease  Crohn’s Disease                               13275        578    18173.54       100     3.180447
 Medicare    No exposure  Inflammatory bowel disease  Ulcerative Colitis                            13275        331    18587.95       100     1.780724
@@ -1322,7 +1329,7 @@ Medicare    TNF          Cancer                      Solid Cancer               
 Medicare    TNF          Cardiac disease             Aortic Insufficiency/Aortic Regurgitation      5929        219    13006.89       100     1.683723
 Medicare    TNF          Cardiac disease             Conduction Block                               5929        231    13098.72       100     1.763531
 Medicare    TNF          Cardiac disease             Myocardial infarction                          5929         92    13395.21       100     0.686813
-Medicare    TNF          Infection                   Hospitalized infection                         5929       1267    11276.34       100     11.23591
+Medicare    TNF          Infection                   Hospitalized infection                         5929       1253    11309.54       100     11.07915
 Medicare    TNF          Infection                   Opportunistic infection                        5929        331    12819.76       100     2.581951
 Medicare    TNF          Inflammatory bowel disease  Crohn’s Disease                                5929        305    12301.19       100     2.479436
 Medicare    TNF          Inflammatory bowel disease  Ulcerative Colitis                             5929        205    12829.28       100     1.597908
@@ -1333,7 +1340,7 @@ Medicare    TNF          Lung disease                Apical Pulmonary fibrosis  
 Medicare    TNF          Lung disease                Interstitial lung disease                      5929         48    13446.08       100     0.356981
  
                                                               queryIncidenceOutcomes.sas
-                                                                  --- AS project ---                                 13:59 Thursday, April 5, 2018  10
+                                                                  --- AS project ---                                  10:31 Friday, April 27, 2018  10
 
                                                                                                                          person              incidence
 database    exposure     Disease Category            Disease                                           n  incidence       Years     scale         Rate
@@ -1407,18 +1414,18 @@ Medicare    TNF          Uveitis                     Uveitis                    
  
  
                                                               queryIncidenceOutcomes.sas
-505        quit;
+506        quit;
 NOTE: The PROCEDURE SQL printed pages 6-10.
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           9.56 seconds
-      cpu time            17.89 seconds
+      real time           8.15 seconds
+      cpu time            14.97 seconds
       
 
-506        
 507        
-508        ods html close;
+508        
+509        ods html close;
 NOTE: SAS Institute Inc., SAS Campus Drive, Cary, NC USA 27513-2414
 NOTE: The SAS System used:
-      real time           1:02.57
-      cpu time            41.97 seconds
+      real time           39.78 seconds
+      cpu time            29.29 seconds
       
