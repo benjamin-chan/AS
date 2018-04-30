@@ -63,10 +63,54 @@ quit;
 
 /* 
 Copy data sets from permanent library
- */
+
 proc copy out = Work in = DT;
   select icd9_infection outcome_infection_dx;
 run;
+ */
+
+/* 
+Instead of requiring queryOutcomeHospitalizedInfection.sas to be run first, make this script to be able to be run independently
+
+* Need to create Work.icd9_infection and Work.outcome_infection_dx data sets
+ */
+proc import datafile='U:\studies\AS\pgms\bchan\data\raw\AHRQ_CCS.csv' 
+    out=icd9_infection dbms = csv replace;
+    guessingrows = 1000;
+run;
+data icd9_infection;
+set icd9_infection;
+Infection=upcase(Infection);
+run;
+proc freq data = Work.icd9_infection;
+  table oi / missprint;
+  table infection_category / missprint;
+run;
+data icd9_inf;
+length ICD_9_CM_CODE $18;
+set icd9_infection;
+keep
+ICD_9_CM_CODE ICD_9_CM_CODE_DESCRIPTION Infection Infection_Category Infection_Location Infectious_Organism OI Viral Fungal bacterial_infection other_types_of_infection;
+where Infection^=" ";
+run; 
+data outcome_infection_dx(drop=rc);
+    if _N_=1 then do;
+        declare hash HDX(dataset:"icd9_inf");
+        rc = HDX.definekey("ICD_9_CM_CODE");
+        rc = HDX.definedata(ALL:"YES");
+        rc=HDX.definedone();
+    end;
+if 0 then set icd9_inf;
+set &indxdat. ;
+by database exposure patid exposureStart exposureEnd exposureID BEGIN_DATE;
+/*length outcome $20 outcome_date 4;*/
+/*format outcome_date mmddyy10.;*/
+        rc =HDX.find(key:DX);
+        if rc=0 then output outcome_infection_dx;
+where ENC_TYPE in ('IP' 'ER' 'AV' 'NH' 'HH' 'ED');
+run;
+proc sort data=outcome_infection_dx nodupkey; by database exposure patid exposureStart exposureEnd exposureID BEGIN_DATE DX ENC_TYPE;run;
+proc freq data=outcome_infection_dx; tables Infection_Category Infection;run;
 
 
 /* 
