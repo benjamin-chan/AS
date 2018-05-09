@@ -31,117 +31,100 @@ proc sql;
 quit;
 
 
-proc sql;
-/* Denominator enrolled at any time during year */
-  create table Work.denom as
-    select "Medicare" as database, 2006 as year, count(distinct patid) as denom from stdc5p.std_enrollment where 6 <= intck("month", max(enr_start_date, "01JAN2006"D), min("31DEC2006"D, enr_end_date)) union corr
-    select "Medicare" as database, 2007 as year, count(distinct patid) as denom from stdc5p.std_enrollment where 6 <= intck("month", max(enr_start_date, "01JAN2007"D), min("31DEC2007"D, enr_end_date)) union corr
-    select "Medicare" as database, 2008 as year, count(distinct patid) as denom from stdc5p.std_enrollment where 6 <= intck("month", max(enr_start_date, "01JAN2008"D), min("31DEC2008"D, enr_end_date)) union corr
-    select "Medicare" as database, 2009 as year, count(distinct patid) as denom from stdc5p.std_enrollment where 6 <= intck("month", max(enr_start_date, "01JAN2009"D), min("31DEC2009"D, enr_end_date)) union corr
-    select "Medicare" as database, 2010 as year, count(distinct patid) as denom from stdc5p.std_enrollment where 6 <= intck("month", max(enr_start_date, "01JAN2010"D), min("31DEC2010"D, enr_end_date)) union corr
-    select "Medicare" as database, 2011 as year, count(distinct patid) as denom from stdc5p.std_enrollment where 6 <= intck("month", max(enr_start_date, "01JAN2011"D), min("31DEC2011"D, enr_end_date)) union corr
-    select "Medicare" as database, 2012 as year, count(distinct patid) as denom from stdc5p.std_enrollment where 6 <= intck("month", max(enr_start_date, "01JAN2012"D), min("31DEC2012"D, enr_end_date)) union corr
-    select "Medicare" as database, 2013 as year, count(distinct patid) as denom from stdc5p.std_enrollment where 6 <= intck("month", max(enr_start_date, "01JAN2013"D), min("31DEC2013"D, enr_end_date)) union corr
-    select "Medicare" as database, 2014 as year, count(distinct patid) as denom from stdc5p.std_enrollment where 6 <= intck("month", max(enr_start_date, "01JAN2014"D), min("31DEC2014"D, enr_end_date)) ;
-/* Numerator is entered AS cohort on or before year & enrolled at any time during year */
-  create table Work.numer as
-    select "Medicare" as database, 2006 as year, count(distinct patid) as numer from STD_SABR.STD_DX_2006    where dx = "7200" union corr
-    select "Medicare" as database, 2007 as year, count(distinct patid) as numer from STD_SABR.STD_DX_2007    where dx = "7200" union corr
-    select "Medicare" as database, 2008 as year, count(distinct patid) as numer from STD_SABR.STD_DX_2008_V2 where dx = "7200" union corr
-    select "Medicare" as database, 2009 as year, count(distinct patid) as numer from STD_SABR.STD_DX_2009    where dx = "7200" union corr
-    select "Medicare" as database, 2010 as year, count(distinct patid) as numer from STD_SABR.STD_DX_2010    where dx = "7200" union corr
-    select "Medicare" as database, 2011 as year, count(distinct patid) as numer from STD_SABR.STD_DX_2011    where dx = "7200" union corr
-    select "Medicare" as database, 2012 as year, count(distinct patid) as numer from STD_SABR.STD_DX_2012    where dx = "7200" union corr
-    select "Medicare" as database, 2013 as year, count(distinct patid) as numer from STD_SABR.STD_DX_2013    where dx = "7200" union corr
-    select "Medicare" as database, 2014 as year, count(distinct patid) as numer from STD_SABR.STD_DX_2014    where dx = "7200" ;
-  create table Work.prev as
-    select A.database, A.year, A.numer, B.denom, A.numer / B.denom as prev
-    from Work.numer A inner join
-         Work.denom B on (A.database = B.database & A.year = B.year);
-  select * from Work.prev;
-quit;
-
-
+/* 
+Denominator
+12 months of enrollment during calendar year
+ */
+%let varlist = patid, enr_start_date, enr_end_date, intck("month", calculated date1, calculated date2) + 1 as monthsEnrolled;
+%let where = calculated monthsEnrolled = 12;
 proc sql;
   create table Work.denom1 as
-    select distinct 2006 as year, patid from stdc5p.std_enrollment where 6 <= intck("month", max(enr_start_date, "01JAN2006"D), min("31DEC2006"D, enr_end_date)) union corr
-    select distinct 2007 as year, patid from stdc5p.std_enrollment where 6 <= intck("month", max(enr_start_date, "01JAN2007"D), min("31DEC2007"D, enr_end_date)) union corr
-    select distinct 2008 as year, patid from stdc5p.std_enrollment where 6 <= intck("month", max(enr_start_date, "01JAN2008"D), min("31DEC2008"D, enr_end_date)) union corr
-    select distinct 2009 as year, patid from stdc5p.std_enrollment where 6 <= intck("month", max(enr_start_date, "01JAN2009"D), min("31DEC2009"D, enr_end_date)) union corr
-    select distinct 2010 as year, patid from stdc5p.std_enrollment where 6 <= intck("month", max(enr_start_date, "01JAN2010"D), min("31DEC2010"D, enr_end_date)) union corr
-    select distinct 2011 as year, patid from stdc5p.std_enrollment where 6 <= intck("month", max(enr_start_date, "01JAN2011"D), min("31DEC2011"D, enr_end_date)) union corr
-    select distinct 2012 as year, patid from stdc5p.std_enrollment where 6 <= intck("month", max(enr_start_date, "01JAN2012"D), min("31DEC2012"D, enr_end_date)) union corr
-    select distinct 2013 as year, patid from stdc5p.std_enrollment where 6 <= intck("month", max(enr_start_date, "01JAN2013"D), min("31DEC2013"D, enr_end_date)) union corr
-    select distinct 2014 as year, patid from stdc5p.std_enrollment where 6 <= intck("month", max(enr_start_date, "01JAN2014"D), min("31DEC2014"D, enr_end_date)) 
+    select distinct 2006 as year, max(enr_start_date, "01JAN2006"D) format = mmddyy10. as date1, min("31DEC2006"D, enr_end_date) format = mmddyy10. as date2, &varlist from stdc5p.std_enrollment where &where union corr
+    select distinct 2007 as year, max(enr_start_date, "01JAN2007"D) format = mmddyy10. as date1, min("31DEC2007"D, enr_end_date) format = mmddyy10. as date2, &varlist from stdc5p.std_enrollment where &where union corr
+    select distinct 2008 as year, max(enr_start_date, "01JAN2008"D) format = mmddyy10. as date1, min("31DEC2008"D, enr_end_date) format = mmddyy10. as date2, &varlist from stdc5p.std_enrollment where &where union corr
+    select distinct 2009 as year, max(enr_start_date, "01JAN2009"D) format = mmddyy10. as date1, min("31DEC2009"D, enr_end_date) format = mmddyy10. as date2, &varlist from stdc5p.std_enrollment where &where union corr
+    select distinct 2010 as year, max(enr_start_date, "01JAN2010"D) format = mmddyy10. as date1, min("31DEC2010"D, enr_end_date) format = mmddyy10. as date2, &varlist from stdc5p.std_enrollment where &where union corr
+    select distinct 2011 as year, max(enr_start_date, "01JAN2011"D) format = mmddyy10. as date1, min("31DEC2011"D, enr_end_date) format = mmddyy10. as date2, &varlist from stdc5p.std_enrollment where &where union corr
+    select distinct 2012 as year, max(enr_start_date, "01JAN2012"D) format = mmddyy10. as date1, min("31DEC2012"D, enr_end_date) format = mmddyy10. as date2, &varlist from stdc5p.std_enrollment where &where union corr
+    select distinct 2013 as year, max(enr_start_date, "01JAN2013"D) format = mmddyy10. as date1, min("31DEC2013"D, enr_end_date) format = mmddyy10. as date2, &varlist from stdc5p.std_enrollment where &where union corr
+    select distinct 2014 as year, max(enr_start_date, "01JAN2014"D) format = mmddyy10. as date1, min("31DEC2014"D, enr_end_date) format = mmddyy10. as date2, &varlist from stdc5p.std_enrollment where &where 
     order by patid, year;
-  create table Work.numer1 as
-    select distinct B.year, B.patid
-    from (select distinct 2006 as year, patid from stdc5p.std_dx_2006 where dx_type = "09" & dx = "7200" & enc_type ^in ("IF", "OT", "") & prov_type = "66" union corr
-          select distinct 2007 as year, patid from stdc5p.std_dx_2007 where dx_type = "09" & dx = "7200" & enc_type ^in ("IF", "OT", "") & prov_type = "66" union corr
-          select distinct 2008 as year, patid from stdc5p.std_dx_2008 where dx_type = "09" & dx = "7200" & enc_type ^in ("IF", "OT", "") & prov_type = "66" union corr
-          select distinct 2009 as year, patid from stdc5p.std_dx_2009 where dx_type = "09" & dx = "7200" & enc_type ^in ("IF", "OT", "") & prov_type = "66" union corr
-          select distinct 2010 as year, patid from stdc5p.std_dx_2010 where dx_type = "09" & dx = "7200" & enc_type ^in ("IF", "OT", "") & prov_type = "66" union corr
-          select distinct 2011 as year, patid from stdc5p.std_dx_2011 where dx_type = "09" & dx = "7200" & enc_type ^in ("IF", "OT", "") & prov_type = "66" union corr
-          select distinct 2012 as year, patid from stdc5p.std_dx_2012 where dx_type = "09" & dx = "7200" & enc_type ^in ("IF", "OT", "") & prov_type = "66" union corr
-          select distinct 2013 as year, patid from stdc5p.std_dx_2013 where dx_type = "09" & dx = "7200" & enc_type ^in ("IF", "OT", "") & prov_type = "66" union corr
-          select distinct 2014 as year, patid from stdc5p.std_dx_2014 where dx_type = "09" & dx = "7200" & enc_type ^in ("IF", "OT", "") & prov_type = "66" ) A inner join
-         Work.denom1 B on (A.patid = B.patid & A.year = B.year)
-    order by B.patid, B.year;
-  create table Work.prev1 as
-    select "Medicare" as database, A.year, A.numer, B.denom, A.numer / B.denom as prev
-    from (select year, count(distinct patid) as numer from Work.numer1 group by year) A inner join
-         (select year, count(distinct patid) as denom from Work.denom1 group by year) B on (A.year = B.year);
-  create table Work.denom2 as
-    select distinct "OVERALL 2006-2014" as year, patid, enr_start_date, enr_end_date from stdc5p.std_enrollment where 6 <= intck("month", max(enr_start_date, "01JAN2006"D), min("31DEC2014"D, enr_end_date)) ;
-  create table Work.numer2 as
-    select distinct B.year, B.patid
-    from (select distinct begin_date, patid from stdc5p.std_dx_2006 where dx_type = "09" & dx = "7200" & enc_type ^in ("IF", "OT", "") & prov_type = "66" union corr
-          select distinct begin_date, patid from stdc5p.std_dx_2007 where dx_type = "09" & dx = "7200" & enc_type ^in ("IF", "OT", "") & prov_type = "66" union corr
-          select distinct begin_date, patid from stdc5p.std_dx_2008 where dx_type = "09" & dx = "7200" & enc_type ^in ("IF", "OT", "") & prov_type = "66" union corr
-          select distinct begin_date, patid from stdc5p.std_dx_2009 where dx_type = "09" & dx = "7200" & enc_type ^in ("IF", "OT", "") & prov_type = "66" union corr
-          select distinct begin_date, patid from stdc5p.std_dx_2010 where dx_type = "09" & dx = "7200" & enc_type ^in ("IF", "OT", "") & prov_type = "66" union corr
-          select distinct begin_date, patid from stdc5p.std_dx_2011 where dx_type = "09" & dx = "7200" & enc_type ^in ("IF", "OT", "") & prov_type = "66" union corr
-          select distinct begin_date, patid from stdc5p.std_dx_2012 where dx_type = "09" & dx = "7200" & enc_type ^in ("IF", "OT", "") & prov_type = "66" union corr
-          select distinct begin_date, patid from stdc5p.std_dx_2013 where dx_type = "09" & dx = "7200" & enc_type ^in ("IF", "OT", "") & prov_type = "66" union corr
-          select distinct begin_date, patid from stdc5p.std_dx_2014 where dx_type = "09" & dx = "7200" & enc_type ^in ("IF", "OT", "") & prov_type = "66" ) A inner join
-         Work.denom2 B on (A.patid = B.patid & B.enr_start_date <= A.begin_date <= B.enr_end_date);
-  create table Work.prev2 as
-    select "Medicare" as database, A.year, A.numer, B.denom, A.numer / B.denom as prev
-    from (select year, count(distinct patid) as numer from Work.numer2 group by year) A,
-         (select year, count(distinct patid) as denom from Work.denom2 group by year) B;
-  create table Work.prev as
-    select database, put(year, 4.) as year, numer, denom, prev from Work.prev1 union corr
-    select database,                  year, numer, denom, prev from Work.prev2 ;
-  select database, year, numer format = comma10.0, denom format = comma10.0, prev format = percent10.3 from Work.prev;
+  create table Work.denom2 as 
+    select distinct patid, enr_start_date, enr_end_date, intck("month", enr_start_date, enr_end_date) + 1 as monthsEnrolled
+    from stdc5p.std_enrollment
+    where 12 <= calculated monthsEnrolled;
 quit;
+
 /* 
-database  year                    numer       denom        prev
----------------------------------------------------------------
-Medicare  2006                      188     866,963     0.022%
-Medicare  2007                      263     881,582     0.030%
-Medicare  2008                      355     892,067     0.040%
-Medicare  2009                      426     895,012     0.048%
-Medicare  2010                      509     912,148     0.056%
-Medicare  2011                      595     947,119     0.063%
-Medicare  2012                      700     993,250     0.070%
-Medicare  2013                      858   1,114,786     0.077%
-Medicare  2014                      952   1,135,170     0.084%
-Medicare  OVERALL 2006-2014       1,061   1,846,811     0.057%
-
-database  year                    numer       denom        prev
----------------------------------------------------------------
-Medicare  2006                      188     866,963     0.022%
-Medicare  2007                      203     881,582     0.023%
-Medicare  2008                      225     892,067     0.025%
-Medicare  2009                      245     895,012     0.027%
-Medicare  2010                      283     912,148     0.031%
-Medicare  2011                      299     947,119     0.032%
-Medicare  2012                      334     993,250     0.034%
-Medicare  2013                      386   1,114,786     0.035%
-Medicare  2014                      411   1,135,170     0.036%
-Medicare  OVERALL 2006-2014       1,061   1,846,811     0.057%
+Two 720.xx diagnosis codes between 7-365 days apart
+Both from rheumatologists
+Both from ambulatory visits
  */
+%let varlist = patid, begin_date, dx_type, dx, enc_type, prov_type;
+%let where = dx_type = "09" & dx like "720%" & enc_type = "AV";
+proc sql;
+  create table Work.temp1 as
+    select &varlist from stdc5p.std_dx_2006 where &where union corr
+    select &varlist from stdc5p.std_dx_2007 where &where union corr
+    select &varlist from stdc5p.std_dx_2008 where &where union corr
+    select &varlist from stdc5p.std_dx_2009 where &where union corr
+    select &varlist from stdc5p.std_dx_2010 where &where union corr
+    select &varlist from stdc5p.std_dx_2011 where &where union corr
+    select &varlist from stdc5p.std_dx_2012 where &where union corr
+    select &varlist from stdc5p.std_dx_2013 where &where union corr
+    select &varlist from stdc5p.std_dx_2014 where &where 
+    order by patid, begin_date;
+  select dx, count(*) as n from Work.temp1 group by dx;
+quit;
+proc sql;
+  create table Work.temp2 as
+    select distinct
+           coalesce(A.patid, B.patid) as patid,
+           year(B.begin_date) as year,
+           A.begin_date format = mmddyy10. as date1,
+           B.begin_date format = mmddyy10. as date2,
+           A.prov_type as prov_type1,
+           B.prov_type as prov_type2,
+           int((B.begin_date - C.birth_date) / 365.25) as ageAtASDate
+    from Work.temp1 A inner join
+         Work.temp1 B on (A.patid = B.patid &
+                          intnx("year", B.begin_date, -1, "sameday") < A.begin_date < B.begin_date - 7) inner join
+         stdc5p.std_demog_2006_2014 C on (A.patid = C.patid)
+    where (A.prov_type = "66" & B.prov_type = "66");
+  create table Work.numer1 as
+    select A.*, B.year
+    from (select patid, min(year) as yearEarliestDiagnosis from Work.temp2 group by patid) A inner join
+         Work.denom1 B on (A.patid = B.patid & A.yearEarliestDiagnosis <= B.year);
+  create table Work.numer2 as
+    select A.*
+    from (select patid, min(date2) format = mmddyy10. as dateEarliestDiagnosis from Work.temp2 group by patid) A inner join
+         Work.denom2 B on (A.patid = B.patid & B.enr_start_date <= A.dateEarliestDiagnosis <= B.enr_end_date);
+quit;
 
+/* 
+Prevalence
+ */
+proc sql;
+  create table Work.prev as
+    select put(coalesce(A.year, B.year), 4.) as year, 
+           A.numer as numer5pct, 
+           B.denom as denom5pct,
+           A.numer * 20 as numerEstimated,
+           B.denom * 20 as denomEstimated,
+           A.numer / B.denom format = percent10.3 as prev
+    from (select year, count(distinct patid) as numer from Work.numer1 group by year) A inner join
+         (select year, count(distinct patid) as denom from Work.denom1 group by year) B on (A.year = B.year)
+    union corr
+    select "OVERALL 2006-2014" as year, 
+           A.numer as numer5pct, 
+           B.denom as denom5pct,
+           A.numer * 20 as numerEstimated,
+           B.denom * 20 as denomEstimated,
+           A.numer / B.denom format = percent10.3 as prev
+    from (select count(distinct patid) as numer from Work.numer2) A,
+         (select count(distinct patid) as denom from Work.denom2) B;
+  select * from Work.prev;
+quit;
 
 
 proc export
