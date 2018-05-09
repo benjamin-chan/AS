@@ -90,7 +90,7 @@ proc sql;
          Work.temp1 B on (A.patid = B.patid &
                           intnx("year", B.begin_date, -1, "sameday") < A.begin_date < B.begin_date - 7) inner join
          stdc5p.std_demog_2006_2014 C on (A.patid = C.patid)
-    where (A.prov_type = "66" & B.prov_type = "66");
+    where (A.prov_type = "66" | B.prov_type = "66");
   create table Work.numer1 as
     select A.*, B.year
     from (select patid, min(year) as yearEarliestDiagnosis from Work.temp2 group by patid) A inner join
@@ -115,7 +115,7 @@ proc sql;
     from (select year, count(distinct patid) as numer from Work.numer1 group by year) A inner join
          (select year, count(distinct patid) as denom from Work.denom1 group by year) B on (A.year = B.year)
     union corr
-    select "OVERALL 2006-2014" as year, 
+    select "OVERALL" as year, 
            A.numer as numer5pct, 
            B.denom as denom5pct,
            A.numer * 20 as numerEstimated,
