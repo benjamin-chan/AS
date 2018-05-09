@@ -61,7 +61,7 @@ Both from rheumatologists
 Both from ambulatory visits
  */
 %let varlist = patid, begin_date, dx_type, dx, enc_type, prov_type;
-%let where = dx_type = "09" & dx like "720%" & enc_type = "AV";
+%let where = dx_type = "09" & dx like "720%" & enc_type = "AV" & prov_type = "66";
 proc sql;
   create table Work.temp1 as
     select &varlist from stdc5p.std_dx_2006 where &where union corr
@@ -93,11 +93,11 @@ proc sql;
     where (A.prov_type = "66" | B.prov_type = "66");
   create table Work.numer1 as
     select A.*, B.year
-    from (select patid, min(year) as yearEarliestDiagnosis from Work.temp2 group by patid) A inner join
+    from (select patid, min(year(begin_date)) as yearEarliestDiagnosis from Work.temp1 group by patid) A inner join
          Work.denom1 B on (A.patid = B.patid & A.yearEarliestDiagnosis <= B.year);
   create table Work.numer2 as
     select A.*
-    from (select patid, min(date2) format = mmddyy10. as dateEarliestDiagnosis from Work.temp2 group by patid) A inner join
+    from (select patid, min(begin_date) format = mmddyy10. as dateEarliestDiagnosis from Work.temp1 group by patid) A inner join
          Work.denom2 B on (A.patid = B.patid & B.enr_start_date <= A.dateEarliestDiagnosis <= B.enr_end_date);
 quit;
 
