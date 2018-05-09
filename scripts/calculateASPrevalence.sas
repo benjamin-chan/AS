@@ -36,7 +36,7 @@ Denominator
 12 months of enrollment during calendar year
  */
 %let varlist = patid, enr_start_date, enr_end_date, intck("month", calculated date1, calculated date2) + 1 as monthsEnrolled;
-%let where = calculated monthsEnrolled = 12;
+%let where = 6 <= calculated monthsEnrolled & 12 <= intck("month", enr_start_date, enr_end_date) + 1;
 proc sql;
   create table Work.denom1 as
     select distinct 2006 as year, max(enr_start_date, "01JAN2006"D) format = mmddyy10. as date1, min("31DEC2006"D, enr_end_date) format = mmddyy10. as date2, &varlist from stdc5p.std_enrollment where &where union corr

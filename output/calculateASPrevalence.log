@@ -1,4 +1,4 @@
-1                                                          The SAS System                               10:54 Wednesday, May 9, 2018
+1                                                          The SAS System                               15:15 Wednesday, May 9, 2018
 
 NOTE: Unable to open SASUSER.REGSTRY. WORK.REGSTRY will be opened instead.
 NOTE: All registry changes will be lost at the end of the session.
@@ -35,7 +35,7 @@ of the shared folders.
 
 
 NOTE: SAS initialization used:
-      real time           6.09 seconds
+      real time           4.75 seconds
       cpu time            0.31 seconds
       
 1          *  University of Alabama at Birmingham                               *
@@ -72,7 +72,7 @@ NOTE: Libref NDC was successfully assigned as follows:
       Physical Name: W:\onenote\references\drug ndcs\sas data
 128        footnote "&pgm.";
 129        * footnote2 "%sysfunc(datetime(),datetime14.)";
-2                                                                   The SAS System                                        10:54 Wednesday, May 9, 2018
+2                                                                   The SAS System                                        15:15 Wednesday, May 9, 2018
 
 130        title1 '--- AS project ---';
 131        **********************************************************************;
@@ -100,7 +100,7 @@ NOTE: Data set UCB.COHORTASTD_SABR is in a format that is native to another host
 NOTE: Table WORK.NUMERASCOHORT created, with 3 rows and 2 columns.
 
 146          select * from Work.numerASCohort;
-                                                                  --- AS project ---                                  10:54 Wednesday, May 9, 2018   1
+                                                                  --- AS project ---                                  15:15 Wednesday, May 9, 2018   1
 
                                                                                   numer
                                                                database        ASCohort
@@ -177,7 +177,7 @@ NOTE: Table WORK.NUMERASCOHORT created, with 3 rows and 2 columns.
 147        quit;
 NOTE: The PROCEDURE SQL printed page 1.
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           2.04 seconds
+      real time           0.27 seconds
       cpu time            0.15 seconds
       
 
@@ -188,7 +188,7 @@ NOTE: PROCEDURE SQL used (Total process time):
 152        12 months of enrollment during calendar year
 153         */
 154        %let varlist = patid, enr_start_date, enr_end_date, intck("month", calculated date1, calculated date2) + 1 as monthsEnrolled;
-155        %let where = calculated monthsEnrolled = 12;
+155        %let where = 6 <= calculated monthsEnrolled & 12 <= intck("month", enr_start_date, enr_end_date) + 1;
 156        proc sql;
 157          create table Work.denom1 as
 158            select distinct 2006 as year, max(enr_start_date, "01JAN2006"D) format = mmddyy10. as date1, min("31DEC2006"D, enr_end_date) format =
@@ -210,7 +210,7 @@ NOTE: PROCEDURE SQL used (Total process time):
 166            select distinct 2014 as year, max(enr_start_date, "01JAN2014"D) format = mmddyy10. as date1, min("31DEC2014"D, enr_end_date) format =
 166      ! mmddyy10. as date2, &varlist from stdc5p.std_enrollment where &where
 167            order by patid, year;
-NOTE: Table WORK.DENOM1 created, with 7699865 rows and 7 columns.
+NOTE: Table WORK.DENOM1 created, with 8633842 rows and 7 columns.
 
 168          create table Work.denom2 as
 169            select distinct patid, enr_start_date, enr_end_date, intck("month", enr_start_date, enr_end_date) + 1 as monthsEnrolled
@@ -220,10 +220,10 @@ NOTE: Table WORK.DENOM2 created, with 1831369 rows and 4 columns.
 
 172        quit;
 NOTE: PROCEDURE SQL used (Total process time):
-3                                                                   The SAS System                                        10:54 Wednesday, May 9, 2018
+3                                                                   The SAS System                                        15:15 Wednesday, May 9, 2018
 
-      real time           24.08 seconds
-      cpu time            39.00 seconds
+      real time           26.72 seconds
+      cpu time            1:07.87
       
 
 173        
@@ -276,7 +276,7 @@ The SAS supervisor will process queries for foreign datasets. No parallel where-
 NOTE: Table WORK.TEMP1 created, with 373492 rows and 6 columns.
 
 193          select dx, count(*) as n from Work.temp1 group by dx;
-                                                                  --- AS project ---                                  10:54 Wednesday, May 9, 2018   2
+                                                                  --- AS project ---                                  15:15 Wednesday, May 9, 2018   2
 
                                                              DX                         n
                                                              ----------------------------
@@ -353,8 +353,8 @@ NOTE: Table WORK.TEMP1 created, with 373492 rows and 6 columns.
 194        quit;
 NOTE: The PROCEDURE SQL printed page 2.
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           10:39.75
-      cpu time            9:24.52
+      real time           10:46.34
+      cpu time            9:24.13
       
 
 195        proc sql;
@@ -368,7 +368,7 @@ NOTE: PROCEDURE SQL used (Total process time):
 203                   B.prov_type as prov_type2,
 204                   int((B.begin_date - C.birth_date) / 365.25) as ageAtASDate
 205            from Work.temp1 A inner join
-4                                                                   The SAS System                                        10:54 Wednesday, May 9, 2018
+4                                                                   The SAS System                                        15:15 Wednesday, May 9, 2018
 
 206                 Work.temp1 B on (A.patid = B.patid &
 207                                  intnx("year", B.begin_date, -1, "sameday") < A.begin_date < B.begin_date - 7) inner join
@@ -382,7 +382,7 @@ NOTE: Table WORK.TEMP2 created, with 65023 rows and 7 columns.
 211            select A.*, B.year
 212            from (select patid, min(year) as yearEarliestDiagnosis from Work.temp2 group by patid) A inner join
 213                 Work.denom1 B on (A.patid = B.patid & A.yearEarliestDiagnosis <= B.year);
-NOTE: Table WORK.NUMER1 created, with 7448 rows and 3 columns.
+NOTE: Table WORK.NUMER1 created, with 7919 rows and 3 columns.
 
 214          create table Work.numer2 as
 215            select A.*
@@ -392,8 +392,8 @@ NOTE: Table WORK.NUMER2 created, with 1615 rows and 2 columns.
 
 218        quit;
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           3.83 seconds
-      cpu time            5.92 seconds
+      real time           3.74 seconds
+      cpu time            5.60 seconds
       
 
 219        
@@ -423,20 +423,20 @@ NOTE: The execution of this query involves performing one or more Cartesian prod
 NOTE: Table WORK.PREV created, with 10 rows and 6 columns.
 
 242          select * from Work.prev;
-                                                                  --- AS project ---                                  10:54 Wednesday, May 9, 2018   3
+                                                                  --- AS project ---                                  15:15 Wednesday, May 9, 2018   3
 
                                                                                    numer         denom
                                    year               numer5pct  denom5pct     Estimated     Estimated        prev
                                    -------------------------------------------------------------------------------
-                                   2006                     145     501031          2900      10020620     0.029% 
-                                   2007                     391     816970          7820      16339400     0.048% 
-                                   2008                     527     825445         10540      16508900     0.064% 
-                                   2009                     668     830967         13360      16619340     0.080% 
-                                   2010                     793     844528         15860      16890560     0.094% 
-                                   2011                     950     879996         19000      17599920     0.108% 
-                                   2012                    1103     921994         22060      18439880     0.120% 
-                                   2013                    1384    1032827         27680      20656540     0.134% 
-                                   2014                    1487    1046107         29740      20922140     0.142% 
+                                   2006                     229     830317          4580      16606340     0.028% 
+                                   2007                     417     896578          8340      17931560     0.047% 
+                                   2008                     563     900910         11260      18018200     0.062% 
+                                   2009                     702     904231         14040      18084620     0.078% 
+                                   2010                     830     921241         16600      18424820     0.090% 
+                                   2011                    1009     956052         20180      19121040     0.106% 
+                                   2012                    1169    1003251         23380      20065020     0.117% 
+                                   2013                    1449    1123450         28980      22469000     0.129% 
+                                   2014                    1551    1097812         31020      21956240     0.141% 
                                    OVERALL 2006-2014       1615    1734873         32300      34697460     0.093% 
  
  
@@ -500,8 +500,8 @@ NOTE: Table WORK.PREV created, with 10 rows and 6 columns.
 243        quit;
 NOTE: The PROCEDURE SQL printed page 3.
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           7.37 seconds
-      cpu time            10.88 seconds
+      real time           8.82 seconds
+      cpu time            12.49 seconds
       
 
 244        
@@ -516,7 +516,7 @@ NOTE: PROCEDURE SQL used (Total process time):
 
 253         /**********************************************************************
 254         *   PRODUCT:   SAS
-5                                                                   The SAS System                                        10:54 Wednesday, May 9, 2018
+5                                                                   The SAS System                                        15:15 Wednesday, May 9, 2018
 
 255         *   VERSION:   9.4
 256         *   CREATOR:   External File Interface
@@ -568,7 +568,7 @@ NOTE: PROCEDURE SQL used (Total process time):
 NOTE: The file 'data\processed\prevalenceAS.csv' is:
       Filename=U:\studies\AS\pgms\bchan\data\processed\prevalenceAS.csv,
       RECFM=V,LRECL=32767,File Size (bytes)=0,
-      Last Modified=09May2018:11:06:02,
+      Last Modified=09May2018:15:27:33,
       Create Time=09May2018:10:48:13
 
 NOTE: 11 records were written to the file 'data\processed\prevalenceAS.csv'.
@@ -576,7 +576,7 @@ NOTE: 11 records were written to the file 'data\processed\prevalenceAS.csv'.
       The maximum record length was 59.
 NOTE: There were 10 observations read from the data set WORK.PREV.
 NOTE: DATA statement used (Total process time):
-      real time           0.06 seconds
+      real time           0.03 seconds
       cpu time            0.01 seconds
       
 
@@ -585,12 +585,12 @@ NOTE: DATA statement used (Total process time):
   
 NOTE: "data\processed\prevalenceAS.csv" file was successfully created.
 NOTE: PROCEDURE EXPORT used (Total process time):
-      real time           0.29 seconds
-      cpu time            0.15 seconds
+      real time           0.21 seconds
+      cpu time            0.14 seconds
       
 
 301        
-6                                                                   The SAS System                                        10:54 Wednesday, May 9, 2018
+6                                                                   The SAS System                                        15:15 Wednesday, May 9, 2018
 
 302        
 303        
@@ -598,6 +598,6 @@ NOTE: PROCEDURE EXPORT used (Total process time):
 305        ods html close;
 NOTE: SAS Institute Inc., SAS Campus Drive, Cary, NC USA 27513-2414
 NOTE: The SAS System used:
-      real time           11:39.86
-      cpu time            10:21.53
+      real time           11:43.31
+      cpu time            10:51.11
       
