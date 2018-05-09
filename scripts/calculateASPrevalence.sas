@@ -61,7 +61,7 @@ Both from rheumatologists
 Both from ambulatory visits
  */
 %let varlist = patid, begin_date, dx_type, dx, enc_type, prov_type;
-%let where = dx_type = "09" & dx like "720%" & enc_type = "AV" & prov_type = "66";
+%let where = dx_type = "09" & dx = "7200" & enc_type = "AV" & prov_type = "66";
 proc sql;
   create table Work.temp1 as
     select &varlist from stdc5p.std_dx_2006 where &where union corr
