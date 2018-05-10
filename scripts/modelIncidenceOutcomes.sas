@@ -25,6 +25,57 @@ ods html
 
 
 /* 
+Focusing on the infections (hospitalized and opportunistic) and fractures outcomes,
+add corticosteroids to the model (include and exclude from PS model)
+
+From: Kevin Winthrop 
+Sent: Friday, January 12, 2018 1:44 PM
+To: Benjamin Chan <chanb@ohsu.edu>
+Subject: Re: EULAR abstract V9; Final?
+
+What about pulling out AGE and using as a discrete covariate in the model?
+Like we discussed doing with steroids. Have you played around with the
+hospital infection Outcome yet?
+
+
+--------------------------------------------------------------------------------
+
+* Check diagnosis codes for OI
+                                                                  Cumulative  Cumulative
+  Infection_Category                          Frequency  Percent   Frequency    Percent
+  --------------------------------------------------------------------------------------
+  Candidiasis                                        9     0.38           9       0.38  
+  HSV                                                4     0.17          13       0.54  
+  aspergillosis                                    140     5.87         153       6.41  
+  blastomycosis                                     43     1.80         196       8.21  
+  candidiasis                                     1106    46.33        1302      54.55  
+  cat-scratch                                        5     0.21        1307      54.75  
+  coccidioidomycosis                               129     5.40        1436      60.16  
+  cryptococcosis                                     9     0.38        1445      60.54  
+  encephalitis                                       4     0.17        1449      60.70  
+  endemic mycosis                                   23     0.96        1472      61.67  
+  endocarditis                                       7     0.29        1479      61.96  
+  filarial or other parasitis                        1     0.04        1480      62.00  
+  gastroenteritis                                   13     0.54        1493      62.55  
+  herpes                                             6     0.25        1499      62.80  
+  histoplasmosis                                   146     6.12        1645      68.91  
+  invasive mold                                    231     9.68        1876      78.59  
+  listeriosis                                        1     0.04        1877      78.63  
+  nontuberculosis mycobacteria                     435    18.22        2312      96.86  
+  pneumocystsis                                     42     1.76        2354      98.62  
+  progressive multifocal leukoencephalopathy         9     0.38        2363      98.99  
+  sporotrichosis                                     8     0.34        2371      99.33  
+  toxoplasmosis                                     16     0.67        2387     100.00  
+                                Frequency Missing = 92
+
+* Check if double counting Hosp Inf.  
+  CONFIRMED: No double-counting of outcomes
+ */
+
+
+
+
+/* 
 Prepare analytic data set
  */
 proc sql;
@@ -64,6 +115,8 @@ proc sql;
            A.iptw,
            A.indCommonSupport,
            A.iptwStabilized,
+           A.meanPredEqDoseCat,
+           A.indHospInf,
            B.outcomeCategory,
            B.disease,
            B.censor,
@@ -147,20 +200,25 @@ quit;
 
 
 
-%macro model(model, outcomeCategory, disease, len, weight);
+%macro model(model, outcomeCategory, disease, len, weight, covar);
   ods output HazardRatios = Work.temp;
   proc phreg data = Work.analyticDataset covsandwich(aggregate);
     where disease = "&disease";
     class exposure (ref = "TNF")
-          database (ref = "Medicare");
-    model daysAtRisk * censor(1) = exposure database exposure*database
+          database (ref = "Medicare")
+          meanPredEqDoseCat (ref = "None")
+          catAge (ref = "60-69")
+          sex (ref = "M");
+    model daysAtRisk * censor(1) = exposure database exposure*database &covar
       / ties = efron risklimits;
     id patid;
-    weight &weight;
+    %if %length(&weight) ^= 0 %then %do;
+      weight &weight;
+    %end;
     hazardratio exposure / at (database = all) diff = ref;
   run;
   proc sql;
-    alter table Work.temp add model varchar(47);
+    alter table Work.temp add model varchar(68);
     update Work.temp set model = "&model";
     alter table Work.temp add outcomeCategory varchar(&len);
     update Work.temp set outcomeCategory = "&outcomeCategory";
@@ -188,7 +246,8 @@ quit;
     create table Work.tempDisease as
       select distinct outcomeCategory, disease, length(disease) as len 
       from DT.incidentDiseaseTimelines
-      where disease ^= "Apical Pulmonary fibrosis";
+      where disease ^= "Amyloidosis" &
+            disease ^= "Apical Pulmonary fibrosis" ;
     create table Work.tempN as select count(*) as n, max(len) as maxlen from Work.tempDisease;
   quit;
   data _null_;
@@ -197,7 +256,7 @@ quit;
     call symput("maxlen", put(maxlen, best2.));
   run;
   proc sql;
-    create table Work.phregHazardRatios (model varchar(&maxlen));
+    create table Work.phregHazardRatios (disease varchar(&maxlen), model varchar(68));
   quit;
   %do i = 1 %to &n;
     data _null_;
@@ -208,8 +267,12 @@ quit;
     %put ********************************************************************************;
     %put *** ITERATION &i OUT OF &n: &outcomeCategory: &disease;
     %put ********************************************************************************;
-    %model(%quote(Weighted, no covariates), &outcomeCategory, &disease, &maxlen, iptw);
-    %model(%quote(Weighted, stabilized, no covariates), &outcomeCategory, &disease, &maxlen, iptwStabilized);
+    %model(%quote(0 Unweighted, no covariates), &outcomeCategory, &disease, &maxlen, , );
+    %model(%quote(a Weighted, no covariates), &outcomeCategory, &disease, &maxlen, iptw, );
+    %model(%quote(b Weighted, covariates (6-month daily steroid dose)), &outcomeCategory, &disease, &maxlen, iptw, meanPredEqDoseCat);
+    %model(%quote(c Weighted, covariates (sex)), &outcomeCategory, &disease, &maxlen, iptw, sex);
+    %model(%quote(d Weighted, covariates (indHospInf)), &outcomeCategory, &disease, &maxlen, iptw, indHospInf);
+    %model(%quote(e Weighted, covariates (6-month daily steroid dose, sex, indHospInf)), &outcomeCategory, &disease, &maxlen, iptw, meanPredEqDoseCat sex indHospInf);
   %end;
   proc sql;
     drop table Work.tempN;
@@ -248,7 +311,7 @@ proc sql;
 quit;
 
 proc export
-  data = DT.phregHazardRatios (where = (model ^= "Unweighted, no covariates"))
+  data = DT.phregHazardRatios
   outfile = "data\processed\phregHazardRatios.csv"
   dbms = csv
   replace;

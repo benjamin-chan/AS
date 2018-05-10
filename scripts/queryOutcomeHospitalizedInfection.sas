@@ -33,6 +33,12 @@ ods html
   style = Statistical;
 
 
+/* 
+Kevin's request 4/25/2018:
+Exclude OI's from hospitalized infection capture
+ */
+
+
 *To edit the following two lines only;
 
 %let indxdat = UCB.tempIncDxAll;
@@ -75,13 +81,17 @@ outcome_infection
 ;
 quit;
  */
-proc import datafile='W:\Users\lchen\lookupdata\AHRQ_CCS.xlsx' 
-    out=icd9_infection replace;
-    sheet="AHRQ_CCS";
+proc import datafile='U:\studies\AS\pgms\bchan\data\raw\AHRQ_CCS.csv' 
+    out=icd9_infection dbms = csv replace;
+    guessingrows = 1000;
 run;
 data icd9_infection;
 set icd9_infection;
+  where upcase(oi) ^= "OI";
 Infection=upcase(Infection);
+run;
+proc freq data = Work.icd9_infection;
+  table oi / missprint;
 run;
 proc print data=icd9_infection (obs=10);run;
 

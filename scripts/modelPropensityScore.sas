@@ -78,6 +78,7 @@ proc sql;
              end as meanPredEqDoseCat,
            max(0, GG.charlson) as charlson,
            max(0, HH.ciras) as ciras,
+           max(0, HH.numinflamMarker) as numinflamMarker,
            HH.numinflamMarker > 0 as indInflamMarker, 
            max(0, II.nsaid) as indRxNSAID, 
            max(0, II.htn) as indRxHtn, 
@@ -86,7 +87,34 @@ proc sql;
            max(0, II.op_bisphosp) as indRxOP_bisphosp, 
            max(0, II.thiazide) as indRxThiazide,
            max(0, II.anticoagulant) as indRxAnticoagulant,
-           max(0, JJ.indIPAdmit12mPrior) as indIPAdmit12mPrior
+           max(0, II.antibiotics) as indRxAntibiotics,
+           max(0, JJ.indIPAdmit12mPrior) as indIPAdmit12mPrior,
+           max(0, JJ.countIPAdmits12mPrior) as countIPAdmits12mPrior,
+           max(0, KK.countAVPhys12mPrior) as countAVPhys12mPrior,
+           case
+             when  0 <= max(0, KK.countAVPhys12mPrior) <=  4 then "0-4"
+             when  5 <= max(0, KK.countAVPhys12mPrior) <=  9 then "5-9"
+             when 10 <= max(0, KK.countAVPhys12mPrior) <= 14 then "10-14"
+             when 15 <= max(0, KK.countAVPhys12mPrior) <= 19 then "15-19"
+             when 20 <= max(0, KK.countAVPhys12mPrior)       then "20+"
+             else ""
+             end as catAVPhys12mPrior,
+           max(0, KK.countAVRheum12mPrior) as countAVRheum12mPrior,
+           case
+             when 0  = max(0, KK.countAVRheum12mPrior) then 0
+             when 1 <= max(0, KK.countAVRheum12mPrior) then 1
+             else .
+             end as indAVRheum12mPrior,
+           max(0, KK.indERVisit12mPrior) as indERVisit12mPrior,
+           max(0, KK.countERVisits) as countERVisits,
+           case
+             when 0  = max(0, KK.countERVisits)       then "0"
+             when 1 <= max(0, KK.countERVisits) <=  1 then "1"
+             when 2 <= max(0, KK.countERVisits)       then "2+"
+             else ""
+             end as catERVisits,
+           max(0, LL.indRxBiologics) as indRxBiologics,
+           max(0, MM.indOutpatientInfection) as indOutpatientInfection
     from 
       DT.indexLookup A left join
       (select indexID, 1 as indAmyloidosis      from DT.comorbidities      where indPrevPriorToIndex = 1 & prxmatch("/Amyloidosis/"                               , disease    )) B  on (A.indexID = B.indexID ) left join
@@ -120,20 +148,23 @@ proc sql;
       (select indexID, meanPredEqDoseCat        from DT.rxOralCorticosteroid                                                                                                    ) FF on (A.indexID = FF.indexID) left join
       (select indexID, charlson from DT.charlsonIndex) GG on (A.indexID = GG.indexID) left join
       (select indexID, ciras, numinflamMarker from DT.CIRAS) HH on (A.indexID = HH.indexID) left join
-      (select indexID, nsaid, htn, narcotics, fungus, op_bisphosp, thiazide, anticoagulant from DT.indRx) II on (A.indexID = II.indexID) left join
-      (select indexID, indIPAdmit12mPrior from DT.diagIndicatorsInpatient) JJ on (A.indexID = JJ.indexID) 
+      (select indexID, nsaid, htn, narcotics, fungus, op_bisphosp, thiazide, anticoagulant, antibiotics from DT.indRx) II on (A.indexID = II.indexID) left join
+      (select indexID, indIPAdmit12mPrior, countIPAdmits12mPrior from DT.diagIndicatorsInpatient) JJ on (A.indexID = JJ.indexID) left join
+      (select indexID, countAVPhys12mPrior, countAVRheum12mPrior, indERVisit12mPrior, countERVisits from DT.countEncounters) KK on (A.indexID = KK.indexID) left join
+      (select indexID, indRxBiologics from DT.indBiologics) LL on (A.indexID = LL.indexID) left join
+      (select indexID, indOutpatientInfection from DT.outpatientInfection) MM on (A.indexID = MM.indexID) 
     order by A.database;
 quit;
 
 
 proc rank data = Work.allCovariates out = Work.allCovariates groups = 4;
   by database;
-  var charlson ciras;
-  ranks quartileCharlson quartileCIRAS;
+  var charlson ciras countIPAdmits12mPrior countAVPhys12mPrior countAVRheum12mPrior;
+  ranks quartileCharlson quartileCIRAS quartileIPAdmits12mPrior quartileAVPhys12mPrior quartileAVRheum12mPrior;
 run;
 
 
-proc means data = Work.allCovariates;
+proc means data = Work.allCovariates maxdec = 2 nolabels;
   class database exposure3;
   var indAmyloidosis
       indAortInsuffRegurg
@@ -174,22 +205,83 @@ proc means data = Work.allCovariates;
       indRxOP_bisphosp
       indRxThiazide
       indRxAnticoagulant
-      indIPAdmit12mPrior;
+      indRxAntibiotics
+      indIPAdmit12mPrior
+      indAVRheum12mPrior
+      indERVisit12mPrior
+      indRxBiologics
+      indOutpatientInfection;
 run;
 proc freq data = Work.allCovariates;
-  table database * exposure3 * (meanPredEqDoseCat quartileCharlson quartileCIRAS) / list;
+  table database * exposure3 * (meanPredEqDoseCat quartileCharlson quartileCIRAS quartileIPAdmits12mPrior quartileAVPhys12mPrior quartileAVRheum12mPrior catERVisits) / list;
 run;
 proc sql;
   select database,
          catAge,
-         min(age) as minAge,
-         max(age) as maxAge,
+         min(age) as min,
+         mean(age) as mean,
+         max(age) as max,
          count(*) as n,
          sum(exposure3 = "TNF") as nTNF,
          sum(exposure3 = "DMARD") as nDMARD,
          sum(exposure3 = "NSAID or no exposure") as nNSAID
-  from Work.AllCovariates
-  group by database, catAge;
+    from Work.AllCovariates
+    group by database, catAge;
+  select database,
+         quartileCharlson,
+         min(charlson) as min,
+         mean(charlson) as mean,
+         max(charlson) as max,
+         count(*) as n,
+         sum(exposure3 = "TNF") as nTNF,
+         sum(exposure3 = "DMARD") as nDMARD,
+         sum(exposure3 = "NSAID or no exposure") as nNSAID
+    from Work.AllCovariates
+    group by database, quartileCharlson;
+  select database,
+         quartileCIRAS,
+         min(ciras) as min,
+         mean(ciras) as mean,
+         max(ciras) as max,
+         count(*) as n,
+         sum(exposure3 = "TNF") as nTNF,
+         sum(exposure3 = "DMARD") as nDMARD,
+         sum(exposure3 = "NSAID or no exposure") as nNSAID
+    from Work.AllCovariates
+    group by database, quartileCIRAS;
+  select database,
+         quartileIPAdmits12mPrior,
+         min(countIPAdmits12mPrior) as min,
+         mean(countIPAdmits12mPrior) as mean,
+         max(countIPAdmits12mPrior) as max,
+         count(*) as n,
+         sum(exposure3 = "TNF") as nTNF,
+         sum(exposure3 = "DMARD") as nDMARD,
+         sum(exposure3 = "NSAID or no exposure") as nNSAID
+    from Work.AllCovariates
+    group by database, quartileIPAdmits12mPrior;
+  select database,
+         quartileAVPhys12mPrior,
+         min(countAVPhys12mPrior) as min,
+         mean(countAVPhys12mPrior) as mean,
+         max(countAVPhys12mPrior) as max,
+         count(*) as n,
+         sum(exposure3 = "TNF") as nTNF,
+         sum(exposure3 = "DMARD") as nDMARD,
+         sum(exposure3 = "NSAID or no exposure") as nNSAID
+    from Work.AllCovariates
+    group by database, quartileAVPhys12mPrior;
+  select database,
+         quartileAVRheum12mPrior,
+         min(countAVRheum12mPrior) as min,
+         mean(countAVRheum12mPrior) as mean,
+         max(countAVRheum12mPrior) as max,
+         count(*) as n,
+         sum(exposure3 = "TNF") as nTNF,
+         sum(exposure3 = "DMARD") as nDMARD,
+         sum(exposure3 = "NSAID or no exposure") as nNSAID
+    from Work.AllCovariates
+    group by database, quartileAVRheum12mPrior;
 quit;
 
 
@@ -201,7 +293,15 @@ Fit separate models for each data source: MPCD, Marketscan, Medicare
 
 Some parameters blow up; exlude these from the model estimation
  */
-%let class = exposure3 (ref = "TNF") catAge (ref = "70+") sex (ref = "M") meanPredEqDoseCat (ref = "None") quartileCharlson (ref = first) quartileCIRAS (ref = first) / param = ref;
+%let class = exposure3 (ref = "TNF") 
+             catAge (ref = "70+") 
+             sex (ref = "M") 
+             meanPredEqDoseCat (ref = "None") 
+             quartileCharlson (ref = first) 
+             quartileCIRAS (ref = first) 
+             quartileAVPhys12mPrior (ref = first)
+             quartileAVRheum12mPrior (ref = first)
+             / param = ref;
 
 
 %let db = MPCD;
@@ -248,7 +348,12 @@ proc logistic data = Work.allCovariates outest = Work.psBetas3Level;
                     indRxOP_bisphosp
                     indRxThiazide
                     indRxAnticoagulant
-                    indIPAdmit12mPrior
+                    indRxAntibiotics
+                    countIPAdmits12mPrior
+                    indERVisit12mPrior
+                    countAVRheum12mPrior
+                    indRxBiologics
+                    indOutpatientInfection
                     / link = glogit rsquare;
   output out = Work.ps3Level predicted = ps xbeta = xbeta;
 run;
@@ -301,7 +406,12 @@ proc logistic data = Work.allCovariates outest = Work.psBetas3Level;
                     indRxOP_bisphosp
                     indRxThiazide
                     indRxAnticoagulant
-                    indIPAdmit12mPrior
+                    indRxAntibiotics
+                    countIPAdmits12mPrior
+                    indERVisit12mPrior
+                    countAVRheum12mPrior
+                    indRxBiologics
+                    indOutpatientInfection
                     / link = glogit rsquare;
   output out = Work.ps3Level predicted = ps xbeta = xbeta;
 run;
@@ -354,7 +464,12 @@ proc logistic data = Work.allCovariates outest = Work.psBetas3Level;
                     indRxOP_bisphosp
                     indRxThiazide
                     indRxAnticoagulant
-                    indIPAdmit12mPrior
+                    indRxAntibiotics
+                    countIPAdmits12mPrior
+                    indERVisit12mPrior
+                    countAVRheum12mPrior
+                    indRxBiologics
+                    indOutpatientInfection
                     / link = glogit rsquare;
   output out = Work.ps3Level predicted = ps xbeta = xbeta;
 run;
@@ -443,7 +558,19 @@ Calculate IPTW
                indRxOP_bisphosp,
                indRxThiazide,
                indRxAnticoagulant,
-               indIPAdmit12mPrior
+               indRxAntibiotics,
+               indIPAdmit12mPrior,
+               countIPAdmits12mPrior,
+               indERVisit12mPrior,
+               ciras,
+               quartileCIRAS,
+               countAVPhys12mPrior,
+               quartileAVPhys12mPrior,
+               countAVRheum12mPrior,
+               quartileAVRheum12mPrior,
+               indAVRheum12mPrior,
+               indRxBiologics,
+               indOutpatientInfection
 ;
 proc sql;
   create table Work.ps as
@@ -602,7 +729,19 @@ proc sql;
            indRxOP_bisphosp,
            indRxThiazide,
            indRxAnticoagulant,
-           indIPAdmit12mPrior
+           indIPAdmit12mPrior,
+           indRxAntibiotics,
+           countIPAdmits12mPrior,
+           indERVisit12mPrior,
+           ciras,
+           quartileCIRAS,
+           countAVPhys12mPrior,
+           quartileAVPhys12mPrior,
+           countAVRheum12mPrior,
+           quartileAVRheum12mPrior,
+           indAVRheum12mPrior,
+           indRxBiologics,
+           indOutpatientInfection
     from DT.ps;
 quit;
 proc export

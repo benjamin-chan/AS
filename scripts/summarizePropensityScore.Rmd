@@ -47,7 +47,7 @@ indNAFattyLiverDis | Non-alcoholic fatty liver disease
 indCOPDEmphysema | COPD or emphysema
 meanPredEqDoseCat | Categorized: None, Low (<2.5 mg/d), Medium-Low (2.5-5 mg/d), Medium-High (5-10 mg/d), High (10+ mg/d)
 quartileCharlson | Charlson comorbidity index: quartiles within data source
-indInflamMarker | Inflammatory marker
+indInflamMarker | 1+ Sedimentation rate, erythrocyte or C-reactive protein CPT code
 indRxNSAID | Prescription drug indicator: NSAID
 indRxHtn | Prescription drug indicator: Antihypertensive
 indRxNarcotics | Prescription drug indicator: Narcotic
@@ -55,7 +55,12 @@ indRxFungus | Prescription drug indicator: Antifungal
 indRxOP_bisphosp | Prescription drug indicator: Bisphosphonate
 indRxThiazide | Prescription drug indicator: Thiazide
 indRxAnticoagulant | Prescription drug indicator: Anticoagulant
-indIPAdmit12mPrior | Inpatient admission 12 months prior to exposure
+indRxAntibiotics | Prescription drug indicator: Antibiotics
+countIPAdmit12mPrior | Number of inpatient admission 12 months prior to exposure
+indERVisit12mPrior | ER visit 12 months prior to exposure
+countAVRheum12mPrior | Number of rheumatologist visits 12 months prior
+indRxBiologics | Prescription drug indicator: Biologics, 7+ months prior
+indOutpatientInfection | Outpatient infectiion
 
 Model output is probability of exposure to TNF, DMARD, and NSAID or no exposure.
 For our purposes, we focus only on the propensity for TNF exposure.
@@ -70,6 +75,9 @@ The common support region upper bound is the minimum of the greatest TNF propens
 To check covariate balance, subjects are partitioned into deciles defined by the TNF propensity score, regardless of true exposure.
 Model covariates are plotted on the y-axis in relation to TNF propensity decile on the x-axis.
 Comparisons are made between exposure groups to check for balance.
+Balance is indicated if the plots overlap.
+Systematic deviations of the lines indicate residual imbalance not accounted for by the propensity scores.
+Variables that exhibit such deviations should be considered for inclusion as a covariate in the outcomes models.
 
 Inverse probability treatment weight (IPTW) for TNF exposure was calculated as
 
@@ -415,15 +423,59 @@ ggsave(paste0("../figures/", f, ".png"), dpi = 300)
 ggsave(paste0("../figures/", f, ".svg"), dpi = 300)
 ```
 
-![covarBalIPAdmit12mPrior.png](../figures/covarBalIPAdmit12mPrior.png)
+![covarBalRxAntibiotics.png](../figures/covarBalRxAntibiotics.png)
 
 ```{r, fig.show = "hide", warning = FALSE, message = FALSE}
-f <- "covarBalIPAdmit12mPrior"
-L <- covariateBalance("dichotomous", "indIPAdmit12mPrior", "% Inpatient admission in 12 months prior")
+f <- "covarBalRxAntibiotics"
+L <- covariateBalance("dichotomous", "indRxAntibiotics", "% Antibiotics Rx")
 ggsave(paste0("../figures/", f, ".png"), dpi = 300)
 ggsave(paste0("../figures/", f, ".svg"), dpi = 300)
 ```
 
+![covarBalIPAdmit12mPrior.png](../figures/covarBalIPAdmit12mPrior.png)
+
+```{r, fig.show = "hide", warning = FALSE, message = FALSE}
+f <- "covarBalIPAdmit12mPrior"
+L <- covariateBalance("continuous", "countIPAdmits12mPrior", "Number of inpatient admissions in 12 months prior")
+ggsave(paste0("../figures/", f, ".png"), dpi = 300)
+ggsave(paste0("../figures/", f, ".svg"), dpi = 300)
+```
+
+![covarBalERVisit12mPrior.png](../figures/covarBalERVisit12mPrior.png)
+
+```{r, fig.show = "hide", warning = FALSE, message = FALSE}
+f <- "covarBalERVisit12mPrior"
+L <- covariateBalance("dichotomous", "indERVisit12mPrior", "% ER visit in 12 months prior")
+ggsave(paste0("../figures/", f, ".png"), dpi = 300)
+ggsave(paste0("../figures/", f, ".svg"), dpi = 300)
+```
+
+![covarBalAVRheum12mPrior.png](../figures/covarBalAVRheum12mPrior.png)
+
+```{r, fig.show = "hide", warning = FALSE, message = FALSE}
+f <- "covarBalAVRheum12mPrior"
+L <- covariateBalance("continuous", "countAVRheum12mPrior", "Number of rheumatologist visits in 12 months prior")
+ggsave(paste0("../figures/", f, ".png"), dpi = 300)
+ggsave(paste0("../figures/", f, ".svg"), dpi = 300)
+```
+
+![covarBalRxBiologics.png](../figures/covarBalRxBiologics.png)
+
+```{r, fig.show = "hide", warning = FALSE, message = FALSE}
+f <- "covarBalRxBiologics"
+L <- covariateBalance("dichotomous", "indRxBiologics", "% Biologics Rx in 7+ months prior")
+ggsave(paste0("../figures/", f, ".png"), dpi = 300)
+ggsave(paste0("../figures/", f, ".svg"), dpi = 300)
+```
+
+![covarBalOutpatientInfection.png](../figures/covarBalOutpatientInfection.png)
+
+```{r, fig.show = "hide", warning = FALSE, message = FALSE}
+f <- "covarBalOutpatientInfection"
+L <- covariateBalance("dichotomous", "indOutpatientInfection", "% Outpatient infection")
+ggsave(paste0("../figures/", f, ".png"), dpi = 300)
+ggsave(paste0("../figures/", f, ".svg"), dpi = 300)
+```
 
 
 ### Comorbidities

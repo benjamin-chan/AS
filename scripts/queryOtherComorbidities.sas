@@ -24,6 +24,163 @@ ods html
 
 
 
+/* 
+From: Yang, Shuo [mailto:shuoyang@uabmc.edu] 
+Sent: Tuesday, April 10, 2018 8:28 AM
+To: Chen, Lang <langchen@uabmc.edu>; Benjamin Chan <chanb@ohsu.edu>
+Subject: RE: Marketscan provider codes
+
+Hi Ben,
+
+Please see below formats that I created from marketscan data dictionary.
+
+Best,
+
+Shawn
+ */
+proc format;      /*<-- $PROVIDERTYPE. (from STDPROV) */
+      value $providerType
+            '1'='Acute Care Hospital'
+            '10'='Birthing Center'
+            '100'='Pediatric Otolaryngology'
+            '105'='Pediatric Critical Care Med'
+            '120'='Chiropractor/DCM'
+            '130'='Podiatry'
+            '140'='Pain Mgmt/Pain Medicine'
+            '145'='Pediatric Anesthesiology'
+            '15'='Treatment Center'
+            '150'='Anesthesiology'
+            '160'='Nuclear Medicine'
+            '170'='Mental Health/Chemical Dep NEC'
+            '175'='Mental Health Facilities'
+            '180'='Chemical Depend Treatment Ctr'
+            '185'='Pediatric Radiology'
+            '20'='Mental Health/Chemical Dep NEC'
+            '200'='Medical Doctor - MD (NEC)'
+            '202'='Osteopathic Medicine'
+            '204'='Internal Medicine (NEC)'
+            '206'='MultiSpecialty Physician Group'
+            '208'='Convalescent Care Facility'
+            '21'='Pulmonary Disease'
+            '210'='Intermediate Care Facility'
+            '215'='Residential Treatment Center'
+            '22'='Rheumatology'
+            '220'='Emergency Medicine'
+            '225'='Hospitalist'
+            '227'='Palliative Medicine'
+            '23'='Mental Hlth/Chem Dep Day Care'
+            '230'='Allergy & Immunology'
+            '240'='Family Practice'
+            '245'='Special Care Facility (NEC)'
+            '25'='Rehabilitation Facilities'
+            '250'='Dentist - MD & DDS (NEC)'
+            '260'='Dental Specialist'
+            '265'='Critical Care Medicine'
+            '270'='Endocrinology & Metabolism'
+            '275'='Gastroenterology'
+            '280'='Hematology'
+            '285'='Infectious Disease'
+            '290'='Nephrology'
+            '295'='Pathology'
+            '30'='Longterm Care (NEC)'
+            '300'='Pediatric Pathology'
+            '31'='Extended Care Facility'
+            '32'='Geriatric Hospital'
+            '320'='Radiology'
+            '325'='Genetics'
+            '33'='Convalescent Care Facility'
+            '330'='Ophthalmology'
+            '34'='Preventative Medicine'
+            '340'='Otolaryngology'
+            '35'='Psychiatry'
+            '350'='Physical Medicine & Rehab'
+            '355'='Plastic/Maxillofacial Surgery'
+            '36'='Continuing Care Retirement Com'
+            '360'='Proctology'
+            '365'='Urology'
+            '37'='Day/Night Care Center'
+            '38'='Hospice Facility'
+            '380'='Dermatology'
+            '40'='Other Facility (NEC)'
+            '400'='Pediatrician (NEC)'
+            '41'='Infirmary'
+            '410'='Pediatric Specialist (NEC)'
+            '413'='Pediatric Nephrology'
+            '415'='Pediatric Ophthalmology'
+            '418'='Pediatric Orthopaedics'
+            '42'='Special Care Facility (NEC)'
+            '420'='Geriatric Medicine'
+            '423'='Cardiovascular Dis/Cardiology'
+            '425'='Neurology'
+            '428'='Pediatric Emergency Medicine'
+            '430'='Pediatric Allergy & Immunology'
+            '433'='Pediatric Endocrinology'
+            '435'='Neonatal-Perinatal Medicine'
+            '438'='Pediatric Gastroenterology'
+            '440'='Pediatric Cardiology'
+            '443'='Pediatric Hematology-Oncology'
+            '448'='Pediatric Infectious Diseases'
+            '450'='Pediatric Rheumatology'
+            '453'='Sports Medicine (Pediatrics)'
+            '455'='Pediatric Urology'
+            '458'='Child Psychiatry'
+            '460'='Pediatric Medical Toxicology'
+            '5'='Ambulatory Surgery Centers'
+            '500'='Surgeon (NEC)'
+            '505'='Surgical Specialist (NEC)'
+            '510'='Colon & Rectal Surgery'
+            '520'='Neurological Surgery'
+            '530'='Orthopaedic Surgery'
+            '535'='Abdominal Surgery'
+            '540'='Cardiovascular Surgery'
+            '545'='Dermatologic Surgery'
+            '550'='General Vascular Surgery'
+            '555'='Head and Neck Surgery'
+            '560'='Pediatric Surgery'
+            '565'='Surgical Critical Care'
+            '570'='Transplant Surgery'
+            '575'='Traumatic Surgery'
+            '580'='Cardiothoracic Surgery'
+            '585'='Thoracic Surgery'
+            '6'='Urgent Care Facility'
+            '805'='Dental Technician'
+            '810'='Dietitian'
+            '815'='Medical Technician'
+            '820'='Midwife'
+            '822'='Nursing Services'
+            '824'='Psychiatric Nurse'
+            '825'='Nurse Practitioner'
+            '827'='Nurse Anesthetist'
+            '830'='Optometrist'
+            '835'='Optician'
+            '840'='Pharmacist'
+            '845'='Physician Assistant'
+            '850'='Therapy (Physical)'
+            '853'='Therapists (Supportive)'
+            '855'='Therapists (Alternative)'
+            '857'='Renal Dialysis Therapy'
+            '860'='Psychologist'
+            '865'='Acupuncturist'
+            '870'='Spiritual Healers'
+            '900'='Health Educator/Agency'
+            '905'='Transportation'
+            '910'='Health Resort'
+            '915'='Hearing Labs'
+            '920'='Home Health Organiz/Agency'
+            '925'='Imaging Center'
+            '930'='Laboratory'
+            '935'='Pharmacy'
+            '940'='Supply Center'
+            '945'='Vision Center'
+            '950'='Public Health Agency'
+            '955'='Unknown Clinic'
+            '960'='Case Manager'
+;
+run;
+
+
+
+
 proc import out = Work.comorbidityLookup
             datafile = "U:\studies\AS\pgms\bchan\data\raw\AS Project Codebooks - 20170410\AS Project Covariates Codebook-20170410.xlsx" 
             dbms = xlsx 
@@ -104,6 +261,13 @@ Fenglong
 /* 
 Only use ICD-9 codes from previous 12 months for Charlson
  */
+/* 
+Last execution: 1/2/2018 (commit 56f369)
+DO NOT EXECUTE AGAIN
+Due to server upgrade (32-bit to 64-bit SAS), subsequent execution results in error:
+"ERROR: Foreign datasets cannot be modified."
+ */
+/*  
 proc sql;
   create table UCB.tempPrevDx12mPrior as
     select * 
@@ -172,9 +336,61 @@ proc contents data = DT.CIRAS order = varnum;
 run;
 proc contents data = DT.indRx order = varnum;
 run;
+ */
 /* 
 END Fenglong's comorbidities code
  */
+
+
+
+
+proc import out = Work.biologicsLookup
+            datafile = "U:\studies\AS\pgms\bchan\data\raw\AS Project Codebooks - 20170410\AS Project Medicine - DMARDs & BIOs  - 20170409.xlsx" 
+            dbms = xlsx 
+            replace;
+  sheet = "Sheet1"; 
+  getnames = yes;
+  datarow = 2;
+run;
+proc sql;
+  delete from Work.biologicsLookup
+    where category ^= "Biologic";
+  select category, subcate as subcategory, gnn, count(*) as n
+    from Work.biologicsLookup
+    group by category, subcate, gnn;
+quit;
+proc sql;
+  create table Work.indBiologics0 as
+    select A.database, A.patid, A.indexID,
+           A.begin_date format = mmddyy10. as rxDate, 
+           "HCPCS" as codeType, 
+           A.px as drugCode, 
+           B.gnn as drugName, 
+           B.descript as drugDesc, 
+           . as dispense_sup
+      from UCB.tempPrevPxAll A inner join 
+           Work.biologicsLookup B on (A.px = B.code)
+      where A.px_date < A.indexDate - 183
+    union corr
+    select A.database, A.patid, A.indexID,
+           A.dispense_date format = mmddyy10. as rxDate, 
+           "NDC" as codeType, 
+           A.ndc as drugCode, 
+           B.gnn as drugName, 
+           B.descript as drugDesc, 
+           A.dispense_sup
+      from UCB.tempPrevRxAll A inner join 
+           Work.biologicsLookup B on (A.ndc = B.code)
+      where A.dispense_date < A.indexDate - 183;
+  select codeType, drugName, count(distinct patid) as countDistinctPatid
+    from Work.indBiologics0
+    group by codeType, drugName;
+  create table DT.indBiologics as
+    select distinct
+           A.database, A.patid, A.indexID,
+           1 as indRxBiologics
+    from Work.indBiologics0 A;
+quit;
 
 
 
@@ -229,7 +445,7 @@ Create diagnosis code indicators from inpatient admissions
  */
   create table DT.diagIndicatorsInpatient as
     select A.database, A.patid, A.indexID,
-           count(distinct A.admit_date) as countIPAdmits,
+           count(distinct A.admit_date) as countIPAdmits12mPrior,
            case
              when count(distinct A.admit_date) > 0 then 1
              else 0
@@ -237,6 +453,62 @@ Create diagnosis code indicators from inpatient admissions
     from UCB.tempPrevDx12mPrior A
     where A.enc_type = "IP"
     group by A.database, A.patid, A.indexID;
+/* 
+Count encounters
+ */
+  create table Work.countAVPhysEncounters as
+    select B.database, B.patid, B.indexID,
+           sum(indAVPhys12mPrior) as countAVPhys12mPrior
+    from (select distinct A.database, A.patid, A.indexID, A.begin_date,
+                 1 as indAVPhys12mPrior
+          from UCB.tempPrevPx12mPrior A
+          where A.codeType = "CPT" & 
+                prxmatch("/^(992[0147][1-5])|(990((24)|(58)))/", A.code) & 
+                calculated indAVPhys12mPrior = 1) B
+    group by B.database, B.patid, B.indexID;
+  create table Work.countAVRheumEncounters as
+    select B.database, B.patid, B.indexID,
+           sum(indAVRheum12mPrior) as countAVRheum12mPrior
+    from (select distinct A.database, A.patid, A.indexID, A.begin_date,
+                 case
+                   when A.database = "MPCD" & B.prov_type = "66" then 1
+                   when A.database = "Marketscan" & B.prov_type = "300" then 1
+                   when A.database = "Medicare" & B.prov_type = "66" then 1
+                   else .
+                   end as indAVRheum12mPrior
+          from UCB.tempPrevPx12mPrior A inner join
+               UCB.tempPrevDx12mPrior B on (A.database = B.database & A.patid = B.patid & A.encounterID = B.encounterID)
+          where A.codeType = "CPT" & 
+                prxmatch("/^(992[0147][1-5])|(990((24)|(58)))/", A.code) & 
+                calculated indAVRheum12mPrior = 1) B
+    group by B.database, B.patid, B.indexID;
+  create table Work.countEREncounters as
+    select A.database, A.patid, A.indexID,
+           count(distinct A.begin_date) as countERVisits,
+           case
+             when count(distinct A.begin_date) > 0 then 1
+             else 0
+             end as indERVisit12mPrior
+    from UCB.tempPrevPx12mPrior A
+    where A.codeType = "CPT" & prxmatch("/^9928[1-5]/", code)
+    group by A.database, A.patid, A.indexID;
+  create table DT.countEncounters as
+    select coalesce(A.database, B.database, C.database) as database,
+           coalesce(A.patid, B.patid, C.patid) as patid,
+           coalesce(A.indexID, B.indexID, C.indexID) as indexID,
+           A.countAVPhys12mPrior,
+           B.countAVRheum12mPrior,
+           C.indERVisit12mPrior,
+           C.countERVisits
+    from Work.countAVPhysEncounters A full join
+         Work.countAVRheumEncounters B on (A.indexID = B.indexID) full join
+         Work.countEREncounters C on (A.indexID = C.indexID | B.indexID = C.indexID);
+  select ^missing(countAVPhys12mPrior) as a,
+         ^missing(countAVRheum12mPrior) as b,
+         ^missing(indERVisit12mPrior) as c,
+         count(*) as n
+    from DT.countEncounters
+    group by calculated a, calculated b, calculated c;
 /* 
 Inhaled antibiotics
 
@@ -277,6 +549,29 @@ IS A DAYS-SUPPLY CRITERION REQUIRED??
            1 as indInhaledAntibiotics
     from Work.indInhaledAntibiotics0 A;
  */
+quit;
+
+
+/* 
+Code for outpatient infections
+Use code for hospitalized infections
+See queryPrevalentComorbidities.sas
+ */
+proc sql;
+  create table Work.defOutcomes as
+    select * 
+    from DT.defOutcomes 
+    where disease ^in ("Interstitial lung disease");
+quit;
+proc sql;
+  create table DT.outpatientInfection as
+    select distinct 
+           A.database, A.patid, A.indexID,
+           1 as indOutpatientInfection
+    from UCB.tempPrevDxAll A inner join 
+         Work.defOutcomes B on (A.codeType = B.codeType & A.code = B.code)
+    where A.enc_type = "AV" &
+          B.disease in ("Hospitalized infection");
 quit;
 
 

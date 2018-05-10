@@ -1,35 +1,42 @@
-1                                                          The SAS System                           11:23 Wednesday, January 3, 2018
+1                                                          The SAS System                               16:38 Wednesday, May 9, 2018
 
-NOTE: Copyright (c) 2002-2012 by SAS Institute Inc., Cary, NC, USA. 
-NOTE: SAS (r) Proprietary Software 9.4 (TS1M1) 
-      Licensed to UNIVERSITY OF ALABAMA AT BIRMINGHAM - SFA - T&R, Site 70058223.
-NOTE: This session is executing on the W32_ES08R2  platform.
+NOTE: Unable to open SASUSER.REGSTRY. WORK.REGSTRY will be opened instead.
+NOTE: All registry changes will be lost at the end of the session.
+
+WARNING: Unable to copy SASUSER registry to WORK registry. Because of this, you will not see registry customizations during this 
+         session.
+NOTE: Unable to open SASUSER.PROFILE. WORK.PROFILE will be opened instead.
+NOTE: All profile changes will be lost at the end of the session.
+NOTE: Copyright (c) 2016 by SAS Institute Inc., Cary, NC, USA. 
+NOTE: SAS (r) Proprietary Software 9.4 (TS1M5) 
+      Licensed to UNIVERSITY OF ALABAMA AT BIRMINGHAM - SFA - T&R, Site 70086550.
+NOTE: This session is executing on the X64_DS08R2  platform.
 
 
 
 NOTE: Updated analytical products:
       
-      SAS/STAT 13.1
-      SAS/ETS 13.1
-      SAS/OR 13.1
-      SAS/IML 13.1
-      SAS/QC 13.1
+      SAS/STAT 14.3
+      SAS/ETS 14.3
+      SAS/IML 14.3
+      SAS/QC 14.3
 
 NOTE: Additional host information:
 
- W32_ES08R2 WIN 6.1.7601 Service Pack 1 Server
+ X64_DS08R2 WIN 6.1.7601 Service Pack 1 Server
 
 --- PEER News and Updates ---
 
 : SECURITY REMINDER :
-Please remember not to copy any data files that contain PHI (protected health identifiers) to any of the shared folders.
+Please remember not to copy any data files that contain PHI (protected health identifiers) to any 
+of the shared folders.
 
  
 
 
 NOTE: SAS initialization used:
-      real time           0.32 seconds
-      cpu time            0.14 seconds
+      real time           4.46 seconds
+      cpu time            0.38 seconds
       
 1          *  University of Alabama at Birmingham                               *
 2          *  AS project                                            *
@@ -50,7 +57,7 @@ NOTE: Libref STD_SABR was successfully assigned as follows:
       Physical Name: q:\data\std_SABER\
 NOTE: Libref MPSTD was successfully assigned as follows: 
       Engine:        SPDE 
-      Physical Name: h:\studies\mpcd\data\stddata\
+      Physical Name: q:\studies\mpcd\data\stddata\
 NOTE: Libref UCBSTD was successfully assigned as follows: 
       Engine:        SPDE 
       Physical Name: q:\studies\AS\data\stddata\
@@ -63,114 +70,55 @@ NOTE: Libref DT was successfully assigned as follows:
 NOTE: Libref NDC was successfully assigned as follows: 
       Engine:        V9 
       Physical Name: W:\onenote\references\drug ndcs\sas data
-127        footnote "&pgm.";
-128        * footnote2 "%sysfunc(datetime(),datetime14.)";
-129        title1 '--- AS project ---';
-130        **********************************************************************;
-131        options macrogen mlogic mprint symbolgen;
-132        options nomacrogen nomlogic nomprint nosymbolgen;
-133        
-134        
-135        ods html
-2                                                                   The SAS System                                    11:23 Wednesday, January 3, 2018
+128        footnote "&pgm.";
+129        * footnote2 "%sysfunc(datetime(),datetime14.)";
+2                                                                   The SAS System                                        16:38 Wednesday, May 9, 2018
 
-136          body = "output\&cmt..html"
-137          style = Statistical;
+130        title1 '--- AS project ---';
+131        **********************************************************************;
+132        options macrogen mlogic mprint symbolgen;
+133        options nomacrogen nomlogic nomprint nosymbolgen;
+134        
+135        
+136        ods html
+137          body = "output\&cmt..html"
+138          style = Statistical;
 NOTE: Writing HTML Body file: output\calculateASPrevalence.html
-138        
 139        
 140        
-141        
-142        proc sql;
-143          create table Work.temp0 as
-144            select "AS" as cohort, database, patid, min(year(indexDate)) as year  /* Only count the first instance of AS cohort membership */
-145            from DT.indexLookup
-146            where database in ("MPCD", "Medicare")
-147            group by database, patid
-148            union corr
-149            select cohort, database, patid, year(indexDate) as year
-150            from DT.controlLookup;
-NOTE: Table WORK.TEMP0 created, with 3009512 rows and 4 columns.
+141        proc sql;
+142          create table Work.numerASCohort as
+143            select "MPCD"       as database, count(distinct patid) as numerASCohort from UCB.cohortastdmpcd  union corr
+144            select "Marketscan" as database, count(distinct patid) as numerASCohort from UCB.cohortastducb   union corr
+145            select "Medicare"   as database, count(distinct patid) as numerASCohort from UCB.cohortastd_sabr ;
+NOTE: Data set UCB.COHORTASTDMPCD is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
+      additional CPU resources and may reduce performance.
+NOTE: Data set UCB.COHORTASTDUCB is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
+      additional CPU resources and may reduce performance.
+NOTE: Data set UCB.COHORTASTD_SABR is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
+      additional CPU resources and may reduce performance.
+NOTE: Table WORK.NUMERASCOHORT created, with 3 rows and 2 columns.
 
-151          create table Work.temp1 as
-152            select database,
-153                   count(distinct patid) as n
-154            from Work.temp0
-155            group by database;
-NOTE: Table WORK.TEMP1 created, with 2 rows and 2 columns.
+146          select * from Work.numerASCohort;
+                                                                  --- AS project ---                                  16:38 Wednesday, May 9, 2018   1
 
-156          create table Work.temp2 as
-157            select database,
-158                   year,
-159                   count(distinct patid) as n
-160            from Work.temp0
-161            group by database, year;
-NOTE: Table WORK.TEMP2 created, with 13 rows and 3 columns.
-
-162          create table Work.temp3 as
-163            select cohort,
-164                   database,
-165                   count(distinct patid) as n
-166            from Work.temp0
-167            where cohort = "AS"
-168            group by cohort, database;
-NOTE: Table WORK.TEMP3 created, with 2 rows and 3 columns.
-
-169          create table Work.temp4 as
-170            select cohort,
-171                   database,
-172                   year,
-173                   count(distinct patid) as n
-174            from Work.temp0
-175            where cohort = "AS"
-176            group by cohort, database, year;
-NOTE: Table WORK.TEMP4 created, with 13 rows and 4 columns.
-
-177          create table Work.temp5 as
-178            select coalesce(A.database, B.database) as database,
-179                   "OVERALL" as year,
-180                   B.n as y,
-181                   A.n as n,
-182                   B.n / A.n as prevalence
-183            from Work.temp1 A inner join
-184                 Work.temp3 B on (A.database = B.database)
-185            union corr
-186            select coalesce(A.database, B.database) as database,
-187                   put(coalesce(A.year, B.year), 4.) as year,
-188                   B.n as y,
-189                   A.n as n,
-190                   B.n / A.n as prevalence
-191            from Work.temp2 A inner join
-192                 Work.temp4 B on (A.database = B.database & A.year = B.year);
-NOTE: Table WORK.TEMP5 created, with 15 rows and 5 columns.
-
-193          select database,
-194                 year,
-3                                                                   The SAS System                                    11:23 Wednesday, January 3, 2018
-
-195                 y format = comma12.0,
-196                 n format = comma12.0,
-197                 prevalence format = percent8.2
-198            from Work.temp5;
-                                                                  --- AS project ---                              11:23 Wednesday, January 3, 2018   1
-
-                                             database    year                y             n  prevalence
-                                             -----------------------------------------------------------
-                                             MPCD        2007              679       795,142      0.09% 
-                                             MPCD        2008              834       166,538      0.50% 
-                                             MPCD        2009              849       127,596      0.67% 
-                                             MPCD        2010              638        52,949      1.20% 
-                                             MPCD        OVERALL         3,000     1,142,225      0.26% 
-                                             Medicare    2006            1,758       874,987      0.20% 
-                                             Medicare    2007            1,766       128,431      1.38% 
-                                             Medicare    2008            1,699        96,175      1.77% 
-                                             Medicare    2009            1,647        92,429      1.78% 
-                                             Medicare    2010            1,884         1,884     100.0% 
-                                             Medicare    2011            2,176       194,411      1.12% 
-                                             Medicare    2012            3,110       131,297      2.37% 
-                                             Medicare    2013            4,344       213,125      2.04% 
-                                             Medicare    2014            4,200       134,548      3.12% 
-                                             Medicare    OVERALL        22,584     1,867,287      1.21% 
+                                                                                  numer
+                                                               database        ASCohort
+                                                               ------------------------
+                                                               MPCD                5078
+                                                               Marketscan         22625
+                                                               Medicare           35349
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
  
  
  
@@ -226,117 +174,430 @@ NOTE: Table WORK.TEMP5 created, with 15 rows and 5 columns.
  
  
                                                               calculateASPrevalence.sas
-199        quit;
+147        quit;
 NOTE: The PROCEDURE SQL printed page 1.
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           14.41 seconds
-      cpu time            18.81 seconds
+      real time           0.26 seconds
+      cpu time            0.21 seconds
       
 
-200        
-201        
-202        proc export
-203          data = Work.temp5
-204          outfile = "data\processed\prevalenceAS.csv"
-205          dbms = csv
-206          replace;
-207          delimiter = ",";
-208        run;
+148        
+149        
+150        /*
+151        Denominator
+152        12 months of enrollment during calendar year
+153         */
+154        %let varlist = patid, enr_start_date, enr_end_date, intck("month", calculated date1, calculated date2) + 1 as monthsEnrolled;
+155        %let where = 6 <= calculated monthsEnrolled & 12 <= intck("month", enr_start_date, enr_end_date) + 1;
+156        proc sql;
+157          create table Work.denom1 as
+158            select distinct 2006 as year, max(enr_start_date, "01JAN2006"D) format = mmddyy10. as date1, min("31DEC2006"D, enr_end_date) format =
+158      ! mmddyy10. as date2, &varlist from stdc5p.std_enrollment where &where union corr
+159            select distinct 2007 as year, max(enr_start_date, "01JAN2007"D) format = mmddyy10. as date1, min("31DEC2007"D, enr_end_date) format =
+159      ! mmddyy10. as date2, &varlist from stdc5p.std_enrollment where &where union corr
+160            select distinct 2008 as year, max(enr_start_date, "01JAN2008"D) format = mmddyy10. as date1, min("31DEC2008"D, enr_end_date) format =
+160      ! mmddyy10. as date2, &varlist from stdc5p.std_enrollment where &where union corr
+161            select distinct 2009 as year, max(enr_start_date, "01JAN2009"D) format = mmddyy10. as date1, min("31DEC2009"D, enr_end_date) format =
+161      ! mmddyy10. as date2, &varlist from stdc5p.std_enrollment where &where union corr
+162            select distinct 2010 as year, max(enr_start_date, "01JAN2010"D) format = mmddyy10. as date1, min("31DEC2010"D, enr_end_date) format =
+162      ! mmddyy10. as date2, &varlist from stdc5p.std_enrollment where &where union corr
+163            select distinct 2011 as year, max(enr_start_date, "01JAN2011"D) format = mmddyy10. as date1, min("31DEC2011"D, enr_end_date) format =
+163      ! mmddyy10. as date2, &varlist from stdc5p.std_enrollment where &where union corr
+164            select distinct 2012 as year, max(enr_start_date, "01JAN2012"D) format = mmddyy10. as date1, min("31DEC2012"D, enr_end_date) format =
+164      ! mmddyy10. as date2, &varlist from stdc5p.std_enrollment where &where union corr
+165            select distinct 2013 as year, max(enr_start_date, "01JAN2013"D) format = mmddyy10. as date1, min("31DEC2013"D, enr_end_date) format =
+165      ! mmddyy10. as date2, &varlist from stdc5p.std_enrollment where &where union corr
+166            select distinct 2014 as year, max(enr_start_date, "01JAN2014"D) format = mmddyy10. as date1, min("31DEC2014"D, enr_end_date) format =
+166      ! mmddyy10. as date2, &varlist from stdc5p.std_enrollment where &where
+167            order by patid, year;
+NOTE: Table WORK.DENOM1 created, with 8633842 rows and 7 columns.
 
-209         /**********************************************************************
-210         *   PRODUCT:   SAS
-211         *   VERSION:   9.4
-212         *   CREATOR:   External File Interface
-213         *   DATE:      03JAN18
-214         *   DESC:      Generated SAS Datastep Code
-215         *   TEMPLATE SOURCE:  (None Specified.)
-216         ***********************************************************************/
-217            data _null_;
-218            %let _EFIERR_ = 0; /* set the ERROR detection macro variable */
-219            %let _EFIREC_ = 0;     /* clear export record count macro variable */
-220            file 'data\processed\prevalenceAS.csv' delimiter=',' DSD DROPOVER lrecl=32767;
-221            if _n_ = 1 then        /* write column names or labels */
-222             do;
-223               put
-224                  "database"
-225               ','
-226                  "year"
-227               ','
-228                  "y"
-229               ','
-230                  "n"
-231               ','
-232                  "prevalence"
-233               ;
-234             end;
-235           set  WORK.TEMP5   end=EFIEOD;
-236               format database $10. ;
-237               format year $7. ;
-238               format y best12. ;
-239               format n best12. ;
-240               format prevalence best12. ;
-241             do;
-242               EFIOUT + 1;
-243               put database $ @;
-244               put year $ @;
-245               put y @;
-246               put n @;
-247               put prevalence ;
-248               ;
-249             end;
-250            if _ERROR_ then call symputx('_EFIERR_',1);  /* set ERROR detection macro variable */
-251            if EFIEOD then call symputx('_EFIREC_',EFIOUT);
-252            run;
+168          create table Work.denom2 as
+169            select distinct patid, enr_start_date, enr_end_date, intck("month", enr_start_date, enr_end_date) + 1 as monthsEnrolled
+170            from stdc5p.std_enrollment
+171            where 12 <= calculated monthsEnrolled;
+NOTE: Table WORK.DENOM2 created, with 1831369 rows and 4 columns.
+
+172        quit;
+NOTE: PROCEDURE SQL used (Total process time):
+3                                                                   The SAS System                                        16:38 Wednesday, May 9, 2018
+
+      real time           26.42 seconds
+      cpu time            1:06.17
+      
+
+173        
+174        /*
+175        Two 720.xx diagnosis codes between 7-365 days apart
+176        Both from rheumatologists
+177        Both from ambulatory visits
+178         */
+179        %let varlist = patid, begin_date, dx_type, dx, enc_type, prov_type;
+180        %let where = dx_type = "09" & dx = "7200" & enc_type = "AV" & prov_type = "66";
+181        proc sql;
+182          create table Work.temp1 as
+183            select &varlist from stdc5p.std_dx_2006 where &where union corr
+184            select &varlist from stdc5p.std_dx_2007 where &where union corr
+185            select &varlist from stdc5p.std_dx_2008 where &where union corr
+186            select &varlist from stdc5p.std_dx_2009 where &where union corr
+187            select &varlist from stdc5p.std_dx_2010 where &where union corr
+188            select &varlist from stdc5p.std_dx_2011 where &where union corr
+189            select &varlist from stdc5p.std_dx_2012 where &where union corr
+190            select &varlist from stdc5p.std_dx_2013 where &where union corr
+191            select &varlist from stdc5p.std_dx_2014 where &where
+192            order by patid, begin_date;
+NOTE: Data set STDC5P.STD_DX_2006 is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
+      additional CPU resources and may reduce performance.
+NOTE: Data set STDC5P.STD_DX_2007 is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
+      additional CPU resources and may reduce performance.
+NOTE: Data set STDC5P.STD_DX_2008 is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
+      additional CPU resources and may reduce performance.
+NOTE: Data set STDC5P.STD_DX_2009 is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
+      additional CPU resources and may reduce performance.
+NOTE: Data set STDC5P.STD_DX_2010 is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
+      additional CPU resources and may reduce performance.
+NOTE: Data set STDC5P.STD_DX_2011 is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
+      additional CPU resources and may reduce performance.
+NOTE: Data set STDC5P.STD_DX_2012 is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
+      additional CPU resources and may reduce performance.
+NOTE: Data set STDC5P.STD_DX_2013 is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
+      additional CPU resources and may reduce performance.
+NOTE: Data set STDC5P.STD_DX_2014 is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
+      additional CPU resources and may reduce performance.
+The SAS supervisor will process queries for foreign datasets. No parallel where-clause processing will occur.
+The SAS supervisor will process queries for foreign datasets. No parallel where-clause processing will occur.
+The SAS supervisor will process queries for foreign datasets. No parallel where-clause processing will occur.
+The SAS supervisor will process queries for foreign datasets. No parallel where-clause processing will occur.
+The SAS supervisor will process queries for foreign datasets. No parallel where-clause processing will occur.
+The SAS supervisor will process queries for foreign datasets. No parallel where-clause processing will occur.
+The SAS supervisor will process queries for foreign datasets. No parallel where-clause processing will occur.
+The SAS supervisor will process queries for foreign datasets. No parallel where-clause processing will occur.
+The SAS supervisor will process queries for foreign datasets. No parallel where-clause processing will occur.
+NOTE: Table WORK.TEMP1 created, with 12010 rows and 6 columns.
+
+193          select dx, count(*) as n from Work.temp1 group by dx;
+                                                                  --- AS project ---                                  16:38 Wednesday, May 9, 2018   2
+
+                                                             DX                         n
+                                                             ----------------------------
+                                                             7200                   12010
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+                                                              calculateASPrevalence.sas
+194        quit;
+NOTE: The PROCEDURE SQL printed page 2.
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           7:33.57
+      cpu time            7:11.73
+      
+
+195        proc sql;
+196          create table Work.temp2 as
+197            select distinct
+198                   coalesce(A.patid, B.patid) as patid,
+199                   year(B.begin_date) as year,
+200                   A.begin_date format = mmddyy10. as date1,
+201                   B.begin_date format = mmddyy10. as date2,
+202                   A.prov_type as prov_type1,
+203                   B.prov_type as prov_type2,
+204                   int((B.begin_date - C.birth_date) / 365.25) as ageAtASDate
+205            from Work.temp1 A inner join
+4                                                                   The SAS System                                        16:38 Wednesday, May 9, 2018
+
+206                 Work.temp1 B on (A.patid = B.patid &
+207                                  intnx("year", B.begin_date, -1, "sameday") < A.begin_date < B.begin_date - 7) inner join
+208                 stdc5p.std_demog_2006_2014 C on (A.patid = C.patid)
+209            where (A.prov_type = "66" | B.prov_type = "66");
+NOTE: Data set STDC5P.STD_DEMOG_2006_2014 is in a format that is native to another host. Cross Environment Data Access will be used. This will 
+      require additional CPU resources and may reduce performance.
+NOTE: Table WORK.TEMP2 created, with 37519 rows and 7 columns.
+
+210          create table Work.numer1 as
+211            select A.*, B.year
+212            from (select patid, min(year(begin_date)) as yearEarliestDiagnosis from Work.temp1 group by patid) A inner join
+213                 Work.denom1 B on (A.patid = B.patid & A.yearEarliestDiagnosis <= B.year);
+NOTE: Table WORK.NUMER1 created, with 4785 rows and 3 columns.
+
+214          create table Work.numer2 as
+215            select A.*
+216            from (select patid, min(begin_date) format = mmddyy10. as dateEarliestDiagnosis from Work.temp1 group by patid) A inner join
+217                 Work.denom2 B on (A.patid = B.patid & B.enr_start_date <= A.dateEarliestDiagnosis <= B.enr_end_date);
+NOTE: Table WORK.NUMER2 created, with 893 rows and 2 columns.
+
+218        quit;
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           3.02 seconds
+      cpu time            2.88 seconds
+      
+
+219        
+220        /*
+221        Prevalence
+222         */
+223        proc sql;
+224          create table Work.prev as
+225            select put(coalesce(A.year, B.year), 4.) as year,
+226                   A.numer as numer5pct,
+227                   B.denom as denom5pct,
+228                   A.numer * 20 as numerEstimated,
+229                   B.denom * 20 as denomEstimated,
+230                   A.numer / B.denom format = percent10.3 as prev
+231            from (select year, count(distinct patid) as numer from Work.numer1 group by year) A inner join
+232                 (select year, count(distinct patid) as denom from Work.denom1 group by year) B on (A.year = B.year)
+233            union corr
+234            select "OVERALL" as year,
+235                   A.numer as numer5pct,
+236                   B.denom as denom5pct,
+237                   A.numer * 20 as numerEstimated,
+238                   B.denom * 20 as denomEstimated,
+239                   A.numer / B.denom format = percent10.3 as prev
+240            from (select count(distinct patid) as numer from Work.numer2) A,
+241                 (select count(distinct patid) as denom from Work.denom2) B;
+NOTE: The execution of this query involves performing one or more Cartesian product joins that can not be optimized.
+NOTE: Table WORK.PREV created, with 10 rows and 6 columns.
+
+242          select * from Work.prev;
+                                                                  --- AS project ---                                  16:38 Wednesday, May 9, 2018   3
+
+                                                                              numer         denom
+                                        year     numer5pct  denom5pct     Estimated     Estimated        prev
+                                        ---------------------------------------------------------------------
+                                        2006           182     830317          3640      16606340     0.022% 
+                                        2007           266     896578          5320      17931560     0.030% 
+                                        2008           353     900910          7060      18018200     0.039% 
+                                        2009           419     904231          8380      18084620     0.046% 
+                                        2010           504     921241         10080      18424820     0.055% 
+                                        2011           596     956052         11920      19121040     0.062% 
+                                        2012           698    1003251         13960      20065020     0.070% 
+                                        2013           846    1123450         16920      22469000     0.075% 
+                                        2014           921    1097812         18420      21956240     0.084% 
+                                        OVERALL        893    1734873         17860      34697460     0.051% 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+                                                              calculateASPrevalence.sas
+243        quit;
+NOTE: The PROCEDURE SQL printed page 3.
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           7.33 seconds
+      cpu time            11.26 seconds
+      
+
+244        
+245        
+246        proc export
+247          data = Work.prev
+248          outfile = "data\processed\prevalenceAS.csv"
+249          dbms = csv
+250          replace;
+251          delimiter = ",";
+252        run;
+
+253         /**********************************************************************
+254         *   PRODUCT:   SAS
+5                                                                   The SAS System                                        16:38 Wednesday, May 9, 2018
+
+255         *   VERSION:   9.4
+256         *   CREATOR:   External File Interface
+257         *   DATE:      09MAY18
+258         *   DESC:      Generated SAS Datastep Code
+259         *   TEMPLATE SOURCE:  (None Specified.)
+260         ***********************************************************************/
+261            data _null_;
+262            %let _EFIERR_ = 0; /* set the ERROR detection macro variable */
+263            %let _EFIREC_ = 0;     /* clear export record count macro variable */
+264            file 'data\processed\prevalenceAS.csv' delimiter=',' DSD DROPOVER lrecl=32767;
+265            if _n_ = 1 then        /* write column names or labels */
+266             do;
+267               put
+268                  "year"
+269               ','
+270                  "numer5pct"
+271               ','
+272                  "denom5pct"
+273               ','
+274                  "numerEstimated"
+275               ','
+276                  "denomEstimated"
+277               ','
+278                  "prev"
+279               ;
+280             end;
+281           set  WORK.PREV   end=EFIEOD;
+282               format year $7. ;
+283               format numer5pct best12. ;
+284               format denom5pct best12. ;
+285               format numerEstimated best12. ;
+286               format denomEstimated best12. ;
+287               format prev percent10.3 ;
+288             do;
+289               EFIOUT + 1;
+290               put year $ @;
+291               put numer5pct @;
+292               put denom5pct @;
+293               put numerEstimated @;
+294               put denomEstimated @;
+295               put prev ;
+296               ;
+297             end;
+298            if _ERROR_ then call symputx('_EFIERR_',1);  /* set ERROR detection macro variable */
+299            if EFIEOD then call symputx('_EFIREC_',EFIOUT);
+300            run;
 
 NOTE: The file 'data\processed\prevalenceAS.csv' is:
       Filename=U:\studies\AS\pgms\bchan\data\processed\prevalenceAS.csv,
       RECFM=V,LRECL=32767,File Size (bytes)=0,
-      Last Modified=03Jan2018:11:24:09,
-      Create Time=02Jan2018:13:24:14
+      Last Modified=09May2018:16:46:36,
+      Create Time=09May2018:10:48:13
 
-4                                                                   The SAS System                                    11:23 Wednesday, January 3, 2018
-
-NOTE: 16 records were written to the file 'data\processed\prevalenceAS.csv'.
-      The minimum record length was 25.
-      The maximum record length was 43.
-NOTE: There were 15 observations read from the data set WORK.TEMP5.
+NOTE: 11 records were written to the file 'data\processed\prevalenceAS.csv'.
+      The minimum record length was 36.
+      The maximum record length was 59.
+NOTE: There were 10 observations read from the data set WORK.PREV.
 NOTE: DATA statement used (Total process time):
-      real time           0.01 seconds
-      cpu time            0.00 seconds
+      real time           0.03 seconds
+      cpu time            0.01 seconds
       
 
-15 records created in data\processed\prevalenceAS.csv from WORK.TEMP5.
+10 records created in data\processed\prevalenceAS.csv from WORK.PREV.
   
   
 NOTE: "data\processed\prevalenceAS.csv" file was successfully created.
 NOTE: PROCEDURE EXPORT used (Total process time):
-      real time           0.07 seconds
-      cpu time            0.06 seconds
+      real time           0.20 seconds
+      cpu time            0.14 seconds
       
 
-253        
-254        /*
-255        libname UCB spde "q:\studies\AS\data\UCB"
-256                         datapath=("q:\studies\AS\data\UCB"
-257                                   "r:\studies\AS\data\UCB"
-258                                   "s:\studies\AS\data\UCB"
-259                                   "t:\studies\AS\data\UCB"
-260                                   "u:\studies\AS\data\UCB"
-261                                   "v:\studies\AS\data\UCB")
-262                         indexpath=("t:\studies\AS\data\UCB"
-263                                    "u:\studies\AS\data\UCB"
-264                                    "v:\studies\AS\data\UCB")
-265                         bysort=no;
-266        
-267        proc freq data = UCB.cntlCohortStdC5P;
-268          format indexDate enr_start_date enr_end_date year4.;
-269          table indexDate enr_start_date enr_end_date;
-270        run;
-271         */
-272        
-273        ods html close;
+301        
+6                                                                   The SAS System                                        16:38 Wednesday, May 9, 2018
+
+302        
+303        
+304        
+305        ods html close;
 NOTE: SAS Institute Inc., SAS Campus Drive, Cary, NC USA 27513-2414
 NOTE: The SAS System used:
-      real time           15.10 seconds
-      cpu time            19.25 seconds
+      real time           8:28.27
+      cpu time            8:33.27
       
