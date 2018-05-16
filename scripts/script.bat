@@ -39,8 +39,8 @@ exit /b
 
 
 :execute
-set exe="D:\Program Files\SASHome\x86\SASFoundation\9.4\sas.exe"
-set cfg="Y:\SAS94_32\S1\sasv9.cfg"
+set exe="D:\Program Files\SASHome\SASFoundation\9.4\sas.exe"
+set cfg="Y:\SAS\9.4\S2\sasv9.cfg"
 set ini="U:\studies\AS\pgms\bchan"
 set scr=U:\studies\AS\pgms\bchan\scripts
 set out=U:\studies\AS\pgms\bchan\output
