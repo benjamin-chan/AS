@@ -3,9 +3,10 @@ del ..\data\processed\* /q
 
 call :execute contentsSourceDatasets
 call :execute importOutcomeCodebook
+call :execute calculateASPrevalence
+call :execute buildASCohort
 call :execute buildIndexLookup
 call :execute buildControlLookup
-call :execute calculateASPrevalence
 call :execute buildExposureFollowUp
 call :execute reproduceTables2
 call :execute buildServiceCodeDatasets
