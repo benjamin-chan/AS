@@ -76,13 +76,13 @@ quit;run;
 %end;
 %mend;
 
-%pullTargetDrug(stdLib=stducb,
+%pullTargetDrug(stdLib=UCBSTD,
                 pxdata=px,
                 rxData=rx,
                 YearStart=2010,
                 nYear=5);
 
-%pullTargetDrug(stdLib=stdmpcd,                   
+%pullTargetDrug(stdLib=MPSTD,                   
                 pxdata=px_07,
                 rxData=rx_07,
                 YearStart=10,
@@ -95,38 +95,38 @@ quit;run;
                 nYear=9);
 
 
-proc freq data=Rxtdrugstducb;
+proc freq data=RxtdrugUCBSTD;
 table GNN;
 run;
 
-proc freq data=HCPCStdrugstducb;
+proc freq data=HCPCStdrugUCBSTD;
 table GNN;
 run;
 
 proc sql;
-create table Biostducb as
+create table BioUCBSTD as
 select patid,DISPENSE_DATE,upcase(GNN) as GNN
-from Rxtdrugstducb
+from RxtdrugUCBSTD
 where NDC in (select Code 
               from NDC.Ndc_dmard_bio_all 
               where CodeType='NDC' and Category in ('Biologic','sDMARD'))
 union
 select patid,BEGIN_DATE as DISPENSE_DATE,upcase(GNN) as GNN
-from HCPCSTdrugstducb
+from HCPCSTdrugUCBSTD
 where PX in (select Code 
               from NDC.Ndc_dmard_bio_all 
               where CodeType='HCPCS' and Category in ('Biologic','sDMARD'))
 ;
 
-create table Biostdmpcd as
+create table BioMPSTD as
 select patid,DISPENSE_DATE,upcase(GNN) as GNN
-from Rxtdrugstdmpcd
+from RxtdrugMPSTD
 where NDC in (select Code 
               from NDC.Ndc_dmard_bio_all 
               where CodeType='NDC' and Category in ('Biologic','sDMARD'))
 union
 select patid,BEGIN_DATE as DISPENSE_DATE,upcase(GNN) as GNN
-from HCPCSTdrugstdmpcd
+from HCPCSTdrugMPSTD
 where PX in (select Code 
               from NDC.Ndc_dmard_bio_all 
               where CodeType='HCPCS' and Category in ('Biologic','sDMARD'));
@@ -148,28 +148,28 @@ select substr(pid,1,20) as patid length=20,rxdate as DISPENSE_DATE,upcase(GNN) a
 from std_sabr.Nonspecific_jcode_biologic
 ;
 
-create table Dmardstducb as
+create table DmardUCBSTD as
 select patid,DISPENSE_DATE,upcase(GNN) as GNN
-from Rxtdrugstducb
+from RxtdrugUCBSTD
 where NDC in (select Code 
               from NDC.Ndc_dmard_bio_all 
               where CodeType='NDC' and Category in ('cDMARD'))
 union
 select patid,BEGIN_DATE as DISPENSE_DATE,upcase(GNN) as GNN
-from HcpcsTdrugstducb
+from HcpcsTdrugUCBSTD
 where PX in (select Code 
               from NDC.Ndc_dmard_bio_all 
               where CodeType='HCPCS' and Category in ('cDMARD'));
 
-create table Dmardstdmpcd as
+create table DmardMPSTD as
 select patid,DISPENSE_DATE,upcase(GNN) as GNN
-from Rxtdrugstdmpcd
+from RxtdrugMPSTD
 where NDC in (select Code 
               from NDC.Ndc_dmard_bio_all 
               where CodeType='NDC' and Category in ('cDMARD'))
 union
 select patid,BEGIN_DATE as DISPENSE_DATE,upcase(GNN) as GNN
-from HcpcsTdrugstdmpcd
+from HcpcsTdrugMPSTD
 where PX in (select Code 
               from NDC.Ndc_dmard_bio_all 
               where CodeType='HCPCS' and Category in ('cDMARD'));
@@ -187,16 +187,16 @@ where PX in (select Code
               from NDC.Ndc_dmard_bio_all 
               where CodeType='HCPCS' and Category in ('cDMARD'));
 
-create table Nsaidstducb as
+create table NsaidUCBSTD as
 select patid,DISPENSE_DATE,upcase(GNN) as GNN
-from Rxtdrugstducb
+from RxtdrugUCBSTD
 where NDC in (select Code from NDC.Ndc_nsaidcox where CodeType='NDC' union
                     select Code from NDC.Ndc_nsaidnoncox where CodeType='NDC')
 ;
 
-create table Nsaidstdmpcd as
+create table NsaidMPSTD as
 select patid,DISPENSE_DATE,upcase(GNN) as GNN
-from Rxtdrugstdmpcd
+from RxtdrugMPSTD
 where NDC in (select Code from NDC.Ndc_nsaidcox where CodeType='NDC' union
                     select Code from NDC.Ndc_nsaidnoncox where CodeType='NDC')
 ;
@@ -208,17 +208,17 @@ where NDC in (select Code from NDC.Ndc_nsaidcox where CodeType='NDC' union
                     select Code from NDC.Ndc_nsaidnoncox where CodeType='NDC')
 ;
 
-proc freq data=Biostducb;
+proc freq data=BioUCBSTD;
 table GNN;
 run;
 
-data TNFstducb;
-set Biostducb;
+data TNFUCBSTD;
+set BioUCBSTD;
 if GNN in ('ADALIMUMAB','CERTOLIZUMAB','ETANERCEPT','GOLIMUMAB','INFLIXIMAB');
 run;
 
-data TNFstdmpcd;
-set Biostdmpcd;
+data TNFMPSTD;
+set BioMPSTD;
 if GNN in ('ADALIMUMAB','CERTOLIZUMAB','ETANERCEPT','GOLIMUMAB','INFLIXIMAB');
 run;
 
