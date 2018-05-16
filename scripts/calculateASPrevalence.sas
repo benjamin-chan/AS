@@ -33,7 +33,8 @@ quit;
 
 /* 
 Denominator
-12 months of enrollment during calendar year
+12 months of continuous enrollment
+6+ months enrollment during calendar year
  */
 %let varlist = patid, enr_start_date, enr_end_date, intck("month", calculated date1, calculated date2) + 1 as monthsEnrolled;
 %let where = 6 <= calculated monthsEnrolled & 12 <= intck("month", enr_start_date, enr_end_date) + 1;
@@ -61,7 +62,7 @@ Both from rheumatologists
 Both from ambulatory visits
  */
 %let varlist = patid, begin_date, dx_type, dx, enc_type, prov_type;
-%let where = dx_type = "09" & dx = "7200" & enc_type = "AV" & prov_type = "66";
+%let where = dx_type = "09" & dx like "720%" & enc_type = "AV";
 proc sql;
   create table Work.temp1 as
     select &varlist from stdc5p.std_dx_2006 where &where union corr
@@ -90,14 +91,14 @@ proc sql;
          Work.temp1 B on (A.patid = B.patid &
                           intnx("year", B.begin_date, -1, "sameday") < A.begin_date < B.begin_date - 7) inner join
          stdc5p.std_demog_2006_2014 C on (A.patid = C.patid)
-    where (A.prov_type = "66" | B.prov_type = "66");
+    where (A.prov_type = "66" & B.prov_type = "66");
   create table Work.numer1 as
     select A.*, B.year
-    from (select patid, min(year(begin_date)) as yearEarliestDiagnosis from Work.temp1 group by patid) A inner join
+    from (select patid, min(year) as yearEarliestDiagnosis from Work.temp2 group by patid) A inner join
          Work.denom1 B on (A.patid = B.patid & A.yearEarliestDiagnosis <= B.year);
   create table Work.numer2 as
     select A.*
-    from (select patid, min(begin_date) format = mmddyy10. as dateEarliestDiagnosis from Work.temp1 group by patid) A inner join
+    from (select patid, min(date2) format = mmddyy10. as dateEarliestDiagnosis from Work.temp2 group by patid) A inner join
          Work.denom2 B on (A.patid = B.patid & B.enr_start_date <= A.dateEarliestDiagnosis <= B.enr_end_date);
 quit;
 
@@ -115,7 +116,7 @@ proc sql;
     from (select year, count(distinct patid) as numer from Work.numer1 group by year) A inner join
          (select year, count(distinct patid) as denom from Work.denom1 group by year) B on (A.year = B.year)
     union corr
-    select "OVERALL" as year, 
+    select "OVERALL 2006-2014" as year, 
            A.numer as numer5pct, 
            B.denom as denom5pct,
            A.numer * 20 as numerEstimated,
