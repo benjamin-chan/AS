@@ -5,6 +5,7 @@ call :execute contentsSourceDatasets
 call :execute importOutcomeCodebook
 call :execute calculateASPrevalence
 call :execute buildASCohort
+call :execute pullTargetDrug
 call :execute buildIndexLookup
 call :execute buildControlLookup
 call :execute buildExposureFollowUp
