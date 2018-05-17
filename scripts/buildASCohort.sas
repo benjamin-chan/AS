@@ -48,7 +48,7 @@ proc sql;
     from MPSTD.enroll
     where 12 <= calculated monthsEnrolled;
 quit;
-%let varlist = patid, begin_date, dx_type, dx, enc_type, prov_type, age;
+%let varlist = patid, begin_date, dx_type, dx, enc_type, prov_type format = $3. as prov_type, age;
 proc sql;
   create table Work.temp1 as
     select &varlist from MPSTD.dx_07_10 where &where union corr
@@ -57,6 +57,16 @@ proc sql;
     order by patid, begin_date;
   select dx, count(*) as n from Work.temp1 group by dx;
 quit;
+proc sort data = Work.temp1 (keep = patid begin_date age) out = Work.ageCstdmpcd nodupkey;
+  by patid begin_date age;
+run;
+data Work.ageCstdmpcd;
+  set Work.ageCstdmpcd (rename = (age = ageC));
+  by patid begin_date;
+  age = scan(ageC, 1, "-") * 1;
+  drop ageC;
+  if first.begin_date then output;
+run;
 proc sql;
   create table Work.temp2 as
     select distinct
@@ -68,11 +78,13 @@ proc sql;
            B.prov_type as prov_type2,
            C.death_date,
            C.sex,
-           B.age
+           D.age
     from Work.temp1 A inner join
          Work.temp1 B on (A.patid = B.patid &
                           intnx("year", B.begin_date, -1, "sameday") < A.begin_date < B.begin_date - 7) inner join
-         MPSTD.demog C on (A.patid = C.patid)
+         MPSTD.demog C on (A.patid = C.patid) inner join
+         Work.ageCstdmpcd D on (A.patid = D.patid &
+                                B.begin_date = D.begin_date)
     where (A.prov_type = "66" & B.prov_type = "66");
   create table DT.cohortASTDMPCD as
     select distinct
