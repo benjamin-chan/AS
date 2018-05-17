@@ -41,7 +41,7 @@ group by patid,indexGNN;
 
 create table ASBio0Cohort&source as
 select a.*,b.indexGNN,b.Bio1st as indexDate format=mmddyy10.
-from &cohort0(drop=enr_start_date enr_end_date) as a
+from &cohort0(drop=enr_start_date enr_end_date indexDate) as a
       ,
      BIO1st&source as b
 where a.patid=b.patid and
@@ -60,7 +60,7 @@ order by patid,indexDate,indexGNN;
 
 create table ASTNF0Cohort&source as
 select a.*,b.indexGNN,b.TNF1st as indexDate format=mmddyy10.
-from &cohort0(drop=enr_start_date enr_end_date) as a
+from &cohort0(drop=enr_start_date enr_end_date indexDate) as a
       ,
      TNF1st&source as b
 where a.patid=b.patid and
@@ -79,7 +79,7 @@ order by patid,indexDate,indexGNN;
 
 create table ASDmard0Cohort&source as
 select a.*,b.indexGNN,b.Dmard1st as indexDate format=mmddyy10.
-from &cohort0(drop=enr_start_date enr_end_date) as a
+from &cohort0(drop=enr_start_date enr_end_date indexDate) as a
       ,
      Dmard1st&source as b
 where a.patid=b.patid and
@@ -87,7 +87,7 @@ where a.patid=b.patid and
 order by patid,indexDate,indexGNN; 
 
 create table ASDmardCohort&source as
-select a.*,b.indexGNN,b.Dmard1st as indexDate format=mmddyy10.
+select a.*, b.enr_start_date, b.enr_end_date 
 from ASDmard0Cohort&source as a
       ,
      &stdLib..&enrData as b
@@ -97,7 +97,7 @@ order by patid,indexDate,indexGNN;
 
 create table ASNsaid0Cohort&source as
 select a.*,b.indexGNN,b.Nsaid1st as indexDate format=mmddyy10.
-from &cohort0(drop=enr_start_date enr_end_date) as a
+from &cohort0(drop=enr_start_date enr_end_date indexDate) as a
       ,
      Nsaid1st&source as b
 where a.patid=b.patid and
@@ -105,16 +105,16 @@ where a.patid=b.patid and
 order by patid,indexDate,indexGNN; 
 
 create table ASNsaidCohort&source as
-select a.*,b.indexGNN,b.Nsaid1st as indexDate format=mmddyy10.
+select a.*, b.enr_start_date, b.enr_end_date
 from ASNsaid0Cohort&source as a
       ,
-     Nsaid1st&source as b
+     &stdLib..&enrData as b
 where a.patid=b.patid and
       b.enr_start_date+183<=a.indexDate<=b.enr_end_date  
 order by patid,indexDate,indexGNN;
 
 data ASNoExpCohort0&source;
-set cohortA&source;
+set &cohort0;
 indexGNn='NoExp';
 indexDate=AScohortDate;
 format indexdate mmddyy10.;
@@ -495,7 +495,7 @@ run;
 
 
 data ASNoExpCohort&source._ex2;
-merge ASNoExpCohort0&source2a(in=a)
+merge ASNoExpCohort&source._ex2a(in=a)
       Bioexc6mNoExp&source(in=b)
       Dmardexc6mNoExp&source(in=c)
       Nsaidexc6mNoExp&source(in=d)
