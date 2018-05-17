@@ -77,7 +77,9 @@ proc sql;
   create table DT.cohortASTDMPCD as
     select distinct
            A.patid,
-           A.dateEarliestDiagnosis format = mmddyy10. as asCohortDate,
+           A.dateEarliestDiagnosis format = mmddyy10. as asDate,
+           max(A.dateEarliestDiagnosis, C.enr_start_date + 183) format = mmddyy10. as asCohortDate,
+           calculated asCohortDate format = mmddyy10. as indexDate,
            C.enr_start_date,
            C.enr_end_date,
            B.death_date,
@@ -129,7 +131,9 @@ proc sql;
   create table DT.cohortASTDUCB as
     select distinct
            A.patid,
-           A.dateEarliestDiagnosis format = mmddyy10. as asCohortDate,
+           A.dateEarliestDiagnosis format = mmddyy10. as asDate,
+           max(A.dateEarliestDiagnosis, C.enr_start_date + 183) format = mmddyy10. as asCohortDate,
+           calculated asCohortDate format = mmddyy10. as indexDate,
            C.enr_start_date,
            C.enr_end_date,
            B.death_date,
@@ -185,7 +189,9 @@ proc sql;
   create table DT.cohortASTD_SABR as
     select distinct
            A.patid,
-           A.dateEarliestDiagnosis format = mmddyy10. as asCohortDate,
+           A.dateEarliestDiagnosis format = mmddyy10. as asDate,
+           max(A.dateEarliestDiagnosis, C.enr_start_date + 183) format = mmddyy10. as asCohortDate,
+           calculated asCohortDate format = mmddyy10. as indexDate,
            C.enr_start_date,
            C.enr_end_date,
            B.death_date,
