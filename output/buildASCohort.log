@@ -1,0 +1,1093 @@
+1                                         The SAS System                10:11 Friday, May 18, 2018
+
+NOTE: Copyright (c) 2016 by SAS Institute Inc., Cary, NC, USA. 
+NOTE: SAS (r) Proprietary Software 9.4 (TS1M5) 
+      Licensed to UNIVERSITY OF ALABAMA AT BIRMINGHAM - SFA - T&R, Site 70086550.
+NOTE: This session is executing on the X64_DS08R2  platform.
+
+
+
+NOTE: Updated analytical products:
+      
+      SAS/STAT 14.3
+      SAS/ETS 14.3
+      SAS/IML 14.3
+      SAS/QC 14.3
+
+NOTE: Additional host information:
+
+ X64_DS08R2 WIN 6.1.7601 Service Pack 1 Server
+
+--- PEER News and Updates ---
+
+: SECURITY REMINDER :
+Please remember not to copy any data files that contain PHI (protected health identifiers) to any 
+of the shared folders.
+
+ 
+
+
+NOTE: SAS initialization used:
+      real time           4.53 seconds
+      cpu time            0.40 seconds
+      
+1          *  University of Alabama at Birmingham                               *
+2          *  AS project                                            *
+3          **********************************************************************;
+4          options pagesize=74 linesize=150 pageno=1 missing=' ' date FORMCHAR="|----|+|---+=|-/\<>*";
+5          * Programmer    : Benjamin Chan <chanb@ohsu.edu>
+6          * Creation date :
+7          * Modify date   :
+8          ;
+9          %let cmt=buildASCohort; * type the name of your program here (without the filename extension);
+10         %let pgm=&cmt..sas;
+11         %include "lib\libname.sas" ;
+NOTE: Libref STDC5P was successfully assigned as follows: 
+      Engine:        SPDE 
+      Physical Name: H:\studies\osteo\data\STD_files\5pct\
+NOTE: Libref STD_SABR was successfully assigned as follows: 
+      Engine:        SPDE 
+      Physical Name: q:\data\std_SABER\
+NOTE: Libref MPSTD was successfully assigned as follows: 
+      Engine:        SPDE 
+      Physical Name: q:\studies\mpcd\data\stddata\
+NOTE: Libref UCBSTD was successfully assigned as follows: 
+      Engine:        SPDE 
+      Physical Name: q:\studies\AS\data\stddata\
+NOTE: Libref UCB was successfully assigned as follows: 
+      Engine:        SPDE 
+      Physical Name: q:\studies\AS\data\UCB\
+NOTE: Libref DT was successfully assigned as follows: 
+      Engine:        V9 
+      Physical Name: V:\studies\AS\data
+NOTE: Libref NDC was successfully assigned as follows: 
+      Engine:        V9 
+      Physical Name: W:\onenote\references\drug ndcs\sas data
+128        footnote "&pgm.";
+129        * footnote2 "%sysfunc(datetime(),datetime14.)";
+130        title1 '--- AS project ---';
+131        **********************************************************************;
+132        options macrogen mlogic mprint symbolgen;
+133        options nomacrogen nomlogic nomprint nosymbolgen;
+134        
+135        
+136        ods html
+2                                                                   The SAS System                                          10:11 Friday, May 18, 2018
+
+137          body = "output\&cmt..html"
+138          style = Statistical;
+NOTE: Writing HTML Body file: output\buildASCohort.html
+139        
+140        
+141        proc sql;
+142          create table Work.numerASCohort as
+143            select "Old cohort, single 720.0 rheumatologist code" as cohort, "MPCD"       as database, count(distinct patid) as numerASCohort from
+143      ! UCB.cohortastdmpcd  union corr
+144            select "Old cohort, single 720.0 rheumatologist code" as cohort, "Marketscan" as database, count(distinct patid) as numerASCohort from
+144      ! UCB.cohortastducb   union corr
+145            select "Old cohort, single 720.0 rheumatologist code" as cohort, "Medicare"   as database, count(distinct patid) as numerASCohort from
+145      ! UCB.cohortastd_sabr ;
+NOTE: Data set UCB.COHORTASTDMPCD is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
+      additional CPU resources and may reduce performance.
+NOTE: Data set UCB.COHORTASTDUCB is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
+      additional CPU resources and may reduce performance.
+NOTE: Data set UCB.COHORTASTD_SABR is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
+      additional CPU resources and may reduce performance.
+NOTE: Table WORK.NUMERASCOHORT created, with 3 rows and 3 columns.
+
+146          select * from Work.numerASCohort;
+                                                                  --- AS project ---                                    10:11 Friday, May 18, 2018   1
+
+                                                                                                         numer
+                                        cohort                                        database        ASCohort
+                                        ----------------------------------------------------------------------
+                                        Old cohort, single 720.0 rheumatologist code  MPCD                5078
+                                        Old cohort, single 720.0 rheumatologist code  Marketscan         22625
+                                        Old cohort, single 720.0 rheumatologist code  Medicare           35349
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+                                                                  buildASCohort.sas
+147        quit;
+NOTE: The PROCEDURE SQL printed page 1.
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.23 seconds
+      cpu time            0.15 seconds
+      
+
+148        
+149        
+150        /*
+151        Two 720.xx diagnosis codes between 7-365 days apart
+152        Both from rheumatologists
+153        Both from ambulatory visits
+154         */
+155        %let where = dx_type = "09" & dx like "720%" & enc_type = "AV";
+156        
+157        
+158        /*
+159        MPCD
+160         */
+161        proc sql;
+162          create table Work.denom as
+163            select distinct patid, enr_start_date, enr_end_date, intck("month", enr_start_date, enr_end_date) + 1 as monthsEnrolled
+164            from MPSTD.enroll
+165            where 12 <= calculated monthsEnrolled;
+NOTE: Table WORK.DENOM created, with 1393100 rows and 4 columns.
+
+166        quit;
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           1.46 seconds
+      cpu time            2.34 seconds
+      
+
+167        %let varlist = patid, begin_date, dx_type, dx, enc_type, prov_type format = $3. as prov_type, age;
+168        proc sql;
+169          create table Work.temp1 as
+170            select &varlist from MPSTD.dx_07_10 where &where union corr
+171            select &varlist from MPSTD.dx_ip_07_10 where &where union corr
+172            select &varlist from MPSTD.dx_op_07_10 where &where
+173            order by patid, begin_date;
+NOTE: Parallel WHERE evaluation suppressed due to sort order on table.
+NOTE: Parallel WHERE evaluation suppressed due to sort order on table.
+NOTE: Table WORK.TEMP1 created, with 638928 rows and 7 columns.
+
+174          select dx, count(*) as n from Work.temp1 group by dx;
+                                                                  --- AS project ---                                    10:11 Friday, May 18, 2018   2
+
+                                                                 Diagnosis
+                                                                 Code              n
+                                                                 -------------------
+                                                                 720             112
+                                                                 7200          96274
+                                                                 7201          85330
+                                                                 7202         427056
+                                                                 7208             20
+                                                                 72081          1082
+                                                                 72089          4348
+                                                                 7209          24706
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+                                                                  buildASCohort.sas
+175        quit;
+NOTE: The PROCEDURE SQL printed page 2.
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           2:11.14
+      cpu time            2:20.13
+3                                                                   The SAS System                                          10:11 Friday, May 18, 2018
+
+      
+
+176        proc sort data = Work.temp1 (keep = patid begin_date age) out = Work.ageCstdmpcd nodupkey;
+177          by patid begin_date age;
+178        run;
+
+NOTE: There were 638928 observations read from the data set WORK.TEMP1.
+NOTE: 23932 observations with duplicate key values were deleted.
+NOTE: The data set WORK.AGECSTDMPCD has 614996 observations and 3 variables.
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           0.40 seconds
+      cpu time            0.92 seconds
+      
+
+179        data Work.ageCstdmpcd;
+180          set Work.ageCstdmpcd (rename = (age = ageC));
+181          by patid begin_date;
+182          age = scan(ageC, 1, "-") * 1;
+183          drop ageC;
+184          if first.begin_date then output;
+185        run;
+
+NOTE: Character values have been converted to numeric values at the places given by: (Line):(Column).
+      182:9   
+NOTE: Invalid numeric data, 'UNK' , at line 182 column 9.
+PATID=104137393 BEGIN_DATE=06/30/2008 ageC=UNK FIRST.PATID=1 LAST.PATID=0 FIRST.BEGIN_DATE=1 LAST.BEGIN_DATE=1 age= _ERROR_=1 _N_=312663
+NOTE: Invalid numeric data, 'UNK' , at line 182 column 9.
+PATID=104137393 BEGIN_DATE=08/18/2008 ageC=UNK FIRST.PATID=0 LAST.PATID=1 FIRST.BEGIN_DATE=1 LAST.BEGIN_DATE=1 age= _ERROR_=1 _N_=312664
+NOTE: Missing values were generated as a result of performing an operation on missing values.
+      Each place is given by: (Number of times) at (Line):(Column).
+      2 at 182:28   
+NOTE: There were 614996 observations read from the data set WORK.AGECSTDMPCD.
+NOTE: The data set WORK.AGECSTDMPCD has 307478 observations and 3 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.26 seconds
+      cpu time            0.23 seconds
+      
+
+186        proc sql;
+187          create table Work.temp2 as
+188            select distinct
+189                   coalesce(A.patid, B.patid) as patid,
+190                   year(B.begin_date) as year,
+191                   A.begin_date format = mmddyy10. as date1,
+192                   B.begin_date format = mmddyy10. as date2,
+193                   A.prov_type as prov_type1,
+194                   B.prov_type as prov_type2,
+195                   C.death_date,
+196                   C.sex,
+197                   D.age
+198            from Work.temp1 A inner join
+199                 Work.temp1 B on (A.patid = B.patid &
+200                                  intnx("year", B.begin_date, -1, "sameday") < A.begin_date < B.begin_date - 7) inner join
+201                 MPSTD.demog C on (A.patid = C.patid) inner join
+202                 Work.ageCstdmpcd D on (A.patid = D.patid &
+203                                        B.begin_date = D.begin_date)
+204            where (A.prov_type = "66" & B.prov_type = "66");
+NOTE: Table WORK.TEMP2 created, with 62714 rows and 9 columns.
+
+205          create table DT.cohortASTDMPCD as
+206            select distinct
+207                   A.patid,
+208                   A.dateEarliestDiagnosis format = mmddyy10. as asDate,
+209                   max(A.dateEarliestDiagnosis, C.enr_start_date + 183) format = mmddyy10. as asCohortDate,
+210                   calculated asCohortDate format = mmddyy10. as indexDate,
+211                   C.enr_start_date,
+212                   C.enr_end_date,
+213                   B.death_date,
+214                   B.sex,
+215                   B.age
+216            from (select patid, min(date2) format = mmddyy10. as dateEarliestDiagnosis from Work.temp2 group by patid) A inner join
+217                 Work.temp2 B on (A.patid = B.patid & A.dateEarliestDiagnosis = B.date2) inner join
+4                                                                   The SAS System                                          10:11 Friday, May 18, 2018
+
+218                 Work.denom C on (A.patid = C.patid & C.enr_start_date <= A.dateEarliestDiagnosis <= C.enr_end_date);
+NOTE: Table DT.COHORTASTDMPCD created, with 4831 rows and 9 columns.
+
+219        quit;
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           2.80 seconds
+      cpu time            4.32 seconds
+      
+
+220        
+221        
+222        /*
+223        Marketscan
+224         */
+225        proc sql;
+226          create table Work.denom as
+227            select distinct patid, enr_start_date, enr_end_date, intck("month", enr_start_date, enr_end_date) + 1 as monthsEnrolled
+228            from UCBSTD.enroll
+229            where 12 <= calculated monthsEnrolled;
+NOTE: Data set UCBSTD.ENROLL is in a format that is native to another host. Cross Environment Data Access will be used. This will require additional 
+      CPU resources and may reduce performance.
+NOTE: Table WORK.DENOM created, with 19182532 rows and 4 columns.
+
+230        quit;
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           18.58 seconds
+      cpu time            34.08 seconds
+      
+
+231        %let varlist = patid, begin_date, dx_type, dx, enc_type, prov_type;
+232        proc sql;
+233          create table Work.temp1 as
+234            select &varlist from UCBSTD.dx_2010 where &where union corr
+235            select &varlist from UCBSTD.dx_2011 where &where union corr
+236            select &varlist from UCBSTD.dx_2012 where &where union corr
+237            select &varlist from UCBSTD.dx_2013 where &where union corr
+238            select &varlist from UCBSTD.dx_2014 where &where
+239            order by patid, begin_date;
+NOTE: Data set UCBSTD.DX_2010 is in a format that is native to another host. Cross Environment Data Access will be used. This will require additional 
+      CPU resources and may reduce performance.
+NOTE: Data set UCBSTD.DX_2011 is in a format that is native to another host. Cross Environment Data Access will be used. This will require additional 
+      CPU resources and may reduce performance.
+NOTE: Data set UCBSTD.DX_2012 is in a format that is native to another host. Cross Environment Data Access will be used. This will require additional 
+      CPU resources and may reduce performance.
+NOTE: Data set UCBSTD.DX_2013 is in a format that is native to another host. Cross Environment Data Access will be used. This will require additional 
+      CPU resources and may reduce performance.
+NOTE: Data set UCBSTD.DX_2014 is in a format that is native to another host. Cross Environment Data Access will be used. This will require additional 
+      CPU resources and may reduce performance.
+The SAS supervisor will process queries for foreign datasets. No parallel where-clause processing will occur.
+The SAS supervisor will process queries for foreign datasets. No parallel where-clause processing will occur.
+The SAS supervisor will process queries for foreign datasets. No parallel where-clause processing will occur.
+The SAS supervisor will process queries for foreign datasets. No parallel where-clause processing will occur.
+The SAS supervisor will process queries for foreign datasets. No parallel where-clause processing will occur.
+NOTE: Table WORK.TEMP1 created, with 1853386 rows and 6 columns.
+
+240          select dx, count(*) as n from Work.temp1 group by dx;
+                                                                  --- AS project ---                                    10:11 Friday, May 18, 2018   3
+
+                                                                 Diagnosis
+                                                                 Code              n
+                                                                 -------------------
+                                                                 7200         258849
+                                                                 7201         259669
+                                                                 7202        1252129
+                                                                 72081          3857
+                                                                 72089         11334
+                                                                 7209          67548
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+                                                                  buildASCohort.sas
+241        quit;
+NOTE: The PROCEDURE SQL printed page 3.
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           9:44.25
+      cpu time            9:04.21
+      
+
+242        proc sql;
+243          create table Work.temp2 as
+244            select distinct
+245                   coalesce(A.patid, B.patid) as patid,
+246                   year(B.begin_date) as year,
+247                   A.begin_date format = mmddyy10. as date1,
+248                   B.begin_date format = mmddyy10. as date2,
+249                   A.prov_type as prov_type1,
+250                   B.prov_type as prov_type2,
+5                                                                   The SAS System                                          10:11 Friday, May 18, 2018
+
+251                   C.death_date,
+252                   C.sex,
+253                   int((B.begin_date - C.birth_date) / 365.25) as age
+254            from Work.temp1 A inner join
+255                 Work.temp1 B on (A.patid = B.patid &
+256                                  intnx("year", B.begin_date, -1, "sameday") < A.begin_date < B.begin_date - 7) inner join
+257                 UCBSTD.demog C on (A.patid = C.patid)
+258            where (A.prov_type = "300" & B.prov_type = "300");
+NOTE: Data set UCBSTD.DEMOG is in a format that is native to another host. Cross Environment Data Access will be used. This will require additional 
+      CPU resources and may reduce performance.
+NOTE: Table WORK.TEMP2 created, with 340131 rows and 9 columns.
+
+258      !                                                         /* Provider type codes in Marketscan are different than MPCD and Medicare */
+259          create table DT.cohortASTDUCB as
+260            select distinct
+261                   A.patid,
+262                   A.dateEarliestDiagnosis format = mmddyy10. as asDate,
+263                   max(A.dateEarliestDiagnosis, C.enr_start_date + 183) format = mmddyy10. as asCohortDate,
+264                   calculated asCohortDate format = mmddyy10. as indexDate,
+265                   C.enr_start_date,
+266                   C.enr_end_date,
+267                   B.death_date,
+268                   B.sex,
+269                   B.age
+270            from (select patid, min(date2) format = mmddyy10. as dateEarliestDiagnosis from Work.temp2 group by patid) A inner join
+271                 Work.temp2 B on (A.patid = B.patid & A.dateEarliestDiagnosis = B.date2) inner join
+272                 Work.denom C on (A.patid = C.patid & C.enr_start_date <= A.dateEarliestDiagnosis <= C.enr_end_date);
+NOTE: Table DT.COHORTASTDUCB created, with 19687 rows and 9 columns.
+
+273        quit;
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           25.16 seconds
+      cpu time            41.35 seconds
+      
+
+274        
+275        
+276        /*
+277        Medicare
+278         */
+279        proc sql;
+280          create table Work.denom as
+281            select distinct patid, enr_start_date, enr_end_date, intck("month", enr_start_date, enr_end_date) + 1 as monthsEnrolled
+282            from std_sabr.enroll
+283            where 12 <= calculated monthsEnrolled;
+NOTE: Table WORK.DENOM created, with 5342533 rows and 4 columns.
+
+284        quit;
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           4.64 seconds
+      cpu time            8.19 seconds
+      
+
+285        %let varlist = patid, begin_date, dx_type, dx, enc_type, prov_type;
+286        proc sql;
+287          create table Work.temp1 as
+288            select &varlist from std_sabr.std_dx_2006    where &where union corr
+289            select &varlist from std_sabr.std_dx_2007    where &where union corr
+290            select &varlist from std_sabr.std_dx_2008_v2 where &where union corr
+291            select &varlist from std_sabr.std_dx_2009    where &where union corr
+292            select &varlist from std_sabr.std_dx_2010    where &where union corr
+293            select &varlist from std_sabr.std_dx_2011    where &where union corr
+294            select &varlist from std_sabr.std_dx_2012    where &where union corr
+295            select &varlist from std_sabr.std_dx_2013    where &where union corr
+296            select &varlist from std_sabr.std_dx_2014    where &where
+297            order by patid, begin_date;
+NOTE: Data set STD_SABR.STD_DX_2006 is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
+      additional CPU resources and may reduce performance.
+NOTE: Data set STD_SABR.STD_DX_2007 is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
+      additional CPU resources and may reduce performance.
+NOTE: Data set STD_SABR.STD_DX_2008_V2 is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
+      additional CPU resources and may reduce performance.
+6                                                                   The SAS System                                          10:11 Friday, May 18, 2018
+
+NOTE: Data set STD_SABR.STD_DX_2009 is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
+      additional CPU resources and may reduce performance.
+NOTE: Data set STD_SABR.STD_DX_2010 is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
+      additional CPU resources and may reduce performance.
+NOTE: Data set STD_SABR.STD_DX_2011 is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
+      additional CPU resources and may reduce performance.
+NOTE: Data set STD_SABR.STD_DX_2012 is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
+      additional CPU resources and may reduce performance.
+NOTE: Data set STD_SABR.STD_DX_2013 is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
+      additional CPU resources and may reduce performance.
+NOTE: Data set STD_SABR.STD_DX_2014 is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
+      additional CPU resources and may reduce performance.
+The SAS supervisor will process queries for foreign datasets. No parallel where-clause processing will occur.
+The SAS supervisor will process queries for foreign datasets. No parallel where-clause processing will occur.
+The SAS supervisor will process queries for foreign datasets. No parallel where-clause processing will occur.
+The SAS supervisor will process queries for foreign datasets. No parallel where-clause processing will occur.
+The SAS supervisor will process queries for foreign datasets. No parallel where-clause processing will occur.
+The SAS supervisor will process queries for foreign datasets. No parallel where-clause processing will occur.
+The SAS supervisor will process queries for foreign datasets. No parallel where-clause processing will occur.
+The SAS supervisor will process queries for foreign datasets. No parallel where-clause processing will occur.
+The SAS supervisor will process queries for foreign datasets. No parallel where-clause processing will occur.
+NOTE: Table WORK.TEMP1 created, with 5044143 rows and 6 columns.
+
+298          select dx, count(*) as n from Work.temp1 group by dx;
+                                                                  --- AS project ---                                    10:11 Friday, May 18, 2018   4
+
+                                                             DX                         n
+                                                             ----------------------------
+                                                             720                       27
+                                                             7200                  654936
+                                                             72000                     18
+                                                             72001                      5
+                                                             72006                      1
+                                                             7201                  694794
+                                                             72010                      1
+                                                             72012                      1
+                                                             72019                      1
+                                                             7202                 3524598
+                                                             72020                      3
+                                                             72025                      2
+                                                             7204                       6
+                                                             72042                      1
+                                                             7205                       4
+                                                             72053                      1
+                                                             7207                       2
+                                                             72071                      1
+                                                             7208                       3
+                                                             72081                   7341
+                                                             72085                      1
+                                                             72089                  20427
+                                                             7209                  141967
+                                                             72090                      1
+                                                             72095                      1
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+                                                                  buildASCohort.sas
+299        quit;
+NOTE: The PROCEDURE SQL printed page 4.
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           16:09.60
+      cpu time            15:25.16
+      
+
+300        proc sql;
+301          create table Work.temp2 as
+302            select distinct
+303                   coalesce(A.patid, B.patid) as patid,
+304                   year(B.begin_date) as year,
+305                   A.begin_date format = mmddyy10. as date1,
+306                   B.begin_date format = mmddyy10. as date2,
+307                   A.prov_type as prov_type1,
+308                   B.prov_type as prov_type2,
+309                   C.death_date,
+310                   C.sex,
+311                   int((B.begin_date - C.birth_date) / 365.25) as age
+312            from Work.temp1 A inner join
+313                 Work.temp1 B on (A.patid = B.patid &
+314                                  intnx("year", B.begin_date, -1, "sameday") < A.begin_date < B.begin_date - 7) inner join
+315                 std_sabr.demog C on (A.patid = C.patid)
+316            where (A.prov_type = "66" & B.prov_type = "66");
+NOTE: Table WORK.TEMP2 created, with 1064167 rows and 9 columns.
+
+317          create table DT.cohortASTD_SABR as
+318            select distinct
+319                   A.patid,
+320                   A.dateEarliestDiagnosis format = mmddyy10. as asDate,
+321                   max(A.dateEarliestDiagnosis, C.enr_start_date + 183) format = mmddyy10. as asCohortDate,
+322                   calculated asCohortDate format = mmddyy10. as indexDate,
+323                   C.enr_start_date,
+324                   C.enr_end_date,
+325                   B.death_date,
+326                   B.sex,
+327                   B.age
+328            from (select patid, min(date2) format = mmddyy10. as dateEarliestDiagnosis from Work.temp2 group by patid) A inner join
+329                 Work.temp2 B on (A.patid = B.patid & A.dateEarliestDiagnosis = B.date2) inner join
+330                 Work.denom C on (A.patid = C.patid & C.enr_start_date <= A.dateEarliestDiagnosis <= C.enr_end_date);
+NOTE: Table DT.COHORTASTD_SABR created, with 26799 rows and 9 columns.
+
+331        quit;
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           11.87 seconds
+      cpu time            17.48 seconds
+      
+
+7                                                                   The SAS System                                          10:11 Friday, May 18, 2018
+
+332        
+333        
+334        proc sql;
+335          create table Work.numerASCohort as
+336            select "New cohort, two 720.0 rheumatologist codes between 7-365 days apart" as cohort, "MPCD"       as database, count(distinct patid)
+336      !  as numerASCohort from DT.cohortASTDMPCD  union corr
+337            select "New cohort, two 720.0 rheumatologist codes between 7-365 days apart" as cohort, "Marketscan" as database, count(distinct patid)
+337      !  as numerASCohort from DT.cohortASTDUCB   union corr
+338            select "New cohort, two 720.0 rheumatologist codes between 7-365 days apart" as cohort, "Medicare"   as database, count(distinct patid)
+338      !  as numerASCohort from DT.cohortASTD_SABR ;
+NOTE: Table WORK.NUMERASCOHORT created, with 3 rows and 3 columns.
+
+339          select * from Work.numerASCohort;
+                                                                  --- AS project ---                                    10:11 Friday, May 18, 2018   5
+
+                                                                                                                    numer
+                            cohort                                                               database        ASCohort
+                            ---------------------------------------------------------------------------------------------
+                            New cohort, two 720.0 rheumatologist codes between 7-365 days apart  MPCD                4831
+                            New cohort, two 720.0 rheumatologist codes between 7-365 days apart  Marketscan         19687
+                            New cohort, two 720.0 rheumatologist codes between 7-365 days apart  Medicare           26799
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+                                                                  buildASCohort.sas
+340        quit;
+NOTE: The PROCEDURE SQL printed page 5.
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.18 seconds
+      cpu time            0.07 seconds
+      
+
+341        
+342        proc contents data = DT.cohortASTDMPCD  order = varnum;  run;
+
+                                                                  --- AS project ---                                    10:11 Friday, May 18, 2018   6
+
+                                                                The CONTENTS Procedure
+
+                                    Data Set Name        DT.COHORTASTDMPCD             Observations          4831
+                                    Member Type          DATA                          Variables             9   
+                                    Engine               V9                            Indexes               0   
+                                    Created              05/18/2018 10:13:39           Observation Length    72  
+                                    Last Modified        05/18/2018 10:13:39           Deleted Observations  0   
+                                    Protection                                         Compressed            NO  
+                                    Data Set Type                                      Sorted                YES 
+                                    Label                                                                        
+                                    Data Representation  WINDOWS_64                                              
+                                    Encoding             wlatin1  Western (Windows)                              
+
+
+                                                          Engine/Host Dependent Information
+
+                                        Data Set Page Size          65536                                     
+                                        Number of Data Set Pages    6                                         
+                                        First Data Page             1                                         
+                                        Max Obs per Page            908                                       
+                                        Obs in First Data Page      879                                       
+                                        Number of Data Set Repairs  0                                         
+                                        ExtendObsCounter            YES                                       
+                                        Filename                    V:\studies\AS\data\cohortastdmpcd.sas7bdat
+                                        Release Created             9.0401M5                                  
+                                        Host Created                X64_DS08R2                                
+                                        Owner Name                  AD\benjaminchan                           
+                                        File Size                   448KB                                     
+                                        File Size (bytes)           458752                                    
+
+
+                                                              Variables in Creation Order
+ 
+                       #    Variable          Type    Len    Format       Label
+
+                       1    patid             Char     20                                                                      
+                       2    asDate            Num       8    MMDDYY10.    asDate                                               
+                       3    asCohortDate      Num       8    MMDDYY10.                                                         
+                       4    indexDate         Num       8    MMDDYY10.                                                         
+                       5    ENR_START_DATE    Num       4    MMDDYY10.    Date of the Beginning of Continuous Enrollment Period
+                       6    ENR_END_DATE      Num       4    MMDDYY10.    Date of the End of the Continuous Enrollment Period  
+                       7    DEATH_DATE        Num       4    MMDDYY10.    Patient Date of Death                                
+                       8    SEX               Char      2                 Administrative Sex                                   
+                       9    age               Num       8                                                                      
+
+
+                                                                  Sort Information
+
+                          Sortedby       patid asDate asCohortDate indexDate ENR_START_DATE ENR_END_DATE DEATH_DATE SEX age
+                          Validated      YES                                                                               
+                          Character Set  ANSI                                                                              
+                          Sort Option    NODUPKEY                                                                          
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+                                                                  buildASCohort.sas
+NOTE: PROCEDURE CONTENTS used (Total process time):
+      real time           0.07 seconds
+      cpu time            0.04 seconds
+      
+NOTE: The PROCEDURE CONTENTS printed page 6.
+
+343        proc contents data = DT.cohortASTDUCB   order = varnum;  run;
+
+                                                                  --- AS project ---                                    10:11 Friday, May 18, 2018   7
+
+                                                                The CONTENTS Procedure
+
+                                    Data Set Name        DT.COHORTASTDUCB              Observations          19687
+                                    Member Type          DATA                          Variables             9    
+                                    Engine               V9                            Indexes               0    
+                                    Created              05/18/2018 10:24:02           Observation Length    72   
+                                    Last Modified        05/18/2018 10:24:02           Deleted Observations  0    
+                                    Protection                                         Compressed            NO   
+                                    Data Set Type                                      Sorted                YES  
+                                    Label                                                                         
+                                    Data Representation  WINDOWS_64                                               
+                                    Encoding             wlatin1  Western (Windows)                               
+
+
+                                                          Engine/Host Dependent Information
+
+                                        Data Set Page Size          65536                                    
+                                        Number of Data Set Pages    22                                       
+                                        First Data Page             1                                        
+                                        Max Obs per Page            908                                      
+                                        Obs in First Data Page      879                                      
+                                        Number of Data Set Repairs  0                                        
+                                        ExtendObsCounter            YES                                      
+                                        Filename                    V:\studies\AS\data\cohortastducb.sas7bdat
+                                        Release Created             9.0401M5                                 
+                                        Host Created                X64_DS08R2                               
+                                        Owner Name                  AD\benjaminchan                          
+                                        File Size                   1MB                                      
+                                        File Size (bytes)           1507328                                  
+
+
+                                                              Variables in Creation Order
+ 
+                       #    Variable          Type    Len    Format       Label
+
+                       1    patid             Char     20                                                                      
+                       2    asDate            Num       8    MMDDYY10.    asDate                                               
+                       3    asCohortDate      Num       8    MMDDYY10.                                                         
+                       4    indexDate         Num       8    MMDDYY10.                                                         
+                       5    ENR_START_DATE    Num       4    MMDDYY10.    Date of the Beginning of Continuous Enrollment Period
+                       6    ENR_END_DATE      Num       4    MMDDYY10.    Date of the End of the Continuous Enrollment Period  
+                       7    DEATH_DATE        Num       4    MMDDYY10.    Patient Date of Death                                
+                       8    SEX               Char      2                 Administrative Sex                                   
+                       9    age               Num       8                                                                      
+
+
+                                                                  Sort Information
+
+                          Sortedby       patid asDate asCohortDate indexDate ENR_START_DATE ENR_END_DATE DEATH_DATE SEX age
+                          Validated      YES                                                                               
+                          Character Set  ANSI                                                                              
+                          Sort Option    NODUPKEY                                                                          
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+                                                                  buildASCohort.sas
+NOTE: PROCEDURE CONTENTS used (Total process time):
+      real time           0.12 seconds
+      cpu time            0.03 seconds
+      
+NOTE: The PROCEDURE CONTENTS printed page 7.
+
+344        proc contents data = DT.cohortASTD_SABR order = varnum;  run;
+
+                                                                  --- AS project ---                                    10:11 Friday, May 18, 2018   8
+
+                                                                The CONTENTS Procedure
+
+                                    Data Set Name        DT.COHORTASTD_SABR            Observations          26799
+                                    Member Type          DATA                          Variables             9    
+                                    Engine               V9                            Indexes               0    
+                                    Created              05/18/2018 10:40:30           Observation Length    72   
+                                    Last Modified        05/18/2018 10:40:30           Deleted Observations  0    
+                                    Protection                                         Compressed            NO   
+                                    Data Set Type                                      Sorted                YES  
+                                    Label                                                                         
+                                    Data Representation  WINDOWS_64                                               
+                                    Encoding             wlatin1  Western (Windows)                               
+
+
+                                                          Engine/Host Dependent Information
+
+                                       Data Set Page Size          65536                                      
+                                       Number of Data Set Pages    30                                         
+                                       First Data Page             1                                          
+                                       Max Obs per Page            908                                        
+                                       Obs in First Data Page      881                                        
+                                       Number of Data Set Repairs  0                                          
+                                       ExtendObsCounter            YES                                        
+                                       Filename                    V:\studies\AS\data\cohortastd_sabr.sas7bdat
+                                       Release Created             9.0401M5                                   
+                                       Host Created                X64_DS08R2                                 
+                                       Owner Name                  AD\benjaminchan                            
+                                       File Size                   2MB                                        
+                                       File Size (bytes)           2031616                                    
+
+
+                                                             Variables in Creation Order
+ 
+                                              #    Variable          Type    Len    Format       Label
+
+                                              1    patid             Char     20                       
+                                              2    asDate            Num       8    MMDDYY10.    asDate
+                                              3    asCohortDate      Num       8    MMDDYY10.          
+                                              4    indexDate         Num       8    MMDDYY10.          
+                                              5    ENR_START_DATE    Num       4    MMDDYY10.          
+                                              6    ENR_END_DATE      Num       4    MMDDYY10.          
+                                              7    DEATH_DATE        Num       4    MMDDYY10.          
+                                              8    SEX               Char      2                       
+                                              9    age               Num       8                       
+
+
+                                                                  Sort Information
+
+                          Sortedby       patid asDate asCohortDate indexDate ENR_START_DATE ENR_END_DATE DEATH_DATE SEX age
+                          Validated      YES                                                                               
+                          Character Set  ANSI                                                                              
+                          Sort Option    NODUPKEY                                                                          
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+                                                                  buildASCohort.sas
+NOTE: PROCEDURE CONTENTS used (Total process time):
+      real time           0.04 seconds
+      cpu time            0.03 seconds
+      
+NOTE: The PROCEDURE CONTENTS printed page 8.
+
+345        
+346        
+347        
+348        
+349        ods html close;
+NOTE: SAS Institute Inc., SAS Campus Drive, Cary, NC USA 27513-2414
+NOTE: The SAS System used:
+      real time           29:27.63
+      cpu time            28:39.73
+      

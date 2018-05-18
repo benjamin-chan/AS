@@ -1,0 +1,5416 @@
+1                                         The SAS System                11:37 Friday, May 18, 2018
+
+NOTE: Copyright (c) 2016 by SAS Institute Inc., Cary, NC, USA. 
+NOTE: SAS (r) Proprietary Software 9.4 (TS1M5) 
+      Licensed to UNIVERSITY OF ALABAMA AT BIRMINGHAM - SFA - T&R, Site 70086550.
+NOTE: This session is executing on the X64_DS08R2  platform.
+
+
+
+NOTE: Updated analytical products:
+      
+      SAS/STAT 14.3
+      SAS/ETS 14.3
+      SAS/IML 14.3
+      SAS/QC 14.3
+
+NOTE: Additional host information:
+
+ X64_DS08R2 WIN 6.1.7601 Service Pack 1 Server
+
+--- PEER News and Updates ---
+
+: SECURITY REMINDER :
+Please remember not to copy any data files that contain PHI (protected health identifiers) to any 
+of the shared folders.
+
+ 
+
+
+NOTE: SAS initialization used:
+      real time           5.07 seconds
+      cpu time            0.29 seconds
+      
+1          *  University of Alabama at Birmingham                               *
+2          *  AS project                                            *
+3          **********************************************************************;
+4          options pagesize=74 linesize=150 pageno=1 missing=' ' date FORMCHAR="|----|+|---+=|-/\<>*";
+5          * Programmer    : Benjamin Chan <chanb@ohsu.edu>
+6          * Creation date :
+7          * Modify date   :
+8          ;
+9          %let cmt=buildExposureCohorts; * type the name of your program here (without the filename extension);
+10         %let pgm=&cmt..sas;
+11         %include "lib\libname.sas" ;
+NOTE: Libref STDC5P was successfully assigned as follows: 
+      Engine:        SPDE 
+      Physical Name: H:\studies\osteo\data\STD_files\5pct\
+NOTE: Libref STD_SABR was successfully assigned as follows: 
+      Engine:        SPDE 
+      Physical Name: q:\data\std_SABER\
+NOTE: Libref MPSTD was successfully assigned as follows: 
+      Engine:        SPDE 
+      Physical Name: q:\studies\mpcd\data\stddata\
+NOTE: Libref UCBSTD was successfully assigned as follows: 
+      Engine:        SPDE 
+      Physical Name: q:\studies\AS\data\stddata\
+NOTE: Libref UCB was successfully assigned as follows: 
+      Engine:        SPDE 
+      Physical Name: q:\studies\AS\data\UCB\
+NOTE: Libref DT was successfully assigned as follows: 
+      Engine:        V9 
+      Physical Name: V:\studies\AS\data
+NOTE: Libref NDC was successfully assigned as follows: 
+      Engine:        V9 
+      Physical Name: W:\onenote\references\drug ndcs\sas data
+128        footnote "&pgm.";
+129        * footnote2 "%sysfunc(datetime(),datetime14.)";
+130        title1 '--- AS project ---';
+131        **********************************************************************;
+132        options macrogen mlogic mprint symbolgen;
+133        options nomacrogen nomlogic nomprint nosymbolgen;
+134        
+135        
+136        ods html
+2                                                                   The SAS System                                          11:37 Friday, May 18, 2018
+
+137          body = "output\&cmt..html"
+138          style = Statistical;
+NOTE: Writing HTML Body file: output\buildExposureCohorts.html
+139        
+140        
+141        /*
+142        Load Fenglong's macro
+143         */
+144        %include "lib\expo.sas" ;
+741        
+742        proc copy in = DT out = Work;
+743          select cohortASTDUCB
+744                 cohortASTDMPCD
+745                 cohortASTD_SABR
+746                 BioUCBSTD
+747                 BioMPSTD
+748                 Biostd_sabr
+749                 DmardUCBSTD
+750                 DmardMPSTD
+751                 Dmardstd_sabr
+752                 NsaidUCBSTD
+753                 NsaidMPSTD
+754                 Nsaidstd_sabr
+755                 TNFUCBSTD
+756                 TNFMPSTD
+757                 TNFstd_sabr;
+758        run;
+
+NOTE: Copying DT.COHORTASTDUCB to WORK.COHORTASTDUCB (memtype=DATA).
+NOTE: There were 19687 observations read from the data set DT.COHORTASTDUCB.
+NOTE: The data set WORK.COHORTASTDUCB has 19687 observations and 9 variables.
+NOTE: Copying DT.COHORTASTDMPCD to WORK.COHORTASTDMPCD (memtype=DATA).
+NOTE: There were 4831 observations read from the data set DT.COHORTASTDMPCD.
+NOTE: The data set WORK.COHORTASTDMPCD has 4831 observations and 9 variables.
+NOTE: Copying DT.COHORTASTD_SABR to WORK.COHORTASTD_SABR (memtype=DATA).
+NOTE: There were 26799 observations read from the data set DT.COHORTASTD_SABR.
+NOTE: The data set WORK.COHORTASTD_SABR has 26799 observations and 9 variables.
+NOTE: Copying DT.BIOUCBSTD to WORK.BIOUCBSTD (memtype=DATA).
+NOTE: There were 3837944 observations read from the data set DT.BIOUCBSTD.
+NOTE: The data set WORK.BIOUCBSTD has 3837944 observations and 3 variables.
+NOTE: Copying DT.BIOMPSTD to WORK.BIOMPSTD (memtype=DATA).
+NOTE: There were 1290591 observations read from the data set DT.BIOMPSTD.
+NOTE: The data set WORK.BIOMPSTD has 1290591 observations and 3 variables.
+NOTE: Copying DT.BIOSTD_SABR to WORK.BIOSTD_SABR (memtype=DATA).
+NOTE: There were 7890590 observations read from the data set DT.BIOSTD_SABR.
+NOTE: The data set WORK.BIOSTD_SABR has 7890590 observations and 3 variables.
+NOTE: Copying DT.DMARDUCBSTD to WORK.DMARDUCBSTD (memtype=DATA).
+NOTE: There were 5901765 observations read from the data set DT.DMARDUCBSTD.
+NOTE: The data set WORK.DMARDUCBSTD has 5901765 observations and 3 variables.
+NOTE: Copying DT.DMARDMPSTD to WORK.DMARDMPSTD (memtype=DATA).
+NOTE: There were 3464342 observations read from the data set DT.DMARDMPSTD.
+NOTE: The data set WORK.DMARDMPSTD has 3464342 observations and 3 variables.
+NOTE: Copying DT.DMARDSTD_SABR to WORK.DMARDSTD_SABR (memtype=DATA).
+NOTE: There were 22923345 observations read from the data set DT.DMARDSTD_SABR.
+NOTE: The data set WORK.DMARDSTD_SABR has 22923345 observations and 3 variables.
+NOTE: Copying DT.NSAIDUCBSTD to WORK.NSAIDUCBSTD (memtype=DATA).
+NOTE: There were 25478174 observations read from the data set DT.NSAIDUCBSTD.
+NOTE: The data set WORK.NSAIDUCBSTD has 25478174 observations and 3 variables.
+NOTE: Copying DT.NSAIDMPSTD to WORK.NSAIDMPSTD (memtype=DATA).
+NOTE: There were 4470510 observations read from the data set DT.NSAIDMPSTD.
+NOTE: The data set WORK.NSAIDMPSTD has 4470510 observations and 3 variables.
+NOTE: Copying DT.NSAIDSTD_SABR to WORK.NSAIDSTD_SABR (memtype=DATA).
+NOTE: There were 21318511 observations read from the data set DT.NSAIDSTD_SABR.
+NOTE: The data set WORK.NSAIDSTD_SABR has 21318511 observations and 3 variables.
+NOTE: Copying DT.TNFUCBSTD to WORK.TNFUCBSTD (memtype=DATA).
+NOTE: There were 3317722 observations read from the data set DT.TNFUCBSTD.
+NOTE: The data set WORK.TNFUCBSTD has 3317722 observations and 3 variables.
+NOTE: Copying DT.TNFMPSTD to WORK.TNFMPSTD (memtype=DATA).
+NOTE: There were 1154672 observations read from the data set DT.TNFMPSTD.
+NOTE: The data set WORK.TNFMPSTD has 1154672 observations and 3 variables.
+NOTE: Copying DT.TNFSTD_SABR to WORK.TNFSTD_SABR (memtype=DATA).
+NOTE: There were 6308496 observations read from the data set DT.TNFSTD_SABR.
+3                                                                   The SAS System                                          11:37 Friday, May 18, 2018
+
+NOTE: The data set WORK.TNFSTD_SABR has 6308496 observations and 3 variables.
+NOTE: PROCEDURE COPY used (Total process time):
+      real time           17.06 seconds
+      cpu time            12.71 seconds
+      
+
+759        
+760        %expo(source = UCBSTD  , cohort0 = Work.cohortASTDUCB  , stdLib = UCBSTD  , enrData = enroll)
+NOTE: Table WORK.ALLBIO1STUCBSTD created, with 306053 rows and 2 columns.
+
+NOTE: Table WORK.BIO1STUCBSTD created, with 366301 rows and 3 columns.
+
+NOTE: Table WORK.TNF1STUCBSTD created, with 293070 rows and 3 columns.
+
+NOTE: Table WORK.ALLDMARD1STUCBSTD created, with 556850 rows and 2 columns.
+
+NOTE: Table WORK.DMARD1STUCBSTD created, with 667182 rows and 3 columns.
+
+NOTE: Table WORK.ALLNSAID1STUCBSTD created, with 6453228 rows and 2 columns.
+
+NOTE: Table WORK.NSAID1STUCBSTD created, with 8992440 rows and 3 columns.
+
+NOTE: Table WORK.ASBIO0COHORTUCBSTD created, with 5688 rows and 8 columns.
+
+NOTE: Data set UCBSTD.ENROLL is in a format that is native to another host. Cross Environment Data Access will be used. This will require additional 
+      CPU resources and may reduce performance.
+NOTE: Table WORK.ASBIOCOHORTUCBSTD created, with 5048 rows and 10 columns.
+
+NOTE: Table WORK.ASTNF0COHORTUCBSTD created, with 5388 rows and 8 columns.
+
+NOTE: Data set UCBSTD.ENROLL is in a format that is native to another host. Cross Environment Data Access will be used. This will require additional 
+      CPU resources and may reduce performance.
+NOTE: Table WORK.ASTNFCOHORTUCBSTD created, with 4776 rows and 10 columns.
+
+NOTE: Table WORK.ASDMARD0COHORTUCBSTD created, with 3539 rows and 8 columns.
+
+NOTE: Data set UCBSTD.ENROLL is in a format that is native to another host. Cross Environment Data Access will be used. This will require additional 
+      CPU resources and may reduce performance.
+NOTE: Table WORK.ASDMARDCOHORTUCBSTD created, with 3073 rows and 10 columns.
+
+NOTE: Table WORK.ASNSAID0COHORTUCBSTD created, with 9980 rows and 8 columns.
+
+NOTE: Data set UCBSTD.ENROLL is in a format that is native to another host. Cross Environment Data Access will be used. This will require additional 
+      CPU resources and may reduce performance.
+NOTE: Table WORK.ASNSAIDCOHORTUCBSTD created, with 9089 rows and 10 columns.
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           1:09.38
+      cpu time            1:41.29
+      
+
+
+NOTE: There were 19687 observations read from the data set WORK.COHORTASTDUCB.
+NOTE: The data set WORK.ASNOEXPCOHORT0UCBSTD has 19687 observations and 10 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.14 seconds
+      cpu time            0.03 seconds
+      
+
+NOTE: Table WORK.BIOCEN4BIOUCBSTD created, with 9472 rows and 4 columns.
+
+NOTE: Table WORK.BIOCEN4TNFUCBSTD created, with 8979 rows and 4 columns.
+
+NOTE: Table WORK.BIOCEN4DMARDUCBSTD created, with 15609 rows and 4 columns.
+
+NOTE: Table WORK.BIOCEN4NSAIDUCBSTD created, with 42980 rows and 4 columns.
+
+NOTE: Table WORK.BIOCEN4NOEXPUCBSTD created, with 120344 rows and 4 columns.
+
+NOTE: Table WORK.DMARDCEN4NSAIDUCBSTD created, with 21603 rows and 4 columns.
+
+NOTE: Table WORK.DMARDCEN4NOEXPUCBSTD created, with 62615 rows and 4 columns.
+4                                                                   The SAS System                                          11:37 Friday, May 18, 2018
+
+
+NOTE: Table WORK.NSAIDCEN4NOEXPUCBSTD created, with 82221 rows and 4 columns.
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           23.66 seconds
+      cpu time            16.20 seconds
+      
+
+
+NOTE: There were 9472 observations read from the data set WORK.BIOCEN4BIOUCBSTD.
+NOTE: The data set WORK.BIOCEN4BIOUCBSTD has 1162 observations and 4 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.06 seconds
+      cpu time            0.03 seconds
+      
+
+
+NOTE: There were 8979 observations read from the data set WORK.BIOCEN4TNFUCBSTD.
+NOTE: The data set WORK.BIOCEN4TNFUCBSTD has 1092 observations and 4 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.06 seconds
+      cpu time            0.01 seconds
+      
+
+
+NOTE: There were 15609 observations read from the data set WORK.BIOCEN4DMARDUCBSTD.
+NOTE: The data set WORK.BIOCEN4DMARDUCBSTD has 1576 observations and 4 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.04 seconds
+      cpu time            0.01 seconds
+      
+
+
+NOTE: There were 120344 observations read from the data set WORK.BIOCEN4NOEXPUCBSTD.
+NOTE: The data set WORK.BIOCEN4NOEXPUCBSTD has 10167 observations and 4 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.09 seconds
+      cpu time            0.09 seconds
+      
+
+
+NOTE: There were 21603 observations read from the data set WORK.DMARDCEN4NSAIDUCBSTD.
+NOTE: The data set WORK.DMARDCEN4NSAIDUCBSTD has 2787 observations and 4 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.06 seconds
+      cpu time            0.03 seconds
+      
+
+
+NOTE: There were 62615 observations read from the data set WORK.DMARDCEN4NOEXPUCBSTD.
+NOTE: The data set WORK.DMARDCEN4NOEXPUCBSTD has 6767 observations and 4 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.12 seconds
+      cpu time            0.03 seconds
+      
+
+
+NOTE: There were 82221 observations read from the data set WORK.NSAIDCEN4NOEXPUCBSTD.
+NOTE: The data set WORK.NSAIDCEN4NOEXPUCBSTD has 11385 observations and 4 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.07 seconds
+      cpu time            0.04 seconds
+      
+
+
+NOTE: Missing values were generated as a result of performing an operation on missing values.
+      Each place is given by: (Number of times) at (Line):(Column).
+      3886 at 939:180   
+NOTE: There were 5048 observations read from the data set WORK.ASBIOCOHORTUCBSTD.
+NOTE: There were 1162 observations read from the data set WORK.BIOCEN4BIOUCBSTD.
+NOTE: The data set WORK.ASBIOCOHORTUCBSTD_EX1 has 5038 observations and 11 variables.
+NOTE: DATA statement used (Total process time):
+5                                                                   The SAS System                                          11:37 Friday, May 18, 2018
+
+      real time           0.04 seconds
+      cpu time            0.03 seconds
+      
+
+
+NOTE: Missing values were generated as a result of performing an operation on missing values.
+      Each place is given by: (Number of times) at (Line):(Column).
+      3684 at 943:160   
+NOTE: There were 4776 observations read from the data set WORK.ASTNFCOHORTUCBSTD.
+NOTE: There were 1092 observations read from the data set WORK.BIOCEN4TNFUCBSTD.
+NOTE: The data set WORK.ASTNFCOHORTUCBSTD_EX1 has 4768 observations and 11 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.06 seconds
+      cpu time            0.04 seconds
+      
+
+
+NOTE: There were 3073 observations read from the data set WORK.ASDMARDCOHORTUCBSTD.
+NOTE: There were 306053 observations read from the data set WORK.ALLBIO1STUCBSTD.
+NOTE: The data set WORK.ASDMARDCOHORTUCBSTD_EX1 has 1564 observations and 12 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.17 seconds
+      cpu time            0.12 seconds
+      
+
+
+NOTE: Missing values were generated as a result of performing an operation on missing values.
+      Each place is given by: (Number of times) at (Line):(Column).
+      1165 at 760:127   
+NOTE: There were 1564 observations read from the data set WORK.ASDMARDCOHORTUCBSTD_EX1.
+NOTE: There were 1576 observations read from the data set WORK.BIOCEN4DMARDUCBSTD.
+NOTE: The data set WORK.ASDMARDCOHORTUCBSTD_EX1 has 1564 observations and 12 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.04 seconds
+      cpu time            0.01 seconds
+      
+
+
+NOTE: There were 9089 observations read from the data set WORK.ASNSAIDCOHORTUCBSTD.
+NOTE: There were 306053 observations read from the data set WORK.ALLBIO1STUCBSTD.
+NOTE: There were 556850 observations read from the data set WORK.ALLDMARD1STUCBSTD.
+NOTE: The data set WORK.ASNSAIDCOHORTUCBSTD_EX1 has 2724 observations and 13 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.38 seconds
+      cpu time            0.34 seconds
+      
+
+
+NOTE: Missing values were generated as a result of performing an operation on missing values.
+      Each place is given by: (Number of times) at (Line):(Column).
+      2390 at 961:195   4420 at 961:202   
+NOTE: There were 2724 observations read from the data set WORK.ASNSAIDCOHORTUCBSTD_EX1.
+NOTE: There were 42980 observations read from the data set WORK.BIOCEN4NSAIDUCBSTD.
+NOTE: There were 2787 observations read from the data set WORK.DMARDCEN4NSAIDUCBSTD.
+NOTE: The data set WORK.ASNSAIDCOHORTUCBSTD_EX1 has 5488 observations and 13 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.09 seconds
+      cpu time            0.04 seconds
+      
+
+
+NOTE: There were 19687 observations read from the data set WORK.ASNOEXPCOHORT0UCBSTD.
+NOTE: There were 306053 observations read from the data set WORK.ALLBIO1STUCBSTD.
+NOTE: There were 556850 observations read from the data set WORK.ALLDMARD1STUCBSTD.
+NOTE: The data set WORK.ASNOBDCOHORTUCBSTD_EX1 has 7242 observations and 13 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.43 seconds
+      cpu time            0.31 seconds
+      
+
+
+NOTE: Missing values were generated as a result of performing an operation on missing values.
+6                                                                   The SAS System                                          11:37 Friday, May 18, 2018
+
+      Each place is given by: (Number of times) at (Line):(Column).
+      5804 at 972:249   6421 at 760:6     
+NOTE: There were 7242 observations read from the data set WORK.ASNOBDCOHORTUCBSTD_EX1.
+NOTE: There were 10167 observations read from the data set WORK.BIOCEN4NOEXPUCBSTD.
+NOTE: There were 6767 observations read from the data set WORK.DMARDCEN4NOEXPUCBSTD.
+NOTE: The data set WORK.ASNOBDCOHORTUCBSTD_EX1 has 7242 observations and 13 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.07 seconds
+      cpu time            0.03 seconds
+      
+
+
+NOTE: There were 7242 observations read from the data set WORK.ASNOBDCOHORTUCBSTD_EX1.
+NOTE: The data set WORK.ASNOBDCOHORTUCBSTD_EX1 has 7242 observations and 13 variables.
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           0.04 seconds
+      cpu time            0.01 seconds
+      
+
+
+NOTE: There were 7242 observations read from the data set WORK.ASNOBDCOHORTUCBSTD_EX1.
+NOTE: The data set WORK.ASNOBDCOHORTUCBSTD_EX1 has 7242 observations and 13 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.06 seconds
+      cpu time            0.03 seconds
+      
+
+
+NOTE: There were 19687 observations read from the data set WORK.ASNOEXPCOHORT0UCBSTD.
+NOTE: There were 306053 observations read from the data set WORK.ALLBIO1STUCBSTD.
+NOTE: There were 556850 observations read from the data set WORK.ALLDMARD1STUCBSTD.
+NOTE: There were 6453228 observations read from the data set WORK.ALLNSAID1STUCBSTD.
+NOTE: The data set WORK.ASNOEXPCOHORTUCBSTD_EX1 has 2449 observations and 14 variables.
+NOTE: DATA statement used (Total process time):
+      real time           2.09 seconds
+      cpu time            2.07 seconds
+      
+
+
+NOTE: Missing values were generated as a result of performing an operation on missing values.
+      Each place is given by: (Number of times) at (Line):(Column).
+      2017 at 760:58   2174 at 760:65   1718 at 760:73   
+NOTE: There were 2449 observations read from the data set WORK.ASNOEXPCOHORTUCBSTD_EX1.
+NOTE: There were 10167 observations read from the data set WORK.BIOCEN4NOEXPUCBSTD.
+NOTE: There were 6767 observations read from the data set WORK.DMARDCEN4NOEXPUCBSTD.
+NOTE: There were 11385 observations read from the data set WORK.NSAIDCEN4NOEXPUCBSTD.
+NOTE: The data set WORK.ASNOEXPCOHORTUCBSTD_EX1 has 2449 observations and 14 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.09 seconds
+      cpu time            0.06 seconds
+      
+
+
+NOTE: There were 2449 observations read from the data set WORK.ASNOEXPCOHORTUCBSTD_EX1.
+NOTE: The data set WORK.ASNOEXPCOHORTUCBSTD_EX1 has 2449 observations and 14 variables.
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           0.04 seconds
+      cpu time            0.03 seconds
+      
+
+
+NOTE: There were 2449 observations read from the data set WORK.ASNOEXPCOHORTUCBSTD_EX1.
+NOTE: The data set WORK.ASNOEXPCOHORTUCBSTD_EX1 has 2449 observations and 14 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.06 seconds
+      cpu time            0.01 seconds
+      
+
+NOTE: Table WORK.BIOEXC6MDMARDUCBSTD created, with 5093 rows and 3 columns.
+
+NOTE: Table WORK.BIOEXC6MNSAIDUCBSTD created, with 14838 rows and 3 columns.
+
+7                                                                   The SAS System                                          11:37 Friday, May 18, 2018
+
+NOTE: Table WORK.BIOEXC6MNOEXPUCBSTD created, with 29095 rows and 3 columns.
+
+NOTE: Table WORK.DMARDEXC6MNSAIDUCBSTD created, with 8844 rows and 3 columns.
+
+NOTE: Table WORK.DMARDEXC6MNOEXPUCBSTD created, with 20054 rows and 3 columns.
+
+NOTE: Table WORK.NSAIDEXC6MNOEXPUCBSTD created, with 28406 rows and 3 columns.
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           34.35 seconds
+      cpu time            13.69 seconds
+      
+
+
+NOTE: Missing values were generated as a result of performing an operation on missing values.
+      Each place is given by: (Number of times) at (Line):(Column).
+      1866 at 760:57   
+NOTE: There were 3073 observations read from the data set WORK.ASDMARDCOHORTUCBSTD.
+NOTE: There were 5093 observations read from the data set WORK.BIOEXC6MDMARDUCBSTD.
+NOTE: There were 1576 observations read from the data set WORK.BIOCEN4DMARDUCBSTD.
+NOTE: The data set WORK.ASDMARDCOHORTUCBSTD_EX2 has 1760 observations and 11 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.06 seconds
+      cpu time            0.03 seconds
+      
+
+
+NOTE: MERGE statement has more than one data set with repeats of BY values.
+NOTE: Missing values were generated as a result of performing an operation on missing values.
+      Each place is given by: (Number of times) at (Line):(Column).
+      8487 at 760:156    31388 at 760:163   
+NOTE: There were 9089 observations read from the data set WORK.ASNSAIDCOHORTUCBSTD.
+NOTE: There were 14838 observations read from the data set WORK.BIOEXC6MNSAIDUCBSTD.
+NOTE: There were 8844 observations read from the data set WORK.DMARDEXC6MNSAIDUCBSTD.
+NOTE: There were 42980 observations read from the data set WORK.BIOCEN4NSAIDUCBSTD.
+NOTE: There were 2787 observations read from the data set WORK.DMARDCEN4NSAIDUCBSTD.
+NOTE: The data set WORK.ASNSAIDCOHORTUCBSTD_EX2 has 7456 observations and 11 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.17 seconds
+      cpu time            0.09 seconds
+      
+
+
+NOTE: MERGE statement has more than one data set with repeats of BY values.
+NOTE: Missing values were generated as a result of performing an operation on missing values.
+      Each place is given by: (Number of times) at (Line):(Column).
+      16626 at 760:6    27719 at 760:13   
+NOTE: There were 19687 observations read from the data set WORK.ASNOEXPCOHORT0UCBSTD.
+NOTE: There were 29095 observations read from the data set WORK.BIOEXC6MNOEXPUCBSTD.
+NOTE: There were 20054 observations read from the data set WORK.DMARDEXC6MNOEXPUCBSTD.
+NOTE: There were 10167 observations read from the data set WORK.BIOCEN4NOEXPUCBSTD.
+NOTE: There were 6767 observations read from the data set WORK.DMARDCEN4NOEXPUCBSTD.
+NOTE: The data set WORK.ASNOBDCOHORTUCBSTD_EX2 has 7710 observations and 11 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.12 seconds
+      cpu time            0.09 seconds
+      
+
+
+NOTE: There were 7710 observations read from the data set WORK.ASNOBDCOHORTUCBSTD_EX2.
+NOTE: The data set WORK.ASNOBDCOHORTUCBSTD_EX2 has 7710 observations and 11 variables.
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           0.07 seconds
+      cpu time            0.03 seconds
+      
+
+
+NOTE: There were 7710 observations read from the data set WORK.ASNOBDCOHORTUCBSTD_EX2.
+NOTE: The data set WORK.ASNOBDCOHORTUCBSTD_EX2 has 7710 observations and 11 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.04 seconds
+      cpu time            0.00 seconds
+8                                                                   The SAS System                                          11:37 Friday, May 18, 2018
+
+      
+
+
+NOTE: Missing values were generated as a result of performing an operation on missing values.
+      Each place is given by: (Number of times) at (Line):(Column).
+      9520 at 1071:242    12920 at 1071:249   8302 at 760:6       
+NOTE: There were 19687 observations read from the data set WORK.ASNOEXPCOHORT0UCBSTD.
+NOTE: There were 10167 observations read from the data set WORK.BIOCEN4NOEXPUCBSTD.
+NOTE: There were 6767 observations read from the data set WORK.DMARDCEN4NOEXPUCBSTD.
+NOTE: There were 11385 observations read from the data set WORK.NSAIDCEN4NOEXPUCBSTD.
+NOTE: The data set WORK.ASNOEXPCOHORTUCBSTD_EX2A has 16990 observations and 11 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.09 seconds
+      cpu time            0.06 seconds
+      
+
+
+NOTE: MERGE statement has more than one data set with repeats of BY values.
+NOTE: There were 16990 observations read from the data set WORK.ASNOEXPCOHORTUCBSTD_EX2A.
+NOTE: There were 29095 observations read from the data set WORK.BIOEXC6MNOEXPUCBSTD.
+NOTE: There were 20054 observations read from the data set WORK.DMARDEXC6MNOEXPUCBSTD.
+NOTE: There were 28406 observations read from the data set WORK.NSAIDEXC6MNOEXPUCBSTD.
+NOTE: The data set WORK.ASNOEXPCOHORTUCBSTD_EX2 has 3368 observations and 11 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.10 seconds
+      cpu time            0.09 seconds
+      
+
+
+NOTE: There were 3368 observations read from the data set WORK.ASNOEXPCOHORTUCBSTD_EX2.
+NOTE: The data set WORK.ASNOEXPCOHORTUCBSTD_EX2 has 3368 observations and 11 variables.
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           0.04 seconds
+      cpu time            0.01 seconds
+      
+
+
+NOTE: There were 3368 observations read from the data set WORK.ASNOEXPCOHORTUCBSTD_EX2.
+NOTE: The data set WORK.ASNOEXPCOHORTUCBSTD_EX2 has 3368 observations and 11 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.04 seconds
+      cpu time            0.01 seconds
+      
+
+                                                                        UCBSTD                                          11:37 Friday, May 18, 2018   1
+                                           Patient with at least one initiation for biologic after AS date
+
+                                                                         number
+                                                                       --------
+                                                                           4535
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+                                                               buildExposureCohorts.sas
+                                                                        UCBSTD                                          11:37 Friday, May 18, 2018   2
+                             Patient with at least one initiation for biologic after AS date and with 183 days observable
+
+                                                                         number
+                                                                       --------
+                                                                           4060
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+                                                               buildExposureCohorts.sas
+                                                                        UCBSTD                                          11:37 Friday, May 18, 2018   3
+                                             Patient with at least one initiation for TNFi after AS date
+
+                                                                         number
+                                                                       --------
+                                                                           4402
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+                                                               buildExposureCohorts.sas
+                                                                        UCBSTD                                          11:37 Friday, May 18, 2018   4
+                               Patient with at least one initiation for TNFi after AS date and with 183 days observable
+
+                                                                         number
+                                                                       --------
+                                                                           3936
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+                                                               buildExposureCohorts.sas
+                                                                        UCBSTD                                          11:37 Friday, May 18, 2018   5
+                                             Patient with at least one initiation for DMARD after AS date
+
+                                                                         number
+                                                                       --------
+                                                                           2985
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+                                                               buildExposureCohorts.sas
+                                                                        UCBSTD                                          11:37 Friday, May 18, 2018   6
+                              Patient with at least one initiation for DMARD after AS date and with 183 days observable
+
+                                                                         number
+                                                                       --------
+                                                                           2630
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+                                                               buildExposureCohorts.sas
+                                                                        UCBSTD                                          11:37 Friday, May 18, 2018   7
+                Patient with at least one initiation for DMARD after AS date and with 183 days observable and no biologic before DMARD
+
+                                                                         number
+                                                                       --------
+                                                                           1378
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+                                                               buildExposureCohorts.sas
+                                                                        UCBSTD                                          11:37 Friday, May 18, 2018   8
+        Patient with at least one initiation for DMARD after AS date and with 183 days observable and no biologic within 6 month before DMARD
+
+                                                                         number
+                                                                       --------
+                                                                           1550
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+                                                               buildExposureCohorts.sas
+                                                                        UCBSTD                                          11:37 Friday, May 18, 2018   9
+                                             Patient with at least one initiation for NSAID after AS date
+
+                                                                         number
+                                                                       --------
+                                                                           6844
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+                                                               buildExposureCohorts.sas
+                                                                        UCBSTD                                          11:37 Friday, May 18, 2018  10
+                              Patient with at least one initiation for NSAID after AS date and with 183 days observable
+
+                                                                         number
+                                                                       --------
+                                                                           6386
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+                                                               buildExposureCohorts.sas
+                                                                        UCBSTD                                          11:37 Friday, May 18, 2018  11
+           Patient with at least one initiation for NSAID after AS date and with 183 days observable and no biologic no DMARD before Nsaid
+
+                                                                         number
+                                                                       --------
+                                                                           1970
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+                                                               buildExposureCohorts.sas
+                                                                        UCBSTD                                          11:37 Friday, May 18, 2018  12
+   Patient with at least one initiation for NSAID after AS date and with 183 days observable and no biologic, no DMARD within 6 month before Nsaids
+
+                                                                         number
+                                                                       --------
+                                                                           2700
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+                                                               buildExposureCohorts.sas
+                                                                        UCBSTD                                          11:37 Friday, May 18, 2018  13
+                            Patient with no biologic, no dmard after index date and no biologic no DMARD before index date
+
+                                                                         number
+                                                                       --------
+                                                                           7242
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+                                                               buildExposureCohorts.sas
+                                                                        UCBSTD                                          11:37 Friday, May 18, 2018  14
+                    Patient with no Biologic, no Dmard after index date and no biologic no DMARD within 6 month before index date
+
+                                                                         number
+                                                                       --------
+                                                                           7710
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+                                                               buildExposureCohorts.sas
+                                                                        UCBSTD                                          11:37 Friday, May 18, 2018  15
+                                       Patient with no exposure after index date and exposure before index date
+
+                                                                         number
+                                                                       --------
+                                                                           2449
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+                                                               buildExposureCohorts.sas
+                                                                        UCBSTD                                          11:37 Friday, May 18, 2018  16
+                                                        Patient with no exposure at index date
+
+                                                                         number
+                                                                       --------
+                                                                          16990
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+                                                               buildExposureCohorts.sas
+                                                                        UCBSTD                                          11:37 Friday, May 18, 2018  17
+                              Patient with no exposure after index date and no exposure within 6 month before index date
+
+                                                                         number
+                                                                       --------
+                                                                           3368
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+                                                               buildExposureCohorts.sas
+761        %expo(source = MPSTD   , cohort0 = Work.cohortASTDMPCD , stdLib = MPSTD   , enrData = enroll)
+NOTE: The PROCEDURE SQL printed pages 1-17.
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.64 seconds
+      cpu time            0.26 seconds
+      
+
+NOTE: Table WORK.ALLBIO1STMPSTD created, with 90567 rows and 2 columns.
+
+NOTE: Table WORK.BIO1STMPSTD created, with 112690 rows and 3 columns.
+
+NOTE: Table WORK.TNF1STMPSTD created, with 94412 rows and 3 columns.
+
+NOTE: Table WORK.ALLDMARD1STMPSTD created, with 217237 rows and 2 columns.
+
+NOTE: Table WORK.DMARD1STMPSTD created, with 279027 rows and 3 columns.
+
+NOTE: Table WORK.ALLNSAID1STMPSTD created, with 695333 rows and 2 columns.
+
+NOTE: Table WORK.NSAID1STMPSTD created, with 1097578 rows and 3 columns.
+
+NOTE: Table WORK.ASBIO0COHORTMPSTD created, with 1172 rows and 8 columns.
+
+NOTE: Table WORK.ASBIOCOHORTMPSTD created, with 1043 rows and 10 columns.
+
+NOTE: Table WORK.ASTNF0COHORTMPSTD created, with 1124 rows and 8 columns.
+
+NOTE: Table WORK.ASTNFCOHORTMPSTD created, with 1000 rows and 10 columns.
+9                                                                   The SAS System                                          11:37 Friday, May 18, 2018
+
+
+NOTE: Table WORK.ASDMARD0COHORTMPSTD created, with 830 rows and 8 columns.
+
+NOTE: Table WORK.ASDMARDCOHORTMPSTD created, with 751 rows and 10 columns.
+
+NOTE: Table WORK.ASNSAID0COHORTMPSTD created, with 2063 rows and 8 columns.
+
+NOTE: Table WORK.ASNSAIDCOHORTMPSTD created, with 1878 rows and 10 columns.
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           24.44 seconds
+      cpu time            58.56 seconds
+      
+
+
+NOTE: There were 4831 observations read from the data set WORK.COHORTASTDMPCD.
+NOTE: The data set WORK.ASNOEXPCOHORT0MPSTD has 4831 observations and 10 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.01 seconds
+      
+
+NOTE: Table WORK.BIOCEN4BIOMPSTD created, with 1548 rows and 4 columns.
+
+NOTE: Table WORK.BIOCEN4TNFMPSTD created, with 1346 rows and 4 columns.
+
+NOTE: Table WORK.BIOCEN4DMARDMPSTD created, with 3977 rows and 4 columns.
+
+NOTE: Table WORK.BIOCEN4NSAIDMPSTD created, with 7879 rows and 4 columns.
+
+NOTE: Table WORK.BIOCEN4NOEXPMPSTD created, with 26851 rows and 4 columns.
+
+NOTE: Table WORK.DMARDCEN4NSAIDMPSTD created, with 4296 rows and 4 columns.
+
+NOTE: Table WORK.DMARDCEN4NOEXPMPSTD created, with 14592 rows and 4 columns.
+
+NOTE: Table WORK.NSAIDCEN4NOEXPMPSTD created, with 19716 rows and 4 columns.
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           8.20 seconds
+      cpu time            5.63 seconds
+      
+
+
+NOTE: There were 1548 observations read from the data set WORK.BIOCEN4BIOMPSTD.
+NOTE: The data set WORK.BIOCEN4BIOMPSTD has 213 observations and 4 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.04 seconds
+      cpu time            0.01 seconds
+      
+
+
+NOTE: There were 1346 observations read from the data set WORK.BIOCEN4TNFMPSTD.
+NOTE: The data set WORK.BIOCEN4TNFMPSTD has 190 observations and 4 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.04 seconds
+      cpu time            0.03 seconds
+      
+
+
+NOTE: There were 3977 observations read from the data set WORK.BIOCEN4DMARDMPSTD.
+NOTE: The data set WORK.BIOCEN4DMARDMPSTD has 378 observations and 4 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.00 seconds
+      
+
+
+NOTE: There were 26851 observations read from the data set WORK.BIOCEN4NOEXPMPSTD.
+NOTE: The data set WORK.BIOCEN4NOEXPMPSTD has 2226 observations and 4 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.06 seconds
+10                                                                  The SAS System                                          11:37 Friday, May 18, 2018
+
+      cpu time            0.03 seconds
+      
+
+
+NOTE: There were 4296 observations read from the data set WORK.DMARDCEN4NSAIDMPSTD.
+NOTE: The data set WORK.DMARDCEN4NSAIDMPSTD has 570 observations and 4 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.04 seconds
+      cpu time            0.01 seconds
+      
+
+
+NOTE: There were 14592 observations read from the data set WORK.DMARDCEN4NOEXPMPSTD.
+NOTE: The data set WORK.DMARDCEN4NOEXPMPSTD has 1590 observations and 4 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.04 seconds
+      cpu time            0.01 seconds
+      
+
+
+NOTE: There were 19716 observations read from the data set WORK.NSAIDCEN4NOEXPMPSTD.
+NOTE: The data set WORK.NSAIDCEN4NOEXPMPSTD has 2573 observations and 4 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.04 seconds
+      cpu time            0.03 seconds
+      
+
+
+NOTE: Missing values were generated as a result of performing an operation on missing values.
+      Each place is given by: (Number of times) at (Line):(Column).
+      830 at 1291:180   
+NOTE: There were 1043 observations read from the data set WORK.ASBIOCOHORTMPSTD.
+NOTE: There were 213 observations read from the data set WORK.BIOCEN4BIOMPSTD.
+NOTE: The data set WORK.ASBIOCOHORTMPSTD_EX1 has 1027 observations and 11 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.06 seconds
+      cpu time            0.03 seconds
+      
+
+
+NOTE: Missing values were generated as a result of performing an operation on missing values.
+      Each place is given by: (Number of times) at (Line):(Column).
+      810 at 1295:160   
+NOTE: There were 1000 observations read from the data set WORK.ASTNFCOHORTMPSTD.
+NOTE: There were 190 observations read from the data set WORK.BIOCEN4TNFMPSTD.
+NOTE: The data set WORK.ASTNFCOHORTMPSTD_EX1 has 994 observations and 11 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.04 seconds
+      cpu time            0.00 seconds
+      
+
+
+NOTE: There were 751 observations read from the data set WORK.ASDMARDCOHORTMPSTD.
+NOTE: There were 90567 observations read from the data set WORK.ALLBIO1STMPSTD.
+NOTE: The data set WORK.ASDMARDCOHORTMPSTD_EX1 has 403 observations and 12 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.09 seconds
+      cpu time            0.04 seconds
+      
+
+
+NOTE: Missing values were generated as a result of performing an operation on missing values.
+      Each place is given by: (Number of times) at (Line):(Column).
+      307 at 761:127   
+NOTE: There were 403 observations read from the data set WORK.ASDMARDCOHORTMPSTD_EX1.
+NOTE: There were 378 observations read from the data set WORK.BIOCEN4DMARDMPSTD.
+NOTE: The data set WORK.ASDMARDCOHORTMPSTD_EX1 has 403 observations and 12 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.04 seconds
+      cpu time            0.01 seconds
+      
+
+11                                                                  The SAS System                                          11:37 Friday, May 18, 2018
+
+
+NOTE: There were 1878 observations read from the data set WORK.ASNSAIDCOHORTMPSTD.
+NOTE: There were 90567 observations read from the data set WORK.ALLBIO1STMPSTD.
+NOTE: There were 217237 observations read from the data set WORK.ALLDMARD1STMPSTD.
+NOTE: The data set WORK.ASNSAIDCOHORTMPSTD_EX1 has 594 observations and 13 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.21 seconds
+      cpu time            0.14 seconds
+      
+
+
+NOTE: Missing values were generated as a result of performing an operation on missing values.
+      Each place is given by: (Number of times) at (Line):(Column).
+      519 at 1313:195   886 at 1313:202   
+NOTE: There were 594 observations read from the data set WORK.ASNSAIDCOHORTMPSTD_EX1.
+NOTE: There were 7879 observations read from the data set WORK.BIOCEN4NSAIDMPSTD.
+NOTE: There were 570 observations read from the data set WORK.DMARDCEN4NSAIDMPSTD.
+NOTE: The data set WORK.ASNSAIDCOHORTMPSTD_EX1 has 1094 observations and 13 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.07 seconds
+      cpu time            0.04 seconds
+      
+
+
+NOTE: There were 4831 observations read from the data set WORK.ASNOEXPCOHORT0MPSTD.
+NOTE: There were 90567 observations read from the data set WORK.ALLBIO1STMPSTD.
+NOTE: There were 217237 observations read from the data set WORK.ALLDMARD1STMPSTD.
+NOTE: The data set WORK.ASNOBDCOHORTMPSTD_EX1 has 2020 observations and 13 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.20 seconds
+      cpu time            0.14 seconds
+      
+
+
+NOTE: Missing values were generated as a result of performing an operation on missing values.
+      Each place is given by: (Number of times) at (Line):(Column).
+      1722 at 1324:249   1807 at 761:6      
+NOTE: There were 2020 observations read from the data set WORK.ASNOBDCOHORTMPSTD_EX1.
+NOTE: There were 2226 observations read from the data set WORK.BIOCEN4NOEXPMPSTD.
+NOTE: There were 1590 observations read from the data set WORK.DMARDCEN4NOEXPMPSTD.
+NOTE: The data set WORK.ASNOBDCOHORTMPSTD_EX1 has 2020 observations and 13 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.04 seconds
+      cpu time            0.01 seconds
+      
+
+
+NOTE: There were 2020 observations read from the data set WORK.ASNOBDCOHORTMPSTD_EX1.
+NOTE: The data set WORK.ASNOBDCOHORTMPSTD_EX1 has 2020 observations and 13 variables.
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           0.04 seconds
+      cpu time            0.01 seconds
+      
+
+
+NOTE: There were 2020 observations read from the data set WORK.ASNOBDCOHORTMPSTD_EX1.
+NOTE: The data set WORK.ASNOBDCOHORTMPSTD_EX1 has 2020 observations and 13 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.06 seconds
+      cpu time            0.03 seconds
+      
+
+
+NOTE: There were 4831 observations read from the data set WORK.ASNOEXPCOHORT0MPSTD.
+NOTE: There were 90567 observations read from the data set WORK.ALLBIO1STMPSTD.
+NOTE: There were 217237 observations read from the data set WORK.ALLDMARD1STMPSTD.
+NOTE: There were 695333 observations read from the data set WORK.ALLNSAID1STMPSTD.
+NOTE: The data set WORK.ASNOEXPCOHORTMPSTD_EX1 has 927 observations and 14 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.53 seconds
+      cpu time            0.46 seconds
+      
+12                                                                  The SAS System                                          11:37 Friday, May 18, 2018
+
+
+
+NOTE: Missing values were generated as a result of performing an operation on missing values.
+      Each place is given by: (Number of times) at (Line):(Column).
+      806 at 761:58   834 at 761:65   735 at 761:73   
+NOTE: There were 927 observations read from the data set WORK.ASNOEXPCOHORTMPSTD_EX1.
+NOTE: There were 2226 observations read from the data set WORK.BIOCEN4NOEXPMPSTD.
+NOTE: There were 1590 observations read from the data set WORK.DMARDCEN4NOEXPMPSTD.
+NOTE: There were 2573 observations read from the data set WORK.NSAIDCEN4NOEXPMPSTD.
+NOTE: The data set WORK.ASNOEXPCOHORTMPSTD_EX1 has 927 observations and 14 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.07 seconds
+      cpu time            0.04 seconds
+      
+
+
+NOTE: There were 927 observations read from the data set WORK.ASNOEXPCOHORTMPSTD_EX1.
+NOTE: The data set WORK.ASNOEXPCOHORTMPSTD_EX1 has 927 observations and 14 variables.
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           0.04 seconds
+      cpu time            0.01 seconds
+      
+
+
+NOTE: There were 927 observations read from the data set WORK.ASNOEXPCOHORTMPSTD_EX1.
+NOTE: The data set WORK.ASNOEXPCOHORTMPSTD_EX1 has 927 observations and 14 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.04 seconds
+      cpu time            0.03 seconds
+      
+
+NOTE: Table WORK.BIOEXC6MDMARDMPSTD created, with 1249 rows and 3 columns.
+
+NOTE: Table WORK.BIOEXC6MNSAIDMPSTD created, with 2947 rows and 3 columns.
+
+NOTE: Table WORK.BIOEXC6MNOEXPMPSTD created, with 6643 rows and 3 columns.
+
+NOTE: Table WORK.DMARDEXC6MNSAIDMPSTD created, with 1859 rows and 3 columns.
+
+NOTE: Table WORK.DMARDEXC6MNOEXPMPSTD created, with 4988 rows and 3 columns.
+
+NOTE: Table WORK.NSAIDEXC6MNOEXPMPSTD created, with 7245 rows and 3 columns.
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           5.63 seconds
+      cpu time            4.22 seconds
+      
+
+
+NOTE: Missing values were generated as a result of performing an operation on missing values.
+      Each place is given by: (Number of times) at (Line):(Column).
+      462 at 761:57   
+NOTE: There were 751 observations read from the data set WORK.ASDMARDCOHORTMPSTD.
+NOTE: There were 1249 observations read from the data set WORK.BIOEXC6MDMARDMPSTD.
+NOTE: There were 378 observations read from the data set WORK.BIOCEN4DMARDMPSTD.
+NOTE: The data set WORK.ASDMARDCOHORTMPSTD_EX2 has 445 observations and 11 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.06 seconds
+      cpu time            0.01 seconds
+      
+
+
+NOTE: MERGE statement has more than one data set with repeats of BY values.
+NOTE: Missing values were generated as a result of performing an operation on missing values.
+      Each place is given by: (Number of times) at (Line):(Column).
+      1876 at 761:156   5831 at 761:163   
+NOTE: There were 1878 observations read from the data set WORK.ASNSAIDCOHORTMPSTD.
+NOTE: There were 2947 observations read from the data set WORK.BIOEXC6MNSAIDMPSTD.
+NOTE: There were 1859 observations read from the data set WORK.DMARDEXC6MNSAIDMPSTD.
+NOTE: There were 7879 observations read from the data set WORK.BIOCEN4NSAIDMPSTD.
+NOTE: There were 570 observations read from the data set WORK.DMARDCEN4NSAIDMPSTD.
+NOTE: The data set WORK.ASNSAIDCOHORTMPSTD_EX2 has 1491 observations and 11 variables.
+13                                                                  The SAS System                                          11:37 Friday, May 18, 2018
+
+NOTE: DATA statement used (Total process time):
+      real time           0.09 seconds
+      cpu time            0.04 seconds
+      
+
+
+NOTE: MERGE statement has more than one data set with repeats of BY values.
+NOTE: Missing values were generated as a result of performing an operation on missing values.
+      Each place is given by: (Number of times) at (Line):(Column).
+      4427 at 761:6    6583 at 761:13   
+NOTE: There were 4831 observations read from the data set WORK.ASNOEXPCOHORT0MPSTD.
+NOTE: There were 6643 observations read from the data set WORK.BIOEXC6MNOEXPMPSTD.
+NOTE: There were 4988 observations read from the data set WORK.DMARDEXC6MNOEXPMPSTD.
+NOTE: There were 2226 observations read from the data set WORK.BIOCEN4NOEXPMPSTD.
+NOTE: There were 1590 observations read from the data set WORK.DMARDCEN4NOEXPMPSTD.
+NOTE: The data set WORK.ASNOBDCOHORTMPSTD_EX2 has 2146 observations and 11 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.15 seconds
+      cpu time            0.01 seconds
+      
+
+
+NOTE: There were 2146 observations read from the data set WORK.ASNOBDCOHORTMPSTD_EX2.
+NOTE: The data set WORK.ASNOBDCOHORTMPSTD_EX2 has 2146 observations and 11 variables.
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           0.04 seconds
+      cpu time            0.00 seconds
+      
+
+
+NOTE: There were 2146 observations read from the data set WORK.ASNOBDCOHORTMPSTD_EX2.
+NOTE: The data set WORK.ASNOBDCOHORTMPSTD_EX2 has 2146 observations and 11 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.06 seconds
+      cpu time            0.01 seconds
+      
+
+
+NOTE: Missing values were generated as a result of performing an operation on missing values.
+      Each place is given by: (Number of times) at (Line):(Column).
+      2605 at 1423:242   3241 at 1423:249   2258 at 761:6      
+NOTE: There were 4831 observations read from the data set WORK.ASNOEXPCOHORT0MPSTD.
+NOTE: There were 2226 observations read from the data set WORK.BIOCEN4NOEXPMPSTD.
+NOTE: There were 1590 observations read from the data set WORK.DMARDCEN4NOEXPMPSTD.
+NOTE: There were 2573 observations read from the data set WORK.NSAIDCEN4NOEXPMPSTD.
+NOTE: The data set WORK.ASNOEXPCOHORTMPSTD_EX2A has 4202 observations and 11 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.07 seconds
+      cpu time            0.04 seconds
+      
+
+
+NOTE: MERGE statement has more than one data set with repeats of BY values.
+NOTE: There were 4202 observations read from the data set WORK.ASNOEXPCOHORTMPSTD_EX2A.
+NOTE: There were 6643 observations read from the data set WORK.BIOEXC6MNOEXPMPSTD.
+NOTE: There were 4988 observations read from the data set WORK.DMARDEXC6MNOEXPMPSTD.
+NOTE: There were 7245 observations read from the data set WORK.NSAIDEXC6MNOEXPMPSTD.
+NOTE: The data set WORK.ASNOEXPCOHORTMPSTD_EX2 has 1160 observations and 11 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.06 seconds
+      cpu time            0.03 seconds
+      
+
+
+NOTE: There were 1160 observations read from the data set WORK.ASNOEXPCOHORTMPSTD_EX2.
+NOTE: The data set WORK.ASNOEXPCOHORTMPSTD_EX2 has 1160 observations and 11 variables.
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           0.06 seconds
+      cpu time            0.03 seconds
+      
+
+
+14                                                                  The SAS System                                          11:37 Friday, May 18, 2018
+
+NOTE: There were 1160 observations read from the data set WORK.ASNOEXPCOHORTMPSTD_EX2.
+NOTE: The data set WORK.ASNOEXPCOHORTMPSTD_EX2 has 1160 observations and 11 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.07 seconds
+      cpu time            0.01 seconds
+      
+
+                                                                        MPSTD                                           11:37 Friday, May 18, 2018  18
+                                           Patient with at least one initiation for biologic after AS date
+
+                                                                         number
+                                                                       --------
+                                                                            997
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+                                                               buildExposureCohorts.sas
+                                                                        MPSTD                                           11:37 Friday, May 18, 2018  19
+                             Patient with at least one initiation for biologic after AS date and with 183 days observable
+
+                                                                         number
+                                                                       --------
+                                                                            876
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+                                                               buildExposureCohorts.sas
+                                                                        MPSTD                                           11:37 Friday, May 18, 2018  20
+                                             Patient with at least one initiation for TNFi after AS date
+
+                                                                         number
+                                                                       --------
+                                                                            966
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+                                                               buildExposureCohorts.sas
+                                                                        MPSTD                                           11:37 Friday, May 18, 2018  21
+                               Patient with at least one initiation for TNFi after AS date and with 183 days observable
+
+                                                                         number
+                                                                       --------
+                                                                            856
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+                                                               buildExposureCohorts.sas
+                                                                        MPSTD                                           11:37 Friday, May 18, 2018  22
+                                             Patient with at least one initiation for DMARD after AS date
+
+                                                                         number
+                                                                       --------
+                                                                            697
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+                                                               buildExposureCohorts.sas
+                                                                        MPSTD                                           11:37 Friday, May 18, 2018  23
+                              Patient with at least one initiation for DMARD after AS date and with 183 days observable
+
+                                                                         number
+                                                                       --------
+                                                                            633
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+                                                               buildExposureCohorts.sas
+                                                                        MPSTD                                           11:37 Friday, May 18, 2018  24
+                Patient with at least one initiation for DMARD after AS date and with 183 days observable and no biologic before DMARD
+
+                                                                         number
+                                                                       --------
+                                                                            343
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+                                                               buildExposureCohorts.sas
+                                                                        MPSTD                                           11:37 Friday, May 18, 2018  25
+        Patient with at least one initiation for DMARD after AS date and with 183 days observable and no biologic within 6 month before DMARD
+
+                                                                         number
+                                                                       --------
+                                                                            381
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+                                                               buildExposureCohorts.sas
+                                                                        MPSTD                                           11:37 Friday, May 18, 2018  26
+                                             Patient with at least one initiation for NSAID after AS date
+
+                                                                         number
+                                                                       --------
+                                                                           1443
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+                                                               buildExposureCohorts.sas
+                                                                        MPSTD                                           11:37 Friday, May 18, 2018  27
+                              Patient with at least one initiation for NSAID after AS date and with 183 days observable
+
+                                                                         number
+                                                                       --------
+                                                                           1349
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+                                                               buildExposureCohorts.sas
+                                                                        MPSTD                                           11:37 Friday, May 18, 2018  28
+           Patient with at least one initiation for NSAID after AS date and with 183 days observable and no biologic no DMARD before Nsaid
+
+                                                                         number
+                                                                       --------
+                                                                            428
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+                                                               buildExposureCohorts.sas
+                                                                        MPSTD                                           11:37 Friday, May 18, 2018  29
+   Patient with at least one initiation for NSAID after AS date and with 183 days observable and no biologic, no DMARD within 6 month before Nsaids
+
+                                                                         number
+                                                                       --------
+                                                                            587
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+                                                               buildExposureCohorts.sas
+                                                                        MPSTD                                           11:37 Friday, May 18, 2018  30
+                            Patient with no biologic, no dmard after index date and no biologic no DMARD before index date
+
+                                                                         number
+                                                                       --------
+                                                                           2020
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+                                                               buildExposureCohorts.sas
+                                                                        MPSTD                                           11:37 Friday, May 18, 2018  31
+                    Patient with no Biologic, no Dmard after index date and no biologic no DMARD within 6 month before index date
+
+                                                                         number
+                                                                       --------
+                                                                           2146
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+                                                               buildExposureCohorts.sas
+                                                                        MPSTD                                           11:37 Friday, May 18, 2018  32
+                                       Patient with no exposure after index date and exposure before index date
+
+                                                                         number
+                                                                       --------
+                                                                            927
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+                                                               buildExposureCohorts.sas
+                                                                        MPSTD                                           11:37 Friday, May 18, 2018  33
+                                                        Patient with no exposure at index date
+
+                                                                         number
+                                                                       --------
+                                                                           4202
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+                                                               buildExposureCohorts.sas
+                                                                        MPSTD                                           11:37 Friday, May 18, 2018  34
+                              Patient with no exposure after index date and no exposure within 6 month before index date
+
+                                                                         number
+                                                                       --------
+                                                                           1160
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+                                                               buildExposureCohorts.sas
+762        %expo(source = STD_SABR, cohort0 = Work.cohortASTD_SABR, stdLib = STD_SABR, enrData = enroll)
+NOTE: The PROCEDURE SQL printed pages 18-34.
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.56 seconds
+      cpu time            0.32 seconds
+      
+
+NOTE: Table WORK.ALLBIO1STSTD_SABR created, with 403525 rows and 2 columns.
+
+NOTE: Table WORK.BIO1STSTD_SABR created, with 551694 rows and 3 columns.
+
+NOTE: Table WORK.TNF1STSTD_SABR created, with 390258 rows and 3 columns.
+
+NOTE: Table WORK.ALLDMARD1STSTD_SABR created, with 938268 rows and 2 columns.
+
+NOTE: Table WORK.DMARD1STSTD_SABR created, with 1307732 rows and 3 columns.
+
+NOTE: Table WORK.ALLNSAID1STSTD_SABR created, with 2031460 rows and 2 columns.
+
+NOTE: Table WORK.NSAID1STSTD_SABR created, with 3700189 rows and 3 columns.
+
+NOTE: Table WORK.ASBIO0COHORTSTD_SABR created, with 6177 rows and 8 columns.
+
+NOTE: Table WORK.ASBIOCOHORTSTD_SABR created, with 5337 rows and 10 columns.
+
+NOTE: Table WORK.ASTNF0COHORTSTD_SABR created, with 5357 rows and 8 columns.
+
+NOTE: Table WORK.ASTNFCOHORTSTD_SABR created, with 4576 rows and 10 columns.
+
+NOTE: Table WORK.ASDMARD0COHORTSTD_SABR created, with 6589 rows and 8 columns.
+
+NOTE: Table WORK.ASDMARDCOHORTSTD_SABR created, with 5511 rows and 10 columns.
+
+NOTE: Table WORK.ASNSAID0COHORTSTD_SABR created, with 23569 rows and 8 columns.
+
+NOTE: Table WORK.ASNSAIDCOHORTSTD_SABR created, with 20667 rows and 10 columns.
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           54.28 seconds
+      cpu time            2:01.04
+      
+
+
+NOTE: There were 26799 observations read from the data set WORK.COHORTASTD_SABR.
+NOTE: The data set WORK.ASNOEXPCOHORT0STD_SABR has 26799 observations and 10 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.04 seconds
+      cpu time            0.00 seconds
+      
+
+NOTE: Table WORK.BIOCEN4BIOSTD_SABR created, with 21185 rows and 4 columns.
+
+NOTE: Table WORK.BIOCEN4TNFSTD_SABR created, with 18057 rows and 4 columns.
+
+NOTE: Table WORK.BIOCEN4DMARDSTD_SABR created, with 35684 rows and 4 columns.
+
+NOTE: Table WORK.BIOCEN4NSAIDSTD_SABR created, with 96101 rows and 4 columns.
+
+NOTE: Table WORK.BIOCEN4NOEXPSTD_SABR created, with 157830 rows and 4 columns.
+
+NOTE: Table WORK.DMARDCEN4NSAIDSTD_SABR created, with 115000 rows and 4 columns.
+
+NOTE: Table WORK.DMARDCEN4NOEXPSTD_SABR created, with 199406 rows and 4 columns.
+
+NOTE: Table WORK.NSAIDCEN4NOEXPSTD_SABR created, with 232525 rows and 4 columns.
+15                                                                  The SAS System                                          11:37 Friday, May 18, 2018
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           19.75 seconds
+      cpu time            19.03 seconds
+      
+
+
+NOTE: There were 21185 observations read from the data set WORK.BIOCEN4BIOSTD_SABR.
+NOTE: The data set WORK.BIOCEN4BIOSTD_SABR has 1511 observations and 4 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.06 seconds
+      cpu time            0.03 seconds
+      
+
+
+NOTE: There were 18057 observations read from the data set WORK.BIOCEN4TNFSTD_SABR.
+NOTE: The data set WORK.BIOCEN4TNFSTD_SABR has 1261 observations and 4 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.06 seconds
+      cpu time            0.01 seconds
+      
+
+
+NOTE: There were 35684 observations read from the data set WORK.BIOCEN4DMARDSTD_SABR.
+NOTE: The data set WORK.BIOCEN4DMARDSTD_SABR has 2003 observations and 4 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.06 seconds
+      cpu time            0.03 seconds
+      
+
+
+NOTE: There were 157830 observations read from the data set WORK.BIOCEN4NOEXPSTD_SABR.
+NOTE: The data set WORK.BIOCEN4NOEXPSTD_SABR has 7652 observations and 4 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.10 seconds
+      cpu time            0.07 seconds
+      
+
+
+NOTE: There were 115000 observations read from the data set WORK.DMARDCEN4NSAIDSTD_SABR.
+NOTE: The data set WORK.DMARDCEN4NSAIDSTD_SABR has 6826 observations and 4 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.10 seconds
+      cpu time            0.07 seconds
+      
+
+
+NOTE: There were 199406 observations read from the data set WORK.DMARDCEN4NOEXPSTD_SABR.
+NOTE: The data set WORK.DMARDCEN4NOEXPSTD_SABR has 10445 observations and 4 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.12 seconds
+      cpu time            0.06 seconds
+      
+
+
+NOTE: There were 232525 observations read from the data set WORK.NSAIDCEN4NOEXPSTD_SABR.
+NOTE: The data set WORK.NSAIDCEN4NOEXPSTD_SABR has 17288 observations and 4 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.15 seconds
+      cpu time            0.12 seconds
+      
+
+
+NOTE: Missing values were generated as a result of performing an operation on missing values.
+      Each place is given by: (Number of times) at (Line):(Column).
+      3826 at 1643:180   
+NOTE: There were 5337 observations read from the data set WORK.ASBIOCOHORTSTD_SABR.
+NOTE: There were 1511 observations read from the data set WORK.BIOCEN4BIOSTD_SABR.
+NOTE: The data set WORK.ASBIOCOHORTSTD_SABR_EX1 has 5324 observations and 11 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.04 seconds
+      cpu time            0.03 seconds
+16                                                                  The SAS System                                          11:37 Friday, May 18, 2018
+
+      
+
+
+NOTE: Missing values were generated as a result of performing an operation on missing values.
+      Each place is given by: (Number of times) at (Line):(Column).
+      3315 at 1647:160   
+NOTE: There were 4576 observations read from the data set WORK.ASTNFCOHORTSTD_SABR.
+NOTE: There were 1261 observations read from the data set WORK.BIOCEN4TNFSTD_SABR.
+NOTE: The data set WORK.ASTNFCOHORTSTD_SABR_EX1 has 4570 observations and 11 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.04 seconds
+      cpu time            0.01 seconds
+      
+
+
+NOTE: There were 5511 observations read from the data set WORK.ASDMARDCOHORTSTD_SABR.
+NOTE: There were 403525 observations read from the data set WORK.ALLBIO1STSTD_SABR.
+NOTE: The data set WORK.ASDMARDCOHORTSTD_SABR_EX1 has 3453 observations and 12 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.20 seconds
+      cpu time            0.17 seconds
+      
+
+
+NOTE: Missing values were generated as a result of performing an operation on missing values.
+      Each place is given by: (Number of times) at (Line):(Column).
+      2806 at 762:127   
+NOTE: There were 3453 observations read from the data set WORK.ASDMARDCOHORTSTD_SABR_EX1.
+NOTE: There were 2003 observations read from the data set WORK.BIOCEN4DMARDSTD_SABR.
+NOTE: The data set WORK.ASDMARDCOHORTSTD_SABR_EX1 has 3453 observations and 12 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.04 seconds
+      cpu time            0.03 seconds
+      
+
+
+NOTE: There were 20667 observations read from the data set WORK.ASNSAIDCOHORTSTD_SABR.
+NOTE: There were 403525 observations read from the data set WORK.ALLBIO1STSTD_SABR.
+NOTE: There were 938268 observations read from the data set WORK.ALLDMARD1STSTD_SABR.
+NOTE: The data set WORK.ASNSAIDCOHORTSTD_SABR_EX1 has 8823 observations and 13 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.46 seconds
+      cpu time            0.39 seconds
+      
+
+
+NOTE: Missing values were generated as a result of performing an operation on missing values.
+      Each place is given by: (Number of times) at (Line):(Column).
+      8425 at 1665:195    11388 at 1665:202   
+NOTE: There were 8823 observations read from the data set WORK.ASNSAIDCOHORTSTD_SABR_EX1.
+NOTE: There were 96101 observations read from the data set WORK.BIOCEN4NSAIDSTD_SABR.
+NOTE: There were 6826 observations read from the data set WORK.DMARDCEN4NSAIDSTD_SABR.
+NOTE: The data set WORK.ASNSAIDCOHORTSTD_SABR_EX1 has 14045 observations and 13 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.13 seconds
+      cpu time            0.11 seconds
+      
+
+
+NOTE: There were 26799 observations read from the data set WORK.ASNOEXPCOHORT0STD_SABR.
+NOTE: There were 403525 observations read from the data set WORK.ALLBIO1STSTD_SABR.
+NOTE: There were 938268 observations read from the data set WORK.ALLDMARD1STSTD_SABR.
+NOTE: The data set WORK.ASNOBDCOHORTSTD_SABR_EX1 has 13738 observations and 13 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.45 seconds
+      cpu time            0.40 seconds
+      
+
+
+NOTE: Missing values were generated as a result of performing an operation on missing values.
+      Each place is given by: (Number of times) at (Line):(Column).
+      12430 at 1676:249   12040 at 762:6      
+17                                                                  The SAS System                                          11:37 Friday, May 18, 2018
+
+NOTE: There were 13738 observations read from the data set WORK.ASNOBDCOHORTSTD_SABR_EX1.
+NOTE: There were 7652 observations read from the data set WORK.BIOCEN4NOEXPSTD_SABR.
+NOTE: There were 10445 observations read from the data set WORK.DMARDCEN4NOEXPSTD_SABR.
+NOTE: The data set WORK.ASNOBDCOHORTSTD_SABR_EX1 has 13738 observations and 13 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.07 seconds
+      cpu time            0.03 seconds
+      
+
+
+NOTE: There were 13738 observations read from the data set WORK.ASNOBDCOHORTSTD_SABR_EX1.
+NOTE: The data set WORK.ASNOBDCOHORTSTD_SABR_EX1 has 13738 observations and 13 variables.
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           0.06 seconds
+      cpu time            0.00 seconds
+      
+
+
+NOTE: There were 13738 observations read from the data set WORK.ASNOBDCOHORTSTD_SABR_EX1.
+NOTE: The data set WORK.ASNOBDCOHORTSTD_SABR_EX1 has 13738 observations and 13 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.04 seconds
+      cpu time            0.01 seconds
+      
+
+
+NOTE: There were 26799 observations read from the data set WORK.ASNOEXPCOHORT0STD_SABR.
+NOTE: There were 403525 observations read from the data set WORK.ALLBIO1STSTD_SABR.
+NOTE: There were 938268 observations read from the data set WORK.ALLDMARD1STSTD_SABR.
+NOTE: There were 2031460 observations read from the data set WORK.ALLNSAID1STSTD_SABR.
+NOTE: The data set WORK.ASNOEXPCOHORTSTD_SABR_EX1 has 5671 observations and 14 variables.
+NOTE: DATA statement used (Total process time):
+      real time           1.04 seconds
+      cpu time            1.02 seconds
+      
+
+
+NOTE: Missing values were generated as a result of performing an operation on missing values.
+      Each place is given by: (Number of times) at (Line):(Column).
+      5180 at 762:58   5000 at 762:65   3274 at 762:73   
+NOTE: There were 5671 observations read from the data set WORK.ASNOEXPCOHORTSTD_SABR_EX1.
+NOTE: There were 7652 observations read from the data set WORK.BIOCEN4NOEXPSTD_SABR.
+NOTE: There were 10445 observations read from the data set WORK.DMARDCEN4NOEXPSTD_SABR.
+NOTE: There were 17288 observations read from the data set WORK.NSAIDCEN4NOEXPSTD_SABR.
+NOTE: The data set WORK.ASNOEXPCOHORTSTD_SABR_EX1 has 5671 observations and 14 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.09 seconds
+      cpu time            0.06 seconds
+      
+
+
+NOTE: There were 5671 observations read from the data set WORK.ASNOEXPCOHORTSTD_SABR_EX1.
+NOTE: The data set WORK.ASNOEXPCOHORTSTD_SABR_EX1 has 5671 observations and 14 variables.
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           0.04 seconds
+      cpu time            0.03 seconds
+      
+
+
+NOTE: There were 5671 observations read from the data set WORK.ASNOEXPCOHORTSTD_SABR_EX1.
+NOTE: The data set WORK.ASNOEXPCOHORTSTD_SABR_EX1 has 5671 observations and 14 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.04 seconds
+      cpu time            0.03 seconds
+      
+
+NOTE: Table WORK.BIOEXC6MDMARDSTD_SABR created, with 5499 rows and 3 columns.
+
+NOTE: Table WORK.BIOEXC6MNSAIDSTD_SABR created, with 17638 rows and 3 columns.
+
+NOTE: Table WORK.BIOEXC6MNOEXPSTD_SABR created, with 20181 rows and 3 columns.
+
+18                                                                  The SAS System                                          11:37 Friday, May 18, 2018
+
+NOTE: Table WORK.DMARDEXC6MNSAIDSTD_SABR created, with 22622 rows and 3 columns.
+
+NOTE: Table WORK.DMARDEXC6MNOEXPSTD_SABR created, with 33626 rows and 3 columns.
+
+NOTE: Table WORK.NSAIDEXC6MNOEXPSTD_SABR created, with 39294 rows and 3 columns.
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           11.82 seconds
+      cpu time            11.84 seconds
+      
+
+
+NOTE: Missing values were generated as a result of performing an operation on missing values.
+      Each place is given by: (Number of times) at (Line):(Column).
+      3854 at 762:57   
+NOTE: There were 5511 observations read from the data set WORK.ASDMARDCOHORTSTD_SABR.
+NOTE: There were 5499 observations read from the data set WORK.BIOEXC6MDMARDSTD_SABR.
+NOTE: There were 2003 observations read from the data set WORK.BIOCEN4DMARDSTD_SABR.
+NOTE: The data set WORK.ASDMARDCOHORTSTD_SABR_EX2 has 4150 observations and 11 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.06 seconds
+      cpu time            0.03 seconds
+      
+
+
+NOTE: MERGE statement has more than one data set with repeats of BY values.
+NOTE: Missing values were generated as a result of performing an operation on missing values.
+      Each place is given by: (Number of times) at (Line):(Column).
+      25667 at 762:156   52465 at 762:163   
+NOTE: There were 20667 observations read from the data set WORK.ASNSAIDCOHORTSTD_SABR.
+NOTE: There were 17638 observations read from the data set WORK.BIOEXC6MNSAIDSTD_SABR.
+NOTE: There were 22622 observations read from the data set WORK.DMARDEXC6MNSAIDSTD_SABR.
+NOTE: There were 96101 observations read from the data set WORK.BIOCEN4NSAIDSTD_SABR.
+NOTE: There were 6826 observations read from the data set WORK.DMARDCEN4NSAIDSTD_SABR.
+NOTE: The data set WORK.ASNSAIDCOHORTSTD_SABR_EX2 has 22055 observations and 11 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.23 seconds
+      cpu time            0.18 seconds
+      
+
+
+NOTE: MERGE statement has more than one data set with repeats of BY values.
+NOTE: Missing values were generated as a result of performing an operation on missing values.
+      Each place is given by: (Number of times) at (Line):(Column).
+      34523 at 762:6    24330 at 762:13   
+NOTE: There were 26799 observations read from the data set WORK.ASNOEXPCOHORT0STD_SABR.
+NOTE: There were 20181 observations read from the data set WORK.BIOEXC6MNOEXPSTD_SABR.
+NOTE: There were 33626 observations read from the data set WORK.DMARDEXC6MNOEXPSTD_SABR.
+NOTE: There were 7652 observations read from the data set WORK.BIOCEN4NOEXPSTD_SABR.
+NOTE: There were 10445 observations read from the data set WORK.DMARDCEN4NOEXPSTD_SABR.
+NOTE: The data set WORK.ASNOBDCOHORTSTD_SABR_EX2 has 14953 observations and 11 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.14 seconds
+      cpu time            0.10 seconds
+      
+
+
+NOTE: There were 14953 observations read from the data set WORK.ASNOBDCOHORTSTD_SABR_EX2.
+NOTE: The data set WORK.ASNOBDCOHORTSTD_SABR_EX2 has 14953 observations and 11 variables.
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           0.06 seconds
+      cpu time            0.01 seconds
+      
+
+
+NOTE: There were 14953 observations read from the data set WORK.ASNOBDCOHORTSTD_SABR_EX2.
+NOTE: The data set WORK.ASNOBDCOHORTSTD_SABR_EX2 has 14953 observations and 11 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.04 seconds
+      cpu time            0.03 seconds
+      
+
+19                                                                  The SAS System                                          11:37 Friday, May 18, 2018
+
+
+NOTE: Missing values were generated as a result of performing an operation on missing values.
+      Each place is given by: (Number of times) at (Line):(Column).
+      19147 at 1775:242   16354 at 1775:249   9511 at 762:6       
+NOTE: There were 26799 observations read from the data set WORK.ASNOEXPCOHORT0STD_SABR.
+NOTE: There were 7652 observations read from the data set WORK.BIOCEN4NOEXPSTD_SABR.
+NOTE: There were 10445 observations read from the data set WORK.DMARDCEN4NOEXPSTD_SABR.
+NOTE: There were 17288 observations read from the data set WORK.NSAIDCEN4NOEXPSTD_SABR.
+NOTE: The data set WORK.ASNOEXPCOHORTSTD_SABR_EX2A has 24164 observations and 11 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.10 seconds
+      cpu time            0.07 seconds
+      
+
+
+NOTE: MERGE statement has more than one data set with repeats of BY values.
+NOTE: There were 24164 observations read from the data set WORK.ASNOEXPCOHORTSTD_SABR_EX2A.
+NOTE: There were 20181 observations read from the data set WORK.BIOEXC6MNOEXPSTD_SABR.
+NOTE: There were 33626 observations read from the data set WORK.DMARDEXC6MNOEXPSTD_SABR.
+NOTE: There were 39294 observations read from the data set WORK.NSAIDEXC6MNOEXPSTD_SABR.
+NOTE: The data set WORK.ASNOEXPCOHORTSTD_SABR_EX2 has 7925 observations and 11 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.11 seconds
+      cpu time            0.07 seconds
+      
+
+
+NOTE: There were 7925 observations read from the data set WORK.ASNOEXPCOHORTSTD_SABR_EX2.
+NOTE: The data set WORK.ASNOEXPCOHORTSTD_SABR_EX2 has 7925 observations and 11 variables.
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           0.04 seconds
+      cpu time            0.01 seconds
+      
+
+
+NOTE: There were 7925 observations read from the data set WORK.ASNOEXPCOHORTSTD_SABR_EX2.
+NOTE: The data set WORK.ASNOEXPCOHORTSTD_SABR_EX2 has 7925 observations and 11 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.04 seconds
+      cpu time            0.03 seconds
+      
+
+                                                                       STD_SABR                                         11:37 Friday, May 18, 2018  35
+                                           Patient with at least one initiation for biologic after AS date
+
+                                                                         number
+                                                                       --------
+                                                                           4689
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+                                                               buildExposureCohorts.sas
+                                                                       STD_SABR                                         11:37 Friday, May 18, 2018  36
+                             Patient with at least one initiation for biologic after AS date and with 183 days observable
+
+                                                                         number
+                                                                       --------
+                                                                           4087
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+                                                               buildExposureCohorts.sas
+                                                                       STD_SABR                                         11:37 Friday, May 18, 2018  37
+                                             Patient with at least one initiation for TNFi after AS date
+
+                                                                         number
+                                                                       --------
+                                                                           4295
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+                                                               buildExposureCohorts.sas
+                                                                       STD_SABR                                         11:37 Friday, May 18, 2018  38
+                               Patient with at least one initiation for TNFi after AS date and with 183 days observable
+
+                                                                         number
+                                                                       --------
+                                                                           3710
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+                                                               buildExposureCohorts.sas
+                                                                       STD_SABR                                         11:37 Friday, May 18, 2018  39
+                                             Patient with at least one initiation for DMARD after AS date
+
+                                                                         number
+                                                                       --------
+                                                                           5181
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+                                                               buildExposureCohorts.sas
+                                                                       STD_SABR                                         11:37 Friday, May 18, 2018  40
+                              Patient with at least one initiation for DMARD after AS date and with 183 days observable
+
+                                                                         number
+                                                                       --------
+                                                                           4393
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+                                                               buildExposureCohorts.sas
+                                                                       STD_SABR                                         11:37 Friday, May 18, 2018  41
+                Patient with at least one initiation for DMARD after AS date and with 183 days observable and no biologic before DMARD
+
+                                                                         number
+                                                                       --------
+                                                                           2819
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+                                                               buildExposureCohorts.sas
+                                                                       STD_SABR                                         11:37 Friday, May 18, 2018  42
+        Patient with at least one initiation for DMARD after AS date and with 183 days observable and no biologic within 6 month before DMARD
+
+                                                                         number
+                                                                       --------
+                                                                           3384
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+                                                               buildExposureCohorts.sas
+                                                                       STD_SABR                                         11:37 Friday, May 18, 2018  43
+                                             Patient with at least one initiation for NSAID after AS date
+
+                                                                         number
+                                                                       --------
+                                                                          13369
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+                                                               buildExposureCohorts.sas
+                                                                       STD_SABR                                         11:37 Friday, May 18, 2018  44
+                              Patient with at least one initiation for NSAID after AS date and with 183 days observable
+
+                                                                         number
+                                                                       --------
+                                                                          12230
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+                                                               buildExposureCohorts.sas
+                                                                       STD_SABR                                         11:37 Friday, May 18, 2018  45
+           Patient with at least one initiation for NSAID after AS date and with 183 days observable and no biologic no DMARD before Nsaid
+
+                                                                         number
+                                                                       --------
+                                                                           5470
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+                                                               buildExposureCohorts.sas
+                                                                       STD_SABR                                         11:37 Friday, May 18, 2018  46
+   Patient with at least one initiation for NSAID after AS date and with 183 days observable and no biologic, no DMARD within 6 month before Nsaids
+
+                                                                         number
+                                                                       --------
+                                                                           7765
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+                                                               buildExposureCohorts.sas
+                                                                       STD_SABR                                         11:37 Friday, May 18, 2018  47
+                            Patient with no biologic, no dmard after index date and no biologic no DMARD before index date
+
+                                                                         number
+                                                                       --------
+                                                                          13738
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+                                                               buildExposureCohorts.sas
+                                                                       STD_SABR                                         11:37 Friday, May 18, 2018  48
+                    Patient with no Biologic, no Dmard after index date and no biologic no DMARD within 6 month before index date
+
+                                                                         number
+                                                                       --------
+                                                                          14953
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+                                                               buildExposureCohorts.sas
+                                                                       STD_SABR                                         11:37 Friday, May 18, 2018  49
+                                       Patient with no exposure after index date and exposure before index date
+
+                                                                         number
+                                                                       --------
+                                                                           5671
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+                                                               buildExposureCohorts.sas
+                                                                       STD_SABR                                         11:37 Friday, May 18, 2018  50
+                                                        Patient with no exposure at index date
+
+                                                                         number
+                                                                       --------
+                                                                          24164
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+                                                               buildExposureCohorts.sas
+                                                                       STD_SABR                                         11:37 Friday, May 18, 2018  51
+                              Patient with no exposure after index date and no exposure within 6 month before index date
+
+                                                                         number
+                                                                       --------
+                                                                           7925
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+                                                               buildExposureCohorts.sas
+763        
+NOTE: The PROCEDURE SQL printed pages 35-51.
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.67 seconds
+      cpu time            0.32 seconds
+      
+
+764        proc datasets lib = Work;
+                                                                      Directory
+
+                                        Libref             WORK                                              
+                                        Engine             V9                                                
+                                        Physical Name      \\peerfs2.ad.hs.uab.edu\U_saswork$\_TD14656_PEER2_
+                                        Filename           \\peerfs2.ad.hs.uab.edu\U_saswork$\_TD14656_PEER2_
+                                        Owner Name         AD\benjaminchan                                   
+                                        File Size          64KB                                              
+                                        File Size (bytes)  65536                                             
+
+
+                                                                  Member
+                                   #  Name                        Type        File Size  Last Modified
+
+                                   1  ALLBIO1STMPSTD              DATA              3MB  05/18/2018 11:40:24        
+                                   2  ALLBIO1STSTD_SABR           DATA             12MB  05/18/2018 11:41:07        
+                                   3  ALLBIO1STUCBSTD             DATA             10MB  05/18/2018 11:38:11        
+                                   4  ALLDMARD1STMPSTD            DATA              7MB  05/18/2018 11:40:27        
+                                   5  ALLDMARD1STSTD_SABR         DATA             29MB  05/18/2018 11:41:18        
+                                   6  ALLDMARD1STUCBSTD           DATA             17MB  05/18/2018 11:38:17        
+                                   7  ALLNSAID1STMPSTD            DATA             21MB  05/18/2018 11:40:31        
+                                   8  ALLNSAID1STSTD_SABR         DATA             62MB  05/18/2018 11:41:38        
+20                                                                  The SAS System                                          11:37 Friday, May 18, 2018
+
+                                                                  Member
+                                   #  Name                        Type        File Size  Last Modified
+
+                                   9  ALLNSAID1STUCBSTD           DATA            198MB  05/18/2018 11:38:30        
+                                  10  ASBIO0COHORTMPSTD           DATA            192KB  05/18/2018 11:40:34        
+                                  11  ASBIO0COHORTSTD_SABR        DATA            640KB  05/18/2018 11:41:52        
+                                  12  ASBIO0COHORTUCBSTD          DATA            576KB  05/18/2018 11:38:50        
+                                  13  ASBIOCOHORTMPSTD            DATA            192KB  05/18/2018 11:40:40        
+                                  14  ASBIOCOHORTMPSTD_EX1        DATA            192KB  05/18/2018 11:40:57        
+                                  15  ASBIOCOHORTSTD_SABR         DATA            576KB  05/18/2018 11:41:54        
+                                  16  ASBIOCOHORTSTD_SABR_EX1     DATA            640KB  05/18/2018 11:42:20        
+                                  17  ASBIOCOHORTUCBSTD           DATA            576KB  05/18/2018 11:39:04        
+                                  18  ASBIOCOHORTUCBSTD_EX1       DATA            640KB  05/18/2018 11:39:44        
+                                  19  ASDMARD0COHORTMPSTD         DATA            192KB  05/18/2018 11:40:45        
+                                  20  ASDMARD0COHORTSTD_SABR      DATA            640KB  05/18/2018 11:41:56        
+                                  21  ASDMARD0COHORTUCBSTD        DATA            384KB  05/18/2018 11:39:09        
+                                  22  ASDMARDCOHORTMPSTD          DATA            192KB  05/18/2018 11:40:47        
+                                  23  ASDMARDCOHORTMPSTD_EX1      DATA            128KB  05/18/2018 11:40:57        
+                                  24  ASDMARDCOHORTMPSTD_EX2      DATA            128KB  05/18/2018 11:41:04        
+                                  25  ASDMARDCOHORTSTD_SABR       DATA            640KB  05/18/2018 11:41:58        
+                                  26  ASDMARDCOHORTSTD_SABR_EX1   DATA            448KB  05/18/2018 11:42:21        
+                                  27  ASDMARDCOHORTSTD_SABR_EX2   DATA            512KB  05/18/2018 11:42:35        
+                                  28  ASDMARDCOHORTUCBSTD         DATA            384KB  05/18/2018 11:39:14        
+                                  29  ASDMARDCOHORTUCBSTD_EX1     DATA            256KB  05/18/2018 11:39:45        
+                                  30  ASDMARDCOHORTUCBSTD_EX2     DATA            256KB  05/18/2018 11:40:23        
+                                  31  ASNOBDCOHORTMPSTD_EX1       DATA            320KB  05/18/2018 11:40:58        
+                                  32  ASNOBDCOHORTMPSTD_EX2       DATA            256KB  05/18/2018 11:41:05        
+                                  33  ASNOBDCOHORTSTD_SABR_EX1    DATA              1MB  05/18/2018 11:42:22        
+                                  34  ASNOBDCOHORTSTD_SABR_EX2    DATA              1MB  05/18/2018 11:42:36        
+                                  35  ASNOBDCOHORTUCBSTD_EX1      DATA            768KB  05/18/2018 11:39:46        
+                                  36  ASNOBDCOHORTUCBSTD_EX2      DATA            704KB  05/18/2018 11:40:23        
+                                  37  ASNOEXPCOHORT0MPSTD         DATA            448KB  05/18/2018 11:40:48        
+                                  38  ASNOEXPCOHORT0STD_SABR      DATA              2MB  05/18/2018 11:42:00        
+                                  39  ASNOEXPCOHORT0UCBSTD        DATA              1MB  05/18/2018 11:39:20        
+                                  40  ASNOEXPCOHORTMPSTD_EX1      DATA            192KB  05/18/2018 11:40:59        
+                                  41  ASNOEXPCOHORTMPSTD_EX2      DATA            192KB  05/18/2018 11:41:05        
+                                  42  ASNOEXPCOHORTMPSTD_EX2A     DATA            448KB  05/18/2018 11:41:05        
+                                  43  ASNOEXPCOHORTSTD_SABR_EX1   DATA            704KB  05/18/2018 11:42:23        
+                                  44  ASNOEXPCOHORTSTD_SABR_EX2   DATA            704KB  05/18/2018 11:42:36        
+                                  45  ASNOEXPCOHORTSTD_SABR_EX2A  DATA              2MB  05/18/2018 11:42:36        
+                                  46  ASNOEXPCOHORTUCBSTD_EX1     DATA            320KB  05/18/2018 11:39:48        
+                                  47  ASNOEXPCOHORTUCBSTD_EX2     DATA            384KB  05/18/2018 11:40:23        
+                                  48  ASNOEXPCOHORTUCBSTD_EX2A    DATA              1MB  05/18/2018 11:40:23        
+                                  49  ASNSAID0COHORTMPSTD         DATA            256KB  05/18/2018 11:40:48        
+                                  50  ASNSAID0COHORTSTD_SABR      DATA              2MB  05/18/2018 11:41:58        
+                                  51  ASNSAID0COHORTUCBSTD        DATA            960KB  05/18/2018 11:39:16        
+                                  52  ASNSAIDCOHORTMPSTD          DATA            256KB  05/18/2018 11:40:48        
+                                  53  ASNSAIDCOHORTMPSTD_EX1      DATA            256KB  05/18/2018 11:40:58        
+                                  54  ASNSAIDCOHORTMPSTD_EX2      DATA            256KB  05/18/2018 11:41:04        
+                                  55  ASNSAIDCOHORTSTD_SABR       DATA              2MB  05/18/2018 11:42:00        
+                                  56  ASNSAIDCOHORTSTD_SABR_EX1   DATA              2MB  05/18/2018 11:42:21        
+                                  57  ASNSAIDCOHORTSTD_SABR_EX2   DATA              2MB  05/18/2018 11:42:35        
+                                  58  ASNSAIDCOHORTUCBSTD         DATA            960KB  05/18/2018 11:39:20        
+                                  59  ASNSAIDCOHORTUCBSTD_EX1     DATA            768KB  05/18/2018 11:39:45        
+                                  60  ASNSAIDCOHORTUCBSTD_EX2     DATA            832KB  05/18/2018 11:40:23        
+                                  61  ASTNF0COHORTMPSTD           DATA            192KB  05/18/2018 11:40:40        
+                                  62  ASTNF0COHORTSTD_SABR        DATA            576KB  05/18/2018 11:41:54        
+                                  63  ASTNF0COHORTUCBSTD          DATA            576KB  05/18/2018 11:39:05        
+                                  64  ASTNFCOHORTMPSTD            DATA            192KB  05/18/2018 11:40:44        
+                                  65  ASTNFCOHORTMPSTD_EX1        DATA            192KB  05/18/2018 11:40:57        
+                                  66  ASTNFCOHORTSTD_SABR         DATA            512KB  05/18/2018 11:41:56        
+                                  67  ASTNFCOHORTSTD_SABR_EX1     DATA            576KB  05/18/2018 11:42:20        
+                                  68  ASTNFCOHORTUCBSTD           DATA            576KB  05/18/2018 11:39:09        
+                                  69  ASTNFCOHORTUCBSTD_EX1       DATA            576KB  05/18/2018 11:39:44        
+                                  70  BIO1STMPSTD                 DATA              7MB  05/18/2018 11:40:26        
+                                  71  BIO1STSTD_SABR              DATA             34MB  05/18/2018 11:41:11        
+                                  72  BIO1STUCBSTD                DATA             23MB  05/18/2018 11:38:14        
+                                  73  BIOCEN4BIOMPSTD             DATA            128KB  05/18/2018 11:40:57        
+                                  74  BIOCEN4BIOSTD_SABR          DATA            192KB  05/18/2018 11:42:20        
+                                  75  BIOCEN4BIOUCBSTD            DATA            192KB  05/18/2018 11:39:44        
+                                  76  BIOCEN4DMARDMPSTD           DATA            128KB  05/18/2018 11:40:57        
+                                  77  BIOCEN4DMARDSTD_SABR        DATA            256KB  05/18/2018 11:42:20        
+21                                                                  The SAS System                                          11:37 Friday, May 18, 2018
+
+                                                                  Member
+                                   #  Name                        Type        File Size  Last Modified
+
+                                  78  BIOCEN4DMARDUCBSTD          DATA            192KB  05/18/2018 11:39:44        
+                                  79  BIOCEN4NOEXPMPSTD           DATA            192KB  05/18/2018 11:40:57        
+                                  80  BIOCEN4NOEXPSTD_SABR        DATA            448KB  05/18/2018 11:42:20        
+                                  81  BIOCEN4NOEXPUCBSTD          DATA            576KB  05/18/2018 11:39:44        
+                                  82  BIOCEN4NSAIDMPSTD           DATA            640KB  05/18/2018 11:40:51        
+                                  83  BIOCEN4NSAIDSTD_SABR        DATA              7MB  05/18/2018 11:42:06        
+                                  84  BIOCEN4NSAIDUCBSTD          DATA              3MB  05/18/2018 11:39:27        
+                                  85  BIOCEN4TNFMPSTD             DATA            128KB  05/18/2018 11:40:57        
+                                  86  BIOCEN4TNFSTD_SABR          DATA            192KB  05/18/2018 11:42:20        
+                                  87  BIOCEN4TNFUCBSTD            DATA            192KB  05/18/2018 11:39:44        
+                                  88  BIOEXC6MDMARDMPSTD          DATA            192KB  05/18/2018 11:40:59        
+                                  89  BIOEXC6MDMARDSTD_SABR       DATA            448KB  05/18/2018 11:42:24        
+                                  90  BIOEXC6MDMARDUCBSTD         DATA            448KB  05/18/2018 11:39:50        
+                                  91  BIOEXC6MNOEXPMPSTD          DATA            384KB  05/18/2018 11:41:01        
+                                  92  BIOEXC6MNOEXPSTD_SABR       DATA            896KB  05/18/2018 11:42:26        
+                                  93  BIOEXC6MNOEXPUCBSTD         DATA              1MB  05/18/2018 11:39:54        
+                                  94  BIOEXC6MNSAIDMPSTD          DATA            256KB  05/18/2018 11:41:00        
+                                  95  BIOEXC6MNSAIDSTD_SABR       DATA              1MB  05/18/2018 11:42:25        
+                                  96  BIOEXC6MNSAIDUCBSTD         DATA              1MB  05/18/2018 11:39:52        
+                                  97  BIOMPSTD                    DATA             79MB  05/18/2018 11:37:56        
+                                  98  BIOSTD_SABR                 DATA            483MB  05/18/2018 11:38:00        
+                                  99  BIOUCBSTD                   DATA            235MB  05/18/2018 11:37:56        
+                                 100  COHORTASTDMPCD              DATA            448KB  05/18/2018 11:37:54        
+                                 101  COHORTASTDUCB               DATA              1MB  05/18/2018 11:37:54        
+                                 102  COHORTASTD_SABR             DATA              2MB  05/18/2018 11:37:54        
+                                 103  DMARD1STMPSTD               DATA             17MB  05/18/2018 11:40:29        
+                                 104  DMARD1STSTD_SABR            DATA             80MB  05/18/2018 11:41:29        
+                                 105  DMARD1STUCBSTD              DATA             41MB  05/18/2018 11:38:22        
+                                 106  DMARDCEN4NOEXPMPSTD         DATA            192KB  05/18/2018 11:40:57        
+                                 107  DMARDCEN4NOEXPSTD_SABR      DATA            576KB  05/18/2018 11:42:20        
+                                 108  DMARDCEN4NOEXPUCBSTD        DATA            384KB  05/18/2018 11:39:44        
+                                 109  DMARDCEN4NSAIDMPSTD         DATA            128KB  05/18/2018 11:40:57        
+                                 110  DMARDCEN4NSAIDSTD_SABR      DATA            576KB  05/18/2018 11:42:20        
+                                 111  DMARDCEN4NSAIDUCBSTD        DATA            320KB  05/18/2018 11:39:44        
+                                 112  DMARDEXC6MNOEXPMPSTD        DATA            320KB  05/18/2018 11:41:03        
+                                 113  DMARDEXC6MNOEXPSTD_SABR     DATA              1MB  05/18/2018 11:42:32        
+                                 114  DMARDEXC6MNOEXPUCBSTD       DATA            896KB  05/18/2018 11:40:00        
+                                 115  DMARDEXC6MNSAIDMPSTD        DATA            192KB  05/18/2018 11:41:02        
+                                 116  DMARDEXC6MNSAIDSTD_SABR     DATA              2MB  05/18/2018 11:42:29        
+                                 117  DMARDEXC6MNSAIDUCBSTD       DATA            640KB  05/18/2018 11:39:57        
+                                 118  DMARDMPSTD                  DATA            212MB  05/18/2018 11:38:01        
+                                 119  DMARDSTD_SABR               DATA              1GB  05/18/2018 11:38:04        
+                                 120  DMARDUCBSTD                 DATA            361MB  05/18/2018 11:38:01        
+                                 121  NSAID1STMPSTD               DATA             67MB  05/18/2018 11:40:34        
+                                 122  NSAID1STSTD_SABR            DATA            227MB  05/18/2018 11:41:52        
+                                 123  NSAID1STUCBSTD              DATA            551MB  05/18/2018 11:38:50        
+                                 124  NSAIDCEN4NOEXPMPSTD         DATA            192KB  05/18/2018 11:40:57        
+                                 125  NSAIDCEN4NOEXPSTD_SABR      DATA            768KB  05/18/2018 11:42:20        
+                                 126  NSAIDCEN4NOEXPUCBSTD        DATA            512KB  05/18/2018 11:39:44        
+                                 127  NSAIDEXC6MNOEXPMPSTD        DATA            384KB  05/18/2018 11:41:04        
+                                 128  NSAIDEXC6MNOEXPSTD_SABR     DATA              2MB  05/18/2018 11:42:35        
+                                 129  NSAIDEXC6MNOEXPUCBSTD       DATA              1MB  05/18/2018 11:40:22        
+                                 130  NSAIDMPSTD                  DATA            240MB  05/18/2018 11:38:07        
+                                 131  NSAIDSTD_SABR               DATA              1GB  05/18/2018 11:38:09        
+                                 132  NSAIDUCBSTD                 DATA              1GB  05/18/2018 11:38:06        
+                                 133  SASMAC3                     CATALOG          13KB  05/18/2018 11:37:53        
+                                 134  SASMACR                     CATALOG           5KB  05/18/2018 11:37:53        
+                                 135  TNF1STMPSTD                 DATA              6MB  05/18/2018 11:40:26        
+                                 136  TNF1STSTD_SABR              DATA             24MB  05/18/2018 11:41:14        
+                                 137  TNF1STUCBSTD                DATA             18MB  05/18/2018 11:38:16        
+                                 138  TNFMPSTD                    DATA             71MB  05/18/2018 11:38:09        
+                                 139  TNFSTD_SABR                 DATA            386MB  05/18/2018 11:38:11        
+                                 140  TNFUCBSTD                   DATA            203MB  05/18/2018 11:38:09        
+765          change ASTNFCohortUCBSTD_ex1   = ASTNFCohortStdUCB_ex1
+766                 ASDMARDCohortUCBSTD_ex2 = ASDMARDCohortStdUCB_ex2
+767                 ASNSAIDCohortUCBSTD_ex2 = ASNSAIDCohortStdUCB_ex2
+768                 ASNoExpCohortUCBSTD_ex2 = ASNoExpCohortStdUCB_ex2
+769                 ASTNFCohortMPSTD_ex1    = ASTNFCohortStdMPCD_ex1
+770                 ASDMARDCohortMPSTD_ex2  = ASDMARDCohortStdMPCD_ex2
+22                                                                  The SAS System                                          11:37 Friday, May 18, 2018
+
+771                 ASNSAIDCohortMPSTD_ex2  = ASNSAIDCohortStdMPCD_ex2
+772                 ASNoExpCohortMPSTD_ex2  = ASNoExpCohortStdMPCD_ex2;
+773        run;
+
+NOTE: Changing the name WORK.ASTNFCOHORTUCBSTD_EX1 to WORK.ASTNFCOHORTSTDUCB_EX1 (memtype=DATA).
+NOTE: Changing the name WORK.ASDMARDCOHORTUCBSTD_EX2 to WORK.ASDMARDCOHORTSTDUCB_EX2 (memtype=DATA).
+NOTE: Changing the name WORK.ASNSAIDCOHORTUCBSTD_EX2 to WORK.ASNSAIDCOHORTSTDUCB_EX2 (memtype=DATA).
+NOTE: Changing the name WORK.ASNOEXPCOHORTUCBSTD_EX2 to WORK.ASNOEXPCOHORTSTDUCB_EX2 (memtype=DATA).
+NOTE: Changing the name WORK.ASTNFCOHORTMPSTD_EX1 to WORK.ASTNFCOHORTSTDMPCD_EX1 (memtype=DATA).
+NOTE: Changing the name WORK.ASDMARDCOHORTMPSTD_EX2 to WORK.ASDMARDCOHORTSTDMPCD_EX2 (memtype=DATA).
+NOTE: Changing the name WORK.ASNSAIDCOHORTMPSTD_EX2 to WORK.ASNSAIDCOHORTSTDMPCD_EX2 (memtype=DATA).
+NOTE: Changing the name WORK.ASNOEXPCOHORTMPSTD_EX2 to WORK.ASNOEXPCOHORTSTDMPCD_EX2 (memtype=DATA).
+774        
+
+NOTE: PROCEDURE DATASETS used (Total process time):
+      real time           0.37 seconds
+      cpu time            0.20 seconds
+      
+
+775        proc copy in = Work out = DT;
+776          select ASTNFCohortStdUCB_ex1
+777                 ASDMARDCohortStdUCB_ex2
+778                 ASNSAIDCohortStdUCB_ex2
+779                 ASNoExpCohortStdUCB_ex2
+780                 ASTNFCohortStdMPCD_ex1
+781                 ASDMARDCohortStdMPCD_ex2
+782                 ASNSAIDCohortStdMPCD_ex2
+783                 ASNoExpCohortStdMPCD_ex2
+784                 ASTNFCohortStd_SABR_ex1
+785                 ASDMARDCohortStd_SABR_ex2
+786                 ASNSAIDCohortStd_SABR_ex2
+787                 ASNoExpCohortStd_SABR_ex2;
+788        run;
+
+NOTE: Copying WORK.ASTNFCOHORTSTDUCB_EX1 to DT.ASTNFCOHORTSTDUCB_EX1 (memtype=DATA).
+NOTE: There were 4768 observations read from the data set WORK.ASTNFCOHORTSTDUCB_EX1.
+NOTE: The data set DT.ASTNFCOHORTSTDUCB_EX1 has 4768 observations and 11 variables.
+NOTE: Copying WORK.ASDMARDCOHORTSTDUCB_EX2 to DT.ASDMARDCOHORTSTDUCB_EX2 (memtype=DATA).
+NOTE: There were 1760 observations read from the data set WORK.ASDMARDCOHORTSTDUCB_EX2.
+NOTE: The data set DT.ASDMARDCOHORTSTDUCB_EX2 has 1760 observations and 11 variables.
+NOTE: Copying WORK.ASNSAIDCOHORTSTDUCB_EX2 to DT.ASNSAIDCOHORTSTDUCB_EX2 (memtype=DATA).
+NOTE: There were 7456 observations read from the data set WORK.ASNSAIDCOHORTSTDUCB_EX2.
+NOTE: The data set DT.ASNSAIDCOHORTSTDUCB_EX2 has 7456 observations and 11 variables.
+NOTE: Copying WORK.ASNOEXPCOHORTSTDUCB_EX2 to DT.ASNOEXPCOHORTSTDUCB_EX2 (memtype=DATA).
+NOTE: There were 3368 observations read from the data set WORK.ASNOEXPCOHORTSTDUCB_EX2.
+NOTE: The data set DT.ASNOEXPCOHORTSTDUCB_EX2 has 3368 observations and 11 variables.
+NOTE: Copying WORK.ASTNFCOHORTSTDMPCD_EX1 to DT.ASTNFCOHORTSTDMPCD_EX1 (memtype=DATA).
+NOTE: There were 994 observations read from the data set WORK.ASTNFCOHORTSTDMPCD_EX1.
+NOTE: The data set DT.ASTNFCOHORTSTDMPCD_EX1 has 994 observations and 11 variables.
+NOTE: Copying WORK.ASDMARDCOHORTSTDMPCD_EX2 to DT.ASDMARDCOHORTSTDMPCD_EX2 (memtype=DATA).
+NOTE: There were 445 observations read from the data set WORK.ASDMARDCOHORTSTDMPCD_EX2.
+NOTE: The data set DT.ASDMARDCOHORTSTDMPCD_EX2 has 445 observations and 11 variables.
+NOTE: Copying WORK.ASNSAIDCOHORTSTDMPCD_EX2 to DT.ASNSAIDCOHORTSTDMPCD_EX2 (memtype=DATA).
+NOTE: There were 1491 observations read from the data set WORK.ASNSAIDCOHORTSTDMPCD_EX2.
+NOTE: The data set DT.ASNSAIDCOHORTSTDMPCD_EX2 has 1491 observations and 11 variables.
+NOTE: Copying WORK.ASNOEXPCOHORTSTDMPCD_EX2 to DT.ASNOEXPCOHORTSTDMPCD_EX2 (memtype=DATA).
+NOTE: There were 1160 observations read from the data set WORK.ASNOEXPCOHORTSTDMPCD_EX2.
+NOTE: The data set DT.ASNOEXPCOHORTSTDMPCD_EX2 has 1160 observations and 11 variables.
+NOTE: Copying WORK.ASTNFCOHORTSTD_SABR_EX1 to DT.ASTNFCOHORTSTD_SABR_EX1 (memtype=DATA).
+NOTE: There were 4570 observations read from the data set WORK.ASTNFCOHORTSTD_SABR_EX1.
+NOTE: The data set DT.ASTNFCOHORTSTD_SABR_EX1 has 4570 observations and 11 variables.
+NOTE: Copying WORK.ASDMARDCOHORTSTD_SABR_EX2 to DT.ASDMARDCOHORTSTD_SABR_EX2 (memtype=DATA).
+NOTE: There were 4150 observations read from the data set WORK.ASDMARDCOHORTSTD_SABR_EX2.
+NOTE: The data set DT.ASDMARDCOHORTSTD_SABR_EX2 has 4150 observations and 11 variables.
+NOTE: Copying WORK.ASNSAIDCOHORTSTD_SABR_EX2 to DT.ASNSAIDCOHORTSTD_SABR_EX2 (memtype=DATA).
+NOTE: There were 22055 observations read from the data set WORK.ASNSAIDCOHORTSTD_SABR_EX2.
+NOTE: The data set DT.ASNSAIDCOHORTSTD_SABR_EX2 has 22055 observations and 11 variables.
+NOTE: Copying WORK.ASNOEXPCOHORTSTD_SABR_EX2 to DT.ASNOEXPCOHORTSTD_SABR_EX2 (memtype=DATA).
+NOTE: There were 7925 observations read from the data set WORK.ASNOEXPCOHORTSTD_SABR_EX2.
+NOTE: The data set DT.ASNOEXPCOHORTSTD_SABR_EX2 has 7925 observations and 11 variables.
+NOTE: PROCEDURE COPY used (Total process time):
+      real time           0.49 seconds
+23                                                                  The SAS System                                          11:37 Friday, May 18, 2018
+
+      cpu time            0.14 seconds
+      
+
+789        
+790        
+791        
+792        ods html close;
+NOTE: SAS Institute Inc., SAS Campus Drive, Cary, NC USA 27513-2414
+NOTE: The SAS System used:
+      real time           5:03.15
+      cpu time            6:15.36
+      
