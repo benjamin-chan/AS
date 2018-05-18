@@ -1,12 +1,5 @@
-1                                                          The SAS System                               12:23 Friday, April 13, 2018
+1                                         The SAS System                14:24 Friday, May 18, 2018
 
-NOTE: Unable to open SASUSER.REGSTRY. WORK.REGSTRY will be opened instead.
-NOTE: All registry changes will be lost at the end of the session.
-
-WARNING: Unable to copy SASUSER registry to WORK registry. Because of this, you will not see registry customizations during this 
-         session.
-NOTE: Unable to open SASUSER.PROFILE. WORK.PROFILE will be opened instead.
-NOTE: All profile changes will be lost at the end of the session.
 NOTE: Copyright (c) 2016 by SAS Institute Inc., Cary, NC, USA. 
 NOTE: SAS (r) Proprietary Software 9.4 (TS1M5) 
       Licensed to UNIVERSITY OF ALABAMA AT BIRMINGHAM - SFA - T&R, Site 70086550.
@@ -36,7 +29,7 @@ of the shared folders.
 
 NOTE: SAS initialization used:
       real time           4.50 seconds
-      cpu time            0.24 seconds
+      cpu time            0.31 seconds
       
 1          *  University of Alabama at Birmingham                               *
 2          *  AS project                                            *
@@ -57,7 +50,7 @@ NOTE: Libref STD_SABR was successfully assigned as follows:
       Physical Name: q:\data\std_SABER\
 NOTE: Libref MPSTD was successfully assigned as follows: 
       Engine:        SPDE 
-      Physical Name: h:\studies\mpcd\data\stddata\
+      Physical Name: q:\studies\mpcd\data\stddata\
 NOTE: Libref UCBSTD was successfully assigned as follows: 
       Engine:        SPDE 
       Physical Name: q:\studies\AS\data\stddata\
@@ -70,84 +63,78 @@ NOTE: Libref DT was successfully assigned as follows:
 NOTE: Libref NDC was successfully assigned as follows: 
       Engine:        V9 
       Physical Name: W:\onenote\references\drug ndcs\sas data
-127        footnote "&pgm.";
-128        * footnote2 "%sysfunc(datetime(),datetime14.)";
-2                                                                   The SAS System                                        12:23 Friday, April 13, 2018
-
-129        title1 '--- AS project ---';
-130        **********************************************************************;
-131        options macrogen mlogic mprint symbolgen;
-132        options nomacrogen nomlogic nomprint nosymbolgen;
-133        
+128        footnote "&pgm.";
+129        * footnote2 "%sysfunc(datetime(),datetime14.)";
+130        title1 '--- AS project ---';
+131        **********************************************************************;
+132        options macrogen mlogic mprint symbolgen;
+133        options nomacrogen nomlogic nomprint nosymbolgen;
 134        
-135        ods html
-136          body = "output\&cmt..html"
-137          style = Statistical;
+135        
+136        ods html
+2                                                                   The SAS System                                          14:24 Friday, May 18, 2018
+
+137          body = "output\&cmt..html"
+138          style = Statistical;
 NOTE: Writing HTML Body file: output\reproduceTables2.html
-138        
 139        
-140        %let var = patid, age, sex, asDate, enr_start_date, enr_end_date, asCohortDate, death_date;
-141        proc sql;
-142          create table DT.asLookup AS
-143            select "Marketscan" as database, "AS" as cohort, &var from UCB.cohortastducb   union corr
-144            select "MPCD"       as database, "AS" as cohort, &var from UCB.cohortastdmpcd  union corr
-145            select "Medicare"   as database, "AS" as cohort, &var from UCB.cohortastd_sabr ;
-NOTE: Data set UCB.COHORTASTDUCB is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
-      additional CPU resources and may reduce performance.
-NOTE: Data set UCB.COHORTASTDMPCD is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
-      additional CPU resources and may reduce performance.
-NOTE: Data set UCB.COHORTASTD_SABR is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
-      additional CPU resources and may reduce performance.
-NOTE: Table DT.ASLOOKUP created, with 63052 rows and 10 columns.
+140        
+141        %let var = patid, age, sex, asDate, enr_start_date, enr_end_date, asCohortDate, death_date;
+142        proc sql;
+143          create table DT.asLookup AS
+144            select "Marketscan" as database, "AS" as cohort, &var from DT.cohortastducb   union corr
+145            select "MPCD"       as database, "AS" as cohort, &var from DT.cohortastdmpcd  union corr
+146            select "Medicare"   as database, "AS" as cohort, &var from DT.cohortastd_sabr ;
+NOTE: Table DT.ASLOOKUP created, with 51317 rows and 10 columns.
 
-146        quit;
+147        quit;
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           0.34 seconds
-      cpu time            0.35 seconds
+      real time           0.32 seconds
+      cpu time            0.23 seconds
       
 
-147        
 148        
-149        proc sort data = DT.asLookup out = Work.patidCharacteristics nodupkey;
-150          by database patid;
-151        run;
+149        
+150        proc sort data = DT.asLookup out = Work.patidCharacteristics nodupkey;
+151          by database patid;
+152        run;
 
-NOTE: There were 63052 observations read from the data set DT.ASLOOKUP.
+NOTE: There were 51317 observations read from the data set DT.ASLOOKUP.
 NOTE: 0 observations with duplicate key values were deleted.
-NOTE: The data set WORK.PATIDCHARACTERISTICS has 63052 observations and 10 variables.
+NOTE: The data set WORK.PATIDCHARACTERISTICS has 51317 observations and 10 variables.
 NOTE: PROCEDURE SORT used (Total process time):
-      real time           0.15 seconds
-      cpu time            0.10 seconds
+      real time           0.10 seconds
+      cpu time            0.06 seconds
       
 
-152        proc sort data = DT.controlLookup out = Work.controlCharacteristics nodupkey;
-153          by database patid;
-154        run;
+153        proc sort data = DT.controlLookup out = Work.controlCharacteristics nodupkey;
+154          by database patid;
+155        run;
 
 NOTE: There were 2993875 observations read from the data set DT.CONTROLLOOKUP.
 NOTE: 0 observations with duplicate key values were deleted.
 NOTE: The data set WORK.CONTROLCHARACTERISTICS has 2993875 observations and 9 variables.
 NOTE: PROCEDURE SORT used (Total process time):
-      real time           2.04 seconds
-      cpu time            4.08 seconds
+      real time           1.26 seconds
+      cpu time            3.29 seconds
       
 
-155        proc sql;
-156          select cohort,
-157                 database,
-158                 count(*) format = comma9.0 as denom,
-159                 strip(put(mean(age), 8.1)) || " (" || strip(put(std(age), 8.1)) || ")" as age,
-160                 strip(put(sum(sex = "F") / count(*), percent9.1) || "(n = " || strip(put(sum(sex = "F"), comma9.0)) || ")") as female
-161            from (select cohort, database, patid, age, sex from Work.patidCharacteristics union corr
-162                  select cohort, database, patid, age, sex from Work.controlCharacteristics )
-163          group by cohort, database;
-                                                                  --- AS project ---                                  12:23 Friday, April 13, 2018   1
+156        proc sql;
+157          select cohort,
+158                 database,
+159                 count(*) format = comma9.0 as denom,
+160                 strip(put(mean(age), 8.1)) || " (" || strip(put(std(age), 8.1)) || ")" as age,
+161                 strip(put(sum(sex = "F") / count(*), percent9.1) || "(n = " || strip(put(sum(sex = "F"), comma9.0)) || ")") as female
+162            from (select cohort, database, patid, age, sex from Work.patidCharacteristics union corr
+163                  select cohort, database, patid, age, sex from Work.controlCharacteristics )
+164          group by cohort, database;
+                                                                  --- AS project ---                                    14:24 Friday, May 18, 2018   1
 
                                      cohort  database        denom  age                  female
                                      ----------------------------------------------------------------------------
-                                     AS      MPCD            5,078  46.5 (14.1)          38.3% (n = 1,946)       
-                                     AS      Marketscan     22,625  47.0 (13.6)          43.0% (n = 9,732)       
-                                     AS      Medicare       35,349  63.2 (14.3)          44.9% (n = 15,887)      
+                                     AS      MPCD            4,831  44.5 (15.0)          49.0% (n = 2,369)       
+                                     AS      Marketscan     19,687  46.4 (14.1)          50.9% (n = 10,025)      
+                                     AS      Medicare       26,799  63.8 (14.5)          61.3% (n = 16,415)      
                                      Non-AS  MPCD        1,139,225  50.1 (16.6)          55.8% (n = 635,972)     
                                      Non-AS  Medicare    1,854,650  68.9 (14.0)          61.2% (n = 1,135,612)   
  
@@ -215,57 +202,57 @@ NOTE: PROCEDURE SORT used (Total process time):
  
  
                                                                  reproduceTables2.sas
-164        quit;
+165        quit;
 NOTE: The PROCEDURE SQL printed page 1.
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           4.19 seconds
-      cpu time            6.44 seconds
-3                                                                   The SAS System                                        12:23 Friday, April 13, 2018
-
+      real time           2.71 seconds
+      cpu time            4.69 seconds
       
 
-165        
 166        
-167        proc sort data = DT.indexLookup out = Work.patidCharacteristics nodupkey;
-168          by database patid;
-169        run;
+167        
+168        proc sort data = DT.indexLookup out = Work.patidCharacteristics nodupkey;
+169          by database patid;
+170        run;
 
-NOTE: There were 60010 observations read from the data set DT.INDEXLOOKUP.
-NOTE: 22444 observations with duplicate key values were deleted.
-NOTE: The data set WORK.PATIDCHARACTERISTICS has 37566 observations and 13 variables.
+NOTE: There were 46057 observations read from the data set DT.INDEXLOOKUP.
+NOTE: 18211 observations with duplicate key values were deleted.
+NOTE: The data set WORK.PATIDCHARACTERISTICS has 27846 observations and 13 variables.
 NOTE: PROCEDURE SORT used (Total process time):
-      real time           0.17 seconds
-      cpu time            0.11 seconds
+      real time           0.12 seconds
+3                                                                   The SAS System                                          14:24 Friday, May 18, 2018
+
+      cpu time            0.07 seconds
       
 
-170        proc sort data = DT.controlLookup out = Work.controlCharacteristics nodupkey;
-171          by database patid;
-172        run;
+171        proc sort data = DT.controlLookup out = Work.controlCharacteristics nodupkey;
+172          by database patid;
+173        run;
 
 NOTE: There were 2993875 observations read from the data set DT.CONTROLLOOKUP.
 NOTE: 0 observations with duplicate key values were deleted.
 NOTE: The data set WORK.CONTROLCHARACTERISTICS has 2993875 observations and 9 variables.
 NOTE: PROCEDURE SORT used (Total process time):
-      real time           1.98 seconds
-      cpu time            3.85 seconds
+      real time           1.37 seconds
+      cpu time            3.37 seconds
       
 
-173        proc sql;
-174          select cohort,
-175                 database,
-176                 count(*) format = comma9.0 as denom,
-177                 strip(put(mean(age), 8.1)) || " (" || strip(put(std(age), 8.1)) || ")" as age,
-178                 strip(put(sum(sex = "F") / count(*), percent9.1) || "(n = " || strip(put(sum(sex = "F"), comma9.0)) || ")") as female
-179            from (select "Exposed" as cohort, database, patid, age, sex from Work.patidCharacteristics union corr
-180                  select              cohort, database, patid, age, sex from Work.controlCharacteristics )
-181          group by cohort, database;
-                                                                  --- AS project ---                                  12:23 Friday, April 13, 2018   2
+174        proc sql;
+175          select cohort,
+176                 database,
+177                 count(*) format = comma9.0 as denom,
+178                 strip(put(mean(age), 8.1)) || " (" || strip(put(std(age), 8.1)) || ")" as age,
+179                 strip(put(sum(sex = "F") / count(*), percent9.1) || "(n = " || strip(put(sum(sex = "F"), comma9.0)) || ")") as female
+180            from (select "Exposed" as cohort, database, patid, age, sex from Work.patidCharacteristics union corr
+181                  select              cohort, database, patid, age, sex from Work.controlCharacteristics )
+182          group by cohort, database;
+                                                                  --- AS project ---                                    14:24 Friday, May 18, 2018   2
 
                                     cohort   database        denom  age                  female
                                     -----------------------------------------------------------------------------
-                                    Exposed  MPCD            3,000  46.6 (15.7)          39.8% (n = 1,194)       
-                                    Exposed  Marketscan     11,982  46.3 (14.9)          45.8% (n = 5,489)       
-                                    Exposed  Medicare       22,584  63.5 (14.6)          43.5% (n = 9,831)       
+                                    Exposed  MPCD            2,384  46.4 (15.8)          54.3% (n = 1,295)       
+                                    Exposed  Marketscan      9,032  46.3 (14.6)          55.6% (n = 5,022)       
+                                    Exposed  Medicare       16,430  64.1 (14.8)          62.8% (n = 10,326)      
                                     Non-AS   MPCD        1,139,225  50.1 (16.6)          55.8% (n = 635,972)     
                                     Non-AS   Medicare    1,854,650  68.9 (14.0)          61.2% (n = 1,135,612)   
  
@@ -333,51 +320,51 @@ NOTE: PROCEDURE SORT used (Total process time):
  
  
                                                                  reproduceTables2.sas
-182        quit;
+183        quit;
 NOTE: The PROCEDURE SQL printed page 2.
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           4.05 seconds
-      cpu time            6.24 seconds
+      real time           2.74 seconds
+      cpu time            4.94 seconds
       
 
-183        
 184        
-185        proc sort data = DT.indexLookup out = Work.patidCharacteristics nodupkey;
-186          by database exposure patid;
-187        run;
+185        
+186        proc sort data = DT.indexLookup out = Work.patidCharacteristics nodupkey;
+187          by database exposure patid;
+188        run;
 
-NOTE: There were 60010 observations read from the data set DT.INDEXLOOKUP.
-NOTE: 9216 observations with duplicate key values were deleted.
-NOTE: The data set WORK.PATIDCHARACTERISTICS has 50794 observations and 13 variables.
+NOTE: There were 46057 observations read from the data set DT.INDEXLOOKUP.
+NOTE: 8735 observations with duplicate key values were deleted.
+NOTE: The data set WORK.PATIDCHARACTERISTICS has 37322 observations and 13 variables.
 NOTE: PROCEDURE SORT used (Total process time):
-      real time           0.21 seconds
-      cpu time            0.15 seconds
+      real time           0.14 seconds
+      cpu time            0.07 seconds
       
 
-188        proc sql;
-189          select database,
-190                 exposure,
-191                 count(*) format = comma9.0 as denom,
-192                 strip(put(mean(age), 8.1)) || " (" || strip(put(std(age), 8.1)) || ")" as age,
-193                 strip(put(sum(sex = "F") / count(*), percent9.1) || "(n = " || strip(put(sum(sex = "F"), comma9.0)) || ")") as female
-194            from Work.patidCharacteristics
-195          group by database, exposure;
-                                                                  --- AS project ---                                  12:23 Friday, April 13, 2018   3
+189        proc sql;
+190          select database,
+191                 exposure,
+192                 count(*) format = comma9.0 as denom,
+193                 strip(put(mean(age), 8.1)) || " (" || strip(put(std(age), 8.1)) || ")" as age,
+194                 strip(put(sum(sex = "F") / count(*), percent9.1) || "(n = " || strip(put(sum(sex = "F"), comma9.0)) || ")") as female
+195            from Work.patidCharacteristics
+196          group by database, exposure;
+                                                                  --- AS project ---                                    14:24 Friday, May 18, 2018   3
 
                                   database    exposure         denom  age                  female
                                   ---------------------------------------------------------------------------------
-                                  MPCD        DMARD              421  42.3 (14.5)          44.4% (n = 187)         
-                                  MPCD        NSAID              763  42.1 (14.3)          43.4% (n = 331)         
-                                  MPCD        No exposure      1,593  52.2 (15.6)          38.2% (n = 608)         
-                                  MPCD        TNF              1,107  40.0 (12.7)          38.1% (n = 422)         
-                                  Marketscan  DMARD            1,799  45.9 (14.0)          54.0% (n = 972)         
-                                  Marketscan  NSAID            3,644  45.3 (14.9)          47.3% (n = 1,722)       
-                                  Marketscan  No exposure      5,696  49.0 (15.4)          42.6% (n = 2,425)       
-                                  Marketscan  TNF              4,797  43.0 (13.3)          46.7% (n = 2,239)       
-                                  Medicare    DMARD            4,231  60.7 (14.0)          55.0% (n = 2,329)       
-                                  Medicare    NSAID            8,602  61.6 (14.5)          45.7% (n = 3,930)       
-                                  Medicare    No exposure     13,275  66.7 (13.9)          39.3% (n = 5,216)       
-                                  Medicare    TNF              4,866  55.0 (14.4)          44.6% (n = 2,169)       
+                                  MPCD        DMARD              381  42.8 (14.9)          59.6% (n = 227)         
+                                  MPCD        NSAID              587  44.0 (15.0)          61.3% (n = 360)         
+                                  MPCD        No exposure      1,160  52.0 (15.7)          57.5% (n = 667)         
+                                  MPCD        TNF                856  40.1 (13.0)          46.4% (n = 397)         
+                                  Marketscan  DMARD            1,550  46.1 (14.1)          63.6% (n = 986)         
+                                  Marketscan  NSAID            2,700  46.2 (15.1)          60.9% (n = 1,643)       
+                                  Marketscan  No exposure      3,368  49.0 (15.5)          55.6% (n = 1,871)       
+                                  Marketscan  TNF              3,936  43.6 (13.3)          51.1% (n = 2,011)       
+                                  Medicare    DMARD            3,384  61.2 (14.2)          66.0% (n = 2,234)       
+                                  Medicare    NSAID            7,765  64.4 (14.6)          66.0% (n = 5,125)       
+                                  Medicare    No exposure      7,925  68.2 (13.9)          65.4% (n = 5,180)       
+                                  Medicare    TNF              3,710  55.0 (14.4)          48.6% (n = 1,804)       
  
  
  
@@ -436,20 +423,18 @@ NOTE: PROCEDURE SORT used (Total process time):
  
  
                                                                  reproduceTables2.sas
-196        quit;
+197        quit;
 NOTE: The PROCEDURE SQL printed page 3.
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           0.09 seconds
-      cpu time            0.09 seconds
+      real time           0.06 seconds
+      cpu time            0.06 seconds
       
-4                                                                   The SAS System                                        12:23 Friday, April 13, 2018
 
-
-197        
 198        
-199        ods html close;
+199        
+200        ods html close;
 NOTE: SAS Institute Inc., SAS Campus Drive, Cary, NC USA 27513-2414
 NOTE: The SAS System used:
-      real time           31.26 seconds
-      cpu time            22.19 seconds
+      real time           25.41 seconds
+      cpu time            17.59 seconds
       

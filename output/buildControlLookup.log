@@ -1,35 +1,35 @@
-1                                                          The SAS System                          14:12 Thursday, December 28, 2017
+1                                         The SAS System                14:23 Friday, May 18, 2018
 
-NOTE: Copyright (c) 2002-2012 by SAS Institute Inc., Cary, NC, USA. 
-NOTE: SAS (r) Proprietary Software 9.4 (TS1M1) 
-      Licensed to UNIVERSITY OF ALABAMA AT BIRMINGHAM - SFA - T&R, Site 70058223.
-NOTE: This session is executing on the W32_ES08R2  platform.
+NOTE: Copyright (c) 2016 by SAS Institute Inc., Cary, NC, USA. 
+NOTE: SAS (r) Proprietary Software 9.4 (TS1M5) 
+      Licensed to UNIVERSITY OF ALABAMA AT BIRMINGHAM - SFA - T&R, Site 70086550.
+NOTE: This session is executing on the X64_DS08R2  platform.
 
 
 
 NOTE: Updated analytical products:
       
-      SAS/STAT 13.1
-      SAS/ETS 13.1
-      SAS/OR 13.1
-      SAS/IML 13.1
-      SAS/QC 13.1
+      SAS/STAT 14.3
+      SAS/ETS 14.3
+      SAS/IML 14.3
+      SAS/QC 14.3
 
 NOTE: Additional host information:
 
- W32_ES08R2 WIN 6.1.7601 Service Pack 1 Server
+ X64_DS08R2 WIN 6.1.7601 Service Pack 1 Server
 
 --- PEER News and Updates ---
 
 : SECURITY REMINDER :
-Please remember not to copy any data files that contain PHI (protected health identifiers) to any of the shared folders.
+Please remember not to copy any data files that contain PHI (protected health identifiers) to any 
+of the shared folders.
 
  
 
 
 NOTE: SAS initialization used:
-      real time           0.17 seconds
-      cpu time            0.13 seconds
+      real time           5.13 seconds
+      cpu time            0.34 seconds
       
 1          *  University of Alabama at Birmingham                               *
 2          *  AS project                                            *
@@ -50,7 +50,7 @@ NOTE: Libref STD_SABR was successfully assigned as follows:
       Physical Name: q:\data\std_SABER\
 NOTE: Libref MPSTD was successfully assigned as follows: 
       Engine:        SPDE 
-      Physical Name: h:\studies\mpcd\data\stddata\
+      Physical Name: q:\studies\mpcd\data\stddata\
 NOTE: Libref UCBSTD was successfully assigned as follows: 
       Engine:        SPDE 
       Physical Name: q:\studies\AS\data\stddata\
@@ -63,74 +63,76 @@ NOTE: Libref DT was successfully assigned as follows:
 NOTE: Libref NDC was successfully assigned as follows: 
       Engine:        V9 
       Physical Name: W:\onenote\references\drug ndcs\sas data
-127        footnote "&pgm.";
-128        * footnote2 "%sysfunc(datetime(),datetime14.)";
-129        title1 '--- AS project ---';
-130        **********************************************************************;
-131        options macrogen mlogic mprint symbolgen;
-132        options nomacrogen nomlogic nomprint nosymbolgen;
-133        
+128        footnote "&pgm.";
+129        * footnote2 "%sysfunc(datetime(),datetime14.)";
+130        title1 '--- AS project ---';
+131        **********************************************************************;
+132        options macrogen mlogic mprint symbolgen;
+133        options nomacrogen nomlogic nomprint nosymbolgen;
 134        
-135        ods html
-2                                                                   The SAS System                                   14:12 Thursday, December 28, 2017
+135        
+136        ods html
+2                                                                   The SAS System                                          14:23 Friday, May 18, 2018
 
-136          body = "output\&cmt..html"
-137          style = Statistical;
+137          body = "output\&cmt..html"
+138          style = Statistical;
 NOTE: Writing HTML Body file: output\buildControlLookup.html
-138        
 139        
-140        %let var = patid, indexDate, age, sex, enr_start_date, enr_end_date;
-141        proc sql;
-142          create table DT.controlLookup AS
-143            select "MPCD"       as database, "Non-AS" as cohort, &var from UCB.cntlCohortStdMPCD union corr
-144            select "Medicare"   as database, "Non-AS" as cohort, &var from UCB.cntlCohortStdC5P ;
-NOTE: Table DT.CONTROLLOOKUP created, with 2983928 rows and 8 columns.
+140        
+141        %let var = patid, indexDate, age, sex, enr_start_date, enr_end_date;
+142        proc sql;
+143          create table DT.controlLookup AS
+144            select "MPCD"       as database, "Non-AS" as cohort, &var from UCB.cntlCohortStdMPCD union corr
+145            select "Medicare"   as database, "Non-AS" as cohort, &var from UCB.cntlCohortStdC5PN ;
+NOTE: Data set UCB.CNTLCOHORTSTDMPCD is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
+      additional CPU resources and may reduce performance.
+NOTE: Table DT.CONTROLLOOKUP created, with 2993875 rows and 8 columns.
 
-145          alter table DT.controlLookup add controlID numeric;
+146          alter table DT.controlLookup add controlID numeric;
 NOTE: Table DT.CONTROLLOOKUP has been modified, with 9 columns.
-146          update DT.controlLookup
-147            set controlID = monotonic();
-NOTE: 2983928 rows were updated in DT.CONTROLLOOKUP.
+147          update DT.controlLookup
+148            set controlID = monotonic();
+NOTE: 2993875 rows were updated in DT.CONTROLLOOKUP.
 
-148        quit;
+149        quit;
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           12.16 seconds
-      cpu time            13.72 seconds
+      real time           7.45 seconds
+      cpu time            9.59 seconds
       
 
-149        
-150        proc sort data = DT.controlLookup nodupkey;
-151          by database cohort patid indexDate;
-152        run;
+150        
+151        proc sort data = DT.controlLookup nodupkey;
+152          by database cohort patid indexDate;
+153        run;
 
-NOTE: There were 2983928 observations read from the data set DT.CONTROLLOOKUP.
+NOTE: There were 2993875 observations read from the data set DT.CONTROLLOOKUP.
 NOTE: 0 observations with duplicate key values were deleted.
-NOTE: The data set DT.CONTROLLOOKUP has 2983928 observations and 9 variables.
+NOTE: The data set DT.CONTROLLOOKUP has 2993875 observations and 9 variables.
 NOTE: PROCEDURE SORT used (Total process time):
-      real time           1.15 seconds
-      cpu time            2.63 seconds
+      real time           1.21 seconds
+      cpu time            3.13 seconds
       
 
-153        
-154        proc sql;
-155          select database,
-156                 cohort,
-157                 . < ENR_START_DATE < indexDate as indIndexAfterEnr,
-158                 count(distinct patid) format = comma12.0 as countDistinctPatid,
-159                 count(distinct controlID) format = comma12.0 as countDistinctID,
-160                 count(*) format = comma12.0 as countRows,
-161                 min(indexDate - ENR_START_DATE) as minDaysFromEnrToIndex,
-162                 max(indexDate - ENR_START_DATE) as maxDaysFromEnrToIndex
-163            from DT.controlLookup
-164            group by database, cohort, calculated indIndexAfterEnr;
-                                                                  --- AS project ---                             14:12 Thursday, December 28, 2017   1
+154        
+155        proc sql;
+156          select database,
+157                 cohort,
+158                 . < ENR_START_DATE < indexDate as indIndexAfterEnr,
+159                 count(distinct patid) format = comma12.0 as countDistinctPatid,
+160                 count(distinct controlID) format = comma12.0 as countDistinctID,
+161                 count(*) format = comma12.0 as countRows,
+162                 min(indexDate - ENR_START_DATE) as minDaysFromEnrToIndex,
+163                 max(indexDate - ENR_START_DATE) as maxDaysFromEnrToIndex
+164            from DT.controlLookup
+165            group by database, cohort, calculated indIndexAfterEnr;
+                                                                  --- AS project ---                                    14:23 Friday, May 18, 2018   1
 
                                                                 count
                                                indIndex      Distinct         count                 minDaysFrom   maxDaysFrom
                          database  cohort      AfterEnr         Patid    DistinctID     countRows    EnrToIndex    EnrToIndex
                          ----------------------------------------------------------------------------------------------------
                          MPCD      Non-AS             1     1,139,225     1,139,225     1,139,225           183           183
-                         Medicare  Non-AS             1     1,844,703     1,844,703     1,844,703           183           183
+                         Medicare  Non-AS             1     1,854,650     1,854,650     1,854,650           183           183
  
  
  
@@ -197,18 +199,18 @@ NOTE: PROCEDURE SORT used (Total process time):
  
  
                                                                 buildControlLookup.sas
-165        quit;
+166        quit;
 NOTE: The PROCEDURE SQL printed page 1.
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           11.93 seconds
-      cpu time            13.41 seconds
+      real time           5.64 seconds
+      cpu time            7.19 seconds
       
 
-166        
 167        
-168        ods html close;
+168        
+169        ods html close;
 NOTE: SAS Institute Inc., SAS Campus Drive, Cary, NC USA 27513-2414
 NOTE: The SAS System used:
-      real time           25.72 seconds
-      cpu time            30.20 seconds
+      real time           31.48 seconds
+      cpu time            20.71 seconds
       

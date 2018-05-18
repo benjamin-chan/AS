@@ -1,35 +1,35 @@
-1                                                          The SAS System                          14:12 Thursday, December 28, 2017
+1                                         The SAS System                14:22 Friday, May 18, 2018
 
-NOTE: Copyright (c) 2002-2012 by SAS Institute Inc., Cary, NC, USA. 
-NOTE: SAS (r) Proprietary Software 9.4 (TS1M1) 
-      Licensed to UNIVERSITY OF ALABAMA AT BIRMINGHAM - SFA - T&R, Site 70058223.
-NOTE: This session is executing on the W32_ES08R2  platform.
+NOTE: Copyright (c) 2016 by SAS Institute Inc., Cary, NC, USA. 
+NOTE: SAS (r) Proprietary Software 9.4 (TS1M5) 
+      Licensed to UNIVERSITY OF ALABAMA AT BIRMINGHAM - SFA - T&R, Site 70086550.
+NOTE: This session is executing on the X64_DS08R2  platform.
 
 
 
 NOTE: Updated analytical products:
       
-      SAS/STAT 13.1
-      SAS/ETS 13.1
-      SAS/OR 13.1
-      SAS/IML 13.1
-      SAS/QC 13.1
+      SAS/STAT 14.3
+      SAS/ETS 14.3
+      SAS/IML 14.3
+      SAS/QC 14.3
 
 NOTE: Additional host information:
 
- W32_ES08R2 WIN 6.1.7601 Service Pack 1 Server
+ X64_DS08R2 WIN 6.1.7601 Service Pack 1 Server
 
 --- PEER News and Updates ---
 
 : SECURITY REMINDER :
-Please remember not to copy any data files that contain PHI (protected health identifiers) to any of the shared folders.
+Please remember not to copy any data files that contain PHI (protected health identifiers) to any 
+of the shared folders.
 
  
 
 
 NOTE: SAS initialization used:
-      real time           0.15 seconds
-      cpu time            0.10 seconds
+      real time           4.53 seconds
+      cpu time            0.32 seconds
       
 1          *  University of Alabama at Birmingham                               *
 2          *  AS project                                            *
@@ -50,7 +50,7 @@ NOTE: Libref STD_SABR was successfully assigned as follows:
       Physical Name: q:\data\std_SABER\
 NOTE: Libref MPSTD was successfully assigned as follows: 
       Engine:        SPDE 
-      Physical Name: h:\studies\mpcd\data\stddata\
+      Physical Name: q:\studies\mpcd\data\stddata\
 NOTE: Libref UCBSTD was successfully assigned as follows: 
       Engine:        SPDE 
       Physical Name: q:\studies\AS\data\stddata\
@@ -63,91 +63,91 @@ NOTE: Libref DT was successfully assigned as follows:
 NOTE: Libref NDC was successfully assigned as follows: 
       Engine:        V9 
       Physical Name: W:\onenote\references\drug ndcs\sas data
-127        footnote "&pgm.";
-128        * footnote2 "%sysfunc(datetime(),datetime14.)";
-129        title1 '--- AS project ---';
-130        **********************************************************************;
-131        options macrogen mlogic mprint symbolgen;
-132        options nomacrogen nomlogic nomprint nosymbolgen;
-133        
+128        footnote "&pgm.";
+129        * footnote2 "%sysfunc(datetime(),datetime14.)";
+130        title1 '--- AS project ---';
+131        **********************************************************************;
+132        options macrogen mlogic mprint symbolgen;
+133        options nomacrogen nomlogic nomprint nosymbolgen;
 134        
-135        ods html
-2                                                                   The SAS System                                   14:12 Thursday, December 28, 2017
+135        
+136        ods html
+2                                                                   The SAS System                                          14:22 Friday, May 18, 2018
 
-136          body = "output\&cmt..html"
-137          style = Statistical;
+137          body = "output\&cmt..html"
+138          style = Statistical;
 NOTE: Writing HTML Body file: output\buildIndexLookup.html
-138        
 139        
-140        %let var = patid, indexGNN, indexDate, age, sex, asDate, enr_start_date, enr_end_date, asCohortDate, death_date;
-141        proc sql;
-142          create table DT.indexLookup AS
-143            select "Marketscan" as database, "TNF"   as exposure, &var from UCB.ASTNFCohortStdUCB_ex1     union corr
-144            select "Marketscan" as database, "DMARD" as exposure, &var from UCB.ASDMARDCohortStdUCB_ex2   union corr
-145            select "Marketscan" as database, "NSAID" as exposure, &var from UCB.ASNSAIDCohortStdUCB_ex2   union corr
-146            select "Marketscan" as database, "No exposure" as exposure, &var from UCB.ASNoExpCohortStdUCB_ex2   union corr
-147            select "MPCD"       as database, "TNF"   as exposure, &var from UCB.ASTNFCohortStdMPCD_ex1    union corr
-148            select "MPCD"       as database, "DMARD" as exposure, &var from UCB.ASDMARDCohortStdMPCD_ex2  union corr
-149            select "MPCD"       as database, "NSAID" as exposure, &var from UCB.ASNSAIDCohortStdMPCD_ex2  union corr
-150            select "MPCD"       as database, "No exposure" as exposure, &var from UCB.ASNoExpCohortStdMPCD_ex2  union corr
-151            select "Medicare"   as database, "TNF"   as exposure, &var from UCB.ASTNFCohortStd_SABR_ex1   union corr
-152            select "Medicare"   as database, "DMARD" as exposure, &var from UCB.ASDMARDCohortStd_SABR_ex2 union corr
-153            select "Medicare"   as database, "NSAID" as exposure, &var from UCB.ASNSAIDCohortStd_SABR_ex2 union corr
-154            select "Medicare"   as database, "No exposure" as exposure, &var from UCB.ASNoExpCohortStd_SABR_ex2 ;
-NOTE: Table DT.INDEXLOOKUP created, with 63511 rows and 12 columns.
+140        
+141        %let var = patid, indexGNN, indexDate, age, sex, asDate, enr_start_date, enr_end_date, asCohortDate, death_date;
+142        proc sql;
+143          create table DT.indexLookup AS
+144            select "Marketscan" as database, "TNF"   as exposure, &var from DT.ASTNFCohortStdUCB_ex1     union corr
+145            select "Marketscan" as database, "DMARD" as exposure, &var from DT.ASDMARDCohortStdUCB_ex2   union corr
+146            select "Marketscan" as database, "NSAID" as exposure, &var from DT.ASNSAIDCohortStdUCB_ex2   union corr
+147            select "Marketscan" as database, "No exposure" as exposure, &var from DT.ASNoExpCohortStdUCB_ex2   union corr
+148            select "MPCD"       as database, "TNF"   as exposure, &var from DT.ASTNFCohortStdMPCD_ex1    union corr
+149            select "MPCD"       as database, "DMARD" as exposure, &var from DT.ASDMARDCohortStdMPCD_ex2  union corr
+150            select "MPCD"       as database, "NSAID" as exposure, &var from DT.ASNSAIDCohortStdMPCD_ex2  union corr
+151            select "MPCD"       as database, "No exposure" as exposure, &var from DT.ASNoExpCohortStdMPCD_ex2  union corr
+152            select "Medicare"   as database, "TNF"   as exposure, &var from DT.ASTNFCohortStd_SABR_ex1   union corr
+153            select "Medicare"   as database, "DMARD" as exposure, &var from DT.ASDMARDCohortStd_SABR_ex2 union corr
+154            select "Medicare"   as database, "NSAID" as exposure, &var from DT.ASNSAIDCohortStd_SABR_ex2 union corr
+155            select "Medicare"   as database, "No exposure" as exposure, &var from DT.ASNoExpCohortStd_SABR_ex2 ;
+NOTE: Table DT.INDEXLOOKUP created, with 46057 rows and 12 columns.
 
-155          alter table DT.indexLookup add indexID numeric;
+156          alter table DT.indexLookup add indexID numeric;
 NOTE: Table DT.INDEXLOOKUP has been modified, with 13 columns.
-156          update DT.indexLookup
-157            set indexID = monotonic();
-NOTE: 63511 rows were updated in DT.INDEXLOOKUP.
+157          update DT.indexLookup
+158            set indexID = monotonic();
+NOTE: 46057 rows were updated in DT.INDEXLOOKUP.
 
-158        quit;
+159        quit;
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           1.24 seconds
-      cpu time            0.73 seconds
+      real time           0.63 seconds
+      cpu time            0.57 seconds
       
 
-159        
-160        proc sort data = DT.indexLookup nodupkey;
-161          by database exposure patid indexGNN indexDate;
-162        run;
+160        
+161        proc sort data = DT.indexLookup nodupkey;
+162          by database exposure patid indexGNN indexDate;
+163        run;
 
-NOTE: There were 63511 observations read from the data set DT.INDEXLOOKUP.
-NOTE: 3501 observations with duplicate key values were deleted.
-NOTE: The data set DT.INDEXLOOKUP has 60010 observations and 13 variables.
+NOTE: There were 46057 observations read from the data set DT.INDEXLOOKUP.
+NOTE: 0 observations with duplicate key values were deleted.
+NOTE: The data set DT.INDEXLOOKUP has 46057 observations and 13 variables.
 NOTE: PROCEDURE SORT used (Total process time):
-      real time           0.12 seconds
-      cpu time            0.06 seconds
+      real time           0.07 seconds
+      cpu time            0.04 seconds
       
 
-163        
-164        proc sql;
-165          select database,
-166                 exposure,
-167                 count(distinct patid) as countDistinctPatid,
-168                 count(distinct indexID) as countDistinctIndexes,
-169                 count(*) as countRows
-170            from DT.indexLookup
-171            group by database, exposure;
-                                                                  --- AS project ---                             14:12 Thursday, December 28, 2017   1
+164        
+165        proc sql;
+166          select database,
+167                 exposure,
+168                 count(distinct patid) as countDistinctPatid,
+169                 count(distinct indexID) as countDistinctIndexes,
+170                 count(*) as countRows
+171            from DT.indexLookup
+172            group by database, exposure;
+                                                                  --- AS project ---                                    14:22 Friday, May 18, 2018   1
 
                                                                             count         count
                                                                          Distinct      Distinct
                                             database    exposure            Patid       Indexes  countRows
                                             --------------------------------------------------------------
-                                            MPCD        DMARD                 421           481        481
-                                            MPCD        NSAID                 763          1000       1000
-                                            MPCD        No exposure          1593          1593       1593
-                                            MPCD        TNF                  1107          1279       1279
-                                            Marketscan  DMARD                1799          2045       2045
-                                            Marketscan  NSAID                3644          4893       4893
-                                            Marketscan  No exposure          5696          5696       5696
-                                            Marketscan  TNF                  4797          5779       5779
-                                            Medicare    DMARD                4231          5193       5193
-                                            Medicare    NSAID                8602         12847      12847
-                                            Medicare    No exposure         13275         13275      13275
-                                            Medicare    TNF                  4866          5929       5929
+                                            MPCD        DMARD                 381           445        445
+                                            MPCD        NSAID                 587           799        799
+                                            MPCD        No exposure          1160          1160       1160
+                                            MPCD        TNF                   856           994        994
+                                            Marketscan  DMARD                1550          1760       1760
+                                            Marketscan  NSAID                2700          3710       3710
+                                            Marketscan  No exposure          3368          3368       3368
+                                            Marketscan  TNF                  3936          4768       4768
+                                            Medicare    DMARD                3384          4150       4150
+                                            Medicare    NSAID                7765         12408      12408
+                                            Medicare    No exposure          7925          7925       7925
+                                            Medicare    TNF                  3710          4570       4570
  
  
  
@@ -204,40 +204,40 @@ NOTE: PROCEDURE SORT used (Total process time):
  
  
                                                                  buildIndexLookup.sas
-172        quit;
+173        quit;
 NOTE: The PROCEDURE SQL printed page 1.
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           0.18 seconds
-      cpu time            0.15 seconds
+      real time           0.14 seconds
+      cpu time            0.12 seconds
       
 
-173        /*
-174        Check sequence of dates
-175        
-176        * In a small number of instances, AS cohort date is BEFORE enrollment start date
-177        * Index date is always at least 183 days BEFORE enrollment start
-178        * Index date is always at least 0 days BEFORE AS cohort date
-179         */
-180        proc sql;
-181          select database,
-3                                                                   The SAS System                                   14:12 Thursday, December 28, 2017
+174        /*
+175        Check sequence of dates
+176        
+177        * In a small number of instances, AS cohort date is BEFORE enrollment start date
+178        * Index date is always at least 183 days BEFORE enrollment start
+179        * Index date is always at least 0 days BEFORE AS cohort date
+180         */
+181        proc sql;
+182          select database,
+3                                                                   The SAS System                                          14:22 Friday, May 18, 2018
 
-182                 exposure,
-183                 . < ENR_START_DATE <= asCohortDate as indASOnOrAfterEnr,
-184                 . < ENR_START_DATE < indexDate as indIndexAfterEnr,
-185                 . < asCohortDate <= indexDate as indIndexOnOrAfterAS,
-186                 count(distinct patid) format = comma12.0 as countDistinctPatid,
-187                 count(distinct indexID) format = comma12.0 as countDistinctID,
-188                 count(*) format = comma12.0 as countRows,
-189                 min(asCohortDate - ENR_START_DATE) as minDaysFromEnrToAS,
-190                 max(asCohortDate - ENR_START_DATE) as maxDaysFromEnrToAS,
-191                 min(indexDate - ENR_START_DATE) as minDaysFromEnrToIndex,
-192                 max(indexDate - ENR_START_DATE) as maxDaysFromEnrToIndex,
-193                 min(indexDate - asCohortDate) as minDaysFromASToIndex,
-194                 max(indexDate - asCohortDate) as maxDaysFromASToIndex
-195            from DT.indexLookup
-196            group by database, exposure, calculated indASOnOrAfterEnr, calculated indIndexAfterEnr, calculated indIndexOnOrAfterAS;
-                                                                  --- AS project ---                             14:12 Thursday, December 28, 2017   2
+183                 exposure,
+184                 . < ENR_START_DATE <= asCohortDate as indASOnOrAfterEnr,
+185                 . < ENR_START_DATE < indexDate as indIndexAfterEnr,
+186                 . < asCohortDate <= indexDate as indIndexOnOrAfterAS,
+187                 count(distinct patid) format = comma12.0 as countDistinctPatid,
+188                 count(distinct indexID) format = comma12.0 as countDistinctID,
+189                 count(*) format = comma12.0 as countRows,
+190                 min(asCohortDate - ENR_START_DATE) as minDaysFromEnrToAS,
+191                 max(asCohortDate - ENR_START_DATE) as maxDaysFromEnrToAS,
+192                 min(indexDate - ENR_START_DATE) as minDaysFromEnrToIndex,
+193                 max(indexDate - ENR_START_DATE) as maxDaysFromEnrToIndex,
+194                 min(indexDate - asCohortDate) as minDaysFromASToIndex,
+195                 max(indexDate - asCohortDate) as maxDaysFromASToIndex
+196            from DT.indexLookup
+197            group by database, exposure, calculated indASOnOrAfterEnr, calculated indIndexAfterEnr, calculated indIndexOnOrAfterAS;
+                                                                  --- AS project ---                                    14:22 Friday, May 18, 2018   2
 
                                                     ind                                                                                     minDays
                             indASOn       ind   IndexOn         count                               minDays   maxDays   minDays   maxDays      From
@@ -248,49 +248,81 @@ NOTE: PROCEDURE SQL used (Total process time):
       ASTo
      Index
   -------------------------------------------------------------------------------------------------------------------------------------------------
-  MPCD        DMARD               1         1         1           421           481           481       183      1449       184      1450         0
-      1230
+  MPCD        DMARD               0         1         1             3             3             3      -760      -231       212       598       804
+      1013
 
-  MPCD        NSAID               1         1         1           763         1,000         1,000       183      1456       183      1456         0
-      1268
+  MPCD        DMARD               1         1         1           379           442           442       183      1442       184      1449         0
+      1222
 
-  MPCD        No exposure         1         1         1         1,593         1,593         1,593       183      1457       183      1457         0
+  MPCD        NSAID               0         1         1             3             3             3      -415      -303       437       582       822
+       939
+
+  MPCD        NSAID               1         1         1           584           796           796       183      1402       183      1445         0
+      1262
+
+  MPCD        No exposure         1         1         1         1,160         1,160         1,160       183      1446       183      1446         0
          0
 
-  MPCD        TNF                 0         1         1             7             8             8      -972      -177       218       917       568
-      1235
+  MPCD        TNF                 0         1         1             4             6             6      -845      -273       218       917       627
+      1190
 
-  MPCD        TNF                 1         1         1         1,101         1,271         1,271       183      1417       183      1460         0
-      1201
+  MPCD        TNF                 1         1         1           853           988           988       183      1436       185      1460         0
+      1248
 
-  Marketscan  DMARD               1         1         1         1,799         2,045         2,045       183      1811       183      1825         0
-      1627
+  Marketscan  DMARD               0         1         1            10            10            10     -1274      -157       185       898       342
+      1587
 
-  Marketscan  NSAID               1         1         1         3,644         4,893         4,893       183      1823       183      1825         0
-      1642
+  Marketscan  DMARD               1         1         1         1,540         1,750         1,750       183      1811       185      1825         0
+      1613
 
-  Marketscan  No exposure         1         1         1         5,696         5,696         5,696       183      1825       183      1825         0
-         0
-
-  Marketscan  TNF                 0         1         1            30            31            31     -1278       -90       197       920       359
+  Marketscan  NSAID               0         1         1            54            60            60     -1278      -188       185      1004       621
       1616
 
-  Marketscan  TNF                 1         1         1         4,776         5,748         5,748       183      1810       183      1825         0
-      1634
+  Marketscan  NSAID               1         1         1         2,659         3,650         3,650       183      1825       183      1825         0
+      1642
 
-  Medicare    DMARD               1         1         1         4,231         5,193         5,193       183      3215       183      3281         0
-      3088
-
-  Medicare    NSAID               1         1         1         8,602        12,847        12,847       183      3257       183      3284         0
-      3088
-
-  Medicare    No exposure         1         1         1        13,275        13,275        13,275       183      3278       183      3278         0
+  Marketscan  No exposure         1         1         1         3,368         3,368         3,368       183      1823       183      1823         0
          0
 
-  Medicare    TNF                 0         1         1           140           162           162     -2638       -32       184      2463       287
-      3101
+  Marketscan  TNF                 0         1         1            23            24            24     -1278      -106       194       443       445
+      1591
 
-  Medicare    TNF                 1         1         1         4,754         5,767         5,767       183      3158       183      3278         0
+  Marketscan  TNF                 1         1         1         3,920         4,744         4,744       183      1813       183      1825         0
+      1634
+
+  Medicare    DMARD               0         1         1            79            92            92     -2099       -59       185      2209       245
+      3068
+
+  Medicare    DMARD               1         1         1         3,314         4,058         4,058       183      3256       183      3281         0
+      3088
+
+  Medicare    NSAID               0         1         1           275           380           380     -2829       -73       185      2332       275
+      3076
+
+  Medicare    NSAID               1         1         1         7,566        12,028        12,028       183      3224       183      3284         0
+      3074
+
+  Medicare    No exposure         1         1         1         7,925         7,925         7,925       183      3284       183      3284         0
+         0
+
+  Medicare    TNF                 0         1         1            99           109           109     -2739      -143       187      2479       473
+      3091
+ 
+ 
+ 
+                                                                 buildIndexLookup.sas
+                                                                  --- AS project ---                                    14:22 Friday, May 18, 2018   3
+
+                                                    ind                                                                                     minDays
+                            indASOn       ind   IndexOn         count                               minDays   maxDays   minDays   maxDays      From
+                            OrAfter     Index   OrAfter      Distinct         count                 FromEnr   FromEnr   FromEnr   FromEnr      ASTo
+  database    exposure          Enr  AfterEnr        AS         Patid    DistinctID     countRows      ToAS      ToAS   ToIndex   ToIndex     Index
+   maxDays
+      From
+      ASTo
+     Index
+  -------------------------------------------------------------------------------------------------------------------------------------------------
+  Medicare    TNF                 1         1         1         3,636         4,461         4,461       183      3172       183      3278         0
       3080
  
  
@@ -310,83 +342,109 @@ NOTE: PROCEDURE SQL used (Total process time):
  
  
  
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
                                                                  buildIndexLookup.sas
-197        quit;
-NOTE: The PROCEDURE SQL printed page 2.
+198        quit;
+NOTE: The PROCEDURE SQL printed pages 2-3.
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           0.26 seconds
-      cpu time            0.28 seconds
+      real time           0.27 seconds
+      cpu time            0.26 seconds
       
 
-198        /*
-199        database exposure indASOnOrAfterEnr indIndexAfterEnr indIndexOnOrAfterAS countDistinctPatid countDistinctID countRows minDaysFromEnrToAS
-199      ! maxDaysFromEnrToAS minDaysFromEnrToIndex maxDaysFromEnrToIndex minDaysFromASToIndex maxDaysFromASToIndex
-200        MPCD DMARD 1 1 1 421 481 481 183 1449 184 1450 0 1230
-201        MPCD NSAID or no exposure 1 1 1 2,083 2,593 2,593 183 1457 183 1457 0 1268
-202        MPCD TNF 0 1 1 7 8 8 -972 -177 218 917 568 1235
-203        MPCD TNF 1 1 1 1,101 1,271 1,271 183 1417 183 1460 0 1201
-204        Marketscan DMARD 1 1 1 1,799 2,045 2,045 183 1811 183 1825 0 1627
-205        Marketscan NSAID or no exposure 1 1 1 8,025 10,589 10,589 183 1825 183 1825 0 1642
-206        Marketscan TNF 0 1 1 30 31 31 -1278 -90 197 920 359 1616
-207        Marketscan TNF 1 1 1 4,776 5,748 5,748 183 1810 183 1825 0 1634
-208        Medicare DMARD 1 1 1 4,231 5,193 5,193 183 3215 183 3281 0 3088
-209        Medicare NSAID or no exposure 1 1 1 17,983 26,122 26,122 183 3278 183 3284 0 3088
-210        Medicare TNF 0 1 1 140 162 162 -2638 -32 184 2463 287 3101
-211        Medicare TNF 1 1 1 4,754 5,767 5,767 183 3158 183 3278 0 3080
-212         */
-213        proc sql;
-214          select * from DT.indexLookup where database = "MPCD" & (. < ENR_START_DATE <= asCohortDate) = 0;
-                                                                  --- AS project ---                             14:12 Thursday, December 28, 2017   3
+199        proc sql;
+200          select * from DT.indexLookup where database = "MPCD" & (. < ENR_START_DATE <= asCohortDate) = 0;
+                                                                  --- AS project ---                                    14:22 Friday, May 18, 2018   4
 
                                                                                                                                          Date of
                                                                                                                                              the
                                                                                                                                        Beginning
                                                                                                                                               of
-                              Unique Patient                                                                                          Continuous
-                              Identification                                                              Administrative              Enrollment
-     database    exposure     Number                indexGNN                         indexDate       age  Sex                 ASdate      Period
+                                                                                                                                      Continuous
+                                                                                                          Administrative              Enrollment
+     database    exposure     patid                 indexGNN                         indexDate       age  Sex                 asDate      Period
         Date of
      the End of
             the
      Continuous                   Patient
      Enrollment                   Date of
-         Period  AScohortDate       Death   indexID
+         Period  asCohortDate       Death   indexID
      -------------------------------------------------------------------------------------------------------------------------------------------
-     MPCD        TNF          103662591             GOLIMUMAB                       01/27/2010        50  F               07/08/2008  01/01/2009
-     12/31/2010    07/08/2008                  4832
+     MPCD        DMARD        103881780             SULFASALAZINE                   07/28/2010        25  F               05/15/2008  01/01/2009
+     07/31/2010    05/15/2008                   129
 
-     MPCD        TNF          103699149             ETANERCEPT                      11/17/2010        45  F               05/02/2008  05/01/2009
-     12/31/2010    05/02/2008                  4930
+     MPCD        DMARD        104001393             LEFLUNOMIDE                     03/01/2010        45  F               05/29/2007  08/01/2009
+     12/31/2010    07/03/2007                   183
 
-     MPCD        TNF          103717376             ETANERCEPT                      10/05/2010        50  M               04/25/2007  03/01/2010
-     12/31/2010    07/03/2007                  4966
+     MPCD        DMARD        104100394             SULFASALAZINE                   11/20/2010        20  F               02/11/2008  04/01/2009
+     12/31/2010    02/11/2008                   222
 
-     MPCD        TNF          103937492             ETANERCEPT                      12/28/2010        50  M               08/19/2008  01/01/2010
-     12/31/2010    08/19/2008                  5484
+     MPCD        NSAID        104059133             INDOMETHACIN                    11/12/2009        35  F               08/13/2007  09/01/2008
+     12/31/2010    08/13/2007                   821
 
-     MPCD        TNF          104017292             INFLIXIMAB                      11/19/2010        45  F               02/20/2007  03/01/2009
-     12/31/2010    07/03/2007                  5660
+     MPCD        NSAID        104073686             DICLOFENAC                      12/04/2009        50  F               06/07/2007  05/01/2008
+     12/31/2009    07/03/2007  09/01/2010       826
 
-     MPCD        TNF          104148799             CERTOLIZUMAB                    10/05/2010        35  F               01/26/2007  04/01/2008
-     12/31/2010    07/03/2007                  5950
+     MPCD        NSAID        104100394             NABUMETONE                      09/07/2010        20  F               02/11/2008  04/01/2009
+     12/31/2010    02/11/2008                   846
 
-     MPCD        TNF          104148799             ETANERCEPT                      01/04/2010        35  F               01/26/2007  04/01/2008
-     12/31/2010    07/03/2007                  5954
+     MPCD        TNF          103717376             ETANERCEPT                      10/05/2010        50  M               11/07/2007  03/01/2010
+     12/31/2010    11/07/2007                  2563
 
-     MPCD        TNF          104409087             ADALIMUMAB                      08/06/2010        35  M               12/05/2007  12/01/2009
-     12/31/2010    12/05/2007                  6510
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
+     MPCD        TNF          104001393             ADALIMUMAB                      07/06/2010        45  F               05/29/2007  08/01/2009
+     12/31/2010    07/03/2007                  2812
+
+     MPCD        TNF          104001393             ETANERCEPT                      04/13/2010        45  F               05/29/2007  08/01/2009
+     12/31/2010    07/03/2007                  2813
+
+     MPCD        TNF          104148799             CERTOLIZUMAB                    10/05/2010        35  F               02/12/2007  04/01/2008
+     12/31/2010    07/03/2007                  2938
+
+     MPCD        TNF          104148799             ETANERCEPT                      01/04/2010        35  F               02/12/2007  04/01/2008
+     12/31/2010    07/03/2007                  2939
+
+     MPCD        TNF          104409087             ADALIMUMAB                      08/06/2010        35  M               11/17/2008  12/01/2009
+     12/31/2010    11/17/2008                  3143
  
  
  
@@ -410,18 +468,18 @@ NOTE: PROCEDURE SQL used (Total process time):
  
  
                                                                  buildIndexLookup.sas
-215        quit;
-NOTE: The PROCEDURE SQL printed page 3.
+201        quit;
+NOTE: The PROCEDURE SQL printed page 4.
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           0.06 seconds
+      real time           0.04 seconds
       cpu time            0.03 seconds
       
 
-216        
-217        
-218        ods html close;
+202        
+203        
+204        ods html close;
 NOTE: SAS Institute Inc., SAS Campus Drive, Cary, NC USA 27513-2414
 NOTE: The SAS System used:
-      real time           2.32 seconds
-      cpu time            1.60 seconds
+      real time           17.79 seconds
+      cpu time            1.87 seconds
       
