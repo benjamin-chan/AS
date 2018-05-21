@@ -32,11 +32,11 @@ quit;
 
 
 /* 
-Two 720.xx diagnosis codes between 7-365 days apart
+Two 720.0 diagnosis codes between 7-365 days apart
 Both from rheumatologists
 Both from ambulatory visits
  */
-%let where = dx_type = "09" & dx like "720%" & enc_type = "AV";
+%let where = dx_type = "09" & dx = "7200" & enc_type = "AV";
 
 
 /* 
