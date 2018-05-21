@@ -69,12 +69,12 @@ proc sql;
 quit;
 
 /* 
-Two 720.0 diagnosis codes between 7-365 days apart
+Two 720.xx diagnosis codes between 7-365 days apart
 Both from rheumatologists
 Both from ambulatory visits
  */
 %let varlist = patid, begin_date, dx_type, dx, enc_type, prov_type;
-%let where = dx_type = "09" & dx = "7200" & enc_type = "AV";
+%let where = dx_type = "09" & dx like "720%" & enc_type = "AV";
 proc sql;
   create table Work.temp1 as
     select &varlist from stdc5p.std_dx_2006 where &where union corr
