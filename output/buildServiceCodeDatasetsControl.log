@@ -1,35 +1,35 @@
-1                                                          The SAS System                            07:49 Friday, December 29, 2017
+1                                         The SAS System                17:44 Monday, May 21, 2018
 
-NOTE: Copyright (c) 2002-2012 by SAS Institute Inc., Cary, NC, USA. 
-NOTE: SAS (r) Proprietary Software 9.4 (TS1M1) 
-      Licensed to UNIVERSITY OF ALABAMA AT BIRMINGHAM - SFA - T&R, Site 70058223.
-NOTE: This session is executing on the W32_ES08R2  platform.
+NOTE: Copyright (c) 2016 by SAS Institute Inc., Cary, NC, USA. 
+NOTE: SAS (r) Proprietary Software 9.4 (TS1M5) 
+      Licensed to UNIVERSITY OF ALABAMA AT BIRMINGHAM - SFA - T&R, Site 70086550.
+NOTE: This session is executing on the X64_DS08R2  platform.
 
 
 
 NOTE: Updated analytical products:
       
-      SAS/STAT 13.1
-      SAS/ETS 13.1
-      SAS/OR 13.1
-      SAS/IML 13.1
-      SAS/QC 13.1
+      SAS/STAT 14.3
+      SAS/ETS 14.3
+      SAS/IML 14.3
+      SAS/QC 14.3
 
 NOTE: Additional host information:
 
- W32_ES08R2 WIN 6.1.7601 Service Pack 1 Server
+ X64_DS08R2 WIN 6.1.7601 Service Pack 1 Server
 
 --- PEER News and Updates ---
 
 : SECURITY REMINDER :
-Please remember not to copy any data files that contain PHI (protected health identifiers) to any of the shared folders.
+Please remember not to copy any data files that contain PHI (protected health identifiers) to any 
+of the shared folders.
 
  
 
 
 NOTE: SAS initialization used:
-      real time           1.07 seconds
-      cpu time            0.10 seconds
+      real time           4.89 seconds
+      cpu time            0.34 seconds
       
 1          *  University of Alabama at Birmingham                               *
 2          *  AS project                                            *
@@ -50,7 +50,7 @@ NOTE: Libref STD_SABR was successfully assigned as follows:
       Physical Name: q:\data\std_SABER\
 NOTE: Libref MPSTD was successfully assigned as follows: 
       Engine:        SPDE 
-      Physical Name: h:\studies\mpcd\data\stddata\
+      Physical Name: q:\studies\mpcd\data\stddata\
 NOTE: Libref UCBSTD was successfully assigned as follows: 
       Engine:        SPDE 
       Physical Name: q:\studies\AS\data\stddata\
@@ -63,595 +63,266 @@ NOTE: Libref DT was successfully assigned as follows:
 NOTE: Libref NDC was successfully assigned as follows: 
       Engine:        V9 
       Physical Name: W:\onenote\references\drug ndcs\sas data
-127        footnote "&pgm.";
-128        * footnote2 "%sysfunc(datetime(),datetime14.)";
-129        title1 '--- AS project ---';
-130        **********************************************************************;
-131        options macrogen mlogic mprint symbolgen;
-132        options nomacrogen nomlogic nomprint nosymbolgen;
-133        
+128        footnote "&pgm.";
+129        * footnote2 "%sysfunc(datetime(),datetime14.)";
+130        title1 '--- AS project ---';
+131        **********************************************************************;
+132        options macrogen mlogic mprint symbolgen;
+133        options nomacrogen nomlogic nomprint nosymbolgen;
 134        
-135        ods html
-2                                                                   The SAS System                                     07:49 Friday, December 29, 2017
+135        
+136        ods html
+2                                                                   The SAS System                                          17:44 Monday, May 21, 2018
 
-136          body = "output\&cmt..html"
-137          style = Statistical;
+137          body = "output\&cmt..html"
+138          style = Statistical;
 NOTE: Writing HTML Body file: output\buildServiceCodeDatasetsControl.html
-138        
 139        
-140        /*
-141        From: Chen, Lang [mailto:langchen@uabmc.edu]
-142        Sent: Monday, September 11, 2017 1:59 PM
-143        To: Benjamin Chan <chanb@ohsu.edu>; Curtis, Jeffrey R <jrcurtis@uabmc.edu>; Kevin Winthrop <winthrop@ohsu.edu>
-144        Cc: Atul Deodhar <deodhara@ohsu.edu>; Sarah Siegel <siegels@ohsu.edu>; Yang, Shuo <shuoyang@uabmc.edu>; Xie, Fenglong
-144      ! <fenglongxie@uabmc.edu>
-145        Subject: RE: quick summary of AS call
-146        
-147        physician-diagnosed codes is usually define by IP AV ED NH and HH. We usually
-148        do not use provider type field. Provider type is provider specialty and MPCD
-149        and CMS use different coding system.
-150         */
-151        
+140        
+141        /*
+142        From: Chen, Lang [mailto:langchen@uabmc.edu]
+143        Sent: Monday, September 11, 2017 1:59 PM
+144        To: Benjamin Chan <chanb@ohsu.edu>; Curtis, Jeffrey R <jrcurtis@uabmc.edu>; Kevin Winthrop <winthrop@ohsu.edu>
+145        Cc: Atul Deodhar <deodhara@ohsu.edu>; Sarah Siegel <siegels@ohsu.edu>; Yang, Shuo <shuoyang@uabmc.edu>; Xie, Fenglong
+145      ! <fenglongxie@uabmc.edu>
+146        Subject: RE: quick summary of AS call
+147        
+148        physician-diagnosed codes is usually define by IP AV ED NH and HH. We usually
+149        do not use provider type field. Provider type is provider specialty and MPCD
+150        and CMS use different coding system.
+151         */
 152        
-153        /*
-154        Service code data sets for prevalence (non-fracture outcomes)
-155         */
-156        %let type = Prev;
-157        %let select1 = select A.*, B.enc_type, B.admit_date, B.begin_date, B.discharge_date, B.end_date, B.dx_type, B.dx, B.pdx, "ICD9-DX" as
-157      ! codeType, B.dx as code;
-158        %let on1 = on (A.patid = B.patid);
-159        %let select2 = select A.patid, A.enc_type, A.admit_date, A.begin_date, A.discharge_date, A.end_date, A.dx_type, A.dx, A.pdx;
-160        %let where2 = where A.dx_type = "09" & A.enc_type in ("IP", "AV", "ED", "NH", "HH");
-161        %let selectfrom3 = select * from DT.controlLookup;
-162        
-163        %include "lib\buildDxControl.sas";  /* Call script to query ICD-9 diagnosis codes */
-NOTE: Table UCB.TEMPLOOKUPMPCDCONTROL created, with 1139225 rows and 9 columns.
+153        
+154        /*
+155        Service code data sets for prevalence (non-fracture outcomes)
+156         */
+157        %let type = Prev;
+158        %let select1 = select A.*, B.enc_type, B.admit_date, B.begin_date, B.discharge_date, B.end_date, B.dx_type, B.dx, B.pdx, "ICD9-DX" as
+158      ! codeType, B.dx as code;
+159        %let on1 = on (A.patid = B.patid);
+160        %let select2 = select A.patid, A.enc_type, A.admit_date, A.begin_date, A.discharge_date, A.end_date, A.dx_type, A.dx, A.pdx;
+161        %let where2 = where A.dx_type = "09" & A.enc_type in ("IP", "AV", "ED", "NH", "HH");
+162        %let selectfrom3 = select * from DT.controlLookup;
+163        
+164        %include "lib\buildDxControl.sas";  /* Call script to query ICD-9 diagnosis codes */
+ERROR: Foreign datasets cannot be modified.
 
-NOTE: Table UCB.TEMP0710 created, with 176326981 rows and 9 columns.
-
-NOTE: Table UCB.TEMPPREVDXMPCDCONTROL created, with 94506830 rows and 19 columns.
-
-NOTE: Table UCB.TEMP0710 has been dropped.
-NOTE: Table UCB.TEMPLOOKUPMEDICARECONTROL created, with 1844703 rows and 9 columns.
-
-NOTE: Table UCB.TEMP06 created, with 70079498 rows and 9 columns.
-
-NOTE: Table UCB.TEMP07 created, with 71395751 rows and 9 columns.
-
-NOTE: Table UCB.TEMP08 created, with 72901254 rows and 9 columns.
-
-NOTE: Table UCB.TEMP09 created, with 75322391 rows and 9 columns.
-
-NOTE: Table UCB.TEMP10 created, with 82724178 rows and 9 columns.
-
-NOTE: Table UCB.TEMP11 created, with 105073869 rows and 9 columns.
-
-NOTE: Table UCB.TEMP12 created, with 106954237 rows and 9 columns.
-
-NOTE: Table UCB.TEMP13 created, with 111463089 rows and 9 columns.
-
-NOTE: Table UCB.TEMP14 created, with 107440003 rows and 9 columns.
-
-NOTE: Table UCB.TEMPPREVDXSABRCONTROL created, with 450706588 rows and 19 columns.
-
-NOTE: Table UCB.TEMP06 has been dropped.
-NOTE: Table UCB.TEMP07 has been dropped.
-NOTE: Table UCB.TEMP08 has been dropped.
-NOTE: Table UCB.TEMP09 has been dropped.
-NOTE: Table UCB.TEMP10 has been dropped.
-NOTE: Table UCB.TEMP11 has been dropped.
-NOTE: Table UCB.TEMP12 has been dropped.
-NOTE: Table UCB.TEMP13 has been dropped.
-NOTE: Table UCB.TEMP14 has been dropped.
-NOTE: Table UCB.TEMPPREVDXALLCONTROL created, with 528984975 rows and 19 columns.
-
-                                                                  --- AS project ---                               07:49 Friday, December 29, 2017   1
-
-                                               table                     database                     n
-                                               --------------------------------------------------------
-                                               UCB.tempPrevDxAllControl  MPCD                78,278,387
-                                               UCB.tempPrevDxAllControl  Medicare           450,706,588
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
-                                                         buildServiceCodeDatasetsControl.sas
-NOTE: Table UCB.TEMPPREVDXMPCDCONTROL has been dropped.
-3                                                                   The SAS System                                     07:49 Friday, December 29, 2017
-
-NOTE: Table UCB.TEMPPREVDXSABRCONTROL has been dropped.
-NOTE: The PROCEDURE SQL printed page 1.
+NOTE: PROC SQL set option NOEXEC and will continue to check the syntax of statements.
+NOTE: Statement not executed due to NOEXEC option.
+NOTE: Statement not executed due to NOEXEC option.
+NOTE: Statement not executed due to NOEXEC option.
+NOTE: Statement not executed due to NOEXEC option.
+NOTE: Statement not executed due to NOEXEC option.
+NOTE: Statement not executed due to NOEXEC option.
+NOTE: Statement not executed due to NOEXEC option.
+NOTE: Statement not executed due to NOEXEC option.
+NOTE: Statement not executed due to NOEXEC option.
+NOTE: Statement not executed due to NOEXEC option.
+NOTE: Statement not executed due to NOEXEC option.
+NOTE: Statement not executed due to NOEXEC option.
+NOTE: Statement not executed due to NOEXEC option.
+NOTE: Statement not executed due to NOEXEC option.
+NOTE: Statement not executed due to NOEXEC option.
+NOTE: Statement not executed due to NOEXEC option.
+NOTE: Statement not executed due to NOEXEC option.
+NOTE: Statement not executed due to NOEXEC option.
+NOTE: Statement not executed due to NOEXEC option.
+NOTE: Statement not executed due to NOEXEC option.
+NOTE: Statement not executed due to NOEXEC option.
+NOTE: Statement not executed due to NOEXEC option.
+NOTE: Statement not executed due to NOEXEC option.
+NOTE: Statement not executed due to NOEXEC option.
+NOTE: Data set UCB.TEMPPREVDXALLCONTROL is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
+      additional CPU resources and may reduce performance.
+NOTE: Statement not executed due to NOEXEC option.
+NOTE: Statement not executed due to NOEXEC option.
+NOTE: Statement not executed due to NOEXEC option.
+NOTE: The SAS System stopped processing this step because of errors.
+NOTE: SAS set option OBS=0 and will continue to check statements. This might cause NOTE: No observations in data set.
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           3:08:03.73
-      cpu time            2:50:31.94
+      real time           0.29 seconds
+      cpu time            0.20 seconds
       
+211        
+212        %let select1 = select A.*,
+213                              B.admit_date, B.begin_date, B.discharge_date, B.end_date, B.px_date, B.px_type, B.px,
+3                                                                   The SAS System                                          17:44 Monday, May 21, 2018
 
-210        
-211        %let select1 = select A.*,
-212                              B.admit_date, B.begin_date, B.discharge_date, B.end_date, B.px_date, B.px_type, B.px,
-213                              case
-214                                when B.px_type = "09" then "ICD9-PX"
-215                                when B.px_type = "C1" | ^anyalpha(strip(B.px)) then "CPT"
-216                                when B.px_type = "H1" & anyalpha(substr(strip(B.px), 1, 1)) & ^anyalpha(strip(B.px), 2) then "HCPCS"
-217                                else ""
-218                                end as codeType,
-219                              B.px as code;
-220        %let select2 = select patid, admit_date, begin_date, discharge_date, end_date, px_date, px_type, px;
-221        
-222        %include "lib\buildPxControl.sas";  /* Call script to query procedure codes */
-NOTE: Table UCB.TEMP0710 created, with 346484578 rows and 8 columns.
+214                              case
+215                                when B.px_type = "09" then "ICD9-PX"
+216                                when B.px_type = "C1" | ^anyalpha(strip(B.px)) then "CPT"
+217                                when B.px_type = "H1" & anyalpha(substr(strip(B.px), 1, 1)) & ^anyalpha(strip(B.px), 2) then "HCPCS"
+218                                else ""
+219                                end as codeType,
+220                              B.px as code;
+221        %let select2 = select patid, admit_date, begin_date, discharge_date, end_date, px_date, px_type, px;
+222        
+223        %include "lib\buildPxControl.sas";  /* Call script to query procedure codes */
 
-NOTE: Table UCB.TEMPPREVPXMPCDCONTROL created, with 168458870 rows and 18 columns.
 
-NOTE: Table UCB.TEMP0710 has been dropped.
-NOTE: Table UCB.TEMP06 created, with 137802721 rows and 8 columns.
-
-NOTE: Table UCB.TEMP07 created, with 141996458 rows and 8 columns.
-
-NOTE: Table UCB.TEMP08 created, with 147118053 rows and 8 columns.
-
-NOTE: Table UCB.TEMP09 created, with 152579039 rows and 8 columns.
-
-NOTE: Table UCB.TEMP10 created, with 154866267 rows and 8 columns.
-
-NOTE: Table UCB.TEMP11 created, with 157181115 rows and 8 columns.
-
-NOTE: Table UCB.TEMP12 created, with 161224747 rows and 8 columns.
-
-NOTE: Table UCB.TEMP13 created, with 164298030 rows and 8 columns.
-
-NOTE: Table UCB.TEMP14 created, with 166228741 rows and 8 columns.
-
-NOTE: Table UCB.TEMPPREVPXSABRCONTROL created, with 896909634 rows and 18 columns.
-
-NOTE: Table UCB.TEMP06 has been dropped.
-NOTE: Table UCB.TEMP07 has been dropped.
-NOTE: Table UCB.TEMP08 has been dropped.
-NOTE: Table UCB.TEMP09 has been dropped.
-NOTE: Table UCB.TEMP10 has been dropped.
-NOTE: Table UCB.TEMP11 has been dropped.
-NOTE: Table UCB.TEMP12 has been dropped.
-NOTE: Table UCB.TEMP13 has been dropped.
-NOTE: Table UCB.TEMP14 has been dropped.
-NOTE: Table UCB.TEMPPREVPXALLCONTROL created, with 1038978234 rows and 18 columns.
-
-                                                                  --- AS project ---                               07:49 Friday, December 29, 2017   2
-
-                                               table                     database                     n
-                                               --------------------------------------------------------
-                                               UCB.tempPrevPxAllControl  MPCD               142,068,600
-                                               UCB.tempPrevPxAllControl  Medicare           896,909,634
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
-                                                         buildServiceCodeDatasetsControl.sas
-NOTE: Table UCB.TEMPPREVPXMPCDCONTROL has been dropped.
-NOTE: Table UCB.TEMPPREVPXSABRCONTROL has been dropped.
-NOTE: The PROCEDURE SQL printed page 2.
+NOTE: PROC SQL set option NOEXEC and will continue to check the syntax of statements.
+NOTE: Statement not executed due to NOEXEC option.
+NOTE: Statement not executed due to NOEXEC option.
+NOTE: Statement not executed due to NOEXEC option.
+NOTE: Statement not executed due to NOEXEC option.
+NOTE: Statement not executed due to NOEXEC option.
+NOTE: Statement not executed due to NOEXEC option.
+NOTE: Statement not executed due to NOEXEC option.
+NOTE: Statement not executed due to NOEXEC option.
+NOTE: Statement not executed due to NOEXEC option.
+NOTE: Statement not executed due to NOEXEC option.
+NOTE: Statement not executed due to NOEXEC option.
+NOTE: Statement not executed due to NOEXEC option.
+NOTE: Statement not executed due to NOEXEC option.
+NOTE: Statement not executed due to NOEXEC option.
+NOTE: Statement not executed due to NOEXEC option.
+NOTE: Statement not executed due to NOEXEC option.
+NOTE: Statement not executed due to NOEXEC option.
+NOTE: Statement not executed due to NOEXEC option.
+NOTE: Statement not executed due to NOEXEC option.
+NOTE: Statement not executed due to NOEXEC option.
+NOTE: Statement not executed due to NOEXEC option.
+NOTE: Statement not executed due to NOEXEC option.
+NOTE: Statement not executed due to NOEXEC option.
+NOTE: Data set UCB.TEMPPREVPXALLCONTROL is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
+      additional CPU resources and may reduce performance.
+NOTE: Statement not executed due to NOEXEC option.
+NOTE: Statement not executed due to NOEXEC option.
+NOTE: Statement not executed due to NOEXEC option.
+NOTE: The SAS System stopped processing this step because of errors.
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           5:31:31.89
-      cpu time            4:43:53.78
+      real time           0.35 seconds
+      cpu time            0.24 seconds
       
-
-267        
 268        
-269        /*
-270        Service code data sets for fracture outcomes
-271        Fracture service code data sets are used for both prevalence and incidence;
-272        unlike non-fracture service code data sets
-273         */
-274        %let type = Frac;
-4                                                                   The SAS System                                     07:49 Friday, December 29, 2017
+269        
+270        /*
+271        Service code data sets for fracture outcomes
+272        Fracture service code data sets are used for both prevalence and incidence;
+273        unlike non-fracture service code data sets
+274         */
+275        %let type = Frac;
+276        %let select1 = select A.*,
+277                              B.encounterID, B.enc_type, B.admit_date, B.begin_date, B.discharge_date, B.end_date, B.dx_type, B.dx, B.pdx,
+277      ! "ICD9-DX" as codeType, B.dx as code,
+278                              B.diagCodeType;
+279        %let on1 = on (A.patid = B.patid);
+280        %let select2 = select A.patid, A.encounterID, A.enc_type, A.admit_date, A.begin_date, A.discharge_date, A.end_date, A.dx_type, A.dx, A.pdx,
+281                              case
+282                                when '800' <= substr(A.dx, 1, 3) <= '829' or substr(A.dx, 1, 4) = '7331' then "Fracture code"
+283                                when substr(A.dx, 1, 4) in ('V541' 'V542') then "Extended care code"
+284                                when 'E800' <= substr(A.dx, 1, 4) <= 'E848' or
+285                                     'E881' <= substr(A.dx, 1, 4) <= 'E884' or
+286                                     'E908' <= substr(A.dx, 1, 4) <= 'E909' or
+287                                     'E916' <= substr(A.dx, 1, 4) <= 'E928'
+288                                  then "Trauma code"
+289                                else ""
+290                                end as diagCodeType;
+291        %let where2 = where A.dx_type = "09" & A.enc_type in ("IP", "AV", "ED", "NH", "HH") & ^missing(calculated diagCodeType);
+292        %let selectfrom3 = select * from DT.controlLookup;
+4                                                                   The SAS System                                          17:44 Monday, May 21, 2018
 
-275        %let select1 = select A.*,
-276                              B.encounterID, B.enc_type, B.admit_date, B.begin_date, B.discharge_date, B.end_date, B.dx_type, B.dx, B.pdx,
-276      ! "ICD9-DX" as codeType, B.dx as code,
-277                              B.diagCodeType;
-278        %let on1 = on (A.patid = B.patid);
-279        %let select2 = select A.patid, A.encounterID, A.enc_type, A.admit_date, A.begin_date, A.discharge_date, A.end_date, A.dx_type, A.dx, A.pdx,
-280                              case
-281                                when '800' <= substr(A.dx, 1, 3) <= '829' or substr(A.dx, 1, 4) = '7331' then "Fracture code"
-282                                when substr(A.dx, 1, 4) in ('V541' 'V542') then "Extended care code"
-283                                when 'E800' <= substr(A.dx, 1, 4) <= 'E848' or
-284                                     'E881' <= substr(A.dx, 1, 4) <= 'E884' or
-285                                     'E908' <= substr(A.dx, 1, 4) <= 'E909' or
-286                                     'E916' <= substr(A.dx, 1, 4) <= 'E928'
-287                                  then "Trauma code"
-288                                else ""
-289                                end as diagCodeType;
-290        %let where2 = where A.dx_type = "09" & A.enc_type in ("IP", "AV", "ED", "NH", "HH") & ^missing(calculated diagCodeType);
-291        %let selectfrom3 = select * from DT.controlLookup;
-292        
-293        %include "lib\buildDxControl.sas";  /* Call script to query ICD-9 diagnosis codes */
-NOTE: Table UCB.TEMPLOOKUPMPCDCONTROL created, with 1139225 rows and 9 columns.
+293        
+294        %include "lib\buildDxControl.sas";  /* Call script to query ICD-9 diagnosis codes */
 
-NOTE: Table UCB.TEMP0710 created, with 1649572 rows and 11 columns.
 
-NOTE: Table UCB.TEMPFRACDXMPCDCONTROL created, with 831426 rows and 21 columns.
-
-NOTE: Table UCB.TEMP0710 has been dropped.
-NOTE: Table UCB.TEMPLOOKUPMEDICARECONTROL created, with 1844703 rows and 9 columns.
-
-NOTE: Table UCB.TEMP06 created, with 635901 rows and 11 columns.
-
-NOTE: Table UCB.TEMP07 created, with 641100 rows and 11 columns.
-
-NOTE: Table UCB.TEMP08 created, with 639137 rows and 11 columns.
-
-NOTE: Table UCB.TEMP09 created, with 684664 rows and 11 columns.
-
-NOTE: Table UCB.TEMP10 created, with 840661 rows and 11 columns.
-
-NOTE: Table UCB.TEMP11 created, with 1047155 rows and 11 columns.
-
-NOTE: Table UCB.TEMP12 created, with 1047926 rows and 11 columns.
-
-NOTE: Table UCB.TEMP13 created, with 1076616 rows and 11 columns.
-
-NOTE: Table UCB.TEMP14 created, with 1075778 rows and 11 columns.
-
-NOTE: Table UCB.TEMPFRACDXSABRCONTROL created, with 4531201 rows and 21 columns.
-
-NOTE: Table UCB.TEMP06 has been dropped.
-NOTE: Table UCB.TEMP07 has been dropped.
-NOTE: Table UCB.TEMP08 has been dropped.
-NOTE: Table UCB.TEMP09 has been dropped.
-NOTE: Table UCB.TEMP10 has been dropped.
-NOTE: Table UCB.TEMP11 has been dropped.
-NOTE: Table UCB.TEMP12 has been dropped.
-NOTE: Table UCB.TEMP13 has been dropped.
-NOTE: Table UCB.TEMP14 has been dropped.
-NOTE: Table UCB.TEMPFRACDXALLCONTROL created, with 5301959 rows and 21 columns.
-
-                                                                  --- AS project ---                               07:49 Friday, December 29, 2017   3
-
-                                               table                     database                     n
-                                               --------------------------------------------------------
-                                               UCB.tempFracDxAllControl  MPCD                   770,758
-                                               UCB.tempFracDxAllControl  Medicare             4,531,201
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
-                                                         buildServiceCodeDatasetsControl.sas
-NOTE: Table UCB.TEMPFRACDXMPCDCONTROL has been dropped.
-NOTE: Table UCB.TEMPFRACDXSABRCONTROL has been dropped.
-NOTE: The PROCEDURE SQL printed page 3.
+NOTE: PROC SQL set option NOEXEC and will continue to check the syntax of statements.
+NOTE: Statement not executed due to NOEXEC option.
+NOTE: Statement not executed due to NOEXEC option.
+NOTE: Statement not executed due to NOEXEC option.
+NOTE: Statement not executed due to NOEXEC option.
+NOTE: Statement not executed due to NOEXEC option.
+NOTE: Statement not executed due to NOEXEC option.
+NOTE: Statement not executed due to NOEXEC option.
+NOTE: Statement not executed due to NOEXEC option.
+NOTE: Statement not executed due to NOEXEC option.
+NOTE: Statement not executed due to NOEXEC option.
+NOTE: Statement not executed due to NOEXEC option.
+NOTE: Statement not executed due to NOEXEC option.
+NOTE: Statement not executed due to NOEXEC option.
+NOTE: Statement not executed due to NOEXEC option.
+NOTE: Statement not executed due to NOEXEC option.
+NOTE: Statement not executed due to NOEXEC option.
+NOTE: Statement not executed due to NOEXEC option.
+NOTE: Statement not executed due to NOEXEC option.
+NOTE: Statement not executed due to NOEXEC option.
+NOTE: Statement not executed due to NOEXEC option.
+NOTE: Statement not executed due to NOEXEC option.
+NOTE: Statement not executed due to NOEXEC option.
+NOTE: Statement not executed due to NOEXEC option.
+NOTE: Statement not executed due to NOEXEC option.
+NOTE: Statement not executed due to NOEXEC option.
+NOTE: Data set UCB.TEMPFRACDXALLCONTROL is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
+      additional CPU resources and may reduce performance.
+NOTE: Statement not executed due to NOEXEC option.
+NOTE: Statement not executed due to NOEXEC option.
+NOTE: Statement not executed due to NOEXEC option.
+NOTE: The SAS System stopped processing this step because of errors.
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           17:59.41
-      cpu time            34:37.34
+      real time           0.07 seconds
+      cpu time            0.03 seconds
       
+341        
+342        %let select1 = select A.*,
+343                              B.encounterID, B.admit_date, B.begin_date, B.discharge_date, B.end_date, B.px_date, B.px_type, B.px,
+344                              case
+345                                when B.px_type = "09" then "ICD9-PX"
+346                                when B.px_type = "C1" | ^anyalpha(strip(B.px)) then "CPT"
+347                                when B.px_type = "H1" & anyalpha(substr(strip(B.px), 1, 1)) & ^anyalpha(strip(B.px), 2) then "HCPCS"
+348                                else ""
+349                                end as codeType,
+350                              B.px as code;
+351        %let select2 = select patid, encounterID, admit_date, begin_date, discharge_date, end_date, px_date, px_type, px;
+352        
+353        %include "lib\buildPxControl.sas";  /* Call script to query procedure codes */
 
-340        
-341        %let select1 = select A.*,
-342                              B.encounterID, B.admit_date, B.begin_date, B.discharge_date, B.end_date, B.px_date, B.px_type, B.px,
-343                              case
-5                                                                   The SAS System                                     07:49 Friday, December 29, 2017
 
-344                                when B.px_type = "09" then "ICD9-PX"
-345                                when B.px_type = "C1" | ^anyalpha(strip(B.px)) then "CPT"
-346                                when B.px_type = "H1" & anyalpha(substr(strip(B.px), 1, 1)) & ^anyalpha(strip(B.px), 2) then "HCPCS"
-347                                else ""
-348                                end as codeType,
-349                              B.px as code;
-350        %let select2 = select patid, encounterID, admit_date, begin_date, discharge_date, end_date, px_date, px_type, px;
-351        
-352        %include "lib\buildPxControl.sas";  /* Call script to query procedure codes */
-NOTE: Table UCB.TEMP0710 created, with 346484578 rows and 9 columns.
+NOTE: PROC SQL set option NOEXEC and will continue to check the syntax of statements.
+NOTE: Statement not executed due to NOEXEC option.
+NOTE: Statement not executed due to NOEXEC option.
+NOTE: Statement not executed due to NOEXEC option.
+NOTE: Statement not executed due to NOEXEC option.
+NOTE: Statement not executed due to NOEXEC option.
+NOTE: Statement not executed due to NOEXEC option.
+NOTE: Statement not executed due to NOEXEC option.
+NOTE: Statement not executed due to NOEXEC option.
+NOTE: Statement not executed due to NOEXEC option.
+NOTE: Statement not executed due to NOEXEC option.
+NOTE: Statement not executed due to NOEXEC option.
+NOTE: Statement not executed due to NOEXEC option.
+NOTE: Statement not executed due to NOEXEC option.
+NOTE: Statement not executed due to NOEXEC option.
+NOTE: Statement not executed due to NOEXEC option.
+NOTE: Statement not executed due to NOEXEC option.
+5                                                                   The SAS System                                          17:44 Monday, May 21, 2018
 
-NOTE: Table UCB.TEMPFRACPXMPCDCONTROL created, with 168458870 rows and 19 columns.
-
-NOTE: Table UCB.TEMP0710 has been dropped.
-NOTE: Table UCB.TEMP06 created, with 137802721 rows and 9 columns.
-
-NOTE: Table UCB.TEMP07 created, with 141996458 rows and 9 columns.
-
-NOTE: Table UCB.TEMP08 created, with 147118053 rows and 9 columns.
-
-NOTE: Table UCB.TEMP09 created, with 152579039 rows and 9 columns.
-
-NOTE: Table UCB.TEMP10 created, with 154866267 rows and 9 columns.
-
-NOTE: Table UCB.TEMP11 created, with 157181115 rows and 9 columns.
-
-NOTE: Table UCB.TEMP12 created, with 161224747 rows and 9 columns.
-
-NOTE: Table UCB.TEMP13 created, with 164298030 rows and 9 columns.
-
-NOTE: Table UCB.TEMP14 created, with 166228741 rows and 9 columns.
-
-NOTE: Table UCB.TEMPFRACPXSABRCONTROL created, with 941591964 rows and 19 columns.
-
-NOTE: Table UCB.TEMP06 has been dropped.
-NOTE: Table UCB.TEMP07 has been dropped.
-NOTE: Table UCB.TEMP08 has been dropped.
-NOTE: Table UCB.TEMP09 has been dropped.
-NOTE: Table UCB.TEMP10 has been dropped.
-NOTE: Table UCB.TEMP11 has been dropped.
-NOTE: Table UCB.TEMP12 has been dropped.
-NOTE: Table UCB.TEMP13 has been dropped.
-NOTE: Table UCB.TEMP14 has been dropped.
-NOTE: Table UCB.TEMPFRACPXALLCONTROL created, with 1110050834 rows and 19 columns.
-
-                                                                  --- AS project ---                               07:49 Friday, December 29, 2017   4
-
-                                               table                     database                     n
-                                               --------------------------------------------------------
-                                               UCB.tempFracPxAllControl  MPCD               168,458,870
-                                               UCB.tempFracPxAllControl  Medicare           941,591,964
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
-                                                         buildServiceCodeDatasetsControl.sas
-NOTE: Table UCB.TEMPFRACPXMPCDCONTROL has been dropped.
-NOTE: Table UCB.TEMPFRACPXSABRCONTROL has been dropped.
-NOTE: The PROCEDURE SQL printed page 4.
+NOTE: Statement not executed due to NOEXEC option.
+NOTE: Statement not executed due to NOEXEC option.
+NOTE: Statement not executed due to NOEXEC option.
+NOTE: Statement not executed due to NOEXEC option.
+NOTE: Statement not executed due to NOEXEC option.
+NOTE: Statement not executed due to NOEXEC option.
+NOTE: Statement not executed due to NOEXEC option.
+NOTE: Data set UCB.TEMPFRACPXALLCONTROL is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
+      additional CPU resources and may reduce performance.
+NOTE: Statement not executed due to NOEXEC option.
+NOTE: Statement not executed due to NOEXEC option.
+NOTE: Statement not executed due to NOEXEC option.
+NOTE: The SAS System stopped processing this step because of errors.
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           5:25:24.85
-      cpu time            4:51:32.28
+      real time           0.48 seconds
+      cpu time            0.28 seconds
       
-
-397        
 398        
 399        
 400        
-401        ods html close;
+401        
+402        ods html close;
+
+ERROR: Errors printed on page 2.
+
 NOTE: SAS Institute Inc., SAS Campus Drive, Cary, NC USA 27513-2414
 NOTE: The SAS System used:
-      real time           14:23:03.58
-      cpu time            13:00:35.72
+      real time           18.82 seconds
+      cpu time            1.73 seconds
       

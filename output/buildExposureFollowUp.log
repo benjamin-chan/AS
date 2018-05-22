@@ -1,4 +1,4 @@
-1                                         The SAS System                14:23 Friday, May 18, 2018
+1                                         The SAS System                17:43 Monday, May 21, 2018
 
 NOTE: Copyright (c) 2016 by SAS Institute Inc., Cary, NC, USA. 
 NOTE: SAS (r) Proprietary Software 9.4 (TS1M5) 
@@ -28,8 +28,8 @@ of the shared folders.
 
 
 NOTE: SAS initialization used:
-      real time           4.55 seconds
-      cpu time            0.38 seconds
+      real time           4.53 seconds
+      cpu time            0.28 seconds
       
 1          *  University of Alabama at Birmingham                               *
 2          *  AS project                                            *
@@ -72,7 +72,7 @@ NOTE: Libref NDC was successfully assigned as follows:
 134        
 135        
 136        ods html
-2                                                                   The SAS System                                          14:23 Friday, May 18, 2018
+2                                                                   The SAS System                                          17:43 Monday, May 21, 2018
 
 137          body = "output\&cmt..html"
 138          style = Statistical;
@@ -118,7 +118,7 @@ NOTE: Writing HTML Body file: output\buildExposureFollowUp.html
 177                   A.*
 178            from DT.indexLookup A
 179            order by A.database, A.patid, A.indexDate;
-NOTE: Table WORK.INDEXLOOKUP created, with 46057 rows and 14 columns.
+NOTE: Table WORK.INDEXLOOKUP created, with 20956 rows and 14 columns.
 
 180        /*
 181        Attach exposure end dates to exposure segments
@@ -141,12 +141,12 @@ NOTE: Table WORK.INDEXLOOKUP created, with 46057 rows and 14 columns.
 198                 Work.indexLookup B on (A.database = B.database &
 199                                        A.patid = B.patid &
 200                                        A.indexDate < B.indexDate);
-NOTE: Table WORK.TEMP0 created, with 56277 rows and 13 columns.
+NOTE: Table WORK.TEMP0 created, with 24846 rows and 13 columns.
 
 201        /*
 202        Select the index start date with the earliest end date
 203         */
-3                                                                   The SAS System                                          14:23 Friday, May 18, 2018
+3                                                                   The SAS System                                          17:43 Monday, May 21, 2018
 
 204          create table Work.tempLookup as
 205            select database,
@@ -157,7 +157,7 @@ NOTE: Table WORK.TEMP0 created, with 56277 rows and 13 columns.
 210            group by database,
 211                     patid,
 212                     indexStartA;
-NOTE: Table WORK.TEMPLOOKUP created, with 45942 rows and 4 columns.
+NOTE: Table WORK.TEMPLOOKUP created, with 20919 rows and 4 columns.
 
 213          create table Work.temp1 as
 214            select A.*
@@ -169,7 +169,7 @@ NOTE: Table WORK.TEMPLOOKUP created, with 45942 rows and 4 columns.
 220            order by A.database,
 221                     A.patid,
 222                     A.indexStartA;
-NOTE: Table WORK.TEMP1 created, with 46231 rows and 13 columns.
+NOTE: Table WORK.TEMP1 created, with 21015 rows and 13 columns.
 
 223          select "Summary of Work.temp1" as table,
 224                 exposureClassA,
@@ -178,27 +178,27 @@ NOTE: Table WORK.TEMP1 created, with 46231 rows and 13 columns.
 227                 count(*) / (select count(*) from Work.temp1) format = percent8.1 as pct
 228            from Work.temp1
 229            group by exposureClassA, exposureClassB;
-                                                                  --- AS project ---                                    14:23 Friday, May 18, 2018   1
+                                                                  --- AS project ---                                    17:43 Monday, May 21, 2018   1
 
                                                                    exposure      exposure
                                         table                        ClassA        ClassB         n       pct
                                         ---------------------------------------------------------------------
-                                        Summary of Work.temp1             0                    6651    14.4% 
-                                        Summary of Work.temp1             0             1      3927     8.5% 
-                                        Summary of Work.temp1             0             2       933     2.0% 
-                                        Summary of Work.temp1             0             3      1011     2.2% 
-                                        Summary of Work.temp1             1                    9637    20.8% 
-                                        Summary of Work.temp1             1             1      5694    12.3% 
-                                        Summary of Work.temp1             1             2       962     2.1% 
-                                        Summary of Work.temp1             1             3       685     1.5% 
-                                        Summary of Work.temp1             2                    3835     8.3% 
-                                        Summary of Work.temp1             2             1       597     1.3% 
-                                        Summary of Work.temp1             2             2       925     2.0% 
-                                        Summary of Work.temp1             2             3      1019     2.2% 
-                                        Summary of Work.temp1             3                    7784    16.8% 
-                                        Summary of Work.temp1             3             1       588     1.3% 
-                                        Summary of Work.temp1             3             2       237     0.5% 
-                                        Summary of Work.temp1             3             3      1746     3.8% 
+                                        Summary of Work.temp1             0                    2401    11.4% 
+                                        Summary of Work.temp1             0             1      1168     5.6% 
+                                        Summary of Work.temp1             0             2       388     1.8% 
+                                        Summary of Work.temp1             0             3       760     3.6% 
+                                        Summary of Work.temp1             1                    3576    17.0% 
+                                        Summary of Work.temp1             1             1      1840     8.8% 
+                                        Summary of Work.temp1             1             2       368     1.8% 
+                                        Summary of Work.temp1             1             3       471     2.2% 
+                                        Summary of Work.temp1             2                    1571     7.5% 
+                                        Summary of Work.temp1             2             1       225     1.1% 
+                                        Summary of Work.temp1             2             2       295     1.4% 
+                                        Summary of Work.temp1             2             3       546     2.6% 
+                                        Summary of Work.temp1             3                    5589    26.6% 
+                                        Summary of Work.temp1             3             1       443     2.1% 
+                                        Summary of Work.temp1             3             2       148     0.7% 
+                                        Summary of Work.temp1             3             3      1226     5.8% 
  
  
  
@@ -270,13 +270,13 @@ NOTE: Table WORK.TEMP1 created, with 46231 rows and 13 columns.
 245            order by A.database,
 246                     A.patid,
 247                     A.indexStartA;
-NOTE: Table WORK.TEMPEXPOSURESEGMENTS created, with 46057 rows and 9 columns.
+NOTE: Table WORK.TEMPEXPOSURESEGMENTS created, with 20956 rows and 9 columns.
 
 248        quit;
 NOTE: The PROCEDURE SQL printed page 1.
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           1.02 seconds
-      cpu time            1.13 seconds
+      real time           0.71 seconds
+      cpu time            0.56 seconds
       
 
 249        
@@ -294,7 +294,7 @@ NOTE: PROCEDURE SQL used (Total process time):
 261          drop holdPeriodStart;
 262          retain holdPeriodStart;
 263          if first.exposureDrug then do;  /* Check the last variable in the BY group */
-4                                                                   The SAS System                                          14:23 Friday, May 18, 2018
+4                                                                   The SAS System                                          17:43 Monday, May 21, 2018
 
 264            holdPeriodStart = exposureStart;
 265          end;
@@ -304,11 +304,11 @@ NOTE: PROCEDURE SQL used (Total process time):
 269          end;
 270        run;
 
-NOTE: There were 46057 observations read from the data set WORK.TEMPEXPOSURESEGMENTS.
-NOTE: The data set DT.EXPOSURETIMELINE has 46057 observations and 9 variables.
+NOTE: There were 20956 observations read from the data set WORK.TEMPEXPOSURESEGMENTS.
+NOTE: The data set DT.EXPOSURETIMELINE has 20956 observations and 9 variables.
 NOTE: DATA statement used (Total process time):
-      real time           0.09 seconds
-      cpu time            0.06 seconds
+      real time           0.04 seconds
+      cpu time            0.04 seconds
       
 
 271        proc sql;
@@ -316,18 +316,18 @@ NOTE: DATA statement used (Total process time):
 NOTE: Table DT.EXPOSURETIMELINE has been modified, with 10 columns.
 273          update DT.exposureTimeline
 274            set daysExposed = exposureEnd - exposureStart + 1;
-NOTE: 46057 rows were updated in DT.EXPOSURETIMELINE.
+NOTE: 20956 rows were updated in DT.EXPOSURETIMELINE.
 
 275          alter table DT.exposureTimeline add exposureID numeric;
 NOTE: Table DT.EXPOSURETIMELINE has been modified, with 11 columns.
 276          update DT.exposureTimeline
 277            set exposureID = monotonic();
-NOTE: 46057 rows were updated in DT.EXPOSURETIMELINE.
+NOTE: 20956 rows were updated in DT.EXPOSURETIMELINE.
 
 278        quit ;
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           0.35 seconds
-      cpu time            0.28 seconds
+      real time           0.21 seconds
+      cpu time            0.12 seconds
       
 
 279        
@@ -337,7 +337,7 @@ NOTE: PROCEDURE SQL used (Total process time):
 283          var daysExposed;
 284        run;
 
-                                                                  --- AS project ---                                    14:23 Friday, May 18, 2018   2
+                                                                  --- AS project ---                                    17:43 Monday, May 21, 2018   2
 
                                                                  The MEANS Procedure
 
@@ -346,29 +346,29 @@ NOTE: PROCEDURE SQL used (Total process time):
                 exposure                                                                                            Lower                       Upper
 database           Class  exposure     N Obs      N           Sum          Mean       Std Dev       Minimum      Quartile        Median      Quartile
 -----------------------------------------------------------------------------------------------------------------------------------------------------
-MPCD                   0  No exposure   1160   1160      524568.0         452.2         381.7           1.0         127.0         356.0         716.5
+MPCD                   0  No exposure    512    512      232256.0         453.6         383.9           1.0         129.5         341.5         721.0
 
-                       1  NSAID          799    799      242832.0         303.9         273.0           2.0          86.0         232.0         436.0
+                       1  NSAID          355    355      107633.0         303.2         273.6           2.0          90.0         225.0         433.0
 
-                       2  DMARD          445    445      148811.0         334.4         291.6           4.0         102.0         254.0         463.0
+                       2  DMARD          165    165       57204.0         346.7         297.8           9.0         101.0         291.0         492.0
 
-                       3  TNF            994    994      417716.0         420.2         318.4           1.0         162.0         335.0         606.0
+                       3  TNF            670    670      281763.0         420.5         318.9           1.0         158.0         337.5         609.0
 
-Marketscan             0  No exposure   3368   3368     1189762.0         353.3         369.7           1.0          76.0         213.0         521.0
+Marketscan             0  No exposure   1699   1699      585821.0         344.8         371.5           1.0          66.0         196.0         499.0
 
-                       1  NSAID         3710   3710     1235108.0         332.9         326.5           1.0          83.0         217.0         482.0
+                       1  NSAID         1733   1733      587724.0         339.1         332.5           1.0          78.0         226.0         496.0
 
-                       2  DMARD         1760   1760      611371.0         347.4         339.4           1.0          91.0         224.5         494.0
+                       2  DMARD          777    777      263494.0         339.1         343.7           1.0          79.0         199.0         489.0
 
-                       3  TNF           4768   4768     2040042.0         427.9         365.4           1.0         141.0         315.5         618.0
+                       3  TNF           3453   3453     1500031.0         434.4         369.5           1.0         145.0         322.0         631.0
 
-Medicare               0  No exposure   7925   7925     6983296.0         881.2         822.6           1.0         206.0         728.0        1265.0
+Medicare               0  No exposure   2489   2489     2165254.0         869.9         909.7           1.0         128.0         603.0        1278.0
 
-                       1  NSAID        12408  12408    10556754.0         850.8         733.0           1.0         229.0         748.0        1234.0
+                       1  NSAID         4147   4147     3610976.0         870.7         764.8           1.0         221.0         750.0        1257.0
 
-                       2  DMARD         4150   4150     3909172.0         942.0         779.8           1.0         294.0         816.0        1353.0
+                       2  DMARD         1688   1688     1651624.0         978.5         814.6           1.0         291.5         835.5        1424.0
 
-                       3  TNF           4570   4570     5412023.0        1184.3         843.5           1.0         523.0         996.0        1662.0
+                       3  TNF           3268   3268     3927247.0        1201.7         856.2           1.0         540.5        1004.5        1690.5
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
                                                            Analysis Variable : daysExposed 
@@ -376,29 +376,29 @@ Medicare               0  No exposure   7925   7925     6983296.0         881.2 
                                                               exposure
                                               database           Class  exposure     N Obs       Maximum
                                               ----------------------------------------------------------
-                                              MPCD                   0  No exposure   1160        1278.0
+                                              MPCD                   0  No exposure    512        1278.0
 
-                                                                     1  NSAID          799        1223.0
+                                                                     1  NSAID          355        1181.0
 
-                                                                     2  DMARD          445        1211.0
+                                                                     2  DMARD          165        1158.0
 
-                                                                     3  TNF            994        1276.0
+                                                                     3  TNF            670        1276.0
 
-                                              Marketscan             0  No exposure   3368        1643.0
+                                              Marketscan             0  No exposure   1699        1643.0
 
-                                                                     1  NSAID         3710        1599.0
+                                                                     1  NSAID         1733        1599.0
 
-                                                                     2  DMARD         1760        1625.0
+                                                                     2  DMARD          777        1625.0
 
-                                                                     3  TNF           4768        1639.0
+                                                                     3  TNF           3453        1637.0
 
-                                              Medicare               0  No exposure   7925        3835.0
+                                              Medicare               0  No exposure   2489        3835.0
 
-                                                                     1  NSAID        12408        3826.0
+                                                                     1  NSAID         4147        3826.0
 
-                                                                     2  DMARD         4150        3821.0
+                                                                     2  DMARD         1688        3821.0
 
-                                                                     3  TNF           4570        3826.0
+                                                                     3  TNF           3268        3826.0
                                               ----------------------------------------------------------
  
  
@@ -411,11 +411,11 @@ Medicare               0  No exposure   7925   7925     6983296.0         881.2 
  
  
                                                               buildExposureFollowUp.sas
-NOTE: There were 46057 observations read from the data set DT.EXPOSURETIMELINE.
+NOTE: There were 20956 observations read from the data set DT.EXPOSURETIMELINE.
 NOTE: The PROCEDURE MEANS printed page 2.
 NOTE: PROCEDURE MEANS used (Total process time):
-      real time           0.07 seconds
-      cpu time            0.17 seconds
+      real time           0.06 seconds
+      cpu time            0.09 seconds
       
 
 285        
@@ -423,6 +423,6 @@ NOTE: PROCEDURE MEANS used (Total process time):
 287        ods html close;
 NOTE: SAS Institute Inc., SAS Campus Drive, Cary, NC USA 27513-2414
 NOTE: The SAS System used:
-      real time           18.19 seconds
-      cpu time            2.54 seconds
+      real time           17.70 seconds
+      cpu time            1.52 seconds
       

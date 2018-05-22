@@ -1,12 +1,5 @@
-1                                                          The SAS System                               10:29 Friday, April 27, 2018
+1                                          The SAS System                 18:21 Monday, May 21, 2018
 
-NOTE: Unable to open SASUSER.REGSTRY. WORK.REGSTRY will be opened instead.
-NOTE: All registry changes will be lost at the end of the session.
-
-WARNING: Unable to copy SASUSER registry to WORK registry. Because of this, you will not see registry customizations during this 
-         session.
-NOTE: Unable to open SASUSER.PROFILE. WORK.PROFILE will be opened instead.
-NOTE: All profile changes will be lost at the end of the session.
 NOTE: Copyright (c) 2016 by SAS Institute Inc., Cary, NC, USA. 
 NOTE: SAS (r) Proprietary Software 9.4 (TS1M5) 
       Licensed to UNIVERSITY OF ALABAMA AT BIRMINGHAM - SFA - T&R, Site 70086550.
@@ -35,8 +28,8 @@ of the shared folders.
 
 
 NOTE: SAS initialization used:
-      real time           4.80 seconds
-      cpu time            0.32 seconds
+      real time           0.38 seconds
+      cpu time            0.38 seconds
       
 1          *  University of Alabama at Birmingham                               *
 2          *  AS project                                            *
@@ -72,8 +65,6 @@ NOTE: Libref MPSTD was successfully assigned as follows:
 NOTE: Libref UCBSTD was successfully assigned as follows: 
       Engine:        SPDE 
       Physical Name: q:\studies\AS\data\stddata\
-2                                                                   The SAS System                                        10:29 Friday, April 27, 2018
-
 NOTE: Libref UCB was successfully assigned as follows: 
       Engine:        SPDE 
       Physical Name: q:\studies\AS\data\UCB\
@@ -81,6 +72,8 @@ NOTE: Libref DT was successfully assigned as follows:
       Engine:        V9 
       Physical Name: V:\studies\AS\data
 NOTE: Libref NDC was successfully assigned as follows: 
+2                                                                   The SAS System                                          18:21 Monday, May 21, 2018
+
       Engine:        V9 
       Physical Name: W:\onenote\references\drug ndcs\sas data
 139        footnote "&pgm.";
@@ -111,66 +104,61 @@ NOTE: Writing HTML Body file: output\queryOutcomeHospitalizedInfection.html
 163        %let inpxdat = UCB.tempIncPxAll;
 164        %let inrxdat = UCB.tempIncRxAll;
 165        proc sort data = &indxdat; by database exposure patid exposureStart exposureEnd exposureID begin_date;
-NOTE: Data set UCB.TEMPINCDXALL is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
-      additional CPU resources and may reduce performance.
 166        run;
 
-NOTE: Input data set is already sorted, no sorting done.
+NOTE: There were 5928438 observations read from the data set UCB.TEMPINCDXALL.
+NOTE: The data set UCB.TEMPINCDXALL has 5928438 observations and 23 variables.
 NOTE: PROCEDURE SORT used (Total process time):
-      real time           0.01 seconds
-      cpu time            0.01 seconds
+      real time           8.45 seconds
+      cpu time            14.49 seconds
       
 
 167        proc sort data = &inpxdat; by database exposure patid exposureStart exposureEnd exposureID px_date;
-NOTE: Data set UCB.TEMPINCPXALL is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
-      additional CPU resources and may reduce performance.
 168        run;
 
-NOTE: Input data set is already sorted, no sorting done.
+NOTE: There were 8264248 observations read from the data set UCB.TEMPINCPXALL.
+NOTE: The data set UCB.TEMPINCPXALL has 8264248 observations and 21 variables.
 NOTE: PROCEDURE SORT used (Total process time):
-      real time           0.03 seconds
-      cpu time            0.03 seconds
+      real time           13.71 seconds
+      cpu time            25.55 seconds
       
 
 169        proc sort data = &inrxdat; by database exposure patid exposureStart exposureEnd exposureID dispense_date;
-NOTE: Data set UCB.TEMPINCRXALL is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
-      additional CPU resources and may reduce performance.
 170        run;
 
-NOTE: Input data set is already sorted, no sorting done.
+NOTE: There were 4273219 observations read from the data set UCB.TEMPINCRXALL.
+NOTE: The data set UCB.TEMPINCRXALL has 4273219 observations and 15 variables.
 NOTE: PROCEDURE SORT used (Total process time):
-      real time           0.00 seconds
-      cpu time            0.00 seconds
+      real time           4.83 seconds
+      cpu time            8.97 seconds
       
 
 171        
 172        /*
 173        Keep only the HCPCS codes
-3                                                                   The SAS System                                        10:29 Friday, April 27, 2018
-
 174        Re-length the px variable
 175         */
 176        data Work.tempIncPxAll;
 177          length px $5;
 178          set &inpxdat.;
-NOTE: Data set UCB.TEMPINCPXALL is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
-      additional CPU resources and may reduce performance.
 179          if px_type = "H1" then output;
 180        run;
 
 WARNING: Multiple lengths were specified for the variable px by input data set(s). This can cause truncation of data.
 NOTE: There were 8264248 observations read from the data set UCB.TEMPINCPXALL.
+3                                                                   The SAS System                                          18:21 Monday, May 21, 2018
+
 NOTE: The data set WORK.TEMPINCPXALL has 1987380 observations and 21 variables.
 NOTE: DATA statement used (Total process time):
-      real time           2.10 seconds
-      cpu time            2.09 seconds
+      real time           1.63 seconds
+      cpu time            1.60 seconds
       
 
 181        proc sql;
 182          select "Check length of px variable in Work.tempIncPxAll" as table,  px_type, length(px) as lengthPx, count(*) as n
 183          from Work.tempIncPxAll
 184          group by px_type, calculated lengthPx;
-                                                                  --- AS project ---                                  10:29 Friday, April 27, 2018   1
+                                                                  --- AS project ---                                    18:21 Monday, May 21, 2018   1
 
                                                                                      Procedure
                                    table                                             Code Type  lengthPx         n
@@ -247,8 +235,8 @@ NOTE: DATA statement used (Total process time):
 185        quit;
 NOTE: The PROCEDURE SQL printed page 1.
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           1.15 seconds
-      cpu time            2.02 seconds
+      real time           1.09 seconds
+      cpu time            1.79 seconds
       
 
 186        %let inpxdat = Work.tempIncPxAll;
@@ -278,7 +266,7 @@ Number of names found is less than number of variables found.
 207         *   PRODUCT:   SAS
 208         *   VERSION:   9.4
 209         *   CREATOR:   External File Interface
-210         *   DATE:      27APR18
+210         *   DATE:      21MAY18
 211         *   DESC:      Generated SAS Datastep Code
 212         *   TEMPLATE SOURCE:  (None Specified.)
 213         ***********************************************************************/
@@ -294,8 +282,6 @@ Number of names found is less than number of variables found.
 223               informat description $146. ;
 224               informat UABlist $1. ;
 225               informat Infection $1. ;
-4                                                                   The SAS System                                        10:29 Friday, April 27, 2018
-
 226               informat UABgroup $36. ;
 227               informat Infection_Category $36. ;
 228               informat Infection_Location $1. ;
@@ -308,6 +294,8 @@ Number of names found is less than number of variables found.
 235               informat VAR19 $26. ;
 236               format ICD_9_CM_CODE $5. ;
 237               format CCS_CATEGORY best12. ;
+4                                                                   The SAS System                                          18:21 Monday, May 21, 2018
+
 238               format CCS_CATEGORY_DESCRIPTION $12. ;
 239               format ICD_9_CM_CODE_DESCRIPTION $64. ;
 240               format OPTIONAL_CCS_CATEGORY $1. ;
@@ -360,21 +348,19 @@ NOTE: 2230 records were read from the infile 'U:\studies\AS\pgms\bchan\data\raw\
       The maximum record length was 266.
 NOTE: The data set WORK.ICD9_INFECTION has 2230 observations and 19 variables.
 NOTE: DATA statement used (Total process time):
-      real time           0.04 seconds
-      cpu time            0.01 seconds
+      real time           0.06 seconds
+      cpu time            0.04 seconds
       
 
 2230 rows created in WORK.ICD9_INFECTION from U:\studies\AS\pgms\bchan\data\raw\AHRQ_CCS.csv.
   
   
   
-5                                                                   The SAS System                                        10:29 Friday, April 27, 2018
-
 NOTE: WORK.ICD9_INFECTION data set was successfully created.
 NOTE: The data set WORK.ICD9_INFECTION has 2230 observations and 19 variables.
 NOTE: PROCEDURE IMPORT used (Total process time):
-      real time           0.84 seconds
-      cpu time            0.73 seconds
+      real time           0.91 seconds
+      cpu time            0.70 seconds
       
 
 278        data icd9_infection;
@@ -382,20 +368,22 @@ NOTE: PROCEDURE IMPORT used (Total process time):
 280          where upcase(oi) ^= "OI";
 281        Infection=upcase(Infection);
 282        run;
+5                                                                   The SAS System                                          18:21 Monday, May 21, 2018
+
 
 NOTE: There were 1725 observations read from the data set WORK.ICD9_INFECTION.
       WHERE UPCASE(oi) not = 'OI';
 NOTE: The data set WORK.ICD9_INFECTION has 1725 observations and 19 variables.
 NOTE: DATA statement used (Total process time):
-      real time           0.04 seconds
-      cpu time            0.01 seconds
+      real time           0.03 seconds
+      cpu time            0.03 seconds
       
 
 283        proc freq data = Work.icd9_infection;
 284          table oi / missprint;
 285        run;
 
-                                                                  --- AS project ---                                  10:29 Friday, April 27, 2018   2
+                                                                  --- AS project ---                                    18:21 Monday, May 21, 2018   2
 
                                                                   The FREQ Procedure
 
@@ -479,7 +467,7 @@ NOTE: PROCEDURE FREQ used (Total process time):
 286        proc print data=icd9_infection (obs=10);run;
 
 WARNING: Data too long for column "description"; truncated to 145 characters to fit.
-                                                                  --- AS project ---                                  10:29 Friday, April 27, 2018   3
+                                                                  --- AS project ---                                    18:21 Monday, May 21, 2018   3
 
                                                                                                                                      OPTIONAL_CCS_
      ICD_9_                     CCS_CATEGORY_                                                                         OPTIONAL_        CATEGORY_
@@ -556,8 +544,8 @@ WARNING: Data too long for column "description"; truncated to 145 characters to 
 NOTE: There were 10 observations read from the data set WORK.ICD9_INFECTION.
 NOTE: The PROCEDURE PRINT printed page 3.
 NOTE: PROCEDURE PRINT used (Total process time):
-      real time           0.03 seconds
-      cpu time            0.03 seconds
+      real time           0.07 seconds
+      cpu time            0.04 seconds
       
 
 287        
@@ -566,7 +554,7 @@ NOTE: PROCEDURE PRINT used (Total process time):
 290        run;
 
 WARNING: Data too long for column "description"; truncated to 145 characters to fit.
-                                                                  --- AS project ---                                  10:29 Friday, April 27, 2018   4
+                                                                  --- AS project ---                                    18:21 Monday, May 21, 2018   4
 
                                                                                                                                      OPTIONAL_CCS_
      ICD_9_                     CCS_CATEGORY_                                                                         OPTIONAL_        CATEGORY_
@@ -652,7 +640,7 @@ NOTE: PROCEDURE PRINT used (Total process time):
 292        proc freq data=icd9_infection; tables Infection_Category Infection_Location;
 293        run;
 
-                                                                  --- AS project ---                                  10:29 Friday, April 27, 2018   5
+                                                                  --- AS project ---                                    18:21 Monday, May 21, 2018   5
 
                                                                   The FREQ Procedure
 
@@ -729,8 +717,8 @@ NOTE: PROCEDURE PRINT used (Total process time):
 NOTE: There were 1725 observations read from the data set WORK.ICD9_INFECTION.
 NOTE: The PROCEDURE FREQ printed page 5.
 NOTE: PROCEDURE FREQ used (Total process time):
-      real time           0.10 seconds
-      cpu time            0.07 seconds
+      real time           0.09 seconds
+      cpu time            0.03 seconds
       
 
 294        proc freq data=icd9_infection; tables Infection_Category Infection_Location;
@@ -738,8 +726,6 @@ NOTE: PROCEDURE FREQ used (Total process time):
 296        run;
 
 NOTE: No observations were selected from data set WORK.ICD9_INFECTION.
-6                                                                   The SAS System                                        10:29 Friday, April 27, 2018
-
 NOTE: There were 0 observations read from the data set WORK.ICD9_INFECTION.
       WHERE (not MISSING(oi)) and (Infection not = ' ') and Infection_Category not in ('tuberculosis', 'zoster');
 NOTE: PROCEDURE FREQ used (Total process time):
@@ -752,11 +738,13 @@ NOTE: PROCEDURE FREQ used (Total process time):
 299        description Infection UABgroup Infection_Category Infection_Location Infectious_Organism OI Viral Fungal bacterial_infection
 299      ! other_types_of_infection;
 300        
+6                                                                   The SAS System                                          18:21 Monday, May 21, 2018
+
 301        where Infection_Category in ("zoster" "herpes");
 302        run;
 
 WARNING: Data too long for column "description"; truncated to 145 characters to fit.
-                                                                  --- AS project ---                                  10:29 Friday, April 27, 2018   6
+                                                                  --- AS project ---                                    18:21 Monday, May 21, 2018   6
 
      ICD_9_     CCS_CATEGORY_
  Obs CM_CODE     DESCRIPTION     ICD_9_CM_CODE_DESCRIPTION
@@ -830,7 +818,7 @@ WARNING: Data too long for column "description"; truncated to 145 characters to 
  
  
                                                         queryOutcomeHospitalizedInfection.sas
-                                                                  --- AS project ---                                  10:29 Friday, April 27, 2018   7
+                                                                  --- AS project ---                                    18:21 Monday, May 21, 2018   7
 
      ICD_9_     CCS_CATEGORY_
  Obs CM_CODE     DESCRIPTION     ICD_9_CM_CODE_DESCRIPTION
@@ -908,8 +896,8 @@ NOTE: There were 25 observations read from the data set WORK.ICD9_INFECTION.
       WHERE Infection_Category in ('herpes', 'zoster');
 NOTE: The PROCEDURE PRINT printed pages 6-7.
 NOTE: PROCEDURE PRINT used (Total process time):
-      real time           0.06 seconds
-      cpu time            0.04 seconds
+      real time           0.07 seconds
+      cpu time            0.06 seconds
       
 
 303        
@@ -926,7 +914,7 @@ NOTE: There were 0 observations read from the data set WORK.ICD9_INFECTION.
       WHERE (not MISSING(oi)) and (Infection not = ' ') and Infection_Category not in ('tuberculosis', 'zoster');
 NOTE: PROCEDURE PRINT used (Total process time):
       real time           0.03 seconds
-      cpu time            0.00 seconds
+      cpu time            0.03 seconds
       
 
 310        
@@ -945,14 +933,14 @@ NOTE: There were 896 observations read from the data set WORK.ICD9_INFECTION.
 NOTE: The data set WORK.ICD9_INF has 896 observations and 11 variables.
 NOTE: DATA statement used (Total process time):
       real time           0.04 seconds
-      cpu time            0.00 seconds
+      cpu time            0.01 seconds
       
 
 319        
 320        proc print data=icd9_infection (obs=10);run;
 
 WARNING: Data too long for column "description"; truncated to 145 characters to fit.
-                                                                  --- AS project ---                                  10:29 Friday, April 27, 2018   8
+                                                                  --- AS project ---                                    18:21 Monday, May 21, 2018   8
 
                                                                                                                                      OPTIONAL_CCS_
      ICD_9_                     CCS_CATEGORY_                                                                         OPTIONAL_        CATEGORY_
@@ -1034,10 +1022,8 @@ NOTE: PROCEDURE PRINT used (Total process time):
       
 
 321        proc freq data=icd9_inf ; tables Infection_Category Infection;run;
-7                                                                   The SAS System                                        10:29 Friday, April 27, 2018
 
-
-                                                                  --- AS project ---                                  10:29 Friday, April 27, 2018   9
+                                                                  --- AS project ---                                    18:21 Monday, May 21, 2018   9
 
                                                                   The FREQ Procedure
 
@@ -1115,13 +1101,15 @@ NOTE: There were 896 observations read from the data set WORK.ICD9_INF.
 NOTE: The PROCEDURE FREQ printed page 9.
 NOTE: PROCEDURE FREQ used (Total process time):
       real time           0.09 seconds
-      cpu time            0.04 seconds
+      cpu time            0.03 seconds
       
 
 322        
 323        
 324        /*Infection_Category="tuberculosis";*/
 325        
+7                                                                   The SAS System                                          18:21 Monday, May 21, 2018
+
 326        data outcome_infection_dx(drop=rc);
 327            if _N_=1 then do;
 328                declare hash HDX(dataset:"icd9_inf");
@@ -1131,24 +1119,22 @@ NOTE: PROCEDURE FREQ used (Total process time):
 332            end;
 333        if 0 then set icd9_inf;
 334        set &indxdat. ;
-NOTE: Data set UCB.TEMPINCDXALL is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
-      additional CPU resources and may reduce performance.
 335        by database exposure patid exposureStart exposureEnd exposureID BEGIN_DATE;
 336        /*length outcome $20 outcome_date 4;*/
 337        /*format outcome_date mmddyy10.;*/
 338                rc =HDX.find(key:DX);
 339                if rc=0 then output outcome_infection_dx;
 340        where ENC_TYPE in ('IP' 'ER' 'AV' 'NH' 'HH' 'ED');
-The SAS supervisor will process queries for foreign datasets. No parallel where-clause processing will occur.
 341        run;
 
 NOTE: There were 896 observations read from the data set WORK.ICD9_INF.
 NOTE: There were 5928438 observations read from the data set UCB.TEMPINCDXALL.
       WHERE ENC_TYPE in ('AV', 'ED', 'ER', 'HH', 'IP', 'NH');
+NOTE: Parallel WHERE evaluation suppressed due to sort order on table.
 NOTE: The data set WORK.OUTCOME_INFECTION_DX has 269203 observations and 34 variables.
 NOTE: DATA statement used (Total process time):
-      real time           3.33 seconds
-      cpu time            3.30 seconds
+      real time           2.74 seconds
+      cpu time            4.13 seconds
       
 
 342        proc sort data=outcome_infection_dx nodupkey; by database exposure patid exposureStart exposureEnd exposureID BEGIN_DATE DX ENC_TYPE;run;
@@ -1157,14 +1143,14 @@ NOTE: There were 269203 observations read from the data set WORK.OUTCOME_INFECTI
 NOTE: 103972 observations with duplicate key values were deleted.
 NOTE: The data set WORK.OUTCOME_INFECTION_DX has 165231 observations and 34 variables.
 NOTE: PROCEDURE SORT used (Total process time):
-      real time           0.46 seconds
-      cpu time            0.67 seconds
+      real time           0.53 seconds
+      cpu time            0.81 seconds
       
 
 343        
 344        proc freq data=outcome_infection_dx; tables Infection_Category Infection;run;
 
-                                                                  --- AS project ---                                  10:29 Friday, April 27, 2018  10
+                                                                  --- AS project ---                                    18:21 Monday, May 21, 2018  10
 
                                                                   The FREQ Procedure
 
@@ -1242,7 +1228,7 @@ NOTE: There were 165231 observations read from the data set WORK.OUTCOME_INFECTI
 NOTE: The PROCEDURE FREQ printed page 10.
 NOTE: PROCEDURE FREQ used (Total process time):
       real time           0.20 seconds
-      cpu time            0.12 seconds
+      cpu time            0.14 seconds
       
 
 345        
@@ -1256,10 +1242,8 @@ NOTE: There were 32 observations read from the data set NDC.TB_ALL_2016.
       WHERE gnn='PYRAZINAMIDE';
 NOTE: The data set WORK.NDC_PYRAZINAMIDE has 32 observations and 6 variables.
 NOTE: DATA statement used (Total process time):
-8                                                                   The SAS System                                        10:29 Friday, April 27, 2018
-
-      real time           0.09 seconds
-      cpu time            0.03 seconds
+      real time           0.07 seconds
+      cpu time            0.01 seconds
       
 
 351        
@@ -1272,14 +1256,14 @@ NOTE: DATA statement used (Total process time):
 358        
 359                declare hash HTB(dataset:"NDC_PYRAZINAMIDE");
 360                rc = HTB.definekey("code");
+8                                                                   The SAS System                                          18:21 Monday, May 21, 2018
+
 361        /*        rc = HTB.definedata(all:"YES");*/
 362                rc=HTB.definedone();
 363        
 364            end;
 365        if 0 then set NDC.Antibiotics_parenteral_ndc(keep=NDC) NDC_PYRAZINAMIDE(keep=code);
 366        set &inrxdat. ;
-NOTE: Data set UCB.TEMPINCRXALL is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
-      additional CPU resources and may reduce performance.
 367        by database exposure patid exposureStart exposureEnd exposureID DISPENSE_DATE;
 368        /*length outcome $20 outcome_date 4;*/
 369        /*format outcome_date mmddyy10.;*/
@@ -1296,8 +1280,8 @@ NOTE: There were 4273219 observations read from the data set UCB.TEMPINCRXALL.
 NOTE: The data set WORK.OUTCOME_INFECTION_RX has 4940 observations and 16 variables.
 NOTE: The data set WORK.OUTCOME_RX_TB has 36 observations and 16 variables.
 NOTE: DATA statement used (Total process time):
-      real time           3.07 seconds
-      cpu time            2.91 seconds
+      real time           2.49 seconds
+      cpu time            2.35 seconds
       
 
 376        
@@ -1323,15 +1307,13 @@ NOTE: There were 69 observations read from the data set NDC.ANTIBIOTICS_PARENTER
 NOTE: There were 1987380 observations read from the data set WORK.TEMPINCPXALL.
 NOTE: The data set WORK.OUTCOME_INFECTION_PX has 11367 observations and 23 variables.
 NOTE: DATA statement used (Total process time):
-      real time           1.17 seconds
-      cpu time            1.10 seconds
+      real time           1.06 seconds
+      cpu time            0.99 seconds
       
 
 394        
 395        
 396        data outcome_infection_trt(label="parenteral antibiotics(PX+RX) for Infection");
-9                                                                   The SAS System                                        10:29 Friday, April 27, 2018
-
 397        set outcome_infection_px outcome_infection_rx;
 398        length trt_date 4;
 399        format trt_date mmddyy10.;
@@ -1342,12 +1324,14 @@ NOTE: There were 11367 observations read from the data set WORK.OUTCOME_INFECTIO
 NOTE: There were 4940 observations read from the data set WORK.OUTCOME_INFECTION_RX.
 NOTE: The data set WORK.OUTCOME_INFECTION_TRT has 16307 observations and 28 variables.
 NOTE: DATA statement used (Total process time):
-      real time           0.12 seconds
-      cpu time            0.04 seconds
+      real time           0.06 seconds
+      cpu time            0.03 seconds
       
 
 402        
 403        
+9                                                                   The SAS System                                          18:21 Monday, May 21, 2018
+
 404        
 405        data outcome_infection(keep=database exposure patid exposureStart exposureEnd exposureID outcome_date dx TRT_DATE BEGIN_DATE ADMIT_DATE
 405      ! ENC_TYPE Infection_Category Infection outcome_start_date PDX) ;
@@ -1376,8 +1360,8 @@ NOTE: There were 16307 observations read from the data set WORK.OUTCOME_INFECTIO
 NOTE: There were 165231 observations read from the data set WORK.OUTCOME_INFECTION_DX.
 NOTE: The data set WORK.OUTCOME_INFECTION has 38232 observations and 16 variables.
 NOTE: DATA statement used (Total process time):
-      real time           0.34 seconds
-      cpu time            0.32 seconds
+      real time           0.28 seconds
+      cpu time            0.24 seconds
       
 
 426        
@@ -1387,8 +1371,8 @@ NOTE: There were 38232 observations read from the data set WORK.OUTCOME_INFECTIO
 NOTE: 69 observations with duplicate key values were deleted.
 NOTE: The data set WORK.OUTCOME_INFECTION has 38163 observations and 16 variables.
 NOTE: PROCEDURE SORT used (Total process time):
-      real time           0.11 seconds
-      cpu time            0.07 seconds
+      real time           0.09 seconds
+      cpu time            0.06 seconds
       
 
 428        data outcome_infection ; set outcome_infection; by database exposure patid exposureStart exposureEnd exposureID outcome_date dx;  /* format
@@ -1398,19 +1382,17 @@ NOTE: There were 38163 observations read from the data set WORK.OUTCOME_INFECTIO
 NOTE: The data set WORK.OUTCOME_INFECTION has 38163 observations and 16 variables.
 NOTE: DATA statement used (Total process time):
       real time           0.09 seconds
-      cpu time            0.06 seconds
+      cpu time            0.07 seconds
       
 
 429        
 430        proc sort data=outcome_infection nodupkey; by database exposure patid exposureStart exposureEnd exposureID outcome_date ;run;
 
-10                                                                  The SAS System                                        10:29 Friday, April 27, 2018
-
 NOTE: There were 38163 observations read from the data set WORK.OUTCOME_INFECTION.
 NOTE: 16600 observations with duplicate key values were deleted.
 NOTE: The data set WORK.OUTCOME_INFECTION has 21563 observations and 16 variables.
 NOTE: PROCEDURE SORT used (Total process time):
-      real time           0.10 seconds
+      real time           0.09 seconds
       cpu time            0.06 seconds
       
 
@@ -1422,6 +1404,8 @@ NOTE: PROCEDURE SORT used (Total process time):
 436        outcome_rx_TB
 437        NDC_PYRAZINAMIDE
 438        outcome_infection_px
+10                                                                  The SAS System                                          18:21 Monday, May 21, 2018
+
 439        outcome_infection_rx
 440        outcome_infection_trt
 441        ;
@@ -1434,7 +1418,7 @@ NOTE: Deleting WORK.OUTCOME_INFECTION_PX (memtype=DATA).
 NOTE: Deleting WORK.OUTCOME_INFECTION_RX (memtype=DATA).
 NOTE: Deleting WORK.OUTCOME_INFECTION_TRT (memtype=DATA).
 NOTE: PROCEDURE DATASETS used (Total process time):
-      real time           0.09 seconds
+      real time           0.07 seconds
       cpu time            0.04 seconds
       
 
@@ -1462,15 +1446,15 @@ NOTE: PROCEDURE SQL used (Total process time):
 457        proc contents data = DT.hospitalizedInfectionEpisodesInc order = varnum;
 458        run;
 
-                                                                  --- AS project ---                                  10:29 Friday, April 27, 2018  11
+                                                                  --- AS project ---                                    18:21 Monday, May 21, 2018  11
 
                                                                 The CONTENTS Procedure
 
                                Data Set Name        DT.HOSPITALIZEDINFECTIONEPISODESINC    Observations          21563
                                Member Type          DATA                                   Variables             16   
                                Engine               V9                                     Indexes               0    
-                               Created              04/27/2018 10:29:52                    Observation Length    152  
-                               Last Modified        04/27/2018 10:29:52                    Deleted Observations  0    
+                               Created              05/21/2018 18:22:36                    Observation Length    152  
+                               Last Modified        05/21/2018 18:22:36                    Deleted Observations  0    
                                Protection                                                  Compressed            NO   
                                Data Set Type                                               Sorted                YES  
                                Label                                                                                  
@@ -1537,8 +1521,8 @@ NOTE: PROCEDURE SQL used (Total process time):
  
                                                         queryOutcomeHospitalizedInfection.sas
 NOTE: PROCEDURE CONTENTS used (Total process time):
-      real time           0.04 seconds
-      cpu time            0.03 seconds
+      real time           0.06 seconds
+      cpu time            0.04 seconds
       
 NOTE: The PROCEDURE CONTENTS printed page 11.
 
@@ -1548,7 +1532,7 @@ NOTE: The PROCEDURE CONTENTS printed page 11.
 462                 count(*) as denom
 463            from DT.hospitalizedInfectionEpisodesInc
 464            group by database;
-                                                                  --- AS project ---                                  10:29 Friday, April 27, 2018  12
+                                                                  --- AS project ---                                    18:21 Monday, May 21, 2018  12
 
                                          table                                           database       denom
                                          --------------------------------------------------------------------
@@ -1626,14 +1610,12 @@ NOTE: The PROCEDURE CONTENTS printed page 11.
 466                 A.database,
 467                 A.infection_category,
 468                 count(distinct A.patid) as countDistinctPatid,
-11                                                                  The SAS System                                        10:29 Friday, April 27, 2018
-
 469                 count(*) as countRows,
 470                 count(*) / denom format = percent8.1 as pctWithinDatabase
 471            from DT.hospitalizedInfectionEpisodesInc A inner join
 472                 (select database, count(*) as denom from Work.outcome_infection group by database) B  on (A.database = B.database)
 473            group by A.database, A.infection_category;
-                                                                  --- AS project ---                                  10:29 Friday, April 27, 2018  13
+                                                                  --- AS project ---                                    18:21 Monday, May 21, 2018  13
 
                                                                                                                 count
                                                                                                              Distinct                pctWithin
@@ -1707,7 +1689,7 @@ NOTE: The PROCEDURE CONTENTS printed page 11.
        Summary of DT.hospitalizedInfectionEpisodesInc  Medicare    pneumonitis                                      1          1         0.0% 
  
                                                         queryOutcomeHospitalizedInfection.sas
-                                                                  --- AS project ---                                  10:29 Friday, April 27, 2018  14
+                                                                  --- AS project ---                                    18:21 Monday, May 21, 2018  14
 
                                                                                                                 count
                                                                                                              Distinct                pctWithin
@@ -1784,14 +1766,16 @@ NOTE: The PROCEDURE CONTENTS printed page 11.
 474        quit;
 NOTE: The PROCEDURE SQL printed pages 12-14.
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           0.20 seconds
-      cpu time            0.26 seconds
+      real time           0.23 seconds
+      cpu time            0.15 seconds
       
 
 475        
 476        
 477        /*
 478        Copy data sets to permanent library for use later
+11                                                                  The SAS System                                          18:21 Monday, May 21, 2018
+
 479         */
 480        proc copy out = DT in = Work;
 481          select icd9_infection outcome_infection_dx;
@@ -1804,8 +1788,8 @@ NOTE: Copying WORK.OUTCOME_INFECTION_DX to DT.OUTCOME_INFECTION_DX (memtype=DATA
 NOTE: There were 165231 observations read from the data set WORK.OUTCOME_INFECTION_DX.
 NOTE: The data set DT.OUTCOME_INFECTION_DX has 165231 observations and 34 variables.
 NOTE: PROCEDURE COPY used (Total process time):
-      real time           0.28 seconds
-      cpu time            0.23 seconds
+      real time           0.24 seconds
+      cpu time            0.17 seconds
       
 
 483        
@@ -1815,6 +1799,6 @@ NOTE: PROCEDURE COPY used (Total process time):
 487        ods html close;
 NOTE: SAS Institute Inc., SAS Campus Drive, Cary, NC USA 27513-2414
 NOTE: The SAS System used:
-      real time           31.71 seconds
-      cpu time            15.38 seconds
+      real time           40.93 seconds
+      cpu time            1:03.89
       

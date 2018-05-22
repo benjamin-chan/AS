@@ -1,4 +1,4 @@
-1                                         The SAS System             13:20 Thursday, April 5, 2018
+1                                          The SAS System                 18:24 Monday, May 21, 2018
 
 NOTE: Copyright (c) 2016 by SAS Institute Inc., Cary, NC, USA. 
 NOTE: SAS (r) Proprietary Software 9.4 (TS1M5) 
@@ -28,8 +28,8 @@ of the shared folders.
 
 
 NOTE: SAS initialization used:
-      real time           4.39 seconds
-      cpu time            0.23 seconds
+      real time           0.38 seconds
+      cpu time            0.35 seconds
       
 1          *  University of Alabama at Birmingham                               *
 2          *  AS project                                            *
@@ -50,7 +50,7 @@ NOTE: Libref STD_SABR was successfully assigned as follows:
       Physical Name: q:\data\std_SABER\
 NOTE: Libref MPSTD was successfully assigned as follows: 
       Engine:        SPDE 
-      Physical Name: h:\studies\mpcd\data\stddata\
+      Physical Name: q:\studies\mpcd\data\stddata\
 NOTE: Libref UCBSTD was successfully assigned as follows: 
       Engine:        SPDE 
       Physical Name: q:\studies\AS\data\stddata\
@@ -63,151 +63,151 @@ NOTE: Libref DT was successfully assigned as follows:
 NOTE: Libref NDC was successfully assigned as follows: 
       Engine:        V9 
       Physical Name: W:\onenote\references\drug ndcs\sas data
-127        footnote "&pgm.";
-128        * footnote2 "%sysfunc(datetime(),datetime14.)";
-129        title1 '--- AS project ---';
-130        **********************************************************************;
-131        options macrogen mlogic mprint symbolgen;
-132        options nomacrogen nomlogic nomprint nosymbolgen;
-133        
+128        footnote "&pgm.";
+129        * footnote2 "%sysfunc(datetime(),datetime14.)";
+130        title1 '--- AS project ---';
+131        **********************************************************************;
+132        options macrogen mlogic mprint symbolgen;
+133        options nomacrogen nomlogic nomprint nosymbolgen;
 134        
-135        ods html
-2                                                                   The SAS System                                       13:20 Thursday, April 5, 2018
+135        
+136        ods html
+2                                                                   The SAS System                                          18:24 Monday, May 21, 2018
 
-136          body = "output\&cmt..html"
-137          style = Statistical;
+137          body = "output\&cmt..html"
+138          style = Statistical;
 NOTE: Writing HTML Body file: output\queryPrevalentComorbiditiesControl.html
-138        
 139        
-140        /*
-141        Calculate the prevalence of each comorbidity over various time intervals, by
-142        disease cohort (AS vs. non-AS). We will explore how the prevalence of each
-143        condition varies according to the amount of data available. Outcomes will be
-144        examined in discrete 12 month increments (i.e. using 12 months of data, 24
-145        months, 36 months, etc.) using the 6 months baseline plus an additional 6
-146        (1st year), 18 (1st and 2nd year), 30 (1st, 2nd, and 3rd year), etc. months
-147        of follow-up.
-148         */
-149        
+140        
+141        /*
+142        Calculate the prevalence of each comorbidity over various time intervals, by
+143        disease cohort (AS vs. non-AS). We will explore how the prevalence of each
+144        condition varies according to the amount of data available. Outcomes will be
+145        examined in discrete 12 month increments (i.e. using 12 months of data, 24
+146        months, 36 months, etc.) using the 6 months baseline plus an additional 6
+147        (1st year), 18 (1st and 2nd year), 30 (1st, 2nd, and 3rd year), etc. months
+148        of follow-up.
+149         */
 150        
-151        /*
-152        See the *Compact Outcome Definition* worksheet in `AS Project Cohort Outcome Codebook-20170410.xlsx`
-153         */
-154        
+151        
+152        /*
+153        See the *Compact Outcome Definition* worksheet in `AS Project Cohort Outcome Codebook-20170410.xlsx`
+154         */
 155        
-156        /*
-157        Call interstitial lung disease macro
-158         */
-159        %include "lib\IPP_2IPSOPplusPX_ILD.sas" / source2;
+156        
+157        /*
+158        Call interstitial lung disease macro
+159         */
+160        %include "lib\IPP_2IPSOPplusPX_ILD.sas" / source2;
 NOTE: %INCLUDE (level 1) file lib\IPP_2IPSOPplusPX_ILD.sas is file U:\studies\AS\pgms\bchan\lib\IPP_2IPSOPplusPX_ILD.sas.
-160       +/*
-161       +Interstitial lung disease;
-162       +1)  One or more diagnosis codes for ILD from primary discharge
-163       +Or
-164       +2)  (Two or more diagnosis codes for ILD from secondary discharge or physician EMM ) plus one or more diagnosis tests within 90 days prior
-164      !+to (inclusive) one of the diagnosis code for ILD
-165       +*/
-166       +%macro IPP_2IPSOPplusPX_ILD(outdata=,ids=,Dxs=, Pxs=);
-167       +*DXs=diagnosis code in followup, Pxs=CPT code in follow up;
-168       +*do not name outData as IPPILD dxIPSILD dxOPILD dxIPSOPILD pxILD dxpxIPSOPILD IPSOPILD;
-169       +
-170       +data IPPILD dxIPSILD dxOPILD;
-171       +set &dxs();
-172       +length dx1_date 4;
-173       +format dx1_date mmddyy10.;
-174       +dx1_date=min(ADMIT_DATE,  BEGIN_DATE);
-175       +
-176       +if dx in :('515','51630','51631','51632','51633','51634','51635','51636','51637',
-177       +           '5164','5165','5166','5168','5169','71481');
-178       +
-179       +if enc_type='IP' and pdx='P'
-180       +    then output IPPILD;
-181       +if enc_type='IP' and pdx ne 'P'
-182       +    then output dxIPSILD;
-183       +if enc_type not in ('IP','IF', 'OT', " ")
-184       +    then output dxOPILD;
-185       +run;
-186       +
-187       +data dxIPSOPILD; *ILD from secondary discharge or physician EMM;
-188       +set dxIPSILD dxOPILD;
-189       +run;
-190       +
-191       +data pxILD; *diagnosis tests;
-192       +set &pxs();
-193       +if (px_type='09' and px in ('8741','8742')) or
-194       +   (px_type='C1' and px in ('71250','71260','71270','71275','31625','31628',
-195       +                             '31629','31632','31633','32095','32096','32097',
-196       +                             '32098','32400','32405','32604','32606','32607',
-197       +                             '32608','32609'));
-198       +run;
-199       +proc sort data=pxILD nodupkey; by &IDS px_date;run; * drop duplicate PX date and keep only one;
-200       +
-201       +proc sql;
-202       +/*one or more diagnosis tests within 90 days prior to (inclusive) one of the diagnosis code for ILD*/
-203       +create table dxpxIPSOPILD as
-204       +select a.* , b.px_date
-3                                                                   The SAS System                                       13:20 Thursday, April 5, 2018
+161       +/*
+162       +Interstitial lung disease;
+163       +1)  One or more diagnosis codes for ILD from primary discharge
+164       +Or
+165       +2)  (Two or more diagnosis codes for ILD from secondary discharge or physician EMM ) plus one or more diagnosis tests within 90 days prior
+165      !+to (inclusive) one of the diagnosis code for ILD
+166       +*/
+167       +%macro IPP_2IPSOPplusPX_ILD(outdata=,ids=,Dxs=, Pxs=);
+168       +*DXs=diagnosis code in followup, Pxs=CPT code in follow up;
+169       +*do not name outData as IPPILD dxIPSILD dxOPILD dxIPSOPILD pxILD dxpxIPSOPILD IPSOPILD;
+170       +
+171       +data IPPILD dxIPSILD dxOPILD;
+172       +set &dxs();
+173       +length dx1_date 4;
+174       +format dx1_date mmddyy10.;
+175       +dx1_date=min(ADMIT_DATE,  BEGIN_DATE);
+176       +
+177       +if dx in :('515','51630','51631','51632','51633','51634','51635','51636','51637',
+178       +           '5164','5165','5166','5168','5169','71481');
+179       +
+180       +if enc_type='IP' and pdx='P'
+181       +    then output IPPILD;
+182       +if enc_type='IP' and pdx ne 'P'
+183       +    then output dxIPSILD;
+184       +if enc_type not in ('IP','IF', 'OT', " ")
+185       +    then output dxOPILD;
+186       +run;
+187       +
+188       +data dxIPSOPILD; *ILD from secondary discharge or physician EMM;
+189       +set dxIPSILD dxOPILD;
+190       +run;
+191       +
+192       +data pxILD; *diagnosis tests;
+193       +set &pxs();
+194       +if (px_type='09' and px in ('8741','8742')) or
+195       +   (px_type='C1' and px in ('71250','71260','71270','71275','31625','31628',
+196       +                             '31629','31632','31633','32095','32096','32097',
+197       +                             '32098','32400','32405','32604','32606','32607',
+198       +                             '32608','32609'));
+199       +run;
+200       +proc sort data=pxILD nodupkey; by &IDS px_date;run; * drop duplicate PX date and keep only one;
+201       +
+202       +proc sql;
+203       +/*one or more diagnosis tests within 90 days prior to (inclusive) one of the diagnosis code for ILD*/
+204       +create table dxpxIPSOPILD as
+205       +select a.* , b.px_date
+3                                                                   The SAS System                                          18:24 Monday, May 21, 2018
 
-205       +from dxIPSOPILD as a
-206       +    ,
-207       +     pxILD as b
-208       +where a.&IDS=b.&IDS and
-209       +      min(b.ADMIT_DATE, b.BEGIN_DATE)-90<=b.px_date<=min(b.ADMIT_DATE, b.BEGIN_DATE);
-210       +
-211       +/* sencond DX code */
-212       +create table IPSOPILD as
-213       +select a.*, min(b.ADMIT_DATE, b.BEGIN_DATE) as DX2_date length=4 format mmddyy10.
-214       +from dxpxIPSOPILD as a
-215       +    ,
-216       +     dxIPSOPILD(drop=dx1_date) as b
-217       +where a.patid=b.patid and
-218       +      (a.ADMIT_DATE ne b.ADMIT_DATE and a.BEGIN_DATE ne b.BEGIN_DATE)
-219       +order by &IDS,ADMIT_DATE, BEGIN_DATE;
-220       +quit;
-221       +
+206       +from dxIPSOPILD as a
+207       +    ,
+208       +     pxILD as b
+209       +where a.&IDS=b.&IDS and
+210       +      min(b.ADMIT_DATE, b.BEGIN_DATE)-90<=b.px_date<=min(b.ADMIT_DATE, b.BEGIN_DATE);
+211       +
+212       +/* sencond DX code */
+213       +create table IPSOPILD as
+214       +select a.*, min(b.ADMIT_DATE, b.BEGIN_DATE) as DX2_date length=4 format mmddyy10.
+215       +from dxpxIPSOPILD as a
+216       +    ,
+217       +     dxIPSOPILD(drop=dx1_date) as b
+218       +where a.patid=b.patid and
+219       +      (a.ADMIT_DATE ne b.ADMIT_DATE and a.BEGIN_DATE ne b.BEGIN_DATE)
+220       +order by &IDS,ADMIT_DATE, BEGIN_DATE;
+221       +quit;
 222       +
-223       +data &outData;
-224       +set IPPILD IPSOPILD;
-225       +length outcome $20 outcome_date outcome_start_date 4;
-226       +format outcome_date outcome_start_date mmddyy10.;
-227       +outcome="ILD";
-228       +outcome_date=max(dx1_date, dx2_date, px_date);
-229       +outcome_start_date=min(dx1_date, dx2_date, px_date);
-230       +drop ADMIT_DATE BEGIN_DATE DISCHARGE_DATE END_DATE;
-231       +run;
-232       +
-233       +proc sort data=&outData;
-234       +by &IDS outcome_date descending outcome_start_date descending Enc_type;
-235       +run;
-236       +
-237       +data &outData;
-238       +set &outData;
-239       +by &IDS outcome_date descending outcome_start_date;
-240       +if first.outcome_date;
-241       +run;
-242       +
-243       +proc datasets nolist;
-244       +delete IPPILD dxIPSILD dxOPILD dxIPSOPILD pxILD dxpxIPSOPILD IPSOPILD;
-245       +quit;run;
-246       +%mend IPP_2IPSOPplusPX_ILD;
+223       +
+224       +data &outData;
+225       +set IPPILD IPSOPILD;
+226       +length outcome $20 outcome_date outcome_start_date 4;
+227       +format outcome_date outcome_start_date mmddyy10.;
+228       +outcome="ILD";
+229       +outcome_date=max(dx1_date, dx2_date, px_date);
+230       +outcome_start_date=min(dx1_date, dx2_date, px_date);
+231       +drop ADMIT_DATE BEGIN_DATE DISCHARGE_DATE END_DATE;
+232       +run;
+233       +
+234       +proc sort data=&outData;
+235       +by &IDS outcome_date descending outcome_start_date descending Enc_type;
+236       +run;
+237       +
+238       +data &outData;
+239       +set &outData;
+240       +by &IDS outcome_date descending outcome_start_date;
+241       +if first.outcome_date;
+242       +run;
+243       +
+244       +proc datasets nolist;
+245       +delete IPPILD dxIPSILD dxOPILD dxIPSOPILD pxILD dxpxIPSOPILD IPSOPILD;
+246       +quit;run;
+247       +%mend IPP_2IPSOPplusPX_ILD;
 NOTE: %INCLUDE (level 1) ending.
-247        %IPP_2IPSOPplusPX_ILD(outdata = Work.outcome_ILD_All,
-248                              IDS = controlID,
-249                              Dxs = UCB.tempPrevDxAllControl,
-250                              Pxs = UCB.tempPrevPxAllControl);
+248        %IPP_2IPSOPplusPX_ILD(outdata = Work.outcome_ILD_All,
+249                              IDS = controlID,
+250                              Dxs = UCB.tempPrevDxAllControl,
+251                              Pxs = UCB.tempPrevPxAllControl);
 NOTE: Data set UCB.TEMPPREVDXALLCONTROL is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
       additional CPU resources and may reduce performance.
 
 NOTE: Missing values were generated as a result of performing an operation on missing values.
       Each place is given by: (Number of times) at (Line):(Column).
-      226 at 250:249   
+      226 at 251:249   
 NOTE: There were 528984975 observations read from the data set UCB.TEMPPREVDXALLCONTROL.
 NOTE: The data set WORK.IPPILD has 5807 observations and 20 variables.
 NOTE: The data set WORK.DXIPSILD has 54369 observations and 20 variables.
 NOTE: The data set WORK.DXOPILD has 262921 observations and 20 variables.
 NOTE: DATA statement used (Total process time):
-      real time           7:11.04
-      cpu time            5:02.86
+      real time           4:46.33
+      cpu time            3:49.74
       
 
 
@@ -215,20 +215,20 @@ NOTE: There were 54369 observations read from the data set WORK.DXIPSILD.
 NOTE: There were 262921 observations read from the data set WORK.DXOPILD.
 NOTE: The data set WORK.DXIPSOPILD has 317290 observations and 20 variables.
 NOTE: DATA statement used (Total process time):
-      real time           0.34 seconds
-      cpu time            0.31 seconds
+      real time           0.51 seconds
+      cpu time            0.23 seconds
       
 
 NOTE: Data set UCB.TEMPPREVPXALLCONTROL is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
-4                                                                   The SAS System                                       13:20 Thursday, April 5, 2018
+4                                                                   The SAS System                                          18:24 Monday, May 21, 2018
 
       additional CPU resources and may reduce performance.
 
 NOTE: There were 1038978234 observations read from the data set UCB.TEMPPREVPXALLCONTROL.
 NOTE: The data set WORK.PXILD has 294861 observations and 18 variables.
 NOTE: DATA statement used (Total process time):
-      real time           11:59.98
-      cpu time            7:21.85
+      real time           8:54.37
+      cpu time            6:14.55
       
 
 
@@ -236,8 +236,8 @@ NOTE: There were 294861 observations read from the data set WORK.PXILD.
 NOTE: 12211 observations with duplicate key values were deleted.
 NOTE: The data set WORK.PXILD has 282650 observations and 18 variables.
 NOTE: PROCEDURE SORT used (Total process time):
-      real time           1.31 seconds
-      cpu time            0.78 seconds
+      real time           0.71 seconds
+      cpu time            0.54 seconds
       
 
 NOTE: Table WORK.DXPXIPSOPILD created, with 154141 rows and 21 columns.
@@ -246,8 +246,8 @@ NOTE: Invalid (or missing) arguments to the MIN function have caused the functio
 NOTE: Table WORK.IPSOPILD created, with 209080 rows and 22 columns.
 
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           3.30 seconds
-      cpu time            2.71 seconds
+      real time           6.06 seconds
+      cpu time            3.12 seconds
       
 
 
@@ -255,24 +255,24 @@ NOTE: There were 5807 observations read from the data set WORK.IPPILD.
 NOTE: There were 209080 observations read from the data set WORK.IPSOPILD.
 NOTE: The data set WORK.OUTCOME_ILD_ALL has 214887 observations and 21 variables.
 NOTE: DATA statement used (Total process time):
-      real time           0.31 seconds
-      cpu time            0.29 seconds
+      real time           0.23 seconds
+      cpu time            0.20 seconds
       
 
 
 NOTE: There were 214887 observations read from the data set WORK.OUTCOME_ILD_ALL.
 NOTE: The data set WORK.OUTCOME_ILD_ALL has 214887 observations and 21 variables.
 NOTE: PROCEDURE SORT used (Total process time):
-      real time           0.48 seconds
-      cpu time            0.65 seconds
+      real time           0.45 seconds
+      cpu time            0.62 seconds
       
 
 
 NOTE: There were 214887 observations read from the data set WORK.OUTCOME_ILD_ALL.
 NOTE: The data set WORK.OUTCOME_ILD_ALL has 13842 observations and 21 variables.
 NOTE: DATA statement used (Total process time):
-      real time           0.23 seconds
-      cpu time            0.20 seconds
+      real time           0.18 seconds
+      cpu time            0.12 seconds
       
 
 
@@ -284,145 +284,145 @@ NOTE: Deleting WORK.PXILD (memtype=DATA).
 NOTE: Deleting WORK.DXPXIPSOPILD (memtype=DATA).
 NOTE: Deleting WORK.IPSOPILD (memtype=DATA).
 NOTE: PROCEDURE DATASETS used (Total process time):
-      real time           0.12 seconds
-      cpu time            0.07 seconds
+      real time           0.14 seconds
+      cpu time            0.01 seconds
       
 
-251        
 252        
-253        /*
-254        Process fracture episodes data set
-255         */
-256        proc sql;
-5                                                                   The SAS System                                       13:20 Thursday, April 5, 2018
+253        
+254        /*
+255        Process fracture episodes data set
+256         */
+257        proc sql;
+5                                                                   The SAS System                                          18:24 Monday, May 21, 2018
 
-257          create table Work.fractures as
-258            select database,
-259                   cohort,
-260                   patid,
-261                   indexDate,
-262                   controlID,
-263                   age,
-264                   sex,
-265                   "Osteoporotic fracture" as outcomeCategory,
-266                   fractureType as disease,
-267                   fractureEpisodeStart as begin_date
-268            from DT.fractureEpisodesPrevControl
-269            where ^missing(fractureType);
+258          create table Work.fractures as
+259            select database,
+260                   cohort,
+261                   patid,
+262                   indexDate,
+263                   controlID,
+264                   age,
+265                   sex,
+266                   "Osteoporotic fracture" as outcomeCategory,
+267                   fractureType as disease,
+268                   fractureEpisodeStart as begin_date
+269            from DT.fractureEpisodesPrevControl
+270            where ^missing(fractureType);
 NOTE: Table WORK.FRACTURES created, with 668758 rows and 10 columns.
 
-270        quit;
+271        quit;
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           1.91 seconds
-      cpu time            1.62 seconds
+      real time           2.27 seconds
+      cpu time            1.49 seconds
       
 
-271        
 272        
 273        
 274        
-275        proc sql;
-276        
-277          create table Work.defOutcomes as
-278            select *
-279            from DT.defOutcomes
-280            where disease ^in ("Interstitial lung disease");
+275        
+276        proc sql;
+277        
+278          create table Work.defOutcomes as
+279            select *
+280            from DT.defOutcomes
+281            where disease ^in ("Interstitial lung disease");
 NOTE: Table WORK.DEFOUTCOMES created, with 2664 rows and 6 columns.
 
-281        
-282          %let select1 = select A.*, B.outcomeCategory, B.disease;
-283          %let join1 = inner join Work.defOutcomes B on (A.codeType = B.codeType & A.code = B.code);
-284          %let where1a = where B.disease ^in ("Myocardial infarction", "Hospitalized infection");
-285          %let where1b = | (B.disease in ("Myocardial infarction", "Hospitalized infection") & A.enc_type = "IP");
-286          %let select2 = select database, cohort, patid, indexDate, controlID, enc_type, age, sex, "Lung disease" as outcomeCategory, "Interstitial
-286      !  lung disease" as disease, outcome_start_date as begin_date;
-287          create table DT.comorbiditiesControl as
-288            select C.database, C.cohort, C.patid, C.indexDate, C.controlID, C.age, C.sex,
-289                   C.outcomeCategory,
-290                   C.disease,
-291                   sum(C.begin_date <= C.indexDate) > 0 as indPrevPriorToIndex,
-292                   sum(0 <= C.indexDate  - C.begin_date <= 183 |
-293                       0 <= C.begin_date - C.indexDate  <= (183 * 1)) > 0 as indPrev12mo,
-294                   sum(0 <= C.indexDate  - C.begin_date <= 183 |
-295                       0 <= C.begin_date - C.indexDate  <= (183 * 3)) > 0 as indPrev24mo,
-296                   sum(0 <= C.indexDate  - C.begin_date <= 183 |
-297                       0 <= C.begin_date - C.indexDate  <= (183 * 5)) > 0 as indPrev36mo
-298            from (&select1 from UCB.tempPrevDxAllControl A &join1 &where1a &where1b union corr
-299                  &select1 from UCB.tempPrevPxAllControl A &join1 &where1a union corr
-300                  &select2 from Work.outcome_ILD_All union corr
-301                  select * from Work.fractures) C
-302            group by C.database, C.cohort, C.patid, C.indexDate, C.controlID, C.age, C.sex,
-303                     C.outcomeCategory,
-304                     C.disease
-305            having calculated indPrevPriorToIndex > 0 |
-306                   calculated indPrev12mo > 0 |
-307                   calculated indPrev24mo > 0 |
-308                   calculated indPrev36mo > 0;
+282        
+283          %let select1 = select A.*, B.outcomeCategory, B.disease;
+284          %let join1 = inner join Work.defOutcomes B on (A.codeType = B.codeType & A.code = B.code);
+285          %let where1a = where B.disease ^in ("Myocardial infarction", "Hospitalized infection");
+286          %let where1b = | (B.disease in ("Myocardial infarction", "Hospitalized infection") & A.enc_type = "IP");
+287          %let select2 = select database, cohort, patid, indexDate, controlID, enc_type, age, sex, "Lung disease" as outcomeCategory, "Interstitial
+287      !  lung disease" as disease, outcome_start_date as begin_date;
+288          create table DT.comorbiditiesControl as
+289            select C.database, C.cohort, C.patid, C.indexDate, C.controlID, C.age, C.sex,
+290                   C.outcomeCategory,
+291                   C.disease,
+292                   sum(C.begin_date <= C.indexDate) > 0 as indPrevPriorToIndex,
+293                   sum(0 <= C.indexDate  - C.begin_date <= 183 |
+294                       0 <= C.begin_date - C.indexDate  <= (183 * 1)) > 0 as indPrev12mo,
+295                   sum(0 <= C.indexDate  - C.begin_date <= 183 |
+296                       0 <= C.begin_date - C.indexDate  <= (183 * 3)) > 0 as indPrev24mo,
+297                   sum(0 <= C.indexDate  - C.begin_date <= 183 |
+298                       0 <= C.begin_date - C.indexDate  <= (183 * 5)) > 0 as indPrev36mo
+299            from (&select1 from UCB.tempPrevDxAllControl A &join1 &where1a &where1b union corr
+300                  &select1 from UCB.tempPrevPxAllControl A &join1 &where1a union corr
+301                  &select2 from Work.outcome_ILD_All union corr
+302                  select * from Work.fractures) C
+303            group by C.database, C.cohort, C.patid, C.indexDate, C.controlID, C.age, C.sex,
+304                     C.outcomeCategory,
+305                     C.disease
+306            having calculated indPrevPriorToIndex > 0 |
+307                   calculated indPrev12mo > 0 |
+308                   calculated indPrev24mo > 0 |
+309                   calculated indPrev36mo > 0;
 NOTE: Data set UCB.TEMPPREVDXALLCONTROL is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
       additional CPU resources and may reduce performance.
 NOTE: Data set UCB.TEMPPREVPXALLCONTROL is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
       additional CPU resources and may reduce performance.
 The SAS supervisor will process queries for foreign datasets. No parallel where-clause processing will occur.
 The SAS supervisor will process queries for foreign datasets. No parallel where-clause processing will occur.
-NOTE: Table DT.COMORBIDITIESCONTROL created, with 1938951 rows and 13 columns.
+NOTE: Table DT.COMORBIDITIESCONTROL created, with 1937305 rows and 13 columns.
 
-309        
-310          create table Work.denominator as
-6                                                                   The SAS System                                       13:20 Thursday, April 5, 2018
+310        
+311          create table Work.denominator as
+6                                                                   The SAS System                                          18:24 Monday, May 21, 2018
 
-311            select database,
-312                   cohort,
-313                   count(distinct patid) as denomPatid,
-314                   count(distinct controlID) as denomControlCohort
-315            from DT.controlLookup
-316            group by database, cohort;
+312            select database,
+313                   cohort,
+314                   count(distinct patid) as denomPatid,
+315                   count(distinct controlID) as denomControlCohort
+316            from DT.controlLookup
+317            group by database, cohort;
 NOTE: Table WORK.DENOMINATOR created, with 2 rows and 4 columns.
 
-317        
-318          create table Work.prev as
-319            select A.database, A.cohort, A.outcomeCategory, A.disease,
-320                   B.denomPatid,
-321                   B.denomControlCohort,
-322                   "Prior to index" as timeWindow,
-323                   sum(A.indPrevPriorToIndex) as numer,
-324                   sum(A.indPrevPriorToIndex) / B.denomControlCohort * 100 as prevPct
-325            from DT.comorbiditiesControl A inner join
-326                 Work.denominator B on (A.database = B.database & A.cohort = B.cohort)
-327            group by A.database, A.cohort, A.outcomeCategory, A.disease, B.denomPatid, B.denomControlCohort
-328            union corr
-329            select A.database, A.cohort, A.outcomeCategory, A.disease,
-330                   B.denomPatid,
-331                   B.denomControlCohort,
-332                   "12 months" as timeWindow,
-333                   sum(A.indPrev12mo) as numer,
-334                   sum(A.indPrev12mo) / B.denomControlCohort * 100 as prevPct
-335            from DT.comorbiditiesControl A inner join
-336                 Work.denominator B on (A.database = B.database & A.cohort = B.cohort)
-337            group by A.database, A.cohort, A.outcomeCategory, A.disease, B.denomPatid, B.denomControlCohort
-338            union corr
-339            select A.database, A.cohort, A.outcomeCategory, A.disease,
-340                   B.denomPatid,
-341                   B.denomControlCohort,
-342                   "24 months" as timeWindow,
-343                   sum(A.indPrev24mo) as numer,
-344                   sum(A.indPrev24mo) / B.denomControlCohort * 100 as prevPct
-345            from DT.comorbiditiesControl A inner join
-346                 Work.denominator B on (A.database = B.database & A.cohort = B.cohort)
-347            group by A.database, A.cohort, A.outcomeCategory, A.disease, B.denomPatid, B.denomControlCohort
-348            union corr
-349            select A.database, A.cohort, A.outcomeCategory, A.disease,
-350                   B.denomPatid,
-351                   B.denomControlCohort,
-352                   "36 months" as timeWindow,
-353                   sum(A.indPrev36mo) as numer,
-354                   sum(A.indPrev36mo) / B.denomControlCohort * 100 as prevPct
-355            from DT.comorbiditiesControl A inner join
-356                 Work.denominator B on (A.database = B.database & A.cohort = B.cohort)
-357            group by A.database, A.cohort, A.outcomeCategory, A.disease, B.denomPatid, B.denomControlCohort;
+318        
+319          create table Work.prev as
+320            select A.database, A.cohort, A.outcomeCategory, A.disease,
+321                   B.denomPatid,
+322                   B.denomControlCohort,
+323                   "Prior to index" as timeWindow,
+324                   sum(A.indPrevPriorToIndex) as numer,
+325                   sum(A.indPrevPriorToIndex) / B.denomControlCohort * 100 as prevPct
+326            from DT.comorbiditiesControl A inner join
+327                 Work.denominator B on (A.database = B.database & A.cohort = B.cohort)
+328            group by A.database, A.cohort, A.outcomeCategory, A.disease, B.denomPatid, B.denomControlCohort
+329            union corr
+330            select A.database, A.cohort, A.outcomeCategory, A.disease,
+331                   B.denomPatid,
+332                   B.denomControlCohort,
+333                   "12 months" as timeWindow,
+334                   sum(A.indPrev12mo) as numer,
+335                   sum(A.indPrev12mo) / B.denomControlCohort * 100 as prevPct
+336            from DT.comorbiditiesControl A inner join
+337                 Work.denominator B on (A.database = B.database & A.cohort = B.cohort)
+338            group by A.database, A.cohort, A.outcomeCategory, A.disease, B.denomPatid, B.denomControlCohort
+339            union corr
+340            select A.database, A.cohort, A.outcomeCategory, A.disease,
+341                   B.denomPatid,
+342                   B.denomControlCohort,
+343                   "24 months" as timeWindow,
+344                   sum(A.indPrev24mo) as numer,
+345                   sum(A.indPrev24mo) / B.denomControlCohort * 100 as prevPct
+346            from DT.comorbiditiesControl A inner join
+347                 Work.denominator B on (A.database = B.database & A.cohort = B.cohort)
+348            group by A.database, A.cohort, A.outcomeCategory, A.disease, B.denomPatid, B.denomControlCohort
+349            union corr
+350            select A.database, A.cohort, A.outcomeCategory, A.disease,
+351                   B.denomPatid,
+352                   B.denomControlCohort,
+353                   "36 months" as timeWindow,
+354                   sum(A.indPrev36mo) as numer,
+355                   sum(A.indPrev36mo) / B.denomControlCohort * 100 as prevPct
+356            from DT.comorbiditiesControl A inner join
+357                 Work.denominator B on (A.database = B.database & A.cohort = B.cohort)
+358            group by A.database, A.cohort, A.outcomeCategory, A.disease, B.denomPatid, B.denomControlCohort;
 NOTE: Table WORK.PREV created, with 184 rows and 9 columns.
 
-358          select * from Work.prev;
-                                                                  --- AS project ---                                 13:20 Thursday, April 5, 2018   1
+359          select * from Work.prev;
+                                                                  --- AS project ---                                    18:24 Monday, May 21, 2018   1
 
                                                                                                             denom
                                                                                                           Control
@@ -496,7 +496,7 @@ MPCD      Non-AS  Neurological Disease        Cauda Equina syndrome             
 MPCD      Non-AS  Neurological Disease        Cauda Equina syndrome                         1139225       1139225  24 months            161  0.014132
  
                                                         queryPrevalentComorbiditiesControl.sas
-                                                                  --- AS project ---                                 13:20 Thursday, April 5, 2018   2
+                                                                  --- AS project ---                                    18:24 Monday, May 21, 2018   2
 
                                                                                                             denom
                                                                                                           Control
@@ -528,106 +528,106 @@ MPCD      Non-AS  Uveitis                     Uveitis                           
 MPCD      Non-AS  Uveitis                     Uveitis                                       1139225       1139225  24 months           4332  0.380259
 MPCD      Non-AS  Uveitis                     Uveitis                                       1139225       1139225  36 months           5496  0.482433
 MPCD      Non-AS  Uveitis                     Uveitis                                       1139225       1139225  Prior to index      1660  0.145713
-Medicare  Non-AS  Cancer                      Hematologic Cancer                            1844703       1844703  12 months          21862  1.185123
-Medicare  Non-AS  Cancer                      Hematologic Cancer                            1844703       1844703  24 months          27137  1.471077
-Medicare  Non-AS  Cancer                      Hematologic Cancer                            1844703       1844703  36 months          31016  1.681355
-Medicare  Non-AS  Cancer                      Hematologic Cancer                            1844703       1844703  Prior to index     21020  1.139479
-Medicare  Non-AS  Cancer                      Non Melanoma Skin Cancer                      1844703       1844703  12 months          13680  0.741583
-Medicare  Non-AS  Cancer                      Non Melanoma Skin Cancer                      1844703       1844703  24 months          23216  1.258522
-Medicare  Non-AS  Cancer                      Non Melanoma Skin Cancer                      1844703       1844703  36 months          28179  1.527563
-Medicare  Non-AS  Cancer                      Non Melanoma Skin Cancer                      1844703       1844703  Prior to index     14091  0.763863
-Medicare  Non-AS  Cancer                      Solid Cancer                                  1844703       1844703  12 months         162509  8.809494
-Medicare  Non-AS  Cancer                      Solid Cancer                                  1844703       1844703  24 months         206586  11.19888
-Medicare  Non-AS  Cancer                      Solid Cancer                                  1844703       1844703  36 months         236344  12.81204
-Medicare  Non-AS  Cancer                      Solid Cancer                                  1844703       1844703  Prior to index    161612  8.760868
-Medicare  Non-AS  Cardiac disease             Aortic Insufficiency/Aortic Regurgitation     1844703       1844703  12 months          49304  2.672734
-Medicare  Non-AS  Cardiac disease             Aortic Insufficiency/Aortic Regurgitation     1844703       1844703  24 months          72377  3.923504
-Medicare  Non-AS  Cardiac disease             Aortic Insufficiency/Aortic Regurgitation     1844703       1844703  36 months          87823  4.760821
-Medicare  Non-AS  Cardiac disease             Aortic Insufficiency/Aortic Regurgitation     1844703       1844703  Prior to index     52375   2.83921
-Medicare  Non-AS  Cardiac disease             Conduction Block                              1844703       1844703  12 months          41521  2.250823
-Medicare  Non-AS  Cardiac disease             Conduction Block                              1844703       1844703  24 months          68577  3.717509
-Medicare  Non-AS  Cardiac disease             Conduction Block                              1844703       1844703  36 months          88229   4.78283
-Medicare  Non-AS  Cardiac disease             Conduction Block                              1844703       1844703  Prior to index     49272  2.670999
-Medicare  Non-AS  Cardiac disease             Myocardial infarction                         1844703       1844703  12 months          18431  0.999131
-Medicare  Non-AS  Cardiac disease             Myocardial infarction                         1844703       1844703  24 months          35154  1.905673
-Medicare  Non-AS  Cardiac disease             Myocardial infarction                         1844703       1844703  36 months          48605  2.634841
-Medicare  Non-AS  Cardiac disease             Myocardial infarction                         1844703       1844703  Prior to index     22399  1.214233
-Medicare  Non-AS  Infection                   Hospitalized infection                        1844703       1844703  12 months         163811  8.880074
-Medicare  Non-AS  Infection                   Hospitalized infection                        1844703       1844703  24 months         273894  14.84759
-Medicare  Non-AS  Infection                   Hospitalized infection                        1844703       1844703  36 months         352171  19.09093
-Medicare  Non-AS  Infection                   Hospitalized infection                        1844703       1844703  Prior to index    169101  9.166841
-Medicare  Non-AS  Infection                   Opportunistic infection                       1844703       1844703  12 months          15816  0.857374
-Medicare  Non-AS  Infection                   Opportunistic infection                       1844703       1844703  24 months          27475    1.4894
-Medicare  Non-AS  Infection                   Opportunistic infection                       1844703       1844703  36 months          37022  2.006936
-Medicare  Non-AS  Infection                   Opportunistic infection                       1844703       1844703  Prior to index     18177  0.985362
-Medicare  Non-AS  Inflammatory bowel disease  Crohn’s Disease                               1844703       1844703  12 months           6328  0.343036
-Medicare  Non-AS  Inflammatory bowel disease  Crohn’s Disease                               1844703       1844703  24 months           8367  0.453569
-Medicare  Non-AS  Inflammatory bowel disease  Crohn’s Disease                               1844703       1844703  36 months           9655   0.52339
-Medicare  Non-AS  Inflammatory bowel disease  Crohn’s Disease                               1844703       1844703  Prior to index      6723  0.364449
-Medicare  Non-AS  Inflammatory bowel disease  Ulcerative Colitis                            1844703       1844703  12 months           6914  0.374803
-Medicare  Non-AS  Inflammatory bowel disease  Ulcerative Colitis                            1844703       1844703  24 months           9971  0.540521
-Medicare  Non-AS  Inflammatory bowel disease  Ulcerative Colitis                            1844703       1844703  36 months          12087  0.655227
-Medicare  Non-AS  Inflammatory bowel disease  Ulcerative Colitis                            1844703       1844703  Prior to index      7663  0.415406
+Medicare  Non-AS  Cancer                      Hematologic Cancer                            1854650       1854650  12 months          21862  1.178767
+Medicare  Non-AS  Cancer                      Hematologic Cancer                            1854650       1854650  24 months          27137  1.463187
+Medicare  Non-AS  Cancer                      Hematologic Cancer                            1854650       1854650  36 months          31016  1.672337
+Medicare  Non-AS  Cancer                      Hematologic Cancer                            1854650       1854650  Prior to index     21020  1.133367
+Medicare  Non-AS  Cancer                      Non Melanoma Skin Cancer                      1854650       1854650  12 months          13680  0.737605
+Medicare  Non-AS  Cancer                      Non Melanoma Skin Cancer                      1854650       1854650  24 months          23216  1.251773
+Medicare  Non-AS  Cancer                      Non Melanoma Skin Cancer                      1854650       1854650  36 months          28179   1.51937
+Medicare  Non-AS  Cancer                      Non Melanoma Skin Cancer                      1854650       1854650  Prior to index     14091  0.759766
+Medicare  Non-AS  Cancer                      Solid Cancer                                  1854650       1854650  12 months         162509  8.762246
+Medicare  Non-AS  Cancer                      Solid Cancer                                  1854650       1854650  24 months         206586  11.13881
+Medicare  Non-AS  Cancer                      Solid Cancer                                  1854650       1854650  36 months         236344  12.74332
+Medicare  Non-AS  Cancer                      Solid Cancer                                  1854650       1854650  Prior to index    161612  8.713881
+Medicare  Non-AS  Cardiac disease             Aortic Insufficiency/Aortic Regurgitation     1854650       1854650  12 months          49304  2.658399
+Medicare  Non-AS  Cardiac disease             Aortic Insufficiency/Aortic Regurgitation     1854650       1854650  24 months          72377  3.902461
+Medicare  Non-AS  Cardiac disease             Aortic Insufficiency/Aortic Regurgitation     1854650       1854650  36 months          87823  4.735287
+Medicare  Non-AS  Cardiac disease             Aortic Insufficiency/Aortic Regurgitation     1854650       1854650  Prior to index     52375  2.823983
+Medicare  Non-AS  Cardiac disease             Conduction Block                              1854650       1854650  12 months          41521  2.238751
+Medicare  Non-AS  Cardiac disease             Conduction Block                              1854650       1854650  24 months          68577  3.697571
+Medicare  Non-AS  Cardiac disease             Conduction Block                              1854650       1854650  36 months          88229  4.757178
+Medicare  Non-AS  Cardiac disease             Conduction Block                              1854650       1854650  Prior to index     49272  2.656674
+Medicare  Non-AS  Cardiac disease             Myocardial infarction                         1854650       1854650  12 months          18431  0.993772
+Medicare  Non-AS  Cardiac disease             Myocardial infarction                         1854650       1854650  24 months          35154  1.895452
+Medicare  Non-AS  Cardiac disease             Myocardial infarction                         1854650       1854650  36 months          48605   2.62071
+Medicare  Non-AS  Cardiac disease             Myocardial infarction                         1854650       1854650  Prior to index     22399  1.207721
+Medicare  Non-AS  Infection                   Hospitalized infection                        1854650       1854650  12 months         163811  8.832448
+Medicare  Non-AS  Infection                   Hospitalized infection                        1854650       1854650  24 months         273894  14.76796
+Medicare  Non-AS  Infection                   Hospitalized infection                        1854650       1854650  36 months         352171  18.98854
+Medicare  Non-AS  Infection                   Hospitalized infection                        1854650       1854650  Prior to index    169101  9.117677
+Medicare  Non-AS  Infection                   Opportunistic infection                       1854650       1854650  12 months          15816  0.852775
+Medicare  Non-AS  Infection                   Opportunistic infection                       1854650       1854650  24 months          27475  1.481412
+Medicare  Non-AS  Infection                   Opportunistic infection                       1854650       1854650  36 months          37022  1.996172
+Medicare  Non-AS  Infection                   Opportunistic infection                       1854650       1854650  Prior to index     18177  0.980077
+Medicare  Non-AS  Inflammatory bowel disease  Crohn’s Disease                               1854650       1854650  12 months           6328  0.341196
+Medicare  Non-AS  Inflammatory bowel disease  Crohn’s Disease                               1854650       1854650  24 months           8367  0.451136
+Medicare  Non-AS  Inflammatory bowel disease  Crohn’s Disease                               1854650       1854650  36 months           9655  0.520583
+Medicare  Non-AS  Inflammatory bowel disease  Crohn’s Disease                               1854650       1854650  Prior to index      6723  0.362494
+Medicare  Non-AS  Inflammatory bowel disease  Ulcerative Colitis                            1854650       1854650  12 months           6914  0.372793
+Medicare  Non-AS  Inflammatory bowel disease  Ulcerative Colitis                            1854650       1854650  24 months           9971  0.537622
+Medicare  Non-AS  Inflammatory bowel disease  Ulcerative Colitis                            1854650       1854650  36 months          12087  0.651713
+Medicare  Non-AS  Inflammatory bowel disease  Ulcerative Colitis                            1854650       1854650  Prior to index      7663  0.413178
  
                                                         queryPrevalentComorbiditiesControl.sas
-                                                                  --- AS project ---                                 13:20 Thursday, April 5, 2018   3
+                                                                  --- AS project ---                                    18:24 Monday, May 21, 2018   3
 
                                                                                                             denom
                                                                                                           Control
 database  cohort  Disease Category            Disease                                    denomPatid        Cohort  timeWindow         numer   prevPct
 -----------------------------------------------------------------------------------------------------------------------------------------------------
-Medicare  Non-AS  Kidney disease              Amyloidosis                                   1844703       1844703  12 months            241  0.013064
-Medicare  Non-AS  Kidney disease              Amyloidosis                                   1844703       1844703  24 months            403  0.021846
-Medicare  Non-AS  Kidney disease              Amyloidosis                                   1844703       1844703  36 months            540  0.029273
-Medicare  Non-AS  Kidney disease              Amyloidosis                                   1844703       1844703  Prior to index       247   0.01339
-Medicare  Non-AS  Kidney disease              IgA nephropathy                               1844703       1844703  12 months           1907  0.103377
-Medicare  Non-AS  Kidney disease              IgA nephropathy                               1844703       1844703  24 months           3088  0.167398
-Medicare  Non-AS  Kidney disease              IgA nephropathy                               1844703       1844703  36 months           4008  0.217271
-Medicare  Non-AS  Kidney disease              IgA nephropathy                               1844703       1844703  Prior to index      2170  0.117634
-Medicare  Non-AS  Kidney disease              Nephrotic syndrome                            1844703       1844703  12 months           1111  0.060226
-Medicare  Non-AS  Kidney disease              Nephrotic syndrome                            1844703       1844703  24 months           1774  0.096167
-Medicare  Non-AS  Kidney disease              Nephrotic syndrome                            1844703       1844703  36 months           2254  0.122188
-Medicare  Non-AS  Kidney disease              Nephrotic syndrome                            1844703       1844703  Prior to index      1245  0.067491
-Medicare  Non-AS  Lung disease                Apical Pulmonary fibrosis                     1844703       1844703  12 months            151  0.008186
-Medicare  Non-AS  Lung disease                Apical Pulmonary fibrosis                     1844703       1844703  24 months            188  0.010191
-Medicare  Non-AS  Lung disease                Apical Pulmonary fibrosis                     1844703       1844703  36 months            218  0.011818
-Medicare  Non-AS  Lung disease                Apical Pulmonary fibrosis                     1844703       1844703  Prior to index       142  0.007698
-Medicare  Non-AS  Lung disease                Interstitial lung disease                     1844703       1844703  12 months            822   0.04456
-Medicare  Non-AS  Lung disease                Interstitial lung disease                     1844703       1844703  24 months           1551  0.084079
-Medicare  Non-AS  Lung disease                Interstitial lung disease                     1844703       1844703  36 months           2086  0.113081
-Medicare  Non-AS  Lung disease                Interstitial lung disease                     1844703       1844703  Prior to index       884  0.047921
-Medicare  Non-AS  Lung disease                Restrictive lung disease                      1844703       1844703  12 months          23340  1.265244
-Medicare  Non-AS  Lung disease                Restrictive lung disease                      1844703       1844703  24 months          38738  2.099959
-Medicare  Non-AS  Lung disease                Restrictive lung disease                      1844703       1844703  36 months          50849  2.756487
-Medicare  Non-AS  Lung disease                Restrictive lung disease                      1844703       1844703  Prior to index     29343  1.590663
-Medicare  Non-AS  Neurological Disease        Cauda Equina syndrome                         1844703       1844703  12 months            335   0.01816
-Medicare  Non-AS  Neurological Disease        Cauda Equina syndrome                         1844703       1844703  24 months            547  0.029652
-Medicare  Non-AS  Neurological Disease        Cauda Equina syndrome                         1844703       1844703  36 months            729  0.039519
-Medicare  Non-AS  Neurological Disease        Cauda Equina syndrome                         1844703       1844703  Prior to index       423  0.022931
-Medicare  Non-AS  Neurological Disease        Spinal Cord compression                       1844703       1844703  12 months           1518   0.08229
-Medicare  Non-AS  Neurological Disease        Spinal Cord compression                       1844703       1844703  24 months           2600  0.140944
-Medicare  Non-AS  Neurological Disease        Spinal Cord compression                       1844703       1844703  36 months           3451  0.187076
-Medicare  Non-AS  Neurological Disease        Spinal Cord compression                       1844703       1844703  Prior to index      1923  0.104244
-Medicare  Non-AS  Osteoporotic fracture       Clinical vertebral fracture                   1844703       1844703  12 months          20612  1.117361
-Medicare  Non-AS  Osteoporotic fracture       Clinical vertebral fracture                   1844703       1844703  24 months          35800  1.940692
-Medicare  Non-AS  Osteoporotic fracture       Clinical vertebral fracture                   1844703       1844703  36 months          47364  2.567568
-Medicare  Non-AS  Osteoporotic fracture       Clinical vertebral fracture                   1844703       1844703  Prior to index     28003  1.518022
-Medicare  Non-AS  Osteoporotic fracture       Non-vertebral osteoporotic fracture           1844703       1844703  12 months          47005  2.548107
-Medicare  Non-AS  Osteoporotic fracture       Non-vertebral osteoporotic fracture           1844703       1844703  24 months          81277  4.405967
-Medicare  Non-AS  Osteoporotic fracture       Non-vertebral osteoporotic fracture           1844703       1844703  36 months         107647  5.835465
-Medicare  Non-AS  Osteoporotic fracture       Non-vertebral osteoporotic fracture           1844703       1844703  Prior to index     74693  4.049053
-Medicare  Non-AS  PsO/PsA                     Psoriasis                                     1844703       1844703  12 months          17918  0.971322
-Medicare  Non-AS  PsO/PsA                     Psoriasis                                     1844703       1844703  24 months          26326  1.427113
-Medicare  Non-AS  PsO/PsA                     Psoriasis                                     1844703       1844703  36 months          31860  1.727107
-Medicare  Non-AS  PsO/PsA                     Psoriasis                                     1844703       1844703  Prior to index     20605  1.116982
-Medicare  Non-AS  PsO/PsA                     Psoriatic arthritis                           1844703       1844703  12 months           2926  0.158616
-Medicare  Non-AS  PsO/PsA                     Psoriatic arthritis                           1844703       1844703  24 months           3881  0.210386
-Medicare  Non-AS  PsO/PsA                     Psoriatic arthritis                           1844703       1844703  36 months           4494  0.243616
-Medicare  Non-AS  PsO/PsA                     Psoriatic arthritis                           1844703       1844703  Prior to index      3136      0.17
-Medicare  Non-AS  Uveitis                     Uveitis                                       1844703       1844703  12 months           4292  0.232666
-Medicare  Non-AS  Uveitis                     Uveitis                                       1844703       1844703  24 months           7059  0.382663
-Medicare  Non-AS  Uveitis                     Uveitis                                       1844703       1844703  36 months           9189  0.498129
-Medicare  Non-AS  Uveitis                     Uveitis                                       1844703       1844703  Prior to index      5774  0.313004
+Medicare  Non-AS  Kidney disease              Amyloidosis                                   1854650       1854650  12 months            241  0.012994
+Medicare  Non-AS  Kidney disease              Amyloidosis                                   1854650       1854650  24 months            403  0.021729
+Medicare  Non-AS  Kidney disease              Amyloidosis                                   1854650       1854650  36 months            540  0.029116
+Medicare  Non-AS  Kidney disease              Amyloidosis                                   1854650       1854650  Prior to index       247  0.013318
+Medicare  Non-AS  Kidney disease              IgA nephropathy                               1854650       1854650  12 months           1907  0.102823
+Medicare  Non-AS  Kidney disease              IgA nephropathy                               1854650       1854650  24 months           3088    0.1665
+Medicare  Non-AS  Kidney disease              IgA nephropathy                               1854650       1854650  36 months           4008  0.216105
+Medicare  Non-AS  Kidney disease              IgA nephropathy                               1854650       1854650  Prior to index      2170  0.117003
+Medicare  Non-AS  Kidney disease              Nephrotic syndrome                            1854650       1854650  12 months           1111  0.059903
+Medicare  Non-AS  Kidney disease              Nephrotic syndrome                            1854650       1854650  24 months           1774  0.095651
+Medicare  Non-AS  Kidney disease              Nephrotic syndrome                            1854650       1854650  36 months           2254  0.121532
+Medicare  Non-AS  Kidney disease              Nephrotic syndrome                            1854650       1854650  Prior to index      1245  0.067129
+Medicare  Non-AS  Lung disease                Apical Pulmonary fibrosis                     1854650       1854650  12 months            151  0.008142
+Medicare  Non-AS  Lung disease                Apical Pulmonary fibrosis                     1854650       1854650  24 months            188  0.010137
+Medicare  Non-AS  Lung disease                Apical Pulmonary fibrosis                     1854650       1854650  36 months            218  0.011754
+Medicare  Non-AS  Lung disease                Apical Pulmonary fibrosis                     1854650       1854650  Prior to index       142  0.007656
+Medicare  Non-AS  Lung disease                Interstitial lung disease                     1854650       1854650  12 months            822  0.044321
+Medicare  Non-AS  Lung disease                Interstitial lung disease                     1854650       1854650  24 months           1551  0.083628
+Medicare  Non-AS  Lung disease                Interstitial lung disease                     1854650       1854650  36 months           2086  0.112474
+Medicare  Non-AS  Lung disease                Interstitial lung disease                     1854650       1854650  Prior to index       884  0.047664
+Medicare  Non-AS  Lung disease                Restrictive lung disease                      1854650       1854650  12 months          23340  1.258458
+Medicare  Non-AS  Lung disease                Restrictive lung disease                      1854650       1854650  24 months          38738  2.088696
+Medicare  Non-AS  Lung disease                Restrictive lung disease                      1854650       1854650  36 months          50849  2.741703
+Medicare  Non-AS  Lung disease                Restrictive lung disease                      1854650       1854650  Prior to index     29343  1.582131
+Medicare  Non-AS  Neurological Disease        Cauda Equina syndrome                         1854650       1854650  12 months            335  0.018063
+Medicare  Non-AS  Neurological Disease        Cauda Equina syndrome                         1854650       1854650  24 months            547  0.029493
+Medicare  Non-AS  Neurological Disease        Cauda Equina syndrome                         1854650       1854650  36 months            729  0.039307
+Medicare  Non-AS  Neurological Disease        Cauda Equina syndrome                         1854650       1854650  Prior to index       423  0.022808
+Medicare  Non-AS  Neurological Disease        Spinal Cord compression                       1854650       1854650  12 months           1518  0.081848
+Medicare  Non-AS  Neurological Disease        Spinal Cord compression                       1854650       1854650  24 months           2600  0.140188
+Medicare  Non-AS  Neurological Disease        Spinal Cord compression                       1854650       1854650  36 months           3451  0.186073
+Medicare  Non-AS  Neurological Disease        Spinal Cord compression                       1854650       1854650  Prior to index      1923  0.103685
+Medicare  Non-AS  Osteoporotic fracture       Clinical vertebral fracture                   1854650       1854650  12 months          20582  1.109751
+Medicare  Non-AS  Osteoporotic fracture       Clinical vertebral fracture                   1854650       1854650  24 months          35761  1.928181
+Medicare  Non-AS  Osteoporotic fracture       Clinical vertebral fracture                   1854650       1854650  36 months          47361  2.553635
+Medicare  Non-AS  Osteoporotic fracture       Clinical vertebral fracture                   1854650       1854650  Prior to index     27463  1.480765
+Medicare  Non-AS  Osteoporotic fracture       Non-vertebral osteoporotic fracture           1854650       1854650  12 months          47086  2.538808
+Medicare  Non-AS  Osteoporotic fracture       Non-vertebral osteoporotic fracture           1854650       1854650  24 months          81433  4.390748
+Medicare  Non-AS  Osteoporotic fracture       Non-vertebral osteoporotic fracture           1854650       1854650  36 months         107757  5.810099
+Medicare  Non-AS  Osteoporotic fracture       Non-vertebral osteoporotic fracture           1854650       1854650  Prior to index     73426  3.959022
+Medicare  Non-AS  PsO/PsA                     Psoriasis                                     1854650       1854650  12 months          17918  0.966112
+Medicare  Non-AS  PsO/PsA                     Psoriasis                                     1854650       1854650  24 months          26326  1.419459
+Medicare  Non-AS  PsO/PsA                     Psoriasis                                     1854650       1854650  36 months          31860  1.717844
+Medicare  Non-AS  PsO/PsA                     Psoriasis                                     1854650       1854650  Prior to index     20605  1.110991
+Medicare  Non-AS  PsO/PsA                     Psoriatic arthritis                           1854650       1854650  12 months           2926  0.157766
+Medicare  Non-AS  PsO/PsA                     Psoriatic arthritis                           1854650       1854650  24 months           3881  0.209258
+Medicare  Non-AS  PsO/PsA                     Psoriatic arthritis                           1854650       1854650  36 months           4494   0.24231
+Medicare  Non-AS  PsO/PsA                     Psoriatic arthritis                           1854650       1854650  Prior to index      3136  0.169089
+Medicare  Non-AS  Uveitis                     Uveitis                                       1854650       1854650  12 months           4292  0.231418
+Medicare  Non-AS  Uveitis                     Uveitis                                       1854650       1854650  24 months           7059  0.380611
+Medicare  Non-AS  Uveitis                     Uveitis                                       1854650       1854650  36 months           9189  0.495457
+Medicare  Non-AS  Uveitis                     Uveitis                                       1854650       1854650  Prior to index      5774  0.311326
  
  
  
@@ -644,101 +644,101 @@ Medicare  Non-AS  Uveitis                     Uveitis                           
  
  
                                                         queryPrevalentComorbiditiesControl.sas
-359        quit;
+360        quit;
 NOTE: The PROCEDURE SQL printed pages 1-3.
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           19:25.85
-      cpu time            12:58.07
+      real time           16:14.78
+      cpu time            10:16.61
       
 
-360        
 361        
-362        proc export
-363          data = Work.prev
-364          outfile = "data\processed\&cmt..csv"
-365          dbms = csv
-366          replace;
-367          delimiter = ",";
-368        run;
+362        
+363        proc export
+364          data = Work.prev
+365          outfile = "data\processed\&cmt..csv"
+366          dbms = csv
+367          replace;
+368          delimiter = ",";
+369        run;
 
-369         /**********************************************************************
-370         *   PRODUCT:   SAS
-371         *   VERSION:   9.4
-7                                                                   The SAS System                                       13:20 Thursday, April 5, 2018
+370         /**********************************************************************
+371         *   PRODUCT:   SAS
+372         *   VERSION:   9.4
+7                                                                   The SAS System                                          18:24 Monday, May 21, 2018
 
-372         *   CREATOR:   External File Interface
-373         *   DATE:      05APR18
-374         *   DESC:      Generated SAS Datastep Code
-375         *   TEMPLATE SOURCE:  (None Specified.)
-376         ***********************************************************************/
-377            data _null_;
-378            %let _EFIERR_ = 0; /* set the ERROR detection macro variable */
-379            %let _EFIREC_ = 0;     /* clear export record count macro variable */
-380            file 'data\processed\queryPrevalentComorbiditiesControl.csv' delimiter=',' DSD DROPOVER lrecl=32767;
-381            if _n_ = 1 then        /* write column names or labels */
-382             do;
-383               put
-384                  "database"
-385               ','
-386                  "cohort"
-387               ','
-388                  "outcomeCategory"
-389               ','
-390                  "Disease"
-391               ','
-392                  "denomPatid"
-393               ','
-394                  "denomControlCohort"
-395               ','
-396                  "timeWindow"
-397               ','
-398                  "numer"
-399               ','
-400                  "prevPct"
-401               ;
-402             end;
-403           set  WORK.PREV   end=EFIEOD;
-404               format database $8. ;
-405               format cohort $6. ;
-406               format outcomeCategory $26. ;
-407               format Disease $41. ;
-408               format denomPatid best12. ;
-409               format denomControlCohort best12. ;
-410               format timeWindow $14. ;
-411               format numer best12. ;
-412               format prevPct best12. ;
-413             do;
-414               EFIOUT + 1;
-415               put database $ @;
-416               put cohort $ @;
-417               put outcomeCategory $ @;
-418               put Disease $ @;
-419               put denomPatid @;
-420               put denomControlCohort @;
-421               put timeWindow $ @;
-422               put numer @;
-423               put prevPct ;
-424               ;
-425             end;
-426            if _ERROR_ then call symputx('_EFIERR_',1);  /* set ERROR detection macro variable */
-427            if EFIEOD then call symputx('_EFIREC_',EFIOUT);
-428            run;
+373         *   CREATOR:   External File Interface
+374         *   DATE:      21MAY18
+375         *   DESC:      Generated SAS Datastep Code
+376         *   TEMPLATE SOURCE:  (None Specified.)
+377         ***********************************************************************/
+378            data _null_;
+379            %let _EFIERR_ = 0; /* set the ERROR detection macro variable */
+380            %let _EFIREC_ = 0;     /* clear export record count macro variable */
+381            file 'data\processed\queryPrevalentComorbiditiesControl.csv' delimiter=',' DSD DROPOVER lrecl=32767;
+382            if _n_ = 1 then        /* write column names or labels */
+383             do;
+384               put
+385                  "database"
+386               ','
+387                  "cohort"
+388               ','
+389                  "outcomeCategory"
+390               ','
+391                  "Disease"
+392               ','
+393                  "denomPatid"
+394               ','
+395                  "denomControlCohort"
+396               ','
+397                  "timeWindow"
+398               ','
+399                  "numer"
+400               ','
+401                  "prevPct"
+402               ;
+403             end;
+404           set  WORK.PREV   end=EFIEOD;
+405               format database $8. ;
+406               format cohort $6. ;
+407               format outcomeCategory $26. ;
+408               format Disease $41. ;
+409               format denomPatid best12. ;
+410               format denomControlCohort best12. ;
+411               format timeWindow $14. ;
+412               format numer best12. ;
+413               format prevPct best12. ;
+414             do;
+415               EFIOUT + 1;
+416               put database $ @;
+417               put cohort $ @;
+418               put outcomeCategory $ @;
+419               put Disease $ @;
+420               put denomPatid @;
+421               put denomControlCohort @;
+422               put timeWindow $ @;
+423               put numer @;
+424               put prevPct ;
+425               ;
+426             end;
+427            if _ERROR_ then call symputx('_EFIERR_',1);  /* set ERROR detection macro variable */
+428            if EFIEOD then call symputx('_EFIREC_',EFIOUT);
+429            run;
 
 NOTE: The file 'data\processed\queryPrevalentComorbiditiesControl.csv' is:
       Filename=U:\studies\AS\pgms\bchan\data\processed\queryPrevalentComorbiditiesControl.csv,
       RECFM=V,LRECL=32767,File Size (bytes)=0,
-      Last Modified=05Apr2018:13:59:07,
-      Create Time=05Apr2018:13:59:07
+      Last Modified=21May2018:18:54:51,
+      Create Time=21May2018:18:54:51
 
 NOTE: 185 records were written to the file 'data\processed\queryPrevalentComorbiditiesControl.csv'.
       The minimum record length was 71.
       The maximum record length was 123.
 NOTE: There were 184 observations read from the data set WORK.PREV.
 NOTE: DATA statement used (Total process time):
-      real time           0.10 seconds
-      cpu time            0.00 seconds
+      real time           0.12 seconds
+      cpu time            0.04 seconds
       
-8                                                                   The SAS System                                       13:20 Thursday, April 5, 2018
+8                                                                   The SAS System                                          18:24 Monday, May 21, 2018
 
 
 184 records created in data\processed\queryPrevalentComorbiditiesControl.csv from WORK.PREV.
@@ -746,15 +746,15 @@ NOTE: DATA statement used (Total process time):
   
 NOTE: "data\processed\queryPrevalentComorbiditiesControl.csv" file was successfully created.
 NOTE: PROCEDURE EXPORT used (Total process time):
-      real time           1.57 seconds
-      cpu time            0.09 seconds
+      real time           1.82 seconds
+      cpu time            0.18 seconds
       
 
-429        
 430        
-431        ods html close;
+431        
+432        ods html close;
 NOTE: SAS Institute Inc., SAS Campus Drive, Cary, NC USA 27513-2414
 NOTE: The SAS System used:
-      real time           39:02.73
-      cpu time            25:30.15
+      real time           30:09.38
+      cpu time            20:28.44
       

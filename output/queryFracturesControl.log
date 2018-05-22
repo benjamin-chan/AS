@@ -1,35 +1,35 @@
-1                                                          The SAS System                            22:16 Friday, December 29, 2017
+1                                         The SAS System                17:46 Monday, May 21, 2018
 
-NOTE: Copyright (c) 2002-2012 by SAS Institute Inc., Cary, NC, USA. 
-NOTE: SAS (r) Proprietary Software 9.4 (TS1M1) 
-      Licensed to UNIVERSITY OF ALABAMA AT BIRMINGHAM - SFA - T&R, Site 70058223.
-NOTE: This session is executing on the W32_ES08R2  platform.
+NOTE: Copyright (c) 2016 by SAS Institute Inc., Cary, NC, USA. 
+NOTE: SAS (r) Proprietary Software 9.4 (TS1M5) 
+      Licensed to UNIVERSITY OF ALABAMA AT BIRMINGHAM - SFA - T&R, Site 70086550.
+NOTE: This session is executing on the X64_DS08R2  platform.
 
 
 
 NOTE: Updated analytical products:
       
-      SAS/STAT 13.1
-      SAS/ETS 13.1
-      SAS/OR 13.1
-      SAS/IML 13.1
-      SAS/QC 13.1
+      SAS/STAT 14.3
+      SAS/ETS 14.3
+      SAS/IML 14.3
+      SAS/QC 14.3
 
 NOTE: Additional host information:
 
- W32_ES08R2 WIN 6.1.7601 Service Pack 1 Server
+ X64_DS08R2 WIN 6.1.7601 Service Pack 1 Server
 
 --- PEER News and Updates ---
 
 : SECURITY REMINDER :
-Please remember not to copy any data files that contain PHI (protected health identifiers) to any of the shared folders.
+Please remember not to copy any data files that contain PHI (protected health identifiers) to any 
+of the shared folders.
 
  
 
 
 NOTE: SAS initialization used:
-      real time           0.26 seconds
-      cpu time            0.12 seconds
+      real time           5.21 seconds
+      cpu time            0.34 seconds
       
 1          *  University of Alabama at Birmingham                               *
 2          *  AS project                                            *
@@ -50,7 +50,7 @@ NOTE: Libref STD_SABR was successfully assigned as follows:
       Physical Name: q:\data\std_SABER\
 NOTE: Libref MPSTD was successfully assigned as follows: 
       Engine:        SPDE 
-      Physical Name: h:\studies\mpcd\data\stddata\
+      Physical Name: q:\studies\mpcd\data\stddata\
 NOTE: Libref UCBSTD was successfully assigned as follows: 
       Engine:        SPDE 
       Physical Name: q:\studies\AS\data\stddata\
@@ -63,318 +63,322 @@ NOTE: Libref DT was successfully assigned as follows:
 NOTE: Libref NDC was successfully assigned as follows: 
       Engine:        V9 
       Physical Name: W:\onenote\references\drug ndcs\sas data
-127        footnote "&pgm.";
-128        * footnote2 "%sysfunc(datetime(),datetime14.)";
-129        title1 '--- AS project ---';
-130        **********************************************************************;
-131        options macrogen mlogic mprint symbolgen;
-132        options nomacrogen nomlogic nomprint nosymbolgen;
-133        
+128        footnote "&pgm.";
+129        * footnote2 "%sysfunc(datetime(),datetime14.)";
+130        title1 '--- AS project ---';
+131        **********************************************************************;
+132        options macrogen mlogic mprint symbolgen;
+133        options nomacrogen nomlogic nomprint nosymbolgen;
 134        
-135        ods html
-2                                                                   The SAS System                                     22:16 Friday, December 29, 2017
+135        
+136        ods html
+2                                                                   The SAS System                                          17:46 Monday, May 21, 2018
 
-136          body = "output\&cmt..html"
-137          style = Statistical;
+137          body = "output\&cmt..html"
+138          style = Statistical;
 NOTE: Writing HTML Body file: output\queryFracturesControl.html
-138        
 139        
-140        /*
-141        FRACTURES
-142        
-143        See "ALGORITHMS TO ENHANCE SPECIFICITY OF FRACTURE IDENTIFICATION_ 100316.docx"
-144        
-145        Adapted from Lang's code in "001_fx_data.sas"
-146        
+140        
+141        /*
+142        FRACTURES
+143        
+144        See "ALGORITHMS TO ENHANCE SPECIFICITY OF FRACTURE IDENTIFICATION_ 100316.docx"
+145        
+146        Adapted from Lang's code in "001_fx_data.sas"
 147        
-148        From: Chen, Lang [mailto:langchen@uabmc.edu]
-149        Sent: Monday, July 24, 2017 8:56 AM
-150        To: Benjamin Chan <chanb@ohsu.edu>
-151        Subject: RE: fracture identification algorithm
-152        
-153        Here it is.
-154        For 001_fx_data, find all fx related claim and run the algorithm.
-155        Please ignore any code after line 476
-156        Modify code from line 1 -50
-157        
-158        For 002_fx_epi_data
-159        Define fx episode.
-160        
-161        Final output data is fx_dgns_&firstyr._&lastyr._4. Please let me if you have any questions.
-162         */
-163        
+148        
+149        From: Chen, Lang [mailto:langchen@uabmc.edu]
+150        Sent: Monday, July 24, 2017 8:56 AM
+151        To: Benjamin Chan <chanb@ohsu.edu>
+152        Subject: RE: fracture identification algorithm
+153        
+154        Here it is.
+155        For 001_fx_data, find all fx related claim and run the algorithm.
+156        Please ignore any code after line 476
+157        Modify code from line 1 -50
+158        
+159        For 002_fx_epi_data
+160        Define fx episode.
+161        
+162        Final output data is fx_dgns_&firstyr._&lastyr._4. Please let me if you have any questions.
+163         */
 164        
-165        /*
-166        START OF 001_fx_data.sas
-167         */
-168        
+165        
+166        /*
+167        START OF 001_fx_data.sas
+168         */
 169        
-170        /*Assign "Broad" fracture site (fx_site) for all ICD9 diagnoses, outputting separately, so some records are cloned, then combining into one
-170      !  file */
-171        /*No longer using matched trauma files here*/
-172        
-173        %macro comballfxdgns;
-174            data fx_dgns;
-175                set UCB.tempFracDxAllControl (where = (diagCodeType = "Fracture code"));
-176                    length fx_site $30 ;
-177                    fx_site = '';
-178                    if strip(DX) in: ('800' '801' '802' '803' '804') then           do; fx_site='(800-804) skull/face'; output; end;
-179                    if strip(DX) in: ('805', '806') or strip(DX)='73313' then       do; fx_site='(805, 806, 73313) spine'; output; end;
-180                    if strip(DX) in: ('807') then                                           do; fx_site='(807) rib/sternum/trachea'; output; end;
-181                    if strip(DX) in: ('808') then                                           do; fx_site='(808) pelvis'; output; end;
-182                    if strip(DX) in: ('809') then                                           do; fx_site='(809) trunk bones'; output; end;
-183                    if strip(DX) in: ('810') then                                           do; fx_site='(810) clavicle'; output; end;
-184                    if strip(DX) in: ('811') then                                           do; fx_site='(811) scapula'; output; end;
-185                    if strip(DX) in: ('812') or strip(DX)='73311' then              do; fx_site='(812, 73311) humerus'; output; end;
-186                    if strip(DX) in: ('813') or strip(DX)='73312' then              do; fx_site='(813, 73312) radius_ulna'; output; end;
-187                    if strip(DX) in: ('814') then                                           do; fx_site='(814) carpal'; output; end;
-188                    if strip(DX) in: ('815' '816' '817') then                           do; fx_site='(815-817) hand/fingers'; output; end;
-189                    if strip(DX) in: ('818' '819') then                                     do; fx_site='(818-819) arms mult'; output; end;
-190                    if strip(DX) in: ('820') or strip(DX) = '73314' then                do; fx_site='(820, 73314) hip'; output; end;
-191                    if strip(DX) in: ('821') or strip(DX)='73315' then              do; fx_site='(821, 73315) femur'; output; end;
-192                    if strip(DX) in: ('822') then                                           do; fx_site='(822) patella'; output; end;
-193                    if strip(DX) in: ('823') or strip(DX)='73316' then              do; fx_site='(823, 73316) tib_fib'; output; end;
-194                    if strip(DX) in: ('824') then                                           do; fx_site='(824) ankle'; output; end;
-195                    if strip(DX) in: ('825') then                                           do; fx_site='(825) tarsal_metatarsal'; output; end;
-196                    if strip(DX) in: ('826') then                                           do; fx_site='(826) foot_phalanges'; output; end;
-197                    if strip(DX) in: ('827') then                                           do; fx_site='(827) lower_limb'; output; end;
-198                    if strip(DX) in: ('828') then                                           do; fx_site='(828) legs+arm/rib'; output; end;
-199                    if strip(DX) in: ('829') then                                           do; fx_site='(829) fx_nos'; output; end;
-200                    if strip(DX) in ('73310' '73319' '7331') then                 do; fx_site='(7331) pathologic nos/nec'; output; end;
-201            data fx_excare;
-202                set UCB.tempFracDxAllControl (where = (diagCodeType = "Extended care code"));
-203                    length fx_site $30 ;
-204                    fx_site = '';
-205                    /*Expanded Diagnosis Codes - Fracture Aftercare Codes*/
-3                                                                   The SAS System                                     22:16 Friday, December 29, 2017
+170        
+171        /*Assign "Broad" fracture site (fx_site) for all ICD9 diagnoses, outputting separately, so some records are cloned, then combining into one
+171      !  file */
+172        /*No longer using matched trauma files here*/
+173        
+174        %macro comballfxdgns;
+175            data fx_dgns;
+176                set UCB.tempFracDxAllControl (where = (diagCodeType = "Fracture code"));
+177                    length fx_site $30 ;
+178                    fx_site = '';
+179                    if strip(DX) in: ('800' '801' '802' '803' '804') then           do; fx_site='(800-804) skull/face'; output; end;
+180                    if strip(DX) in: ('805', '806') or strip(DX)='73313' then       do; fx_site='(805, 806, 73313) spine'; output; end;
+181                    if strip(DX) in: ('807') then                                           do; fx_site='(807) rib/sternum/trachea'; output; end;
+182                    if strip(DX) in: ('808') then                                           do; fx_site='(808) pelvis'; output; end;
+183                    if strip(DX) in: ('809') then                                           do; fx_site='(809) trunk bones'; output; end;
+184                    if strip(DX) in: ('810') then                                           do; fx_site='(810) clavicle'; output; end;
+185                    if strip(DX) in: ('811') then                                           do; fx_site='(811) scapula'; output; end;
+186                    if strip(DX) in: ('812') or strip(DX)='73311' then              do; fx_site='(812, 73311) humerus'; output; end;
+187                    if strip(DX) in: ('813') or strip(DX)='73312' then              do; fx_site='(813, 73312) radius_ulna'; output; end;
+188                    if strip(DX) in: ('814') then                                           do; fx_site='(814) carpal'; output; end;
+189                    if strip(DX) in: ('815' '816' '817') then                           do; fx_site='(815-817) hand/fingers'; output; end;
+190                    if strip(DX) in: ('818' '819') then                                     do; fx_site='(818-819) arms mult'; output; end;
+191                    if strip(DX) in: ('820') or strip(DX) = '73314' then                do; fx_site='(820, 73314) hip'; output; end;
+192                    if strip(DX) in: ('821') or strip(DX)='73315' then              do; fx_site='(821, 73315) femur'; output; end;
+193                    if strip(DX) in: ('822') then                                           do; fx_site='(822) patella'; output; end;
+194                    if strip(DX) in: ('823') or strip(DX)='73316' then              do; fx_site='(823, 73316) tib_fib'; output; end;
+195                    if strip(DX) in: ('824') then                                           do; fx_site='(824) ankle'; output; end;
+196                    if strip(DX) in: ('825') then                                           do; fx_site='(825) tarsal_metatarsal'; output; end;
+197                    if strip(DX) in: ('826') then                                           do; fx_site='(826) foot_phalanges'; output; end;
+198                    if strip(DX) in: ('827') then                                           do; fx_site='(827) lower_limb'; output; end;
+199                    if strip(DX) in: ('828') then                                           do; fx_site='(828) legs+arm/rib'; output; end;
+200                    if strip(DX) in: ('829') then                                           do; fx_site='(829) fx_nos'; output; end;
+201                    if strip(DX) in ('73310' '73319' '7331') then                 do; fx_site='(7331) pathologic nos/nec'; output; end;
+202            data fx_excare;
+203                set UCB.tempFracDxAllControl (where = (diagCodeType = "Extended care code"));
+204                    length fx_site $30 ;
+205                    fx_site = '';
+206                    /*Expanded Diagnosis Codes - Fracture Aftercare Codes*/
+3                                                                   The SAS System                                          17:46 Monday, May 21, 2018
 
-206                    if strip(DX) in ('V5410' 'V5420') then                          do; fx_site='(812, 73311) humerus'; output;
-207                                                                                                     fx_site='(813, 73312) radius_ulna'; output;
-207      ! end;
-208                    if strip(DX) in ('V5411' 'V5421') then                          do; fx_site='(812, 73311) humerus'; output; end;
-209                    if strip(DX) in ('V5412' 'V5422') then                          do; fx_site='(813, 73312) radius_ulna'; output;
-210                                                                                                     fx_site='(814) carpal'; output; end;
-211                    if strip(DX) in ('V5413' 'V5423') then                          do; fx_site='(820, 73314) hip'; output; end;
-212                    if strip(DX) in ('V5414' 'V5424') then                          do; fx_site='(820, 73314) hip'; output;
-213                                                                                                     fx_site='(821, 73315) femur'; output;
-214                                                                                                     fx_site='(822) patella'; output;
-215                                                                                                     fx_site='(824) ankle'; output;
-216                                                                                                     fx_site='(823, 73316) tib_fib'; output; end;
-217                    if strip(DX) in ('V5415' 'V5425') then                          do; fx_site='(820, 73314) hip'; output;
-218                                                                                                     fx_site='(821, 73315) femur'; output;
-219                                                                                                     fx_site='(822) patella'; output; end;
-220                    if strip(DX) in ('V5416' 'V5426') then                          do; fx_site='(824) ankle'; output;
-221                                                                                                     fx_site='(822) patella'; output;
-222                                                                                                     fx_site='(823, 73316) tib_fib'; output; end;
-223                    if strip(DX) in ('V5417' 'V5427') then                          do; fx_site='(805, 806, 73313) spine'; output; end;
-224                    if strip(DX) in: ('V542') then                                       do; fx_site='(7331) pathologic nos/nec'; output; end;
-225                    if strip(DX) in: ('V541') then                                       do; fx_site='(829) fx_nos'; output; end;
-226            run;
-227        
-228            /* proc sort data=fx_dgns; by patid BEGIN_DATE fx_site; run;
-229            proc sort data=fx_excare; by patid BEGIN_DATE fx_site; run; */
-230        %mend;
-231        %comballfxdgns;
+207                    if strip(DX) in ('V5410' 'V5420') then                          do; fx_site='(812, 73311) humerus'; output;
+208                                                                                                     fx_site='(813, 73312) radius_ulna'; output;
+208      ! end;
+209                    if strip(DX) in ('V5411' 'V5421') then                          do; fx_site='(812, 73311) humerus'; output; end;
+210                    if strip(DX) in ('V5412' 'V5422') then                          do; fx_site='(813, 73312) radius_ulna'; output;
+211                                                                                                     fx_site='(814) carpal'; output; end;
+212                    if strip(DX) in ('V5413' 'V5423') then                          do; fx_site='(820, 73314) hip'; output; end;
+213                    if strip(DX) in ('V5414' 'V5424') then                          do; fx_site='(820, 73314) hip'; output;
+214                                                                                                     fx_site='(821, 73315) femur'; output;
+215                                                                                                     fx_site='(822) patella'; output;
+216                                                                                                     fx_site='(824) ankle'; output;
+217                                                                                                     fx_site='(823, 73316) tib_fib'; output; end;
+218                    if strip(DX) in ('V5415' 'V5425') then                          do; fx_site='(820, 73314) hip'; output;
+219                                                                                                     fx_site='(821, 73315) femur'; output;
+220                                                                                                     fx_site='(822) patella'; output; end;
+221                    if strip(DX) in ('V5416' 'V5426') then                          do; fx_site='(824) ankle'; output;
+222                                                                                                     fx_site='(822) patella'; output;
+223                                                                                                     fx_site='(823, 73316) tib_fib'; output; end;
+224                    if strip(DX) in ('V5417' 'V5427') then                          do; fx_site='(805, 806, 73313) spine'; output; end;
+225                    if strip(DX) in: ('V542') then                                       do; fx_site='(7331) pathologic nos/nec'; output; end;
+226                    if strip(DX) in: ('V541') then                                       do; fx_site='(829) fx_nos'; output; end;
+227            run;
+228        
+229            /* proc sort data=fx_dgns; by patid BEGIN_DATE fx_site; run;
+230            proc sort data=fx_excare; by patid BEGIN_DATE fx_site; run; */
+231        %mend;
+232        %comballfxdgns;
+NOTE: Data set UCB.TEMPFRACDXALLCONTROL is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
+      additional CPU resources and may reduce performance.
+The SAS supervisor will process queries for foreign datasets. No parallel where-clause processing will occur.
 
 NOTE: There were 4280380 observations read from the data set UCB.TEMPFRACDXALLCONTROL.
       WHERE diagCodeType='Fracture code';
-NOTE: Parallel WHERE evaluation suppressed due to sort order on table.
 NOTE: The data set WORK.FX_DGNS has 4280380 observations and 22 variables.
 NOTE: DATA statement used (Total process time):
-      real time           26.98 seconds
-      cpu time            12.04 seconds
+      real time           11.04 seconds
+      cpu time            10.39 seconds
       
 
+NOTE: Data set UCB.TEMPFRACDXALLCONTROL is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
+      additional CPU resources and may reduce performance.
+The SAS supervisor will process queries for foreign datasets. No parallel where-clause processing will occur.
 
 NOTE: There were 315402 observations read from the data set UCB.TEMPFRACDXALLCONTROL.
       WHERE diagCodeType='Extended care code';
-NOTE: Parallel WHERE evaluation suppressed due to sort order on table.
 NOTE: The data set WORK.FX_EXCARE has 729598 observations and 22 variables.
 NOTE: DATA statement used (Total process time):
-      real time           1.04 seconds
-      cpu time            1.35 seconds
+      real time           1.57 seconds
+      cpu time            1.56 seconds
       
 
-232        
-233        /*Now, assign a more specific fracture site (e.g., closed, other) (site) that is used in the CQ algorithms*/
-234        /*Since Expanded Diagnosis Codes (V Codes) apply to sub-categories of each broad fracture site, clone records for these so they appear in
-234      ! both places*/
-235        
-236        data fx_dgns_2;
-237            set fx_dgns;
-238        
-239            length site $30;
-240        
-241            site="";
-242        
-243            *Spine-closed and Spine-other;
-244            if fx_site='(805, 806, 73313) spine' then
-245                do;
-246                    site = 'spine_cls'; /*Includes V Codes and 73313 here*/
-247                    if substr(strip(DX),1,3) in ('805' '806') and substr(strip(DX),1,4) ^in ('8050', '8052', '8054', '8058') then
-248                        site = 'spine_oth';
-249                end;
-250        
-251            *Pelvis-closed and Pelvis-other... No V Codes;
-252            if fx_site='(808) pelvis' then
-253                do;
-254                    site = 'pelvis_cls';
-255                    if substr(strip(DX),1,3)='808' and substr(strip(DX),1,4) ^in ('8080', '8082', '8084', '8088') then
-4                                                                   The SAS System                                     22:16 Friday, December 29, 2017
+233        
+234        /*Now, assign a more specific fracture site (e.g., closed, other) (site) that is used in the CQ algorithms*/
+235        /*Since Expanded Diagnosis Codes (V Codes) apply to sub-categories of each broad fracture site, clone records for these so they appear in
+235      ! both places*/
+236        
+237        data fx_dgns_2;
+238            set fx_dgns;
+239        
+240            length site $30;
+241        
+242            site="";
+243        
+244            *Spine-closed and Spine-other;
+245            if fx_site='(805, 806, 73313) spine' then
+246                do;
+247                    site = 'spine_cls'; /*Includes V Codes and 73313 here*/
+248                    if substr(strip(DX),1,3) in ('805' '806') and substr(strip(DX),1,4) ^in ('8050', '8052', '8054', '8058') then
+249                        site = 'spine_oth';
+250                end;
+251        
+252            *Pelvis-closed and Pelvis-other... No V Codes;
+4                                                                   The SAS System                                          17:46 Monday, May 21, 2018
 
-256                        site = 'pelvis_oth';
-257                end;
-258        
-259            *Clavicle-closed and Clavicle-other.... No V Codes;
-260            if fx_site='(810) clavicle' then
-261                do;
-262                    site = 'clv_cls';
-263                    if substr(strip(DX),1,3) = '810' and substr(strip(DX),1,4) ^in ('8100') then
-264                        site = 'clv_oth';
-265                end;
-266        
-267            *Humerus-closed and Humerus-other;
-268            if fx_site='(812, 73311) humerus' then
-269                do;
-270                    site = 'hmrs_cls'; /*Includes V Codes and 73311 here*/
-271                    if substr(strip(DX),1,3)= '812' and substr(strip(DX),1,4) ^in ('8120', '8122', '8124') then
-272                        site = 'hmrs_oth';
-273                end;
-274        
-275            *Distal radius/ulna and Radius/ulna-other;
-276            if fx_site='(813, 73312) radius_ulna' then
-277                do;
-278                 site = 'dist4arm'; /*Includes V Codes and 73312 here*/
-279                    if substr(strip(DX),1,3) = '813' and substr(strip(DX),1,4) ^in ('8134', '8135') then
-280                        site = 'rad_ul_oth';
-281                end;
-282        
-283            *Carpal... V Codes present but only one category;
-284            if fx_site='(814) carpal' then
-285                do;
-286                    site = 'carpal';
-287                 end;
-288        
-289            *Hip-closed and Hip-other;
-290            if fx_site='(820, 73314) hip' then
-291                    do;
-292                    site = 'hip_cls'; /*Includes V Codes and 73314 here*/
-293                    if substr(strip(DX),1,3)='820' and substr(strip(DX),1,4) ^in ('8200', '8202', '8208') then
-294                        site = 'hip_oth';
-295                end;
-296        
-297            *Other femur-closed and Other femur-other;
-298            if fx_site='(821, 73315) femur' then
-299                do;
-300                    site = 'oth_fem_cls'; /*Includes V Codes and 73315 here*/
-301                    if substr(strip(DX),1,3)='821' and substr(strip(DX),1,4) ^in ('8210', '8212') then
-302                        site = 'oth_fem_oth';
-303                end;
-304        
-305            *Tib/fib-closed and Tib/fib-other;
-306            if fx_site='(823, 73316) tib_fib' then
-307                do;
-308                    site = 'tib_fib_cls'; /*Includes V Codes and 73316 here*/
-309                    if substr(strip(DX),1,3)='823' and substr(strip(DX),1,4) ^in ('8230', '8232', '8238') then
-310                        site = 'tib_fib_oth';
-311                end;
-312        
-313            *Ankle... V Codes present but only one category;
-314            if fx_site='(824) ankle' then
-315                do;
-316                    site = 'ankle';
-317                end;
-318        
-319            /*Assign site for other fx_sites that do not have CQ algorithm and thus no sub categories*/
-320            if site = "" then do;
-321                site = fx_site;
-322            end;
-323        
-324            label site = 'CQ Algorithm Fracture Site (Specific)';
-325        
-326        run;
+253            if fx_site='(808) pelvis' then
+254                do;
+255                    site = 'pelvis_cls';
+256                    if substr(strip(DX),1,3)='808' and substr(strip(DX),1,4) ^in ('8080', '8082', '8084', '8088') then
+257                        site = 'pelvis_oth';
+258                end;
+259        
+260            *Clavicle-closed and Clavicle-other.... No V Codes;
+261            if fx_site='(810) clavicle' then
+262                do;
+263                    site = 'clv_cls';
+264                    if substr(strip(DX),1,3) = '810' and substr(strip(DX),1,4) ^in ('8100') then
+265                        site = 'clv_oth';
+266                end;
+267        
+268            *Humerus-closed and Humerus-other;
+269            if fx_site='(812, 73311) humerus' then
+270                do;
+271                    site = 'hmrs_cls'; /*Includes V Codes and 73311 here*/
+272                    if substr(strip(DX),1,3)= '812' and substr(strip(DX),1,4) ^in ('8120', '8122', '8124') then
+273                        site = 'hmrs_oth';
+274                end;
+275        
+276            *Distal radius/ulna and Radius/ulna-other;
+277            if fx_site='(813, 73312) radius_ulna' then
+278                do;
+279                 site = 'dist4arm'; /*Includes V Codes and 73312 here*/
+280                    if substr(strip(DX),1,3) = '813' and substr(strip(DX),1,4) ^in ('8134', '8135') then
+281                        site = 'rad_ul_oth';
+282                end;
+283        
+284            *Carpal... V Codes present but only one category;
+285            if fx_site='(814) carpal' then
+286                do;
+287                    site = 'carpal';
+288                 end;
+289        
+290            *Hip-closed and Hip-other;
+291            if fx_site='(820, 73314) hip' then
+292                    do;
+293                    site = 'hip_cls'; /*Includes V Codes and 73314 here*/
+294                    if substr(strip(DX),1,3)='820' and substr(strip(DX),1,4) ^in ('8200', '8202', '8208') then
+295                        site = 'hip_oth';
+296                end;
+297        
+298            *Other femur-closed and Other femur-other;
+299            if fx_site='(821, 73315) femur' then
+300                do;
+301                    site = 'oth_fem_cls'; /*Includes V Codes and 73315 here*/
+302                    if substr(strip(DX),1,3)='821' and substr(strip(DX),1,4) ^in ('8210', '8212') then
+303                        site = 'oth_fem_oth';
+304                end;
+305        
+306            *Tib/fib-closed and Tib/fib-other;
+307            if fx_site='(823, 73316) tib_fib' then
+308                do;
+309                    site = 'tib_fib_cls'; /*Includes V Codes and 73316 here*/
+310                    if substr(strip(DX),1,3)='823' and substr(strip(DX),1,4) ^in ('8230', '8232', '8238') then
+311                        site = 'tib_fib_oth';
+312                end;
+313        
+314            *Ankle... V Codes present but only one category;
+315            if fx_site='(824) ankle' then
+316                do;
+317                    site = 'ankle';
+318                end;
+319        
+320            /*Assign site for other fx_sites that do not have CQ algorithm and thus no sub categories*/
+321            if site = "" then do;
+322                site = fx_site;
+323            end;
+324        
+5                                                                   The SAS System                                          17:46 Monday, May 21, 2018
 
-5                                                                   The SAS System                                     22:16 Friday, December 29, 2017
+325            label site = 'CQ Algorithm Fracture Site (Specific)';
+326        
+327        run;
 
-NOTE: Invalid third argument to function SUBSTR at line 255 column 48.
+NOTE: Invalid third argument to function SUBSTR at line 256 column 48.
 database=MPCD cohort=Non-AS PATID=102482316 indexDate=07/03/2007 age=75 SEX=F ENR_START_DATE=01/01/2007 ENR_END_DATE=01/31/2010 controlID=28427
 ENCOUNTERID=10807028445 ENC_TYPE=ED ADMIT_DATE= BEGIN_DATE=07/04/2009 DISCHARGE_DATE= END_DATE=07/04/2009 DX_TYPE=09 DX=808 PDX=O codeType=ICD9-DX
 code=808 diagCodeType=Fracture code fx_site=(808) pelvis site=pelvis_oth _ERROR_=1 _N_=19983
-NOTE: Invalid third argument to function SUBSTR at line 255 column 48.
+NOTE: Invalid third argument to function SUBSTR at line 256 column 48.
 database=MPCD cohort=Non-AS PATID=102482316 indexDate=07/03/2007 age=75 SEX=F ENR_START_DATE=01/01/2007 ENR_END_DATE=01/31/2010 controlID=28427
 ENCOUNTERID=10807028445 ENC_TYPE=ED ADMIT_DATE= BEGIN_DATE=07/04/2009 DISCHARGE_DATE= END_DATE=07/04/2009 DX_TYPE=09 DX=808 PDX=P codeType=ICD9-DX
 code=808 diagCodeType=Fracture code fx_site=(808) pelvis site=pelvis_oth _ERROR_=1 _N_=19984
-NOTE: Invalid third argument to function SUBSTR at line 255 column 48.
+NOTE: Invalid third argument to function SUBSTR at line 256 column 48.
 database=MPCD cohort=Non-AS PATID=102482316 indexDate=07/03/2007 age=75 SEX=F ENR_START_DATE=01/01/2007 ENR_END_DATE=01/31/2010 controlID=28427
 ENCOUNTERID=10861064444 ENC_TYPE=ED ADMIT_DATE= BEGIN_DATE=07/04/2009 DISCHARGE_DATE= END_DATE=07/04/2009 DX_TYPE=09 DX=808 PDX=O codeType=ICD9-DX
 code=808 diagCodeType=Fracture code fx_site=(808) pelvis site=pelvis_oth _ERROR_=1 _N_=19989
-NOTE: Invalid third argument to function SUBSTR at line 255 column 48.
+NOTE: Invalid third argument to function SUBSTR at line 256 column 48.
 database=MPCD cohort=Non-AS PATID=102482316 indexDate=07/03/2007 age=75 SEX=F ENR_START_DATE=01/01/2007 ENR_END_DATE=01/31/2010 controlID=28427
 ENCOUNTERID=10861064444 ENC_TYPE=ED ADMIT_DATE= BEGIN_DATE=07/04/2009 DISCHARGE_DATE= END_DATE=07/04/2009 DX_TYPE=09 DX=808 PDX=P codeType=ICD9-DX
 code=808 diagCodeType=Fracture code fx_site=(808) pelvis site=pelvis_oth _ERROR_=1 _N_=19990
-NOTE: Invalid third argument to function SUBSTR at line 271 column 49.
+NOTE: Invalid third argument to function SUBSTR at line 272 column 49.
 database=MPCD cohort=Non-AS PATID=102501970 indexDate=07/03/2007 age=70 SEX=F ENR_START_DATE=01/01/2007 ENR_END_DATE=12/31/2010 controlID=40946
 ENCOUNTERID=10886102012 ENC_TYPE=AV ADMIT_DATE= BEGIN_DATE=05/20/2010 DISCHARGE_DATE= END_DATE=05/20/2010 DX_TYPE=09 DX=812 PDX=P codeType=ICD9-DX
 code=812 diagCodeType=Fracture code fx_site=(812, 73311) humerus site=hmrs_oth _ERROR_=1 _N_=29606
-NOTE: Invalid third argument to function SUBSTR at line 255 column 48.
+NOTE: Invalid third argument to function SUBSTR at line 256 column 48.
 database=MPCD cohort=Non-AS PATID=103648636 indexDate=07/03/2007 age=80 SEX=F ENR_START_DATE=01/01/2007 ENR_END_DATE=12/31/2010 controlID=70462
 ENCOUNTERID=10892850787 ENC_TYPE=AV ADMIT_DATE= BEGIN_DATE=04/28/2009 DISCHARGE_DATE= END_DATE=04/28/2009 DX_TYPE=09 DX=808 PDX=O codeType=ICD9-DX
 code=808 diagCodeType=Fracture code fx_site=(808) pelvis site=pelvis_oth _ERROR_=1 _N_=54175
-NOTE: Invalid third argument to function SUBSTR at line 255 column 48.
+NOTE: Invalid third argument to function SUBSTR at line 256 column 48.
 database=MPCD cohort=Non-AS PATID=103648636 indexDate=07/03/2007 age=80 SEX=F ENR_START_DATE=01/01/2007 ENR_END_DATE=12/31/2010 controlID=70462
 ENCOUNTERID=10892850787 ENC_TYPE=AV ADMIT_DATE= BEGIN_DATE=04/28/2009 DISCHARGE_DATE= END_DATE=04/28/2009 DX_TYPE=09 DX=808 PDX=P codeType=ICD9-DX
 code=808 diagCodeType=Fracture code fx_site=(808) pelvis site=pelvis_oth _ERROR_=1 _N_=54176
-NOTE: Invalid third argument to function SUBSTR at line 263 column 50.
+NOTE: Invalid third argument to function SUBSTR at line 264 column 50.
 database=MPCD cohort=Non-AS PATID=103662395 indexDate=10/01/2009 age=65 SEX=M ENR_START_DATE=04/01/2009 ENR_END_DATE=12/31/2010 controlID=79181
 ENCOUNTERID=10857526106 ENC_TYPE=AV ADMIT_DATE= BEGIN_DATE=09/09/2009 DISCHARGE_DATE= END_DATE=09/09/2009 DX_TYPE=09 DX=810 PDX=P codeType=ICD9-DX
 code=810 diagCodeType=Fracture code fx_site=(810) clavicle site=clv_oth _ERROR_=1 _N_=61267
-NOTE: Invalid third argument to function SUBSTR at line 263 column 50.
+NOTE: Invalid third argument to function SUBSTR at line 264 column 50.
 database=MPCD cohort=Non-AS PATID=103662395 indexDate=10/01/2009 age=65 SEX=M ENR_START_DATE=04/01/2009 ENR_END_DATE=12/31/2010 controlID=79181
 ENCOUNTERID=10857526106 ENC_TYPE=NH ADMIT_DATE= BEGIN_DATE=09/09/2009 DISCHARGE_DATE= END_DATE=09/09/2009 DX_TYPE=09 DX=810 PDX=O codeType=ICD9-DX
 code=810 diagCodeType=Fracture code fx_site=(810) clavicle site=clv_oth _ERROR_=1 _N_=61268
-NOTE: Invalid third argument to function SUBSTR at line 263 column 50.
+NOTE: Invalid third argument to function SUBSTR at line 264 column 50.
 database=MPCD cohort=Non-AS PATID=103662395 indexDate=10/01/2009 age=65 SEX=M ENR_START_DATE=04/01/2009 ENR_END_DATE=12/31/2010 controlID=79181
 ENCOUNTERID=10857526106 ENC_TYPE=NH ADMIT_DATE= BEGIN_DATE=09/09/2009 DISCHARGE_DATE= END_DATE=09/09/2009 DX_TYPE=09 DX=810 PDX=P codeType=ICD9-DX
 code=810 diagCodeType=Fracture code fx_site=(810) clavicle site=clv_oth _ERROR_=1 _N_=61269
-NOTE: Invalid third argument to function SUBSTR at line 263 column 50.
+NOTE: Invalid third argument to function SUBSTR at line 264 column 50.
 database=MPCD cohort=Non-AS PATID=103662395 indexDate=10/01/2009 age=65 SEX=M ENR_START_DATE=04/01/2009 ENR_END_DATE=12/31/2010 controlID=79181
 ENCOUNTERID=10883038575 ENC_TYPE=AV ADMIT_DATE= BEGIN_DATE=09/10/2009 DISCHARGE_DATE= END_DATE=09/10/2009 DX_TYPE=09 DX=810 PDX=P codeType=ICD9-DX
 code=810 diagCodeType=Fracture code fx_site=(810) clavicle site=clv_oth _ERROR_=1 _N_=61271
-NOTE: Invalid third argument to function SUBSTR at line 263 column 50.
+NOTE: Invalid third argument to function SUBSTR at line 264 column 50.
 database=MPCD cohort=Non-AS PATID=103662395 indexDate=10/01/2009 age=65 SEX=M ENR_START_DATE=04/01/2009 ENR_END_DATE=12/31/2010 controlID=79181
 ENCOUNTERID=10883038575 ENC_TYPE=NH ADMIT_DATE= BEGIN_DATE=09/10/2009 DISCHARGE_DATE= END_DATE=09/10/2009 DX_TYPE=09 DX=810 PDX=O codeType=ICD9-DX
 code=810 diagCodeType=Fracture code fx_site=(810) clavicle site=clv_oth _ERROR_=1 _N_=61272
-NOTE: Invalid third argument to function SUBSTR at line 263 column 50.
+NOTE: Invalid third argument to function SUBSTR at line 264 column 50.
 database=MPCD cohort=Non-AS PATID=103662395 indexDate=10/01/2009 age=65 SEX=M ENR_START_DATE=04/01/2009 ENR_END_DATE=12/31/2010 controlID=79181
 ENCOUNTERID=10883038575 ENC_TYPE=NH ADMIT_DATE= BEGIN_DATE=09/10/2009 DISCHARGE_DATE= END_DATE=09/10/2009 DX_TYPE=09 DX=810 PDX=P codeType=ICD9-DX
 code=810 diagCodeType=Fracture code fx_site=(810) clavicle site=clv_oth _ERROR_=1 _N_=61273
-NOTE: Invalid third argument to function SUBSTR at line 263 column 50.
+NOTE: Invalid third argument to function SUBSTR at line 264 column 50.
 database=MPCD cohort=Non-AS PATID=103662395 indexDate=10/01/2009 age=65 SEX=M ENR_START_DATE=04/01/2009 ENR_END_DATE=12/31/2010 controlID=79181
 ENCOUNTERID=11023119948 ENC_TYPE=NH ADMIT_DATE= BEGIN_DATE=09/04/2009 DISCHARGE_DATE= END_DATE=09/04/2009 DX_TYPE=09 DX=810 PDX=O codeType=ICD9-DX
 code=810 diagCodeType=Fracture code fx_site=(810) clavicle site=clv_oth _ERROR_=1 _N_=61276
-NOTE: Invalid third argument to function SUBSTR at line 263 column 50.
+NOTE: Invalid third argument to function SUBSTR at line 264 column 50.
 database=MPCD cohort=Non-AS PATID=103662395 indexDate=10/01/2009 age=65 SEX=M ENR_START_DATE=04/01/2009 ENR_END_DATE=12/31/2010 controlID=79181
 ENCOUNTERID=11023119948 ENC_TYPE=NH ADMIT_DATE= BEGIN_DATE=09/04/2009 DISCHARGE_DATE= END_DATE=09/04/2009 DX_TYPE=09 DX=810 PDX=P codeType=ICD9-DX
 code=810 diagCodeType=Fracture code fx_site=(810) clavicle site=clv_oth _ERROR_=1 _N_=61277
-NOTE: Invalid third argument to function SUBSTR at line 263 column 50.
+NOTE: Invalid third argument to function SUBSTR at line 264 column 50.
 database=MPCD cohort=Non-AS PATID=103662395 indexDate=10/01/2009 age=65 SEX=M ENR_START_DATE=04/01/2009 ENR_END_DATE=12/31/2010 controlID=79181
 ENCOUNTERID=11032331831 ENC_TYPE=NH ADMIT_DATE= BEGIN_DATE=09/08/2009 DISCHARGE_DATE= END_DATE=09/08/2009 DX_TYPE=09 DX=810 PDX=O codeType=ICD9-DX
 code=810 diagCodeType=Fracture code fx_site=(810) clavicle site=clv_oth _ERROR_=1 _N_=61279
-NOTE: Invalid third argument to function SUBSTR at line 263 column 50.
+NOTE: Invalid third argument to function SUBSTR at line 264 column 50.
 database=MPCD cohort=Non-AS PATID=103662395 indexDate=10/01/2009 age=65 SEX=M ENR_START_DATE=04/01/2009 ENR_END_DATE=12/31/2010 controlID=79181
 ENCOUNTERID=11032331831 ENC_TYPE=NH ADMIT_DATE= BEGIN_DATE=09/08/2009 DISCHARGE_DATE= END_DATE=09/08/2009 DX_TYPE=09 DX=810 PDX=P codeType=ICD9-DX
 code=810 diagCodeType=Fracture code fx_site=(810) clavicle site=clv_oth _ERROR_=1 _N_=61280
-NOTE: Invalid third argument to function SUBSTR at line 271 column 49.
+6                                                                   The SAS System                                          17:46 Monday, May 21, 2018
+
+NOTE: Invalid third argument to function SUBSTR at line 272 column 49.
 database=MPCD cohort=Non-AS PATID=103685585 indexDate=07/03/2007 age=30 SEX=M ENR_START_DATE=01/01/2007 ENR_END_DATE=12/31/2008 controlID=93869
 ENCOUNTERID=10853030298 ENC_TYPE=IP ADMIT_DATE=09/06/2008 BEGIN_DATE=09/06/2008 DISCHARGE_DATE= END_DATE= DX_TYPE=09 DX=812 PDX=O codeType=ICD9-DX
 code=812 diagCodeType=Fracture code fx_site=(812, 73311) humerus site=hmrs_oth _ERROR_=1 _N_=73472
-6                                                                   The SAS System                                     22:16 Friday, December 29, 2017
-
-NOTE: Invalid third argument to function SUBSTR at line 271 column 49.
+NOTE: Invalid third argument to function SUBSTR at line 272 column 49.
 database=MPCD cohort=Non-AS PATID=103685585 indexDate=07/03/2007 age=30 SEX=M ENR_START_DATE=01/01/2007 ENR_END_DATE=12/31/2008 controlID=93869
 ENCOUNTERID=10888473073 ENC_TYPE=IP ADMIT_DATE=11/02/2008 BEGIN_DATE=11/02/2008 DISCHARGE_DATE= END_DATE= DX_TYPE=09 DX=812 PDX=O codeType=ICD9-DX
 code=812 diagCodeType=Fracture code fx_site=(812, 73311) humerus site=hmrs_oth _ERROR_=1 _N_=73473
-NOTE: Invalid third argument to function SUBSTR at line 271 column 49.
+NOTE: Invalid third argument to function SUBSTR at line 272 column 49.
 WARNING: Limit set by ERRORS= option reached.  Further errors of this type will not be printed.
 database=MPCD cohort=Non-AS PATID=103685585 indexDate=07/03/2007 age=30 SEX=M ENR_START_DATE=01/01/2007 ENR_END_DATE=12/31/2008 controlID=93869
 ENCOUNTERID=10904456369 ENC_TYPE=IP ADMIT_DATE=08/20/2008 BEGIN_DATE=08/20/2008 DISCHARGE_DATE=08/20/2008 END_DATE=08/20/2008 DX_TYPE=09 DX=812 PDX=O
@@ -382,33 +386,33 @@ codeType=ICD9-DX code=812 diagCodeType=Fracture code fx_site=(812, 73311) humeru
 NOTE: There were 4280380 observations read from the data set WORK.FX_DGNS.
 NOTE: The data set WORK.FX_DGNS_2 has 4280380 observations and 23 variables.
 NOTE: DATA statement used (Total process time):
-      real time           4.81 seconds
-      cpu time            4.77 seconds
+      real time           3.04 seconds
+      cpu time            3.01 seconds
       
 
-327        
-328        /*###########################################################################################################*/
-329        /***************************************************Intermediate Fracture Diagnosis File**********************/
-330        /*Combine CQ diagnosis files*******************************************************/
-331        data fx_dgns_3;
-332            set fx_dgns_2
-333        /*    fx_excare_*/
-334                ;
-335        run;
+328        
+329        /*###########################################################################################################*/
+330        /***************************************************Intermediate Fracture Diagnosis File**********************/
+331        /*Combine CQ diagnosis files*******************************************************/
+332        data fx_dgns_3;
+333            set fx_dgns_2
+334        /*    fx_excare_*/
+335                ;
+336        run;
 
 NOTE: There were 4280380 observations read from the data set WORK.FX_DGNS_2.
 NOTE: The data set WORK.FX_DGNS_3 has 4280380 observations and 23 variables.
 NOTE: DATA statement used (Total process time):
-      real time           2.88 seconds
-      cpu time            2.80 seconds
+      real time           2.38 seconds
+      cpu time            2.32 seconds
       
 
-336        
-337        proc freq data=fx_dgns_3;
-338            tables fx_site site;
-339        run;
+337        
+338        proc freq data=fx_dgns_3;
+339            tables fx_site site;
+340        run;
 
-                                                                  --- AS project ---                               22:16 Friday, December 29, 2017   1
+                                                                  --- AS project ---                                    17:46 Monday, May 21, 2018   1
 
                                                                   The FREQ Procedure
 
@@ -485,196 +489,198 @@ NOTE: DATA statement used (Total process time):
 NOTE: There were 4280380 observations read from the data set WORK.FX_DGNS_3.
 NOTE: The PROCEDURE FREQ printed page 1.
 NOTE: PROCEDURE FREQ used (Total process time):
-      real time           2.51 seconds
-      cpu time            2.15 seconds
+      real time           1.37 seconds
+      cpu time            1.32 seconds
       
 
-340        
-341        proc sort data=fx_dgns_3;
-342            by patid ENCOUNTERID fx_site site;
-343        run;
+341        
+342        proc sort data=fx_dgns_3;
+343            by patid ENCOUNTERID fx_site site;
+344        run;
 
 NOTE: There were 4280380 observations read from the data set WORK.FX_DGNS_3.
 NOTE: The data set WORK.FX_DGNS_3 has 4280380 observations and 23 variables.
 NOTE: PROCEDURE SORT used (Total process time):
-      real time           7.78 seconds
-      cpu time            10.60 seconds
+      real time           3.69 seconds
+      cpu time            7.75 seconds
       
 
-344        
 345        
-346        /*###########################################################################################################*/
-347        /*************************************************************************************************************/
-348        /*Look for repair procedures and assign treatment site*******************/
-349        /*This code has been updated to include hip/femur replacement with matching diagnosis code, also looked in claim strip(DX) not just primary
-349      !  strip(DX)
-350        /*Not accepting contiguous sites until later*/
-351        /*Excluding procedures from DME files*/
-352        /*******************************Select All Spine Imaging Codes from STD Procedure Files for CQ=4/5 algorithms*/
-353        
-354        %macro fx_prcd;
-355            data fx_prcd spine_xray;
-356                set UCB.tempFracPxAllControl;
-357        
-7                                                                   The SAS System                                     22:16 Friday, December 29, 2017
+346        
+347        /*###########################################################################################################*/
+348        /*************************************************************************************************************/
+349        /*Look for repair procedures and assign treatment site*******************/
+350        /*This code has been updated to include hip/femur replacement with matching diagnosis code, also looked in claim strip(DX) not just primary
+350      !  strip(DX)
+351        /*Not accepting contiguous sites until later*/
+352        /*Excluding procedures from DME files*/
+353        /*******************************Select All Spine Imaging Codes from STD Procedure Files for CQ=4/5 algorithms*/
+354        
+7                                                                   The SAS System                                          17:46 Monday, May 21, 2018
 
-358                    length tx_site $30;
-359                    length HLAT $1;
-360        
-361                    if strip(px) in ('21300' '21310' '21315' '21320' '21325' '21330' '21335' '21336' '21337' '21338' '21339' '21340' '21343'
-361      ! '21344' '21345' '21346' '21347' '21348'
-362                                         '21355' '21356' '21360' '21365' '21366' '21385' '21386' '21387' '21390' '21395' '21400' '21401' '21406'
-362      ! '21407' '21408' '21421' '21422' '21423'
-363                                         '21431' '21432' '21433' '21435' '21436' '21440' '21445' '21450' '21451' '21452' '21453' '21454' '21461'
-363      ! '21462' '21465' '21470'
-364                                         '62000' '62005' '62010')  and lengthn(strip(px)) = 5 then do;
-365                        tx_site='(800-804) skull/face'; output fx_prcd; end;
-366        
-367                    if strip(px) in ('22305' '22310' '22315' '22318' '22319' '22325' '22326' '22327' '22328' '22520' '22521' '22522' '22523'
-367      ! '22524' '22525' '76012' '76013'
-368                                         'S2360' 'S2361' 'S2362' 'S2363' '72291' '72292')  and lengthn(strip(px)) = 5 then do;
-369                        tx_site = '(805, 806, 73313) spine'; output fx_prcd; end;
-370        
-371                    if  strip(px) in ('21493' '21494' '21495' '21800' '21805' '21810' '21820' '21825' ) then do;
-372                        tx_site='(807) rib/sternum/trachea'; output fx_prcd; end;
-373        
-374                    if strip(px) in ('27193' '27194' '27215' '27216' '27217' '27218' '27220' '27222' '27226' '27227' '27228')  and
-374      ! lengthn(strip(px)) = 5 then do;
-375                        tx_site = '(808) pelvis'; output fx_prcd; end;
-376        
-377                    if strip(px) in ('23500' '23505' '23515')  and lengthn(strip(px)) = 5 then do;
-378                        tx_site = '(810) clavicle'; output fx_prcd; end;
-379        
-380                    if strip(px) in ('23570' '23575' '23585') then do;
-381                        tx_site= '(811) scapula'; output fx_prcd; end;
-382        
-383                    if strip(px) in ('23600' '23605' '23615' '23616' '23620' '23625' '23630' '23665' '24500' '24505' '24515' '24516' '24530'
-383      ! '24535' '24538' '24545' '24546' '24560'
-384                                 '24565' '24566' '24575' '24576' '24577' '24579' '24582')  and lengthn(strip(px)) = 5 then do;
-385                        tx_site = '(812, 73311) humerus'; output fx_prcd; end;
-386        
-387                    if strip(px) in ('25600' '25605' '25606' '25607' '25608' '25609' '25620' '25650' '25651' '25652')  and lengthn(strip(px)) = 5
-387      ! then do;
-388                        tx_site = '(813, 73312) radius_ulna'; output fx_prcd; end; /*Procedure codes are the same for both categories*/
-389        
-390                    if strip(px) in ('24650' '24655' '24665' '24666' '24670' '24675' '24685' '25500' '25505' '25515' '25520' '25525' '25526'
-390      ! '25530' '25535' '25545' '25560' '25565'
-391                                 '25574' '25575')  and lengthn(strip(px)) = 5 then do;
-392                        tx_site = '(813, 73312) radius_ulna'; output fx_prcd; end; /*Procedure codes are the same for both categories*/
-393        
-394                    if strip(px) in ('25622' '25624' '25628' '25630' '25635' '25645' '25680' '25685')  and lengthn(strip(px)) = 5 then do;
-395                        tx_site = '(814) carpal'; output fx_prcd; end;
-396        
-397                    if strip(px) in ('26600' '26605' '26607' '26608' '26615' '26645' '26650' '26665' '26720' '26725' '26727' '26735' '26740'
-397      ! '26742' '26746' '26750' '26755' '26756' '26765' )
-398                               and lengthn(strip(px)) = 5 then do;
-399                        tx_site='(815-817) hand/fingers'; output fx_prcd; end;
-400        
-401                    if '27230' <= strip(px) <= '27248' and lengthn(strip(px)) = 5 then do;
-402                        tx_site = '(820, 73314) hip'; output fx_prcd; end;
-403        
-404                    if '27500' <= strip(px) <= '27514'  and lengthn(strip(px)) = 5 then do;
-405                        tx_site = '(821, 73315) femur'; output fx_prcd; end;
-406        
-407                    if strip(px) in ('27520' '27524')  and lengthn(strip(px)) = 5 then do;
-408                        tx_site = '(822) patella'; output fx_prcd; end;
-409        
-410                    if ('27530' <= strip(px) <= '27536' or '27750' <= strip(px) <= '27759' or '27780' <= strip(px) <= '27784' or '27824' <=
-410      ! strip(px) <= '27828') and lengthn(strip(px)) = 5  then do;
-411                        tx_site = '(823, 73316) tib_fib'; output fx_prcd; end;
-412        
-413                    if strip(px) in ('27760' '27762' '27766' '27786' '27788' '27792' '27808' '27810' '27814' '27816' '27818' '27822' '27823'
-413      ! '28430' '28435' '28436' '28445')  and lengthn(strip(px)) = 5 then do;
-414                        tx_site = '(824) ankle'; output fx_prcd; end;
-415        
-416                    if strip(px) in ('28320' '28322' '28400' '28405' '28406' '28415' '28420' ) and lengthn(strip(px)) = 5 then do;
-417                        tx_site='(825) tarsal_metatarsal'; output fx_prcd; end;
-418        
-8                                                                   The SAS System                                     22:16 Friday, December 29, 2017
+355        %macro fx_prcd;
+356            data fx_prcd spine_xray;
+357                set UCB.tempFracPxAllControl;
+358        
+359                    length tx_site $30;
+360                    length HLAT $1;
+361        
+362                    if strip(px) in ('21300' '21310' '21315' '21320' '21325' '21330' '21335' '21336' '21337' '21338' '21339' '21340' '21343'
+362      ! '21344' '21345' '21346' '21347' '21348'
+363                                         '21355' '21356' '21360' '21365' '21366' '21385' '21386' '21387' '21390' '21395' '21400' '21401' '21406'
+363      ! '21407' '21408' '21421' '21422' '21423'
+364                                         '21431' '21432' '21433' '21435' '21436' '21440' '21445' '21450' '21451' '21452' '21453' '21454' '21461'
+364      ! '21462' '21465' '21470'
+365                                         '62000' '62005' '62010')  and lengthn(strip(px)) = 5 then do;
+366                        tx_site='(800-804) skull/face'; output fx_prcd; end;
+367        
+368                    if strip(px) in ('22305' '22310' '22315' '22318' '22319' '22325' '22326' '22327' '22328' '22520' '22521' '22522' '22523'
+368      ! '22524' '22525' '76012' '76013'
+369                                         'S2360' 'S2361' 'S2362' 'S2363' '72291' '72292')  and lengthn(strip(px)) = 5 then do;
+370                        tx_site = '(805, 806, 73313) spine'; output fx_prcd; end;
+371        
+372                    if  strip(px) in ('21493' '21494' '21495' '21800' '21805' '21810' '21820' '21825' ) then do;
+373                        tx_site='(807) rib/sternum/trachea'; output fx_prcd; end;
+374        
+375                    if strip(px) in ('27193' '27194' '27215' '27216' '27217' '27218' '27220' '27222' '27226' '27227' '27228')  and
+375      ! lengthn(strip(px)) = 5 then do;
+376                        tx_site = '(808) pelvis'; output fx_prcd; end;
+377        
+378                    if strip(px) in ('23500' '23505' '23515')  and lengthn(strip(px)) = 5 then do;
+379                        tx_site = '(810) clavicle'; output fx_prcd; end;
+380        
+381                    if strip(px) in ('23570' '23575' '23585') then do;
+382                        tx_site= '(811) scapula'; output fx_prcd; end;
+383        
+384                    if strip(px) in ('23600' '23605' '23615' '23616' '23620' '23625' '23630' '23665' '24500' '24505' '24515' '24516' '24530'
+384      ! '24535' '24538' '24545' '24546' '24560'
+385                                 '24565' '24566' '24575' '24576' '24577' '24579' '24582')  and lengthn(strip(px)) = 5 then do;
+386                        tx_site = '(812, 73311) humerus'; output fx_prcd; end;
+387        
+388                    if strip(px) in ('25600' '25605' '25606' '25607' '25608' '25609' '25620' '25650' '25651' '25652')  and lengthn(strip(px)) = 5
+388      ! then do;
+389                        tx_site = '(813, 73312) radius_ulna'; output fx_prcd; end; /*Procedure codes are the same for both categories*/
+390        
+391                    if strip(px) in ('24650' '24655' '24665' '24666' '24670' '24675' '24685' '25500' '25505' '25515' '25520' '25525' '25526'
+391      ! '25530' '25535' '25545' '25560' '25565'
+392                                 '25574' '25575')  and lengthn(strip(px)) = 5 then do;
+393                        tx_site = '(813, 73312) radius_ulna'; output fx_prcd; end; /*Procedure codes are the same for both categories*/
+394        
+395                    if strip(px) in ('25622' '25624' '25628' '25630' '25635' '25645' '25680' '25685')  and lengthn(strip(px)) = 5 then do;
+396                        tx_site = '(814) carpal'; output fx_prcd; end;
+397        
+398                    if strip(px) in ('26600' '26605' '26607' '26608' '26615' '26645' '26650' '26665' '26720' '26725' '26727' '26735' '26740'
+398      ! '26742' '26746' '26750' '26755' '26756' '26765' )
+399                               and lengthn(strip(px)) = 5 then do;
+400                        tx_site='(815-817) hand/fingers'; output fx_prcd; end;
+401        
+402                    if '27230' <= strip(px) <= '27248' and lengthn(strip(px)) = 5 then do;
+403                        tx_site = '(820, 73314) hip'; output fx_prcd; end;
+404        
+405                    if '27500' <= strip(px) <= '27514'  and lengthn(strip(px)) = 5 then do;
+406                        tx_site = '(821, 73315) femur'; output fx_prcd; end;
+407        
+408                    if strip(px) in ('27520' '27524')  and lengthn(strip(px)) = 5 then do;
+409                        tx_site = '(822) patella'; output fx_prcd; end;
+410        
+411                    if ('27530' <= strip(px) <= '27536' or '27750' <= strip(px) <= '27759' or '27780' <= strip(px) <= '27784' or '27824' <=
+411      ! strip(px) <= '27828') and lengthn(strip(px)) = 5  then do;
+412                        tx_site = '(823, 73316) tib_fib'; output fx_prcd; end;
+413        
+414                    if strip(px) in ('27760' '27762' '27766' '27786' '27788' '27792' '27808' '27810' '27814' '27816' '27818' '27822' '27823'
+414      ! '28430' '28435' '28436' '28445')  and lengthn(strip(px)) = 5 then do;
+415                        tx_site = '(824) ankle'; output fx_prcd; end;
+8                                                                   The SAS System                                          17:46 Monday, May 21, 2018
 
-419                 /********************************Hip/Femur Additions - must be matched with DGNS to be included*/
-420                 /*Hip replacement codes*/
-421                    /*Hip*/
-422                    if strip(px) in ('27130' '27125') and lengthn(strip(px)) = 5  then do;
-423                        HLAT='1'; tx_site = '(820, 73314) hip'; output fx_prcd; end;
-424        
-425                    /*Codes below are the only ICD9 Procedure Codes that we are using for "repair"*/
-426                    if strip(px) in ('8151' '8152') and lengthn(strip(px)) = 4 then do;
-427                        HLAT = '1'; tx_site = '(820, 73314) hip'; output fx_prcd; end;
-428        
-429                    /*Femur repair codes, assigned to both Hip and Femur treatment sites... CHECK - MAYBE WE NEED TO DO THIS THE OTHER WAY AS
-429      ! WELL*/
-430                    /*Hip*/
-431                    if strip(px) in ('7855' '7905' '7915' '7925' '7935' '7965') and lengthn(strip(px)) = 4 then do;
-432                        HLAT = '1'; tx_site = '(820, 73314) hip'; output fx_prcd; end;
-433        
-434                    /*Femur*/
-435                    if strip(px) in ('7855' '7905' '7915' '7925' '7935' '7965') and lengthn(strip(px)) = 4 then do;
-436                        HLAT = '1'; tx_site = '(821, 73315) femur'; output fx_prcd; end;
-437                     /*spine image*/
-438                        if '72010' <= strip(px) <= '72159' or '72240' <= strip(px) <= '72285' or strip(px) = '72295' then do;   /*Spine Imaging
-438      ! Codes*/
-439                        tx_site='(805, 806, 73313) spine';
-440                        output spine_xray; end;
-441        
-442            run;
-443        
-444            data fx_prcd;
-445                set fx_prcd;
-446                /*To add laterality info*/
-447        /*        array hcpcs{*} hcpcs_1st_mdfr_cd hcpcs_2nd_mdfr_cd hcpcs_3rd_mdfr_cd hcpcs_4th_mdfr_cd ; */
-448                if HLAT='1' then do;
-449                    repair_right='0'; repair_left='0';
-450                end;
-451        /*        if HLAT='1' then */
-452        /*            do i=1 to dim(hcpcs);*/
-453        /*                if hcpcs{i} = 'RT' then repair_right='1';*/
-454        /*                else if hcpcs{i} = 'LT' then repair_left='1';*/
-455        /*            end;*/
-456            run;
-457            proc sort data=fx_prcd nodupkey; by patid ENCOUNTERID px_date tx_site; run;
-458        
-459            data spine_xray;
-460                set spine_xray;
-461                keep patid px_date tx_site  ENCOUNTERID begin_date;
-462            run;
-463            proc sort data=spine_xray nodupkey; by patid px_date; run;
-464        %mend;
-465        %fx_prcd;
+416        
+417                    if strip(px) in ('28320' '28322' '28400' '28405' '28406' '28415' '28420' ) and lengthn(strip(px)) = 5 then do;
+418                        tx_site='(825) tarsal_metatarsal'; output fx_prcd; end;
+419        
+420                 /********************************Hip/Femur Additions - must be matched with DGNS to be included*/
+421                 /*Hip replacement codes*/
+422                    /*Hip*/
+423                    if strip(px) in ('27130' '27125') and lengthn(strip(px)) = 5  then do;
+424                        HLAT='1'; tx_site = '(820, 73314) hip'; output fx_prcd; end;
+425        
+426                    /*Codes below are the only ICD9 Procedure Codes that we are using for "repair"*/
+427                    if strip(px) in ('8151' '8152') and lengthn(strip(px)) = 4 then do;
+428                        HLAT = '1'; tx_site = '(820, 73314) hip'; output fx_prcd; end;
+429        
+430                    /*Femur repair codes, assigned to both Hip and Femur treatment sites... CHECK - MAYBE WE NEED TO DO THIS THE OTHER WAY AS
+430      ! WELL*/
+431                    /*Hip*/
+432                    if strip(px) in ('7855' '7905' '7915' '7925' '7935' '7965') and lengthn(strip(px)) = 4 then do;
+433                        HLAT = '1'; tx_site = '(820, 73314) hip'; output fx_prcd; end;
+434        
+435                    /*Femur*/
+436                    if strip(px) in ('7855' '7905' '7915' '7925' '7935' '7965') and lengthn(strip(px)) = 4 then do;
+437                        HLAT = '1'; tx_site = '(821, 73315) femur'; output fx_prcd; end;
+438                     /*spine image*/
+439                        if '72010' <= strip(px) <= '72159' or '72240' <= strip(px) <= '72285' or strip(px) = '72295' then do;   /*Spine Imaging
+439      ! Codes*/
+440                        tx_site='(805, 806, 73313) spine';
+441                        output spine_xray; end;
+442        
+443            run;
+444        
+445            data fx_prcd;
+446                set fx_prcd;
+447                /*To add laterality info*/
+448        /*        array hcpcs{*} hcpcs_1st_mdfr_cd hcpcs_2nd_mdfr_cd hcpcs_3rd_mdfr_cd hcpcs_4th_mdfr_cd ; */
+449                if HLAT='1' then do;
+450                    repair_right='0'; repair_left='0';
+451                end;
+452        /*        if HLAT='1' then */
+453        /*            do i=1 to dim(hcpcs);*/
+454        /*                if hcpcs{i} = 'RT' then repair_right='1';*/
+455        /*                else if hcpcs{i} = 'LT' then repair_left='1';*/
+456        /*            end;*/
+457            run;
+458            proc sort data=fx_prcd nodupkey; by patid ENCOUNTERID px_date tx_site; run;
+459        
+460            data spine_xray;
+461                set spine_xray;
+462                keep patid px_date tx_site  ENCOUNTERID begin_date;
+463            run;
+464            proc sort data=spine_xray nodupkey; by patid px_date; run;
+465        %mend;
+466        %fx_prcd;
+NOTE: Data set UCB.TEMPFRACPXALLCONTROL is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
+      additional CPU resources and may reduce performance.
 
 NOTE: There were 1110050834 observations read from the data set UCB.TEMPFRACPXALLCONTROL.
 NOTE: The data set WORK.FX_PRCD has 794441 observations and 21 variables.
 NOTE: The data set WORK.SPINE_XRAY has 5729407 observations and 21 variables.
 NOTE: DATA statement used (Total process time):
-      real time           1:20:06.07
-      cpu time            59:39.86
+      real time           30:42.08
+      cpu time            30:03.21
       
 
 
 NOTE: There were 794441 observations read from the data set WORK.FX_PRCD.
 NOTE: The data set WORK.FX_PRCD has 794441 observations and 23 variables.
 NOTE: DATA statement used (Total process time):
-      real time           0.56 seconds
-      cpu time            0.48 seconds
+      real time           0.85 seconds
+      cpu time            0.67 seconds
       
+
+9                                                                   The SAS System                                          17:46 Monday, May 21, 2018
 
 
 NOTE: There were 794441 observations read from the data set WORK.FX_PRCD.
 NOTE: 54524 observations with duplicate key values were deleted.
 NOTE: The data set WORK.FX_PRCD has 739917 observations and 23 variables.
 NOTE: PROCEDURE SORT used (Total process time):
-      real time           0.76 seconds
-9                                                                   The SAS System                                     22:16 Friday, December 29, 2017
-
-      cpu time            1.28 seconds
+      real time           1.35 seconds
+      cpu time            2.02 seconds
       
 
 
 NOTE: There were 5729407 observations read from the data set WORK.SPINE_XRAY.
 NOTE: The data set WORK.SPINE_XRAY has 5729407 observations and 5 variables.
 NOTE: DATA statement used (Total process time):
-      real time           3.15 seconds
-      cpu time            2.48 seconds
+      real time           3.10 seconds
+      cpu time            2.49 seconds
       
 
 
@@ -682,146 +688,148 @@ NOTE: There were 5729407 observations read from the data set WORK.SPINE_XRAY.
 NOTE: 2284293 observations with duplicate key values were deleted.
 NOTE: The data set WORK.SPINE_XRAY has 3445114 observations and 5 variables.
 NOTE: PROCEDURE SORT used (Total process time):
-      real time           2.48 seconds
-      cpu time            5.02 seconds
+      real time           2.54 seconds
+      cpu time            6.58 seconds
       
 
-466        
 467        
 468        
-469        data trauma (rename=(begin_date=trauma_dt));
-470                set UCB.tempFracDxAllControl (where = (diagCodeType = "Trauma code"));
-471        run;
+469        
+470        data trauma (rename=(begin_date=trauma_dt));
+471                set UCB.tempFracDxAllControl (where = (diagCodeType = "Trauma code"));
+NOTE: Data set UCB.TEMPFRACDXALLCONTROL is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
+      additional CPU resources and may reduce performance.
+The SAS supervisor will process queries for foreign datasets. No parallel where-clause processing will occur.
+472        run;
 
 NOTE: There were 706177 observations read from the data set UCB.TEMPFRACDXALLCONTROL.
       WHERE diagCodeType='Trauma code';
-NOTE: Parallel WHERE evaluation suppressed due to sort order on table.
 NOTE: The data set WORK.TRAUMA has 706177 observations and 21 variables.
 NOTE: DATA statement used (Total process time):
-      real time           19.12 seconds
-      cpu time            1.01 seconds
+      real time           4.30 seconds
+      cpu time            1.68 seconds
       
 
-472        proc sort data= trauma(keep=patid trauma_dt) nodupkey; by patid trauma_dt;run;
+473        proc sort data= trauma(keep=patid trauma_dt) nodupkey; by patid trauma_dt;run;
 
 NOTE: There were 706177 observations read from the data set WORK.TRAUMA.
 NOTE: 127172 observations with duplicate key values were deleted.
 NOTE: The data set WORK.TRAUMA has 579005 observations and 2 variables.
 NOTE: PROCEDURE SORT used (Total process time):
-      real time           0.34 seconds
-      cpu time            0.59 seconds
+      real time           0.54 seconds
+      cpu time            0.95 seconds
       
 
-473        
 474        
-475        /*subset the spine xray procedure claim for patients with fx diagnosis code only*/
-476        /*so SAS will not run out of memory*/
-477        data fx_spine_xray(keep=patid tx_site px_date ENCOUNTERID begin_date);
-478        if _n_=1 then do;
-479          declare hash hid(dataset:"fx_dgns_3(where=(fx_site='(805, 806, 73313) spine')))", multidata:"N", hashexp:20);
-480          rc=hid.defineKey("patid");
-481          rc=hid.defineDone();
-482        end;
-483        set spine_xray;
-484        rc=hid.find();
-485        if rc=0;
-486        run;
+475        
+476        /*subset the spine xray procedure claim for patients with fx diagnosis code only*/
+477        /*so SAS will not run out of memory*/
+478        data fx_spine_xray(keep=patid tx_site px_date ENCOUNTERID begin_date);
+479        if _n_=1 then do;
+480          declare hash hid(dataset:"fx_dgns_3(where=(fx_site='(805, 806, 73313) spine')))", multidata:"N", hashexp:20);
+481          rc=hid.defineKey("patid");
+482          rc=hid.defineDone();
+483        end;
+484        set spine_xray;
+485        rc=hid.find();
+486        if rc=0;
+487        run;
 
 NOTE: There were 625951 observations read from the data set WORK.FX_DGNS_3.
       WHERE fx_site='(805, 806, 73313) spine';
 NOTE: There were 3445114 observations read from the data set WORK.SPINE_XRAY.
+10                                                                  The SAS System                                          17:46 Monday, May 21, 2018
+
 NOTE: The data set WORK.FX_SPINE_XRAY has 573214 observations and 5 variables.
 NOTE: DATA statement used (Total process time):
-      real time           4.21 seconds
-      cpu time            3.49 seconds
+      real time           5.47 seconds
+      cpu time            3.18 seconds
       
 
-487        /*subset the Trauma code for patients with fx diagnosis code only*/
-488        /*so SAS will not run out of memory*/
-10                                                                  The SAS System                                     22:16 Friday, December 29, 2017
-
-489        data fx_trauma(drop=rc);
-490        if _n_=1 then do;
-491          declare hash hid(dataset:"fx_dgns_3", multidata:"N", hashexp:20);
-492          rc=hid.defineKey("patid");
-493          rc=hid.defineDone();
-494        end;
-495        set trauma;
-496        rc=hid.find();
-497        if rc=0;
-498        run;
+488        /*subset the Trauma code for patients with fx diagnosis code only*/
+489        /*so SAS will not run out of memory*/
+490        data fx_trauma(drop=rc);
+491        if _n_=1 then do;
+492          declare hash hid(dataset:"fx_dgns_3", multidata:"N", hashexp:20);
+493          rc=hid.defineKey("patid");
+494          rc=hid.defineDone();
+495        end;
+496        set trauma;
+497        rc=hid.find();
+498        if rc=0;
+499        run;
 
 NOTE: There were 4280380 observations read from the data set WORK.FX_DGNS_3.
 NOTE: There were 579005 observations read from the data set WORK.TRAUMA.
 NOTE: The data set WORK.FX_TRAUMA has 283418 observations and 2 variables.
 NOTE: DATA statement used (Total process time):
-      real time           3.54 seconds
-      cpu time            2.68 seconds
+      real time           4.07 seconds
+      cpu time            2.60 seconds
       
 
-499        /************************************Link Fracture Claims (ICD9 Diagnosis) with Repair Claims (CPT/HCPCS, some ICD9 procedure
-499      ! code)***************/
-500        
-501        data fx_dgns_4(drop=rc: px_date tx_site xray_date trauma_dt);
-502        if _n_=1 then do;
-503          declare hash hid(dataset:"fx_prcd", multidata:"N", hashexp:20);
-504          rc=hid.defineKey("patid", "px_date", "tx_site");
-505        /*  rc=hid.defineData("px_date", "tx_site");*/
-506          rc=hid.defineDone();
-507          declare hash hxray(dataset:"fx_spine_xray(rename=px_date=xray_date)", multidata:"Y", hashexp:20);
-508          rc=hxray.defineKey("patid", "tx_site");
-509          rc=hxray.defineData("xray_date");
-510          rc=hxray.defineDone();
-511          declare hash htrauma(dataset:"fx_trauma", multidata:"Y", hashexp:20);
-512          rc=htrauma.defineKey("patid");
-513          rc=htrauma.defineData("trauma_dt");
-514          rc=htrauma.defineDone();
-515        end;
-516        if 0 then set fx_prcd(keep=patid px_date tx_site)
-517                      fx_spine_xray(keep=patid px_date tx_site rename=px_date=xray_date)
-518                      fx_trauma;
-519        set fx_dgns_3;
-520        length cq $4 spine_image trauma_date 4 trauma $1;
-521        format spine_image trauma_date mmddyy10.;
-522        cq="0000";
-523        rc=hid.find(key:patid, key:begin_date,key:fx_site);
-524        if rc^=0 then do;
-525            px_date=.;
-526            tx_site=" ";
-527        end;
-528        if enc_type="IP" then do;
-529        /*CQ = 1 Inpatient claim with primary diagnosis code */
-530            if pdx="P" then substr(cq,1,1)="1";
-531        /*CQ = 2 Inpatient claim with secondary diagnosis code*/
-532            else substr(cq,2,1)="2";
-533        end; else do;
-534        /*CQ = 3 outpatient diagnosis code AND carrier line with repair/replace HCPCS*/
-535            if rc=0 then substr(cq,3,1)="3";
-536            rc1=hxray.find(key:patid, key:fx_site);
-537            do while (rc1 = 0);
-538                if begin_date-10 <=xray_date<= begin_date then do;
-539                    if enc_type in ("AV" "IF" "NH" "HH" "ER" "ED") then do;
-540        /*CQ = 4 outpatient [Physician E&M codes] diagnosis code with spine image/x-ray within 10 day early*/
-541                        substr(cq,4,1)="4";
-542                        spine_image=min(spine_image,xray_date);
-543                    end;
-544                end;
-545                rc1=hxray.find_next(key:patid, key:fx_site);
-546            end;
-547        end;
-548        /*is there trauma dx within 14 days*/
-549        rc2=htrauma.find(key:patid);
-550        do while (rc2 = 0) ;
-11                                                                  The SAS System                                     22:16 Friday, December 29, 2017
+500        /************************************Link Fracture Claims (ICD9 Diagnosis) with Repair Claims (CPT/HCPCS, some ICD9 procedure
+500      ! code)***************/
+501        
+502        data fx_dgns_4(drop=rc: px_date tx_site xray_date trauma_dt);
+503        if _n_=1 then do;
+504          declare hash hid(dataset:"fx_prcd", multidata:"N", hashexp:20);
+505          rc=hid.defineKey("patid", "px_date", "tx_site");
+506        /*  rc=hid.defineData("px_date", "tx_site");*/
+507          rc=hid.defineDone();
+508          declare hash hxray(dataset:"fx_spine_xray(rename=px_date=xray_date)", multidata:"Y", hashexp:20);
+509          rc=hxray.defineKey("patid", "tx_site");
+510          rc=hxray.defineData("xray_date");
+511          rc=hxray.defineDone();
+512          declare hash htrauma(dataset:"fx_trauma", multidata:"Y", hashexp:20);
+513          rc=htrauma.defineKey("patid");
+514          rc=htrauma.defineData("trauma_dt");
+515          rc=htrauma.defineDone();
+516        end;
+517        if 0 then set fx_prcd(keep=patid px_date tx_site)
+518                      fx_spine_xray(keep=patid px_date tx_site rename=px_date=xray_date)
+519                      fx_trauma;
+520        set fx_dgns_3;
+521        length cq $4 spine_image trauma_date 4 trauma $1;
+522        format spine_image trauma_date mmddyy10.;
+523        cq="0000";
+524        rc=hid.find(key:patid, key:begin_date,key:fx_site);
+525        if rc^=0 then do;
+526            px_date=.;
+527            tx_site=" ";
+528        end;
+529        if enc_type="IP" then do;
+530        /*CQ = 1 Inpatient claim with primary diagnosis code */
+531            if pdx="P" then substr(cq,1,1)="1";
+532        /*CQ = 2 Inpatient claim with secondary diagnosis code*/
+533            else substr(cq,2,1)="2";
+534        end; else do;
+535        /*CQ = 3 outpatient diagnosis code AND carrier line with repair/replace HCPCS*/
+536            if rc=0 then substr(cq,3,1)="3";
+537            rc1=hxray.find(key:patid, key:fx_site);
+538            do while (rc1 = 0);
+539                if begin_date-10 <=xray_date<= begin_date then do;
+540                    if enc_type in ("AV" "IF" "NH" "HH" "ER" "ED") then do;
+541        /*CQ = 4 outpatient [Physician E&M codes] diagnosis code with spine image/x-ray within 10 day early*/
+542                        substr(cq,4,1)="4";
+543                        spine_image=min(spine_image,xray_date);
+11                                                                  The SAS System                                          17:46 Monday, May 21, 2018
 
-551            if 0<=abs(trauma_dt-begin_date)<=14 then do;
-552                    trauma="1";
-553                    trauma_date=min(trauma_date,trauma_dt);
-554           end ;
-555           rc2=htrauma.find_next(key:patid) ;
-556        end;
-557        
-558        run;
+544                    end;
+545                end;
+546                rc1=hxray.find_next(key:patid, key:fx_site);
+547            end;
+548        end;
+549        /*is there trauma dx within 14 days*/
+550        rc2=htrauma.find(key:patid);
+551        do while (rc2 = 0) ;
+552            if 0<=abs(trauma_dt-begin_date)<=14 then do;
+553                    trauma="1";
+554                    trauma_date=min(trauma_date,trauma_dt);
+555           end ;
+556           rc2=htrauma.find_next(key:patid) ;
+557        end;
+558        
+559        run;
 
 NOTE: There were 739917 observations read from the data set WORK.FX_PRCD.
 NOTE: There were 573214 observations read from the data set WORK.FX_SPINE_XRAY.
@@ -829,13 +837,13 @@ NOTE: There were 283418 observations read from the data set WORK.FX_TRAUMA.
 NOTE: There were 4280380 observations read from the data set WORK.FX_DGNS_3.
 NOTE: The data set WORK.FX_DGNS_4 has 4280380 observations and 27 variables.
 NOTE: DATA statement used (Total process time):
-      real time           12.72 seconds
-      cpu time            11.80 seconds
+      real time           6.66 seconds
+      cpu time            6.45 seconds
       
 
-559        proc freq data=fx_dgns_4; tables enc_type*cq fx_site*cq trauma/missing;run;
+560        proc freq data=fx_dgns_4; tables enc_type*cq fx_site*cq trauma/missing;run;
 
-                                                                  --- AS project ---                               22:16 Friday, December 29, 2017   2
+                                                                  --- AS project ---                                    17:46 Monday, May 21, 2018   2
 
                                                                   The FREQ Procedure
 
@@ -909,7 +917,7 @@ NOTE: DATA statement used (Total process time):
  
  
                                                               queryFracturesControl.sas
-                                                                  --- AS project ---                               22:16 Friday, December 29, 2017   3
+                                                                  --- AS project ---                                    17:46 Monday, May 21, 2018   3
 
                                                                   The FREQ Procedure
 
@@ -983,7 +991,7 @@ NOTE: DATA statement used (Total process time):
  
  
                                                               queryFracturesControl.sas
-                                                                  --- AS project ---                               22:16 Friday, December 29, 2017   4
+                                                                  --- AS project ---                                    17:46 Monday, May 21, 2018   4
 
                                                                   The FREQ Procedure
 
@@ -1057,7 +1065,7 @@ NOTE: DATA statement used (Total process time):
  
  
                                                               queryFracturesControl.sas
-                                                                  --- AS project ---                               22:16 Friday, December 29, 2017   5
+                                                                  --- AS project ---                                    17:46 Monday, May 21, 2018   5
 
                                                                   The FREQ Procedure
 
@@ -1134,174 +1142,174 @@ NOTE: DATA statement used (Total process time):
 NOTE: There were 4280380 observations read from the data set WORK.FX_DGNS_4.
 NOTE: The PROCEDURE FREQ printed pages 2-5.
 NOTE: PROCEDURE FREQ used (Total process time):
-      real time           3.55 seconds
-      cpu time            3.49 seconds
+      real time           1.95 seconds
+      cpu time            1.80 seconds
       
 
-560        
-561        *goto 002_fx_epi.sas;
-562        
+561        
+562        *goto 002_fx_epi.sas;
 563        
 564        
 565        
-566        /*
-567        START OF 002_fx_data.sas
-568         */
-569        
-570        /*all the claims to define episode sequence */
-571        data _dat0(keep=
-572        PATID ENCOUNTERID ADMIT_DATE DISCHARGE_DATE BEGIN_DATE END_DATE DX DX_TYPE PDX  /* SOURCE */ ENC_TYPE fx_site px px_date
-573        site cq spine_image trauma_date trauma );
-574        set fx_dgns_4 fx_excare Fx_prcd(rename=tx_site=fx_site);
-575        run;
+566        
+567        /*
+568        START OF 002_fx_data.sas
+569         */
+570        
+571        /*all the claims to define episode sequence */
+572        data _dat0(keep=
+573        PATID ENCOUNTERID ADMIT_DATE DISCHARGE_DATE BEGIN_DATE END_DATE DX DX_TYPE PDX  /* SOURCE */ ENC_TYPE fx_site px px_date
+574        site cq spine_image trauma_date trauma );
+575        set fx_dgns_4 fx_excare Fx_prcd(rename=tx_site=fx_site);
+576        run;
 
 NOTE: There were 4280380 observations read from the data set WORK.FX_DGNS_4.
 NOTE: There were 729598 observations read from the data set WORK.FX_EXCARE.
 NOTE: There were 739917 observations read from the data set WORK.FX_PRCD.
 NOTE: The data set WORK._DAT0 has 5749895 observations and 18 variables.
 NOTE: DATA statement used (Total process time):
-      real time           4.00 seconds
-      cpu time            3.33 seconds
+      real time           3.54 seconds
+      cpu time            2.99 seconds
       
 
-576        proc sort data=_dat0; by PATID fx_site BEGIN_DATE END_DATE; run;
+577        proc sort data=_dat0; by PATID fx_site BEGIN_DATE END_DATE; run;
 
 NOTE: There were 5749895 observations read from the data set WORK._DAT0.
 NOTE: The data set WORK._DAT0 has 5749895 observations and 18 variables.
 NOTE: PROCEDURE SORT used (Total process time):
-      real time           5.75 seconds
-      cpu time            12.05 seconds
+      real time           4.83 seconds
+      cpu time            11.12 seconds
       
 
-577        /*for each claim define start and end date applicable to IP NH and NH*/
-578        data _dat1;
-579        set _dat0;
-580        length start_date end_date 4;
-581        format start_date end_date mmddyy10.;
-582        by PATID fx_site BEGIN_DATE END_DATE;
-583        start_date=min(ADMIT_DATE, BEGIN_DATE);
-584        end_date=max(DISCHARGE_DATE, End_DATE);
-585        run;
-12                                                                  The SAS System                                     22:16 Friday, December 29, 2017
+578        /*for each claim define start and end date applicable to IP NH and NH*/
+12                                                                  The SAS System                                          17:46 Monday, May 21, 2018
 
+579        data _dat1;
+580        set _dat0;
+581        length start_date end_date 4;
+582        format start_date end_date mmddyy10.;
+583        by PATID fx_site BEGIN_DATE END_DATE;
+584        start_date=min(ADMIT_DATE, BEGIN_DATE);
+585        end_date=max(DISCHARGE_DATE, End_DATE);
+586        run;
 
 NOTE: Missing values were generated as a result of performing an operation on missing values.
       Each place is given by: (Number of times) at (Line):(Column).
-      43219 at 583:12   3719 at 584:10    
+      43219 at 584:12   3719 at 585:10    
 NOTE: There were 5749895 observations read from the data set WORK._DAT0.
 NOTE: The data set WORK._DAT1 has 5749895 observations and 19 variables.
 NOTE: DATA statement used (Total process time):
-      real time           4.27 seconds
-      cpu time            4.25 seconds
+      real time           3.36 seconds
+      cpu time            3.33 seconds
       
 
-586        proc sort data=_dat1; by PATID fx_site start_date end_date; run;
+587        proc sort data=_dat1; by PATID fx_site start_date end_date; run;
 
 NOTE: There were 5749895 observations read from the data set WORK._DAT1.
 NOTE: The data set WORK._DAT1 has 5749895 observations and 19 variables.
 NOTE: PROCEDURE SORT used (Total process time):
-      real time           5.67 seconds
-      cpu time            11.71 seconds
+      real time           4.28 seconds
+      cpu time            9.25 seconds
       
 
-587        
-588        /* generate unique episode sequence ID */
-589        data _dat2(drop=end_date_max lag_end_date_max _gap);
-590        set _dat1;
-591        length lag_end_date_max end_date_max 4;
-592        format lag_end_date_max end_date_max mmddyy10.;
-593        
-594        by PATID fx_site start_date end_date;
-595        retain seq 0;
-596        
-597        /*if current claims end date > all previouse claim end date in sequence, then update*/
-598        end_date_max=max(end_date,end_date_max);
-599        lag_end_date_max=lag(end_date_max);
-600        
-601        if first.fx_site then lag_end_date_max=.;
-602        _gap=start_date-lag_end_date_max;
-603        
-604        /*if current claims start date >90 days after all previouse claim end date in sequence,
-605        then start new sequence*/
-606        if first.fx_site or start_date-lag_end_date_max>90 then do;
-607            end_date_max=end_date;
-608        
-609            seq+1;
-610        end;
-611        run;
+588        
+589        /* generate unique episode sequence ID */
+590        data _dat2(drop=end_date_max lag_end_date_max _gap);
+591        set _dat1;
+592        length lag_end_date_max end_date_max 4;
+593        format lag_end_date_max end_date_max mmddyy10.;
+594        
+595        by PATID fx_site start_date end_date;
+596        retain seq 0;
+597        
+598        /*if current claims end date > all previouse claim end date in sequence, then update*/
+599        end_date_max=max(end_date,end_date_max);
+600        lag_end_date_max=lag(end_date_max);
+601        
+602        if first.fx_site then lag_end_date_max=.;
+603        _gap=start_date-lag_end_date_max;
+604        
+605        /*if current claims start date >90 days after all previouse claim end date in sequence,
+606        then start new sequence*/
+607        if first.fx_site or start_date-lag_end_date_max>90 then do;
+608            end_date_max=end_date;
+609        
+610            seq+1;
+611        end;
+612        run;
 
 NOTE: Missing values were generated as a result of performing an operation on missing values.
       Each place is given by: (Number of times) at (Line):(Column).
-      3719 at 598:14      1139999 at 602:16   1139999 at 606:31   
+      3719 at 599:14      1139999 at 603:16   1139999 at 607:31   
 NOTE: There were 5749895 observations read from the data set WORK._DAT1.
 NOTE: The data set WORK._DAT2 has 5749895 observations and 20 variables.
 NOTE: DATA statement used (Total process time):
-      real time           4.86 seconds
-      cpu time            4.82 seconds
+      real time           3.60 seconds
+      cpu time            3.55 seconds
       
 
-612        proc sort data=_dat2; by seq;run;
+613        proc sort data=_dat2; by seq;run;
 
 NOTE: There were 5749895 observations read from the data set WORK._DAT2.
 NOTE: The data set WORK._DAT2 has 5749895 observations and 20 variables.
 NOTE: PROCEDURE SORT used (Total process time):
-      real time           4.97 seconds
-      cpu time            9.45 seconds
+      real time           3.74 seconds
+      cpu time            6.81 seconds
       
+13                                                                  The SAS System                                          17:46 Monday, May 21, 2018
 
-613        proc sql;
-614        /*episode sequence start date*/
-615        create table seq_start as
-616        select patid, seq, min(start_date) as seq_start_date length=4 format=mmddyy10.
-617         from _dat2
-618         where substr(dx,1,4) not in ('V541' 'V542')
-619         group by patid, seq
-13                                                                  The SAS System                                     22:16 Friday, December 29, 2017
 
-620         order by patid, seq;
+614        proc sql;
+615        /*episode sequence start date*/
+616        create table seq_start as
+617        select patid, seq, min(start_date) as seq_start_date length=4 format=mmddyy10.
+618         from _dat2
+619         where substr(dx,1,4) not in ('V541' 'V542')
+620         group by patid, seq
+621         order by patid, seq;
 NOTE: Table WORK.SEQ_START created, with 1137375 rows and 3 columns.
 
-621        /*episode sequence end date*/
-622        create table seq_end as
-623        select patid, seq,
-624         max(start_date) as seq_end_date length=4 format=mmddyy10. from _dat2
-625         group by patid, seq
-626         order by patid, seq;
+622        /*episode sequence end date*/
+623        create table seq_end as
+624        select patid, seq,
+625         max(start_date) as seq_end_date length=4 format=mmddyy10. from _dat2
+626         group by patid, seq
+627         order by patid, seq;
 NOTE: Table WORK.SEQ_END created, with 1356521 rows and 3 columns.
 
-627        quit;
+628        quit;
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           9.84 seconds
-      cpu time            15.21 seconds
+      real time           6.24 seconds
+      cpu time            13.30 seconds
       
 
-628        /*episode sequence case qualifier indicator and trauma*/
-629        data seq_cq(keep=patid seq seq_cq seq_trauma fx_site);
-630        set _dat2;
-631        by patid seq;
-632        length seq_cq $4 seq_trauma $1;
-633        retain seq_cq seq_trauma;
-634        if first.seq then do;
-635            seq_cq="0000";
-636            seq_trauma="0";
-637        end;
-638        if trauma="1" then seq_trauma=trauma;
-639        do i=1 to 4;
-640        if substr(cq,i,1)>substr(seq_cq,i,1) then substr(seq_cq,i,1)=substr(cq,i,1);
-641        end;
-642        if last.seq then output;
-643        run;
+629        /*episode sequence case qualifier indicator and trauma*/
+630        data seq_cq(keep=patid seq seq_cq seq_trauma fx_site);
+631        set _dat2;
+632        by patid seq;
+633        length seq_cq $4 seq_trauma $1;
+634        retain seq_cq seq_trauma;
+635        if first.seq then do;
+636            seq_cq="0000";
+637            seq_trauma="0";
+638        end;
+639        if trauma="1" then seq_trauma=trauma;
+640        do i=1 to 4;
+641        if substr(cq,i,1)>substr(seq_cq,i,1) then substr(seq_cq,i,1)=substr(cq,i,1);
+642        end;
+643        if last.seq then output;
+644        run;
 
 NOTE: There were 5749895 observations read from the data set WORK._DAT2.
 NOTE: The data set WORK.SEQ_CQ has 1356521 observations and 5 variables.
 NOTE: DATA statement used (Total process time):
-      real time           5.02 seconds
-      cpu time            5.02 seconds
+      real time           2.21 seconds
+      cpu time            2.18 seconds
       
 
-644        proc freq data=seq_cq; tables seq_cq seq_trauma fx_site; run;
+645        proc freq data=seq_cq; tables seq_cq seq_trauma fx_site; run;
 
-                                                                  --- AS project ---                               22:16 Friday, December 29, 2017   6
+                                                                  --- AS project ---                                    17:46 Monday, May 21, 2018   6
 
                                                                   The FREQ Procedure
 
@@ -1378,82 +1386,82 @@ NOTE: DATA statement used (Total process time):
 NOTE: There were 1356521 observations read from the data set WORK.SEQ_CQ.
 NOTE: The PROCEDURE FREQ printed page 6.
 NOTE: PROCEDURE FREQ used (Total process time):
-      real time           0.64 seconds
-      cpu time            0.54 seconds
+      real time           0.43 seconds
+      cpu time            0.37 seconds
       
 
-645        
-646        data seq_cq_date;
-647        merge seq_cq seq_start seq_end;
-648        by patid seq;
-649        length site_order $1;
-650        if fx_site='(820, 73314) hip' then site_order='1';
-651        if fx_site='(821, 73315) femur' then site_order='2';
-652        if fx_site='(808) pelvis' then site_order='3';
-653        if fx_site='(805, 806, 73313) spine' then site_order='4';
-654        if fx_site='(812, 73311) humerus' then site_order='5';
-655        if fx_site='(813, 73312) radius_ulna' then site_order='6';
-656        if fx_site='(823, 73316) tib_fib' then site_order='7';
-657        if fx_site='(824) ankle' then site_order='8';
-658        if fx_site='(810) clavicle' then site_order='9';
-659        run;
+646        
+647        data seq_cq_date;
+648        merge seq_cq seq_start seq_end;
+649        by patid seq;
+650        length site_order $1;
+651        if fx_site='(820, 73314) hip' then site_order='1';
+652        if fx_site='(821, 73315) femur' then site_order='2';
+653        if fx_site='(808) pelvis' then site_order='3';
+654        if fx_site='(805, 806, 73313) spine' then site_order='4';
+655        if fx_site='(812, 73311) humerus' then site_order='5';
+656        if fx_site='(813, 73312) radius_ulna' then site_order='6';
+657        if fx_site='(823, 73316) tib_fib' then site_order='7';
+658        if fx_site='(824) ankle' then site_order='8';
+659        if fx_site='(810) clavicle' then site_order='9';
+14                                                                  The SAS System                                          17:46 Monday, May 21, 2018
+
+660        run;
 
 NOTE: There were 1356521 observations read from the data set WORK.SEQ_CQ.
 NOTE: There were 1137375 observations read from the data set WORK.SEQ_START.
 NOTE: There were 1356521 observations read from the data set WORK.SEQ_END.
 NOTE: The data set WORK.SEQ_CQ_DATE has 1356521 observations and 8 variables.
 NOTE: DATA statement used (Total process time):
-      real time           1.88 seconds
-14                                                                  The SAS System                                     22:16 Friday, December 29, 2017
-
-      cpu time            1.88 seconds
+      real time           0.99 seconds
+      cpu time            0.98 seconds
       
 
-660        
-661        data _tmp_combo;
-662        set seq_cq_date;
-663        where site_order^=" " and seq_cq^="0000" and seq_cq^=" ";
-664        run;
+661        
+662        data _tmp_combo;
+663        set seq_cq_date;
+664        where site_order^=" " and seq_cq^="0000" and seq_cq^=" ";
+665        run;
 
 NOTE: There were 335543 observations read from the data set WORK.SEQ_CQ_DATE.
       WHERE (site_order not = ' ') and seq_cq not in (' ', '0000');
 NOTE: The data set WORK._TMP_COMBO has 335543 observations and 8 variables.
 NOTE: DATA statement used (Total process time):
-      real time           0.32 seconds
-      cpu time            0.32 seconds
+      real time           0.31 seconds
+      cpu time            0.28 seconds
       
 
-665        
-666        * define combo or alone fx;
-667        data seq_COMBO(
-668        keep=patid seq seq_cq seq_start_date alone_combo fx_site site_order)
-669        ;
-670        if _n_=1 then do;
-671            declare hash hpid(dataset:"_tmp_combo(where=(seq_cq^='0000' and seq_cq^=' ')
-672                    rename=(seq_start_date=seq_start_date2  fx_site= fx_site_combo seq=seq_COMBO))", ordered: 'a', multidata:"Y");
-673            rc=hpid.defineKey("patid");
-674            rc=hpid.defineData("patid","seq_start_date2", "fx_site_combo", "seq_COMBO");
-675            rc=hpid.defineDone();
-676        end;
-677        if 0 then set _tmp_combo(rename=(seq_start_date=seq_start_date2 fx_site= fx_site_combo seq=seq_COMBO));
-678        set _tmp_combo(where=(seq_cq^="0000" and seq_cq^=" ") );
-679        by patid seq;
-680        length  index_fx_begin 4 alone_combo $5;
-681        alone_combo="alone";
-682            format index_fx_begin mmddyy10.;
-683            index_fx_begin=seq_start_date;
-684        
-685         rc=hpid.find(key:patid);
-686        
-687         do while (rc = 0);
-688         if rc=0 and abs(seq_start_date-seq_start_date2) <=30 and fx_site_combo^=fx_site then alone_combo= 'combo';
-689         rc=hpid.find_next();
-690         *hpid.has_next(result:r);
-691        end;
-692        if alone_combo="alone" then do;
-693            seq_start_date2=.; fx_site_combo=" "; seq_COMBO=.;
-694        end;
-695        run;
+666        
+667        * define combo or alone fx;
+668        data seq_COMBO(
+669        keep=patid seq seq_cq seq_start_date alone_combo fx_site site_order)
+670        ;
+671        if _n_=1 then do;
+672            declare hash hpid(dataset:"_tmp_combo(where=(seq_cq^='0000' and seq_cq^=' ')
+673                    rename=(seq_start_date=seq_start_date2  fx_site= fx_site_combo seq=seq_COMBO))", ordered: 'a', multidata:"Y");
+674            rc=hpid.defineKey("patid");
+675            rc=hpid.defineData("patid","seq_start_date2", "fx_site_combo", "seq_COMBO");
+676            rc=hpid.defineDone();
+677        end;
+678        if 0 then set _tmp_combo(rename=(seq_start_date=seq_start_date2 fx_site= fx_site_combo seq=seq_COMBO));
+679        set _tmp_combo(where=(seq_cq^="0000" and seq_cq^=" ") );
+680        by patid seq;
+681        length  index_fx_begin 4 alone_combo $5;
+682        alone_combo="alone";
+683            format index_fx_begin mmddyy10.;
+684            index_fx_begin=seq_start_date;
+685        
+686         rc=hpid.find(key:patid);
+687        
+688         do while (rc = 0);
+689         if rc=0 and abs(seq_start_date-seq_start_date2) <=30 and fx_site_combo^=fx_site then alone_combo= 'combo';
+690         rc=hpid.find_next();
+691         *hpid.has_next(result:r);
+692        end;
+693        if alone_combo="alone" then do;
+694            seq_start_date2=.; fx_site_combo=" "; seq_COMBO=.;
+695        end;
+696        run;
 
 NOTE: There were 335543 observations read from the data set WORK._TMP_COMBO.
       WHERE seq_cq not in (' ', '0000');
@@ -1461,13 +1469,13 @@ NOTE: There were 335543 observations read from the data set WORK._TMP_COMBO.
       WHERE seq_cq not in (' ', '0000');
 NOTE: The data set WORK.SEQ_COMBO has 335543 observations and 7 variables.
 NOTE: DATA statement used (Total process time):
-      real time           1.04 seconds
-      cpu time            1.04 seconds
+      real time           0.79 seconds
+      cpu time            0.76 seconds
       
 
-696        proc freq data=seq_COMBO; tables alone_combo; run;
+697        proc freq data=seq_COMBO; tables alone_combo; run;
 
-                                                                  --- AS project ---                               22:16 Friday, December 29, 2017   7
+                                                                  --- AS project ---                                    17:46 Monday, May 21, 2018   7
 
                                                                   The FREQ Procedure
 
@@ -1544,63 +1552,63 @@ NOTE: DATA statement used (Total process time):
 NOTE: There were 335543 observations read from the data set WORK.SEQ_COMBO.
 NOTE: The PROCEDURE FREQ printed page 7.
 NOTE: PROCEDURE FREQ used (Total process time):
-      real time           0.09 seconds
-      cpu time            0.07 seconds
+15                                                                  The SAS System                                          17:46 Monday, May 21, 2018
+
+      real time           0.14 seconds
+      cpu time            0.10 seconds
       
 
-697        
-698        proc sort data = Work.seq_COMBO;
-699          by patid seq_start_date;
-700        run;
-15                                                                  The SAS System                                     22:16 Friday, December 29, 2017
-
+698        
+699        proc sort data = Work.seq_COMBO;
+700          by patid seq_start_date;
+701        run;
 
 NOTE: There were 335543 observations read from the data set WORK.SEQ_COMBO.
 NOTE: The data set WORK.SEQ_COMBO has 335543 observations and 7 variables.
 NOTE: PROCEDURE SORT used (Total process time):
-      real time           0.15 seconds
-      cpu time            0.37 seconds
+      real time           0.29 seconds
+      cpu time            0.56 seconds
       
 
-701        
-702        data combo_seq;
-703        set seq_COMBO;
-704        by patid seq_start_date;
-705        length combo_fx_site $30. combo_seq 4;
-706        retain combo_seq 0 combo_fx_site;
-707        if first.patid or seq_start_date-lag(seq_start_date) then combo_seq=1+combo_seq;
-708        where seq_cq^='0000' and seq_cq^=' ';
-709        if combo_fx_site=" " or ""<site_order<lag(site_order) then combo_fx_site=fx_site;
-710        run;
+702        
+703        data combo_seq;
+704        set seq_COMBO;
+705        by patid seq_start_date;
+706        length combo_fx_site $30. combo_seq 4;
+707        retain combo_seq 0 combo_fx_site;
+708        if first.patid or seq_start_date-lag(seq_start_date) then combo_seq=1+combo_seq;
+709        where seq_cq^='0000' and seq_cq^=' ';
+710        if combo_fx_site=" " or ""<site_order<lag(site_order) then combo_fx_site=fx_site;
+711        run;
 
 NOTE: Missing values were generated as a result of performing an operation on missing values.
       Each place is given by: (Number of times) at (Line):(Column).
-      1 at 707:33   
+      1 at 708:33   
 NOTE: There were 335543 observations read from the data set WORK.SEQ_COMBO.
       WHERE seq_cq not in (' ', '0000');
 NOTE: The data set WORK.COMBO_SEQ has 335543 observations and 9 variables.
 NOTE: DATA statement used (Total process time):
-      real time           0.28 seconds
-      cpu time            0.28 seconds
+      real time           0.42 seconds
+      cpu time            0.37 seconds
       
 
-711        
-712        proc sort data = Work.seq_COMBO;
-713          by patid seq;
-714        run;
+712        
+713        proc sort data = Work.seq_COMBO;
+714          by patid seq;
+715        run;
 
 NOTE: There were 335543 observations read from the data set WORK.SEQ_COMBO.
 NOTE: The data set WORK.SEQ_COMBO has 335543 observations and 7 variables.
 NOTE: PROCEDURE SORT used (Total process time):
-      real time           0.14 seconds
-      cpu time            0.26 seconds
+      real time           0.29 seconds
+      cpu time            0.50 seconds
       
 
-715        
-716        data FX_CLM_DB;
-717        merge _dat2 seq_start seq_end seq_cq(drop=fx_site) seq_COMBO(keep=patid seq alone_combo);
-718        by patid seq;
-719        run;
+716        
+717        data FX_CLM_DB;
+718        merge _dat2 seq_start seq_end seq_cq(drop=fx_site) seq_COMBO(keep=patid seq alone_combo);
+719        by patid seq;
+720        run;
 
 NOTE: There were 5749895 observations read from the data set WORK._DAT2.
 NOTE: There were 1137375 observations read from the data set WORK.SEQ_START.
@@ -1609,14 +1617,14 @@ NOTE: There were 1356521 observations read from the data set WORK.SEQ_CQ.
 NOTE: There were 335543 observations read from the data set WORK.SEQ_COMBO.
 NOTE: The data set WORK.FX_CLM_DB has 5749895 observations and 25 variables.
 NOTE: DATA statement used (Total process time):
-      real time           8.25 seconds
-      cpu time            8.23 seconds
+      real time           5.52 seconds
+      cpu time            5.47 seconds
       
 
-720        
-721        proc sql;
-722        select count(distinct seq) from FX_CLM_DB;
-                                                                  --- AS project ---                               22:16 Friday, December 29, 2017   8
+721        
+722        proc sql;
+723        select count(distinct seq) from FX_CLM_DB;
+                                                                  --- AS project ---                                    17:46 Monday, May 21, 2018   8
 
                                                                                
                                                                        --------
@@ -1690,72 +1698,72 @@ NOTE: DATA statement used (Total process time):
  
  
                                                               queryFracturesControl.sas
-723        quit;
+724        quit;
 NOTE: The PROCEDURE SQL printed page 8.
+16                                                                  The SAS System                                          17:46 Monday, May 21, 2018
+
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           5.49 seconds
-      cpu time            5.36 seconds
+      real time           3.44 seconds
+      cpu time            3.41 seconds
       
 
-724        
 725        
 726        
-16                                                                  The SAS System                                     22:16 Friday, December 29, 2017
-
 727        
-728        /*
-729        Collapse to fracture episodes
-730        
-731        Q: Why are some seq_start_date values missing?
-732         */
-733        proc sort
-734          data = Work.fx_clm_db
-735          out = Work.fractureEpisodes (drop = seq
-736                                       rename = (seq_start_date = fractureEpisodeStart
-737                                                 seq_end_date = fractureEpisodeEnd
-738                                                 fx_site = fractureSite))
-739          nodupkey;
-740          by patid seq seq_start_date seq_end_date fx_site;
-741        run;
+728        
+729        /*
+730        Collapse to fracture episodes
+731        
+732        Q: Why are some seq_start_date values missing?
+733         */
+734        proc sort
+735          data = Work.fx_clm_db
+736          out = Work.fractureEpisodes (drop = seq
+737                                       rename = (seq_start_date = fractureEpisodeStart
+738                                                 seq_end_date = fractureEpisodeEnd
+739                                                 fx_site = fractureSite))
+740          nodupkey;
+741          by patid seq seq_start_date seq_end_date fx_site;
+742        run;
 
 NOTE: There were 5749895 observations read from the data set WORK.FX_CLM_DB.
 NOTE: 4393374 observations with duplicate key values were deleted.
 NOTE: The data set WORK.FRACTUREEPISODES has 1356521 observations and 24 variables.
 NOTE: PROCEDURE SORT used (Total process time):
-      real time           4.14 seconds
-      cpu time            8.44 seconds
+      real time           4.11 seconds
+      cpu time            9.43 seconds
       
 
-742        
-743        proc sql;
-744          create table DT.fractureEpisodesPrevControl as
-745            select A.database,
-746                   A.cohort,
-747                   A.indexDate,
-748                   A.controlID,
-749                   A.age,
-750                   A.sex,
-751                   B.*,
-752                   case
-753                     when prxmatch("/spine/", B.fractureSite) then "Clinical vertebral fracture"
-754                     when prxmatch("/(hip)|(pelvis)|(femur)|(humerus)|(radius)|(ulna)/", B.fractureSite) then "Non-vertebral osteoporotic fracture"
-755                     else ""
-756                     end as fractureType
-757            from DT.controlLookup A inner join
-758                 Work.fractureEpisodes B on (A.patid = B.patid);
+743        
+744        proc sql;
+745          create table DT.fractureEpisodesPrevControl as
+746            select A.database,
+747                   A.cohort,
+748                   A.indexDate,
+749                   A.controlID,
+750                   A.age,
+751                   A.sex,
+752                   B.*,
+753                   case
+754                     when prxmatch("/spine/", B.fractureSite) then "Clinical vertebral fracture"
+755                     when prxmatch("/(hip)|(pelvis)|(femur)|(humerus)|(radius)|(ulna)/", B.fractureSite) then "Non-vertebral osteoporotic fracture"
+756                     else ""
+757                     end as fractureType
+758            from DT.controlLookup A inner join
+759                 Work.fractureEpisodes B on (A.patid = B.patid);
 NOTE: Table DT.FRACTUREEPISODESPREVCONTROL created, with 1356521 rows and 31 columns.
 
-759          create table Work.summaryFractureEpisodesPrev as
-760            select "DT.fractureEpisodesPrevControl" as table,
-761                   fractureType, fractureSite,
-762                   count(distinct patid) as countDistinctPatid,
-763                   count(*) as countFractureEpisodes
-764            from DT.fractureEpisodesPrevControl
-765            group by fractureType, fractureSite;
+760          create table Work.summaryFractureEpisodesPrev as
+761            select "DT.fractureEpisodesPrevControl" as table,
+762                   fractureType, fractureSite,
+763                   count(distinct patid) as countDistinctPatid,
+764                   count(*) as countFractureEpisodes
+765            from DT.fractureEpisodesPrevControl
+766            group by fractureType, fractureSite;
 NOTE: Table WORK.SUMMARYFRACTUREEPISODESPREV created, with 23 rows and 5 columns.
 
-766          select * from Work.summaryFractureEpisodesPrev;
-                                                                  --- AS project ---                               22:16 Friday, December 29, 2017   9
+767          select * from Work.summaryFractureEpisodesPrev;
+                                                                  --- AS project ---                                    17:46 Monday, May 21, 2018   9
 
                                                                                                                        count         count
                                                                                                                     Distinct      Fracture
@@ -1829,11 +1837,11 @@ NOTE: Table WORK.SUMMARYFRACTUREEPISODESPREV created, with 23 rows and 5 columns
  
  
                                                               queryFracturesControl.sas
-767          select "DT.fractureEpisodesPrevControl" as table,
-768                 sum(countDistinctPatid) as sumDistinctPatid,
-769                 sum(countFractureEpisodes) as sumFractureEpisodes
-770            from Work.summaryFractureEpisodesPrev;
-                                                                  --- AS project ---                               22:16 Friday, December 29, 2017  10
+768          select "DT.fractureEpisodesPrevControl" as table,
+769                 sum(countDistinctPatid) as sumDistinctPatid,
+770                 sum(countFractureEpisodes) as sumFractureEpisodes
+771            from Work.summaryFractureEpisodesPrev;
+                                                                  --- AS project ---                                    17:46 Monday, May 21, 2018  10
 
                                                                                sumDistinct   sumFracture
                                               table                                  Patid      Episodes
@@ -1907,103 +1915,103 @@ NOTE: Table WORK.SUMMARYFRACTUREEPISODESPREV created, with 23 rows and 5 columns
  
  
                                                               queryFracturesControl.sas
-771        quit;
+772        quit;
 NOTE: The PROCEDURE SQL printed pages 9-10.
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           15.58 seconds
-      cpu time            17.39 seconds
+      real time           8.34 seconds
+      cpu time            10.90 seconds
       
 
-772        
+17                                                                  The SAS System                                          17:46 Monday, May 21, 2018
+
 773        
 774        
 775        
-776        proc export
-777          data = Work.summaryFractureEpisodesPrev
-778          outfile = "data\processed\&cmt..csv"
-779          dbms = csv
-17                                                                  The SAS System                                     22:16 Friday, December 29, 2017
+776        
+777        proc export
+778          data = Work.summaryFractureEpisodesPrev
+779          outfile = "data\processed\&cmt..csv"
+780          dbms = csv
+781          replace;
+782          delimiter = '09'x;
+783        run;
 
-780          replace;
-781          delimiter = '09'x;
-782        run;
-
-783         /**********************************************************************
-784         *   PRODUCT:   SAS
-785         *   VERSION:   9.4
-786         *   CREATOR:   External File Interface
-787         *   DATE:      29DEC17
-788         *   DESC:      Generated SAS Datastep Code
-789         *   TEMPLATE SOURCE:  (None Specified.)
-790         ***********************************************************************/
-791            data _null_;
-792            %let _EFIERR_ = 0; /* set the ERROR detection macro variable */
-793            %let _EFIREC_ = 0;     /* clear export record count macro variable */
-794            file 'data\processed\queryFracturesControl.csv' delimiter='09'x DSD DROPOVER lrecl=32767;
-795            if _n_ = 1 then        /* write column names or labels */
-796             do;
-797               put
-798                  "table"
-799               '09'x
-800                  "fractureType"
-801               '09'x
-802                  "fractureSite"
-803               '09'x
-804                  "countDistinctPatid"
-805               '09'x
-806                  "countFractureEpisodes"
-807               ;
-808             end;
-809           set  WORK.SUMMARYFRACTUREEPISODESPREV   end=EFIEOD;
-810               format table $30. ;
-811               format fractureType $35. ;
-812               format fractureSite $30. ;
-813               format countDistinctPatid best12. ;
-814               format countFractureEpisodes best12. ;
-815             do;
-816               EFIOUT + 1;
-817               put table $ @;
-818               put fractureType $ @;
-819               put fractureSite $ @;
-820               put countDistinctPatid @;
-821               put countFractureEpisodes ;
-822               ;
-823             end;
-824            if _ERROR_ then call symputx('_EFIERR_',1);  /* set ERROR detection macro variable */
-825            if EFIEOD then call symputx('_EFIREC_',EFIOUT);
-826            run;
+784         /**********************************************************************
+785         *   PRODUCT:   SAS
+786         *   VERSION:   9.4
+787         *   CREATOR:   External File Interface
+788         *   DATE:      21MAY18
+789         *   DESC:      Generated SAS Datastep Code
+790         *   TEMPLATE SOURCE:  (None Specified.)
+791         ***********************************************************************/
+792            data _null_;
+793            %let _EFIERR_ = 0; /* set the ERROR detection macro variable */
+794            %let _EFIREC_ = 0;     /* clear export record count macro variable */
+795            file 'data\processed\queryFracturesControl.csv' delimiter='09'x DSD DROPOVER lrecl=32767;
+796            if _n_ = 1 then        /* write column names or labels */
+797             do;
+798               put
+799                  "table"
+800               '09'x
+801                  "fractureType"
+802               '09'x
+803                  "fractureSite"
+804               '09'x
+805                  "countDistinctPatid"
+806               '09'x
+807                  "countFractureEpisodes"
+808               ;
+809             end;
+810           set  WORK.SUMMARYFRACTUREEPISODESPREV   end=EFIEOD;
+811               format table $30. ;
+812               format fractureType $35. ;
+813               format fractureSite $30. ;
+814               format countDistinctPatid best12. ;
+815               format countFractureEpisodes best12. ;
+816             do;
+817               EFIOUT + 1;
+818               put table $ @;
+819               put fractureType $ @;
+820               put fractureSite $ @;
+821               put countDistinctPatid @;
+822               put countFractureEpisodes ;
+823               ;
+824             end;
+825            if _ERROR_ then call symputx('_EFIERR_',1);  /* set ERROR detection macro variable */
+826            if EFIEOD then call symputx('_EFIREC_',EFIOUT);
+827            run;
 
 NOTE: The file 'data\processed\queryFracturesControl.csv' is:
       Filename=U:\studies\AS\pgms\bchan\data\processed\queryFracturesControl.csv,
       RECFM=V,LRECL=32767,File Size (bytes)=0,
-      Last Modified=29Dec2017:23:39:57,
-      Create Time=29Dec2017:23:39:57
+      Last Modified=21May2018:18:19:41,
+      Create Time=21May2018:18:19:41
 
 NOTE: 24 records were written to the file 'data\processed\queryFracturesControl.csv'.
       The minimum record length was 55.
       The maximum record length was 103.
 NOTE: There were 23 observations read from the data set WORK.SUMMARYFRACTUREEPISODESPREV.
 NOTE: DATA statement used (Total process time):
-      real time           0.01 seconds
+      real time           0.07 seconds
       cpu time            0.01 seconds
       
+
+18                                                                  The SAS System                                          17:46 Monday, May 21, 2018
 
 23 records created in data\processed\queryFracturesControl.csv from WORK.SUMMARYFRACTUREEPISODESPREV.
   
   
 NOTE: "data\processed\queryFracturesControl.csv" file was successfully created.
 NOTE: PROCEDURE EXPORT used (Total process time):
-      real time           0.62 seconds
-      cpu time            0.07 seconds
+      real time           1.21 seconds
+      cpu time            0.14 seconds
       
-18                                                                  The SAS System                                     22:16 Friday, December 29, 2017
 
-
-827        
 828        
-829        ods html close;
+829        
+830        ods html close;
 NOTE: SAS Institute Inc., SAS Campus Drive, Cary, NC USA 27513-2414
 NOTE: The SAS System used:
-      real time           1:23:06.38
-      cpu time            1:02:36.55
+      real time           32:52.01
+      cpu time            32:24.86
       
