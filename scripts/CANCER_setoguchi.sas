@@ -55,10 +55,13 @@ cancer_:
 quit;
  */
 /*bring in the malignancy table where code clean doen't have the x in it*/
-proc import datafile='q:\shared\users\wsmith\malignancy_code_list_20131019.xlsx' out=malignancy replace; run;
-proc import datafile='W:\Users\lchen\lookupdata\cancer\Updated SABER2_Cancer_Codes - 10-30-2015 LC 2016.xlsx' 
-    out=malignancy replace; 
-    sheet="malignancy_code_lists";
+/* proc import datafile='q:\shared\users\wsmith\malignancy_code_list_20131019.xlsx' out=malignancy replace; run; */
+proc import datafile='U:\studies\AS\pgms\bchan\data\raw\Updated SABER2_Cancer_Codes - 10-30-2015 LC 2016.txt' 
+    out=malignancy replace
+    dbms=dlm;
+  delimiter = '09'x;
+  getnames = yes;
+  guessingrows = 1000;
 run;
 /*Making sure that there is a unique key for code clean*/
 data malignancy;set malignancy; code=upcase(code);run;
@@ -85,7 +88,7 @@ data cancer_dat_dx(drop=rc);
     end;
 if 0 then set malignancy;
 set &indxdat.;
-rc = cancer_hash.find(key:DX);
+rc = cancer_hash.find();
 if rc=0;
 run;
 proc sort data=Cancer_dat_DX nodupkey; by exposureID begin_date dx;run;
@@ -99,7 +102,7 @@ data cancer_dat_px(drop=rc);
     end;
 if 0 then set malignancy;
 set &inpxdat.;
-rc = cancer_hash.find(key:PX);
+rc = cancer_hash.find();
 if rc=0;
 run;
 proc sort data=Cancer_dat_PX nodupkey; by exposureID px_date px;run;
@@ -114,7 +117,7 @@ data cancer_dat_rx(drop=rc);
     end;
 if 0 then set malignancy;
 set &inrxdat.;
-rc = cancer_hash.find(key:NDC);
+rc = cancer_hash.find();
 if rc=0;
 run;
 proc sort data=Cancer_dat_RX nodupkey; by exposureID dispense_date ndc;run;
