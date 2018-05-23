@@ -35,9 +35,9 @@ ods html
 
 *To edit the following two lines only;
 
-%let indxdat = UCB.tempIncDxAll;
-%let inpxdat = UCB.tempIncPxAll;
-%let inrxdat = UCB.tempIncRxAll;
+%let indxdat = UCB64.tempIncDxAll;
+%let inpxdat = UCB64.tempIncPxAll;
+%let inrxdat = UCB64.tempIncRxAll;
 proc sort data = &indxdat; by database exposure patid exposureStart exposureEnd exposureID begin_date;
 run;
 proc sort data = &inpxdat; by database exposure patid exposureStart exposureEnd exposureID px_date;

@@ -71,9 +71,9 @@ proc sort data=malignancy(where=(code^='')) out=malignancy2 ; by table code anyc
 *please adjust to point all PX/DX/RX/etc.;
 
 
-%let indxdat = UCB.tempIncDxAll;
-%let inpxdat = UCB.tempIncPxAll;
-%let inrxdat = UCB.tempIncRxAll;
+%let indxdat = UCB64.tempIncDxAll;
+%let inpxdat = UCB64.tempIncPxAll;
+%let inrxdat = UCB64.tempIncRxAll;
 proc sort data=&indxdat; by exposureID begin_date;run;
 proc sort data=&inpxdat; by exposureID px_date;run;
 proc sort data=&inrxdat; by exposureID dispense_date;run;

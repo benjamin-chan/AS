@@ -57,7 +57,7 @@ START OF 001_fx_data.sas
 
 %macro comballfxdgns;
     data fx_dgns;
-        set UCB.tempFracDxAll (where = (diagCodeType = "Fracture code"));
+        set UCB64.tempFracDxAll (where = (diagCodeType = "Fracture code"));
             length fx_site $30 ;
             fx_site = '';
             if strip(DX) in: ('800' '801' '802' '803' '804') then           do; fx_site='(800-804) skull/face'; output; end;
@@ -84,7 +84,7 @@ START OF 001_fx_data.sas
             if strip(DX) in: ('829') then                                           do; fx_site='(829) fx_nos'; output; end;
             if strip(DX) in ('73310' '73319' '7331') then                 do; fx_site='(7331) pathologic nos/nec'; output; end;
     data fx_excare;
-        set UCB.tempFracDxAll (where = (diagCodeType = "Extended care code"));
+        set UCB64.tempFracDxAll (where = (diagCodeType = "Extended care code"));
             length fx_site $30 ;
             fx_site = '';
             /*Expanded Diagnosis Codes - Fracture Aftercare Codes*/
@@ -238,7 +238,7 @@ run;
 
 %macro fx_prcd;
     data fx_prcd spine_xray;
-        set UCB.tempFracPxAll;
+        set UCB64.tempFracPxAll;
 
             length tx_site $30;
             length HLAT $1;
@@ -352,7 +352,7 @@ run;
 
 
 data trauma (rename=(begin_date=trauma_dt));
-        set UCB.tempFracDxAll (where = (diagCodeType = "Trauma code"));
+        set UCB64.tempFracDxAll (where = (diagCodeType = "Trauma code"));
 run;
 proc sort data= trauma(keep=patid trauma_dt) nodupkey; by patid trauma_dt;run;
 
@@ -694,12 +694,12 @@ quit;
 CLEAN UP
 
 proc sql;
-  drop table UCB.tempFracDxMPCD;
-  drop table UCB.tempFracDxUCB;
-  drop table UCB.tempFracDxSABR;
-  drop table UCB.tempFracPxMPCD;
-  drop table UCB.tempFracPxUCB;
-  drop table UCB.tempFracPxSABR;
+  drop table UCB64.tempFracDxMPCD;
+  drop table UCB64.tempFracDxUCB;
+  drop table UCB64.tempFracDxSABR;
+  drop table UCB64.tempFracPxMPCD;
+  drop table UCB64.tempFracPxUCB;
+  drop table UCB64.tempFracPxSABR;
 quit;
  */
 
