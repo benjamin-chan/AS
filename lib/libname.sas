@@ -76,6 +76,21 @@ libname UCB spde "q:\studies\AS\data\UCB"
                             "v:\studies\AS\data\UCB")
                  bysort=no;
 /* 
+64-bit SPDE library
+ */
+libname UCB64 spde "q:\studies\AS\data\UCB64"
+                 datapath=("q:\studies\AS\data\UCB64"
+			   "r:\studies\AS\data\UCB64"
+                           "s:\studies\AS\data\UCB64"
+                           "t:\studies\AS\data\UCB64"
+                           "u:\studies\AS\data\UCB64"
+                           "v:\studies\AS\data\UCB64")
+                 indexpath=("t:\studies\AS\data\UCB64"
+                            "u:\studies\AS\data\UCB64"
+                            "v:\studies\AS\data\UCB64")
+                 bysort=no
+					 compress=binary;
+/* 
 Small data library:
  */ 
 libname dt 'V:\studies\AS\data\';

@@ -225,7 +225,7 @@ proc sql;
            C.age, C.sex,
            C.comorbidity,
            1 as indPreExposure
-    from (&select1 from UCB.tempPrevDxAll A &join1) C;
+    from (&select1 from UCB64.tempPrevDxAll A &join1) C;
 
   select comorbidity, database, exposure, sum(indPreExposure) as sumIndPreExposure
     from DT.comorbiditiesOther
@@ -269,19 +269,19 @@ Due to server upgrade (32-bit to 64-bit SAS), subsequent execution results in er
  */
 /*  
 proc sql;
-  create table UCB.tempPrevDx12mPrior as
+  create table UCB64.tempPrevDx12mPrior as
     select * 
-    from UCB.tempPrevDxAll 
+    from UCB64.tempPrevDxAll 
     where intnx("year", indexDate, -1, "same") < begin_date <= indexDate
     order by indexID, indexDate;
-  create table UCB.tempPrevPx12mPrior as
+  create table UCB64.tempPrevPx12mPrior as
     select * 
-    from UCB.tempPrevPxAll 
+    from UCB64.tempPrevPxAll 
     where intnx("year", indexDate, -1, "same") < px_date <= indexDate
     order by indexID, indexDate;
-  create table UCB.tempPrevRx12mPrior as
+  create table UCB64.tempPrevRx12mPrior as
     select A.*, B.etc_name, B.source
-    from UCB.tempPrevRxAll A left join
+    from UCB64.tempPrevRxAll A left join
          DT.lookupNDC B on (A.ndc = B.ndc)
     where intnx("year", indexDate, -1, "same") < dispense_date <= indexDate
     order by indexID, indexDate;
@@ -368,7 +368,7 @@ proc sql;
            B.gnn as drugName, 
            B.descript as drugDesc, 
            . as dispense_sup
-      from UCB.tempPrevPxAll A inner join 
+      from UCB64.tempPrevPxAll A inner join 
            Work.biologicsLookup B on (A.px = B.code)
       where A.px_date < A.indexDate - 183
     union corr
@@ -379,7 +379,7 @@ proc sql;
            B.gnn as drugName, 
            B.descript as drugDesc, 
            A.dispense_sup
-      from UCB.tempPrevRxAll A inner join 
+      from UCB64.tempPrevRxAll A inner join 
            Work.biologicsLookup B on (A.ndc = B.code)
       where A.dispense_date < A.indexDate - 183;
   select codeType, drugName, count(distinct patid) as countDistinctPatid
@@ -434,7 +434,7 @@ mg/d (medium dose), and 10 mg/d or more (high dose)
                    else .
                    end as daysAtRisk,
                  B.prednisodeEquivalentDose
-          from UCB.tempPrevRxAll A inner join
+          from UCB64.tempPrevRxAll A inner join
                DT.lookupNDC B on (A.ndc = B.ndc)
           where ^missing(B.prednisodeEquivalentDose) & 
                 ((A.indexDate - 183 <= A.dispense_date <= A.indexDate) | 
@@ -450,7 +450,7 @@ Create diagnosis code indicators from inpatient admissions
              when count(distinct A.admit_date) > 0 then 1
              else 0
              end as indIPAdmit12mPrior
-    from UCB.tempPrevDx12mPrior A
+    from UCB64.tempPrevDx12mPrior A
     where A.enc_type = "IP"
     group by A.database, A.patid, A.indexID;
 /* 
@@ -461,7 +461,7 @@ Count encounters
            sum(indAVPhys12mPrior) as countAVPhys12mPrior
     from (select distinct A.database, A.patid, A.indexID, A.begin_date,
                  1 as indAVPhys12mPrior
-          from UCB.tempPrevPx12mPrior A
+          from UCB64.tempPrevPx12mPrior A
           where A.codeType = "CPT" & 
                 prxmatch("/^(992[0147][1-5])|(990((24)|(58)))/", A.code) & 
                 calculated indAVPhys12mPrior = 1) B
@@ -476,8 +476,8 @@ Count encounters
                    when A.database = "Medicare" & B.prov_type = "66" then 1
                    else .
                    end as indAVRheum12mPrior
-          from UCB.tempPrevPx12mPrior A inner join
-               UCB.tempPrevDx12mPrior B on (A.database = B.database & A.patid = B.patid & A.encounterID = B.encounterID)
+          from UCB64.tempPrevPx12mPrior A inner join
+               UCB64.tempPrevDx12mPrior B on (A.database = B.database & A.patid = B.patid & A.encounterID = B.encounterID)
           where A.codeType = "CPT" & 
                 prxmatch("/^(992[0147][1-5])|(990((24)|(58)))/", A.code) & 
                 calculated indAVRheum12mPrior = 1) B
@@ -489,7 +489,7 @@ Count encounters
              when count(distinct A.begin_date) > 0 then 1
              else 0
              end as indERVisit12mPrior
-    from UCB.tempPrevPx12mPrior A
+    from UCB64.tempPrevPx12mPrior A
     where A.codeType = "CPT" & prxmatch("/^9928[1-5]/", code)
     group by A.database, A.patid, A.indexID;
   create table DT.countEncounters as
@@ -568,7 +568,7 @@ proc sql;
     select distinct 
            A.database, A.patid, A.indexID,
            1 as indOutpatientInfection
-    from UCB.tempPrevDxAll A inner join 
+    from UCB64.tempPrevDxAll A inner join 
          Work.defOutcomes B on (A.codeType = B.codeType & A.code = B.code)
     where A.enc_type = "AV" &
           B.disease in ("Hospitalized infection");

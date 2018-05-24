@@ -55,8 +55,8 @@ Call interstitial lung disease macro
 %include "lib\IPP_2IPSOPplusPX_ILD.sas" / source2;
 %IPP_2IPSOPplusPX_ILD(outdata = Work.outcome_ILD_All,
                       IDS = exposureID,
-                      Dxs = UCB.tempIncDxAll,
-                      Pxs = UCB.tempIncPxAll);
+                      Dxs = UCB64.tempIncDxAll,
+                      Pxs = UCB64.tempIncPxAll);
 proc sql;
   create table Work.ILD as
     select database, 
@@ -151,7 +151,7 @@ proc sql;
            C.disease,
            C.begin_date
     from (select A.*, B.outcomeCategory, B.disease 
-          from UCB.tempIncDxAll A inner join 
+          from UCB64.tempIncDxAll A inner join 
                (select * from DT.defOutcomes where disease = "Myocardial infarction") B on (A.codeType = B.codeType & A.code = B.code) 
           where B.disease = "Myocardial infarction"  & 
                 A.enc_type = "IP" &
@@ -207,8 +207,8 @@ proc sql;
            C.outcomeCategory,
            C.disease,
            C.begin_date
-    from (&select1 from UCB.tempIncDxAll A &join1 union corr
-          &select1 from UCB.tempIncPxAll A &join1 union corr
+    from (&select1 from UCB64.tempIncDxAll A &join1 union corr
+          &select1 from UCB64.tempIncPxAll A &join1 union corr
           select * from Work.cancer union corr
           select * from Work.ILD union corr
           select * from Work.incidentMI union corr
