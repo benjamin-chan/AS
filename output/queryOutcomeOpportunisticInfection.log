@@ -1,5 +1,12 @@
-1                                          The SAS System                 18:22 Monday, May 21, 2018
+1                                                          The SAS System                               10:17 Thursday, May 24, 2018
 
+NOTE: Unable to open SASUSER.REGSTRY. WORK.REGSTRY will be opened instead.
+NOTE: All registry changes will be lost at the end of the session.
+
+WARNING: Unable to copy SASUSER registry to WORK registry. Because of this, you will not see registry customizations during this 
+         session.
+NOTE: Unable to open SASUSER.PROFILE. WORK.PROFILE will be opened instead.
+NOTE: All profile changes will be lost at the end of the session.
 NOTE: Copyright (c) 2016 by SAS Institute Inc., Cary, NC, USA. 
 NOTE: SAS (r) Proprietary Software 9.4 (TS1M5) 
       Licensed to UNIVERSITY OF ALABAMA AT BIRMINGHAM - SFA - T&R, Site 70086550.
@@ -28,8 +35,8 @@ of the shared folders.
 
 
 NOTE: SAS initialization used:
-      real time           0.34 seconds
-      cpu time            0.32 seconds
+      real time           4.46 seconds
+      cpu time            0.31 seconds
       
 1          *  University of Alabama at Birmingham                               *
 2          *  AS project                                            *
@@ -65,56 +72,50 @@ NOTE: Libref MPSTD was successfully assigned as follows:
 NOTE: Libref UCBSTD was successfully assigned as follows: 
       Engine:        SPDE 
       Physical Name: q:\studies\AS\data\stddata\
+2                                                                   The SAS System                                        10:17 Thursday, May 24, 2018
+
 NOTE: Libref UCB was successfully assigned as follows: 
       Engine:        SPDE 
       Physical Name: q:\studies\AS\data\UCB\
+NOTE: Libref UCB64 was successfully assigned as follows: 
+      Engine:        SPDE 
+      Physical Name: q:\studies\AS\data\UCB64\
 NOTE: Libref DT was successfully assigned as follows: 
       Engine:        V9 
       Physical Name: V:\studies\AS\data
 NOTE: Libref NDC was successfully assigned as follows: 
-2                                                                   The SAS System                                          18:22 Monday, May 21, 2018
-
       Engine:        V9 
       Physical Name: W:\onenote\references\drug ndcs\sas data
-139        footnote "&pgm.";
-140        * footnote2 "%sysfunc(datetime(),datetime14.)";
-141        title1 '--- AS project ---';
-142        **********************************************************************;
-143        options macrogen mlogic mprint symbolgen;
-144        options nomacrogen nomlogic nomprint nosymbolgen;
-145        
-146        
-147        ods html
-148          body = "output\&cmt..html"
-149          style = Statistical;
+154        footnote "&pgm.";
+155        * footnote2 "%sysfunc(datetime(),datetime14.)";
+156        title1 '--- AS project ---';
+157        **********************************************************************;
+158        options macrogen mlogic mprint symbolgen;
+159        options nomacrogen nomlogic nomprint nosymbolgen;
+160        
+161        
+162        ods html
+163          body = "output\&cmt..html"
+164          style = Statistical;
 NOTE: Writing HTML Body file: output\queryOutcomeOpportunisticInfection.html
-150        
-151        
-152        *To edit the following two lines only;
-153        
-154        %let indxdat = UCB.tempIncDxAll;
-155        %let inpxdat = UCB.tempIncPxAll;
-156        %let inrxdat = UCB.tempIncRxAll;
-157        proc sort data = &indxdat; by database exposure patid exposureStart exposureEnd exposureID begin_date;
-158        run;
+165        
+166        
+167        *To edit the following two lines only;
+168        
+169        %let indxdat = UCB64.tempIncDxAll;
+170        %let inpxdat = UCB64.tempIncPxAll;
+171        %let inrxdat = UCB64.tempIncRxAll;
+172        proc sort data = &indxdat; by database exposure patid exposureStart exposureEnd exposureID begin_date;
+173        run;
 
 NOTE: Input data set is already sorted, no sorting done.
 NOTE: PROCEDURE SORT used (Total process time):
-      real time           0.04 seconds
-      cpu time            0.04 seconds
+      real time           0.03 seconds
+      cpu time            0.03 seconds
       
 
-159        proc sort data = &inpxdat; by database exposure patid exposureStart exposureEnd exposureID px_date;
-160        run;
-
-NOTE: Input data set is already sorted, no sorting done.
-NOTE: PROCEDURE SORT used (Total process time):
-      real time           0.01 seconds
-      cpu time            0.01 seconds
-      
-
-161        proc sort data = &inrxdat; by database exposure patid exposureStart exposureEnd exposureID dispense_date;
-162        run;
+174        proc sort data = &inpxdat; by database exposure patid exposureStart exposureEnd exposureID px_date;
+175        run;
 
 NOTE: Input data set is already sorted, no sorting done.
 NOTE: PROCEDURE SORT used (Total process time):
@@ -122,119 +123,128 @@ NOTE: PROCEDURE SORT used (Total process time):
       cpu time            0.01 seconds
       
 
-163        
-164        /*
-165        proc datasets nolist; delete
-166        outcome_OI_dx
-167        outcome_OI_dx_mycobacteria
-168        outcome_OI_dx_only
-169        outcome_OI_dx1
-170        outcome_OI_mycobacteria
-171        outcome_OI_rx
-172        Outcome_oi_dx_rx_1
-173        Outcome_oi_dx_rx_2
-174        outcome_OI_dx_rx
-175        outcome_OI
-176        ;
-177        quit;
-178         */
-179        
-180        /*
-181        Copy data sets from permanent library
-182        
-183        proc copy out = Work in = DT;
-184          select icd9_infection outcome_infection_dx;
-185        run;
-186         */
-3                                                                   The SAS System                                          18:22 Monday, May 21, 2018
+176        proc sort data = &inrxdat; by database exposure patid exposureStart exposureEnd exposureID dispense_date;
+177        run;
 
-187        
-188        /*
-189        Instead of requiring queryOutcomeHospitalizedInfection.sas to be run first, make this script to be able to be run independently
-190        
-191        * Need to create Work.icd9_infection and Work.outcome_infection_dx data sets
-192         */
-193        proc import datafile='U:\studies\AS\pgms\bchan\data\raw\AHRQ_CCS.csv'
-194            out=icd9_infection dbms = csv replace;
-195            guessingrows = 1000;
-196        run;
+NOTE: Input data set is already sorted, no sorting done.
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+      
+
+178        
+179        /*
+180        proc datasets nolist; delete
+181        outcome_OI_dx
+182        outcome_OI_dx_mycobacteria
+183        outcome_OI_dx_only
+184        outcome_OI_dx1
+185        outcome_OI_mycobacteria
+186        outcome_OI_rx
+187        Outcome_oi_dx_rx_1
+188        Outcome_oi_dx_rx_2
+189        outcome_OI_dx_rx
+190        outcome_OI
+191        ;
+3                                                                   The SAS System                                        10:17 Thursday, May 24, 2018
+
+192        quit;
+193         */
+194        
+195        /*
+196        Copy data sets from permanent library
+197        
+198        proc copy out = Work in = DT;
+199          select icd9_infection outcome_infection_dx;
+200        run;
+201         */
+202        
+203        /*
+204        Instead of requiring queryOutcomeHospitalizedInfection.sas to be run first, make this script to be able to be run independently
+205        
+206        * Need to create Work.icd9_infection and Work.outcome_infection_dx data sets
+207         */
+208        proc import datafile='U:\studies\AS\pgms\bchan\data\raw\AHRQ_CCS.csv'
+209            out=icd9_infection dbms = csv replace;
+210            guessingrows = 1000;
+211        run;
 
 Number of names found is less than number of variables found. 
 Number of names found is less than number of variables found. 
-197         /**********************************************************************
-198         *   PRODUCT:   SAS
-199         *   VERSION:   9.4
-200         *   CREATOR:   External File Interface
-201         *   DATE:      21MAY18
-202         *   DESC:      Generated SAS Datastep Code
-203         *   TEMPLATE SOURCE:  (None Specified.)
-204         ***********************************************************************/
-205            data WORK.ICD9_INFECTION    ;
-206            %let _EFIERR_ = 0; /* set the ERROR detection macro variable */
-207            infile 'U:\studies\AS\pgms\bchan\data\raw\AHRQ_CCS.csv' delimiter = ',' MISSOVER DSD lrecl=32767 firstobs=2 ;
-208               informat ICD_9_CM_CODE $5. ;
-209               informat CCS_CATEGORY best32. ;
-210               informat CCS_CATEGORY_DESCRIPTION $12. ;
-211               informat ICD_9_CM_CODE_DESCRIPTION $64. ;
-212               informat OPTIONAL_CCS_CATEGORY $1. ;
-213               informat OPTIONAL_CCS_CATEGORY_DESCRIPTI $1. ;
-214               informat description $146. ;
-215               informat UABlist $1. ;
-216               informat Infection $1. ;
-217               informat UABgroup $36. ;
-218               informat Infection_Category $36. ;
-219               informat Infection_Location $1. ;
-220               informat Infectious_Organism $1. ;
-221               informat OI $2. ;
-222               informat Viral $5. ;
-223               informat Fungal $1. ;
-224               informat bacterial_infection $1. ;
-225               informat other_types_of_infection $1. ;
-226               informat VAR19 $26. ;
-227               format ICD_9_CM_CODE $5. ;
-228               format CCS_CATEGORY best12. ;
-229               format CCS_CATEGORY_DESCRIPTION $12. ;
-230               format ICD_9_CM_CODE_DESCRIPTION $64. ;
-231               format OPTIONAL_CCS_CATEGORY $1. ;
-232               format OPTIONAL_CCS_CATEGORY_DESCRIPTI $1. ;
-233               format description $146. ;
-234               format UABlist $1. ;
-235               format Infection $1. ;
-236               format UABgroup $36. ;
-237               format Infection_Category $36. ;
-238               format Infection_Location $1. ;
-239               format Infectious_Organism $1. ;
-240               format OI $2. ;
-241               format Viral $5. ;
-242               format Fungal $1. ;
-243               format bacterial_infection $1. ;
-244               format other_types_of_infection $1. ;
-245               format VAR19 $26. ;
-246            input
-247                        ICD_9_CM_CODE  $
-248                        CCS_CATEGORY
-249                        CCS_CATEGORY_DESCRIPTION  $
-250                        ICD_9_CM_CODE_DESCRIPTION  $
-251                        OPTIONAL_CCS_CATEGORY  $
-252                        OPTIONAL_CCS_CATEGORY_DESCRIPTI  $
-253                        description  $
-254                        UABlist  $
-255                        Infection  $
-4                                                                   The SAS System                                          18:22 Monday, May 21, 2018
+212         /**********************************************************************
+213         *   PRODUCT:   SAS
+214         *   VERSION:   9.4
+215         *   CREATOR:   External File Interface
+216         *   DATE:      24MAY18
+217         *   DESC:      Generated SAS Datastep Code
+218         *   TEMPLATE SOURCE:  (None Specified.)
+219         ***********************************************************************/
+220            data WORK.ICD9_INFECTION    ;
+221            %let _EFIERR_ = 0; /* set the ERROR detection macro variable */
+222            infile 'U:\studies\AS\pgms\bchan\data\raw\AHRQ_CCS.csv' delimiter = ',' MISSOVER DSD lrecl=32767 firstobs=2 ;
+223               informat ICD_9_CM_CODE $5. ;
+224               informat CCS_CATEGORY best32. ;
+225               informat CCS_CATEGORY_DESCRIPTION $12. ;
+226               informat ICD_9_CM_CODE_DESCRIPTION $64. ;
+227               informat OPTIONAL_CCS_CATEGORY $1. ;
+228               informat OPTIONAL_CCS_CATEGORY_DESCRIPTI $1. ;
+229               informat description $146. ;
+230               informat UABlist $1. ;
+231               informat Infection $1. ;
+232               informat UABgroup $36. ;
+233               informat Infection_Category $36. ;
+234               informat Infection_Location $1. ;
+235               informat Infectious_Organism $1. ;
+236               informat OI $2. ;
+237               informat Viral $5. ;
+238               informat Fungal $1. ;
+239               informat bacterial_infection $1. ;
+240               informat other_types_of_infection $1. ;
+241               informat VAR19 $26. ;
+242               format ICD_9_CM_CODE $5. ;
+243               format CCS_CATEGORY best12. ;
+244               format CCS_CATEGORY_DESCRIPTION $12. ;
+245               format ICD_9_CM_CODE_DESCRIPTION $64. ;
+246               format OPTIONAL_CCS_CATEGORY $1. ;
+247               format OPTIONAL_CCS_CATEGORY_DESCRIPTI $1. ;
+248               format description $146. ;
+249               format UABlist $1. ;
+250               format Infection $1. ;
+251               format UABgroup $36. ;
+252               format Infection_Category $36. ;
+253               format Infection_Location $1. ;
+254               format Infectious_Organism $1. ;
+255               format OI $2. ;
+256               format Viral $5. ;
+257               format Fungal $1. ;
+258               format bacterial_infection $1. ;
+259               format other_types_of_infection $1. ;
+260               format VAR19 $26. ;
+4                                                                   The SAS System                                        10:17 Thursday, May 24, 2018
 
-256                        UABgroup  $
-257                        Infection_Category  $
-258                        Infection_Location  $
-259                        Infectious_Organism  $
-260                        OI  $
-261                        Viral  $
-262                        Fungal  $
-263                        bacterial_infection  $
-264                        other_types_of_infection  $
-265                        VAR19  $
-266            ;
-267            if _ERROR_ then call symputx('_EFIERR_',1);  /* set ERROR detection macro variable */
-268            run;
+261            input
+262                        ICD_9_CM_CODE  $
+263                        CCS_CATEGORY
+264                        CCS_CATEGORY_DESCRIPTION  $
+265                        ICD_9_CM_CODE_DESCRIPTION  $
+266                        OPTIONAL_CCS_CATEGORY  $
+267                        OPTIONAL_CCS_CATEGORY_DESCRIPTI  $
+268                        description  $
+269                        UABlist  $
+270                        Infection  $
+271                        UABgroup  $
+272                        Infection_Category  $
+273                        Infection_Location  $
+274                        Infectious_Organism  $
+275                        OI  $
+276                        Viral  $
+277                        Fungal  $
+278                        bacterial_infection  $
+279                        other_types_of_infection  $
+280                        VAR19  $
+281            ;
+282            if _ERROR_ then call symputx('_EFIERR_',1);  /* set ERROR detection macro variable */
+283            run;
 
 NOTE: The infile 'U:\studies\AS\pgms\bchan\data\raw\AHRQ_CCS.csv' is:
       Filename=U:\studies\AS\pgms\bchan\data\raw\AHRQ_CCS.csv,
@@ -247,8 +257,8 @@ NOTE: 2230 records were read from the infile 'U:\studies\AS\pgms\bchan\data\raw\
       The maximum record length was 266.
 NOTE: The data set WORK.ICD9_INFECTION has 2230 observations and 19 variables.
 NOTE: DATA statement used (Total process time):
-      real time           0.04 seconds
-      cpu time            0.03 seconds
+      real time           0.06 seconds
+      cpu time            0.01 seconds
       
 
 2230 rows created in WORK.ICD9_INFECTION from U:\studies\AS\pgms\bchan\data\raw\AHRQ_CCS.csv.
@@ -258,14 +268,14 @@ NOTE: DATA statement used (Total process time):
 NOTE: WORK.ICD9_INFECTION data set was successfully created.
 NOTE: The data set WORK.ICD9_INFECTION has 2230 observations and 19 variables.
 NOTE: PROCEDURE IMPORT used (Total process time):
-      real time           0.77 seconds
-      cpu time            0.70 seconds
+      real time           0.79 seconds
+      cpu time            0.67 seconds
       
 
-269        data icd9_infection;
-270        set icd9_infection;
-271        Infection=upcase(Infection);
-272        run;
+284        data icd9_infection;
+285        set icd9_infection;
+286        Infection=upcase(Infection);
+287        run;
 
 NOTE: There were 2230 observations read from the data set WORK.ICD9_INFECTION.
 NOTE: The data set WORK.ICD9_INFECTION has 2230 observations and 19 variables.
@@ -274,12 +284,12 @@ NOTE: DATA statement used (Total process time):
       cpu time            0.01 seconds
       
 
-273        proc freq data = Work.icd9_infection;
-274          table oi / missprint;
-275          table infection_category / missprint;
-276        run;
+288        proc freq data = Work.icd9_infection;
+289          table oi / missprint;
+290          table infection_category / missprint;
+291        run;
 
-                                                                  --- AS project ---                                    18:22 Monday, May 21, 2018   1
+                                                                  --- AS project ---                                  10:17 Thursday, May 24, 2018   1
 
                                                                   The FREQ Procedure
 
@@ -353,7 +363,7 @@ NOTE: DATA statement used (Total process time):
  
  
                                                         queryOutcomeOpportunisticInfection.sas
-                                                                  --- AS project ---                                    18:22 Monday, May 21, 2018   2
+                                                                  --- AS project ---                                  10:17 Thursday, May 24, 2018   2
 
                                                                   The FREQ Procedure
 
@@ -427,7 +437,7 @@ NOTE: DATA statement used (Total process time):
                                                                Frequency Missing = 973
  
                                                         queryOutcomeOpportunisticInfection.sas
-                                                                  --- AS project ---                                    18:22 Monday, May 21, 2018   3
+                                                                  --- AS project ---                                  10:17 Thursday, May 24, 2018   3
 
                                                                   The FREQ Procedure
 
@@ -506,202 +516,128 @@ NOTE: The PROCEDURE FREQ printed pages 1-3.
 NOTE: PROCEDURE FREQ used (Total process time):
       real time           0.10 seconds
       cpu time            0.06 seconds
+5                                                                   The SAS System                                        10:17 Thursday, May 24, 2018
+
       
 
-277        data icd9_inf;
-278        length ICD_9_CM_CODE $18;
-279        set icd9_infection;
-280        keep
-281        ICD_9_CM_CODE ICD_9_CM_CODE_DESCRIPTION Infection Infection_Category Infection_Location Infectious_Organism OI Viral Fungal
-281      ! bacterial_infection other_types_of_infection;
-282        where Infection^=" ";
-283        run;
-5                                                                   The SAS System                                          18:22 Monday, May 21, 2018
-
+292        data icd9_inf;
+293        length ICD_9_CM_CODE $18;
+294        set icd9_infection;
+295        keep
+296        ICD_9_CM_CODE ICD_9_CM_CODE_DESCRIPTION Infection Infection_Category Infection_Location Infectious_Organism OI Viral Fungal
+296      ! bacterial_infection other_types_of_infection;
+297        where Infection^=" ";
+298        run;
 
 NOTE: There were 1401 observations read from the data set WORK.ICD9_INFECTION.
       WHERE Infection not = ' ';
 NOTE: The data set WORK.ICD9_INF has 1401 observations and 11 variables.
 NOTE: DATA statement used (Total process time):
-      real time           0.03 seconds
-      cpu time            0.00 seconds
+      real time           0.04 seconds
+      cpu time            0.01 seconds
       
 
-284        data outcome_infection_dx(drop=rc);
-285            if _N_=1 then do;
-286                declare hash HDX(dataset:"icd9_inf");
-287                rc = HDX.definekey("ICD_9_CM_CODE");
-288                rc = HDX.definedata(ALL:"YES");
-289                rc=HDX.definedone();
-290            end;
-291        if 0 then set icd9_inf;
-292        set &indxdat. ;
-293        by database exposure patid exposureStart exposureEnd exposureID BEGIN_DATE;
-294        /*length outcome $20 outcome_date 4;*/
-295        /*format outcome_date mmddyy10.;*/
-296                rc =HDX.find(key:DX);
-297                if rc=0 then output outcome_infection_dx;
-298        where ENC_TYPE in ('IP' 'ER' 'AV' 'NH' 'HH' 'ED');
-299        run;
+299        data outcome_infection_dx(drop=rc);
+300            if _N_=1 then do;
+301                declare hash HDX(dataset:"icd9_inf");
+302                rc = HDX.definekey("ICD_9_CM_CODE");
+303                rc = HDX.definedata(ALL:"YES");
+304                rc=HDX.definedone();
+305            end;
+306        if 0 then set icd9_inf;
+307        set &indxdat. ;
+308        by database exposure patid exposureStart exposureEnd exposureID BEGIN_DATE;
+309        /*length outcome $20 outcome_date 4;*/
+310        /*format outcome_date mmddyy10.;*/
+311                rc =HDX.find(key:DX);
+312                if rc=0 then output outcome_infection_dx;
+313        where ENC_TYPE in ('IP' 'ER' 'AV' 'NH' 'HH' 'ED');
+314        run;
 
 NOTE: There were 1401 observations read from the data set WORK.ICD9_INF.
-NOTE: There were 5928438 observations read from the data set UCB.TEMPINCDXALL.
+NOTE: There were 1935016 observations read from the data set UCB64.TEMPINCDXALL.
       WHERE ENC_TYPE in ('AV', 'ED', 'ER', 'HH', 'IP', 'NH');
 NOTE: Parallel WHERE evaluation suppressed due to sort order on table.
-NOTE: The data set WORK.OUTCOME_INFECTION_DX has 273795 observations and 34 variables.
+NOTE: The data set WORK.OUTCOME_INFECTION_DX has 81863 observations and 34 variables.
 NOTE: DATA statement used (Total process time):
-      real time           2.30 seconds
-      cpu time            3.96 seconds
+      real time           1.15 seconds
+      cpu time            1.88 seconds
       
 
-300        proc sort data=outcome_infection_dx nodupkey; by database exposure patid exposureStart exposureEnd exposureID BEGIN_DATE DX ENC_TYPE;run;
+315        proc sort data=outcome_infection_dx nodupkey; by database exposure patid exposureStart exposureEnd exposureID BEGIN_DATE DX ENC_TYPE;run;
 
-NOTE: There were 273795 observations read from the data set WORK.OUTCOME_INFECTION_DX.
-NOTE: 105664 observations with duplicate key values were deleted.
-NOTE: The data set WORK.OUTCOME_INFECTION_DX has 168131 observations and 34 variables.
+NOTE: There were 81863 observations read from the data set WORK.OUTCOME_INFECTION_DX.
+NOTE: 31802 observations with duplicate key values were deleted.
+NOTE: The data set WORK.OUTCOME_INFECTION_DX has 50061 observations and 34 variables.
 NOTE: PROCEDURE SORT used (Total process time):
-      real time           0.46 seconds
-      cpu time            0.76 seconds
+      real time           0.25 seconds
+      cpu time            0.20 seconds
       
 
-301        proc freq data=outcome_infection_dx; tables Infection_Category Infection;run;
+316        proc freq data=outcome_infection_dx; tables Infection_Category Infection;run;
 
-                                                                  --- AS project ---                                    18:22 Monday, May 21, 2018   4
+                                                                  --- AS project ---                                  10:17 Thursday, May 24, 2018   4
 
                                                                   The FREQ Procedure
 
                                                                                                Cumulative    Cumulative
                               Infection_Category                      Frequency     Percent     Frequency      Percent
                               -----------------------------------------------------------------------------------------
-                              Candidiasis                                    9        0.01             9         0.01  
-                              GI abscess                                  2615        1.67          2624         1.67  
-                              HSV                                          204        0.13          2828         1.80  
-                              Q fever                                        2        0.00          2830         1.81  
-                              UTI                                         1259        0.80          4089         2.61  
-                              abdominal abscess                           2294        1.46          6383         4.07  
-                              actinomycosis                                 68        0.04          6451         4.12  
-                              aspergillosis                                140        0.09          6591         4.21  
-                              bacteremia septicemia                       5896        3.76         12487         7.97  
-                              blastomycosis                                 43        0.03         12530         8.00  
-                              borrelia                                     673        0.43         13203         8.43  
-                              brain abscess                                154        0.10         13357         8.52  
-                              brucella                                       1        0.00         13358         8.53  
-                              candidiasis                                 1123        0.72         14481         9.24  
-                              cat-scratch                                   12        0.01         14493         9.25  
-                              cjd                                            1        0.00         14494         9.25  
-                              coccidioidomycosis                           129        0.08         14623         9.33  
-                              cryptococcosis                                 9        0.01         14632         9.34  
-                              device associated infections                1812        1.16         16444        10.50  
-                              encephalitis                                  17        0.01         16461        10.51  
-                              endemic mycosis                               23        0.01         16484        10.52  
-                              endocarditis                                 229        0.15         16713        10.67  
-                              endophthalmitis                               44        0.03         16757        10.69  
-                              filarial or other parasitis                   49        0.03         16806        10.73  
-                              gastroenteritis                             4993        3.19         21799        13.91  
-                              herpes                                      1042        0.67         22841        14.58  
-                              histoplasmosis                               146        0.09         22987        14.67  
-                              infectious conjunctivitis                     36        0.02         23023        14.69  
-                              invasive mold                                231        0.15         23254        14.84  
-                              leprosy                                        1        0.00         23255        14.84  
-                              leptospirosis                                  1        0.00         23256        14.84  
-                              leshmaniasis                                   2        0.00         23258        14.84  
-                              listeriosis                                    1        0.00         23259        14.84  
-                              meningitis                                    73        0.05         23332        14.89  
-                              myocarditis                                    3        0.00         23335        14.89  
-                              nontuberculosis mycobacteria                 435        0.28         23770        15.17  
-                              ocular infection                              76        0.05         23846        15.22  
-                              osteomyelitis                               3460        2.21         27306        17.43  
-                              plague                                         1        0.00         27307        17.43  
-                              pneumocystsis                                 42        0.03         27349        17.45  
-                              pneumonia                                  17847       11.39         45196        28.85  
-                              pneumonitis                                    1        0.00         45197        28.85  
-                              progressive multifocal leukoencephal           9        0.01         45206        28.85  
-                              prostate infections                            3        0.00         45209        28.85  
-                              pyelonephritis urine tract infection       27345       17.45         72554        46.31  
-                              rickettsia                                    38        0.02         72592        46.33  
-                              septic arthritis                             899        0.57         73491        46.90  
-                              skin and soft tissue                         112        0.07         73603        46.98  
-                              skin and soft tissue infection             25267       16.13         98870        63.10  
-                              sporotrichosis                                 8        0.01         98878        63.11  
-                              syphilis and other venereal disease,        1792        1.14        100670        64.25  
-                              toxoplasmosis                                 16        0.01        100686        64.26  
-                              tuberculosis                                 412        0.26        101098        64.52  
-                              upper respiratory tract infection          52613       33.58        153711        98.10  
-                              viremia                                       26        0.02        153737        98.12  
-                              zoster                                      2947        1.88        156684       100.00  
+                              GI abscess                                   774        1.63           774         1.63  
+                              HSV                                          112        0.24           886         1.87  
+                              Q fever                                        2        0.00           888         1.87  
+                              UTI                                          407        0.86          1295         2.73  
+                              abdominal abscess                            585        1.23          1880         3.96  
+                              actinomycosis                                 41        0.09          1921         4.04  
+                              aspergillosis                                 26        0.05          1947         4.10  
+                              bacteremia septicemia                       1145        2.41          3092         6.51  
+                              blastomycosis                                 14        0.03          3106         6.54  
+                              borrelia                                     192        0.40          3298         6.94  
+                              brain abscess                                 26        0.05          3324         7.00  
+                              candidiasis                                  317        0.67          3641         7.66  
+                              cat-scratch                                    5        0.01          3646         7.68  
+                              coccidioidomycosis                            64        0.13          3710         7.81  
+                              cryptococcosis                                 7        0.01          3717         7.82  
+                              device associated infections                 383        0.81          4100         8.63  
+                              encephalitis                                   3        0.01          4103         8.64  
+                              endemic mycosis                               19        0.04          4122         8.68  
+                              endocarditis                                  24        0.05          4146         8.73  
+                              endophthalmitis                               14        0.03          4160         8.76  
+                              filarial or other parasitis                   22        0.05          4182         8.80  
+                              gastroenteritis                             1313        2.76          5495        11.57  
+                              herpes                                       383        0.81          5878        12.37  
+                              histoplasmosis                                60        0.13          5938        12.50  
+                              infectious conjunctivitis                     14        0.03          5952        12.53  
+                              invasive mold                                 71        0.15          6023        12.68  
+                              leprosy                                        1        0.00          6024        12.68  
+                              leshmaniasis                                   3        0.01          6027        12.69  
+                              meningitis                                    26        0.05          6053        12.74  
+                              nontuberculosis mycobacteria                 160        0.34          6213        13.08  
+                              ocular infection                              46        0.10          6259        13.18  
+                              osteomyelitis                                659        1.39          6918        14.56  
+                              pneumocystsis                                 13        0.03          6931        14.59  
+                              pneumonia                                   4428        9.32         11359        23.91  
+                              pyelonephritis urine tract infection        6528       13.74         17887        37.65  
+                              rickettsia                                    19        0.04         17906        37.69  
+                              septic arthritis                             239        0.50         18145        38.20  
+                              skin and soft tissue                          13        0.03         18158        38.22  
+                              skin and soft tissue infection              7451       15.69         25609        53.91  
+                              sporotrichosis                                 3        0.01         25612        53.92  
+                              syphilis and other venereal disease,         715        1.51         26327        55.42  
+                              toxoplasmosis                                  1        0.00         26328        55.42  
+                              tuberculosis                                 180        0.38         26508        55.80  
+                              upper respiratory tract infection          20074       42.26         46582        98.06  
+                              viremia                                        4        0.01         46586        98.07  
+                              zoster                                       917        1.93         47503       100.00  
 
-                                                              Frequency Missing = 11447
+                                                              Frequency Missing = 2558
 
-
- 
- 
- 
- 
- 
- 
-                                                        queryOutcomeOpportunisticInfection.sas
-                                                                  --- AS project ---                                    18:22 Monday, May 21, 2018   5
-
-                                                                  The FREQ Procedure
 
                                                                                   Cumulative    Cumulative
                                             Infection    Frequency     Percent     Frequency      Percent
                                             --------------------------------------------------------------
-                                            T                 379        0.23           379         0.23  
-                                            Y              167752       99.77        168131       100.00  
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
+                                            T                  98        0.20            98         0.20  
+                                            Y               49963       99.80         50061       100.00  
  
  
  
@@ -714,34 +650,34 @@ NOTE: PROCEDURE SORT used (Total process time):
  
  
                                                         queryOutcomeOpportunisticInfection.sas
-NOTE: There were 168131 observations read from the data set WORK.OUTCOME_INFECTION_DX.
-NOTE: The PROCEDURE FREQ printed pages 4-5.
+NOTE: There were 50061 observations read from the data set WORK.OUTCOME_INFECTION_DX.
+NOTE: The PROCEDURE FREQ printed page 4.
 NOTE: PROCEDURE FREQ used (Total process time):
-      real time           0.20 seconds
-      cpu time            0.15 seconds
+      real time           0.13 seconds
+      cpu time            0.07 seconds
       
 
-302        
-303        
-304        /*
-305        Override OI designation of some of the infection categories
-306        Source lookup table is "W:\Users\lchen\lookupdata\AHRQ_CCS.xlsx",
-307        which was converted to CSV as "U:\studies\AS\pgms\bchan\data\raw\AHRQ_CCS.csv"
-308        See commit ceaac8
-309         */
-310        proc sql;
-311          select "Work.icd9_infection" as table, "BEFORE" as when, upcase(oi) as oi, upcase(infection_category) as infection_category, count(*) as
-311      ! records
-312            from Work.icd9_infection
-313            where upcase(infection_category) = "TUBERCULOSIS" |
-314                  upcase(infection_category) = "ACTINOMYCOSIS" |
-315                  upcase(infection_category) = "ZOSTER" |
-316                  icd_9_cm_code = "48284" |
-317                  prxmatch("/^003((1)|(2[1234]))/", icd_9_cm_code)
-6                                                                   The SAS System                                          18:22 Monday, May 21, 2018
+317        
+318        
+319        /*
+320        Override OI designation of some of the infection categories
+321        Source lookup table is "W:\Users\lchen\lookupdata\AHRQ_CCS.xlsx",
+322        which was converted to CSV as "U:\studies\AS\pgms\bchan\data\raw\AHRQ_CCS.csv"
+323        See commit ceaac8
+6                                                                   The SAS System                                        10:17 Thursday, May 24, 2018
 
-318            group by calculated oi, calculated infection_category;
-                                                                  --- AS project ---                                    18:22 Monday, May 21, 2018   6
+324         */
+325        proc sql;
+326          select "Work.icd9_infection" as table, "BEFORE" as when, upcase(oi) as oi, upcase(infection_category) as infection_category, count(*) as
+326      ! records
+327            from Work.icd9_infection
+328            where upcase(infection_category) = "TUBERCULOSIS" |
+329                  upcase(infection_category) = "ACTINOMYCOSIS" |
+330                  upcase(infection_category) = "ZOSTER" |
+331                  icd_9_cm_code = "48284" |
+332                  prxmatch("/^003((1)|(2[1234]))/", icd_9_cm_code)
+333            group by calculated oi, calculated infection_category;
+                                                                  --- AS project ---                                  10:17 Thursday, May 24, 2018   5
 
                                    table                when    oi  infection_category                     records
                                    -------------------------------------------------------------------------------
@@ -815,27 +751,27 @@ NOTE: PROCEDURE FREQ used (Total process time):
  
  
                                                         queryOutcomeOpportunisticInfection.sas
-319          update Work.icd9_infection
-320            set oi = case
-321                       when upcase(infection_category) = "TUBERCULOSIS" then "OI"
-322                       when upcase(infection_category) = "ACTINOMYCOSIS" then "OI"
-323                       when upcase(infection_category) = "ZOSTER" then "OI"
-324                       when icd_9_cm_code = "48284" then "OI"
-325                       when prxmatch("/^003((1)|(2[1234]))/", icd_9_cm_code) then "OI"
-326                       else oi
-327                       end;
+334          update Work.icd9_infection
+335            set oi = case
+336                       when upcase(infection_category) = "TUBERCULOSIS" then "OI"
+337                       when upcase(infection_category) = "ACTINOMYCOSIS" then "OI"
+338                       when upcase(infection_category) = "ZOSTER" then "OI"
+339                       when icd_9_cm_code = "48284" then "OI"
+340                       when prxmatch("/^003((1)|(2[1234]))/", icd_9_cm_code) then "OI"
+341                       else oi
+342                       end;
 NOTE: 2230 rows were updated in WORK.ICD9_INFECTION.
 
-328          select "Work.icd9_infection" as table, "AFTER" as when, upcase(oi) as oi, upcase(infection_category) as infection_category, count(*) as
-328      ! records
-329            from Work.icd9_infection
-330            where upcase(infection_category) = "TUBERCULOSIS" |
-331                  upcase(infection_category) = "ACTINOMYCOSIS" |
-332                  upcase(infection_category) = "ZOSTER" |
-333                  icd_9_cm_code = "48284" |
-334                  prxmatch("/^003((1)|(2[1234]))/", icd_9_cm_code)
-335            group by calculated oi, calculated infection_category;
-                                                                  --- AS project ---                                    18:22 Monday, May 21, 2018   7
+343          select "Work.icd9_infection" as table, "AFTER" as when, upcase(oi) as oi, upcase(infection_category) as infection_category, count(*) as
+343      ! records
+344            from Work.icd9_infection
+345            where upcase(infection_category) = "TUBERCULOSIS" |
+346                  upcase(infection_category) = "ACTINOMYCOSIS" |
+347                  upcase(infection_category) = "ZOSTER" |
+348                  icd_9_cm_code = "48284" |
+349                  prxmatch("/^003((1)|(2[1234]))/", icd_9_cm_code)
+350            group by calculated oi, calculated infection_category;
+                                                                  --- AS project ---                                  10:17 Thursday, May 24, 2018   6
 
                                     table                when   oi  infection_category                     records
                                     ------------------------------------------------------------------------------
@@ -909,25 +845,25 @@ NOTE: 2230 rows were updated in WORK.ICD9_INFECTION.
  
  
                                                         queryOutcomeOpportunisticInfection.sas
-336          select "Work.outcome_infection_dx" as table, "BEFORE" as when, upcase(oi) as oi, upcase(infection_category) as infection_category,
-336      ! count(*) as records
-337            from Work.outcome_infection_dx
-338            where upcase(infection_category) = "TUBERCULOSIS" |
-339                  upcase(infection_category) = "ACTINOMYCOSIS" |
-340                  upcase(infection_category) = "ZOSTER" |
-341                  icd_9_cm_code = "48284" |
-342                  prxmatch("/^003((1)|(2[1234]))/", icd_9_cm_code)
-343            group by calculated oi, calculated infection_category;
-                                                                  --- AS project ---                                    18:22 Monday, May 21, 2018   8
+351          select "Work.outcome_infection_dx" as table, "BEFORE" as when, upcase(oi) as oi, upcase(infection_category) as infection_category,
+351      ! count(*) as records
+352            from Work.outcome_infection_dx
+353            where upcase(infection_category) = "TUBERCULOSIS" |
+354                  upcase(infection_category) = "ACTINOMYCOSIS" |
+355                  upcase(infection_category) = "ZOSTER" |
+356                  icd_9_cm_code = "48284" |
+357                  prxmatch("/^003((1)|(2[1234]))/", icd_9_cm_code)
+358            group by calculated oi, calculated infection_category;
+                                                                  --- AS project ---                                  10:17 Thursday, May 24, 2018   7
 
                                 table                      when    oi  infection_category                     records
                                 -------------------------------------------------------------------------------------
-                                Work.outcome_infection_dx  BEFORE      ACTINOMYCOSIS                               68
-                                Work.outcome_infection_dx  BEFORE      PNEUMONIA                                   15
-                                Work.outcome_infection_dx  BEFORE      ZOSTER                                    2938
-                                Work.outcome_infection_dx  BEFORE  OI  GASTROENTERITIS                             11
-                                Work.outcome_infection_dx  BEFORE  OI  TUBERCULOSIS                               412
-                                Work.outcome_infection_dx  BEFORE  OI  ZOSTER                                       9
+                                Work.outcome_infection_dx  BEFORE      ACTINOMYCOSIS                               41
+                                Work.outcome_infection_dx  BEFORE      PNEUMONIA                                    2
+                                Work.outcome_infection_dx  BEFORE      ZOSTER                                     914
+                                Work.outcome_infection_dx  BEFORE  OI  GASTROENTERITIS                              3
+                                Work.outcome_infection_dx  BEFORE  OI  TUBERCULOSIS                               180
+                                Work.outcome_infection_dx  BEFORE  OI  ZOSTER                                       3
  
  
  
@@ -992,35 +928,35 @@ NOTE: 2230 rows were updated in WORK.ICD9_INFECTION.
  
  
                                                         queryOutcomeOpportunisticInfection.sas
-344          update Work.outcome_infection_dx
-345            set oi = case
-346                       when upcase(infection_category) = "TUBERCULOSIS" then "OI"
-347                       when upcase(infection_category) = "ACTINOMYCOSIS" then "OI"
-348                       when upcase(infection_category) = "ZOSTER" then "OI"
-349                       when icd_9_cm_code = "48284" then "OI"
-350                       when prxmatch("/^003((1)|(2[1234]))/", icd_9_cm_code) then "OI"
-351                       else oi
-352                       end;
-NOTE: 168131 rows were updated in WORK.OUTCOME_INFECTION_DX.
+359          update Work.outcome_infection_dx
+360            set oi = case
+361                       when upcase(infection_category) = "TUBERCULOSIS" then "OI"
+362                       when upcase(infection_category) = "ACTINOMYCOSIS" then "OI"
+363                       when upcase(infection_category) = "ZOSTER" then "OI"
+364                       when icd_9_cm_code = "48284" then "OI"
+365                       when prxmatch("/^003((1)|(2[1234]))/", icd_9_cm_code) then "OI"
+366                       else oi
+367                       end;
+NOTE: 50061 rows were updated in WORK.OUTCOME_INFECTION_DX.
 
-353          select "Work.outcome_infection_dx" as table, "AFTER" as when, upcase(oi) as oi, upcase(infection_category) as infection_category,
-353      ! count(*) as records
-354            from Work.outcome_infection_dx
-355            where upcase(infection_category) = "TUBERCULOSIS" |
-356                  upcase(infection_category) = "ACTINOMYCOSIS" |
-357                  upcase(infection_category) = "ZOSTER" |
-358                  icd_9_cm_code = "48284" |
-359                  prxmatch("/^003((1)|(2[1234]))/", icd_9_cm_code)
-360            group by calculated oi, calculated infection_category;
-                                                                  --- AS project ---                                    18:22 Monday, May 21, 2018   9
+368          select "Work.outcome_infection_dx" as table, "AFTER" as when, upcase(oi) as oi, upcase(infection_category) as infection_category,
+368      ! count(*) as records
+369            from Work.outcome_infection_dx
+370            where upcase(infection_category) = "TUBERCULOSIS" |
+371                  upcase(infection_category) = "ACTINOMYCOSIS" |
+372                  upcase(infection_category) = "ZOSTER" |
+373                  icd_9_cm_code = "48284" |
+374                  prxmatch("/^003((1)|(2[1234]))/", icd_9_cm_code)
+375            group by calculated oi, calculated infection_category;
+                                                                  --- AS project ---                                  10:17 Thursday, May 24, 2018   8
 
                                  table                      when   oi  infection_category                     records
                                  ------------------------------------------------------------------------------------
-                                 Work.outcome_infection_dx  AFTER  OI  ACTINOMYCOSIS                               68
-                                 Work.outcome_infection_dx  AFTER  OI  GASTROENTERITIS                             11
-                                 Work.outcome_infection_dx  AFTER  OI  PNEUMONIA                                   15
-                                 Work.outcome_infection_dx  AFTER  OI  TUBERCULOSIS                               412
-                                 Work.outcome_infection_dx  AFTER  OI  ZOSTER                                    2947
+                                 Work.outcome_infection_dx  AFTER  OI  ACTINOMYCOSIS                               41
+                                 Work.outcome_infection_dx  AFTER  OI  GASTROENTERITIS                              3
+                                 Work.outcome_infection_dx  AFTER  OI  PNEUMONIA                                    2
+                                 Work.outcome_infection_dx  AFTER  OI  TUBERCULOSIS                               180
+                                 Work.outcome_infection_dx  AFTER  OI  ZOSTER                                     917
  
  
  
@@ -1086,21 +1022,23 @@ NOTE: 168131 rows were updated in WORK.OUTCOME_INFECTION_DX.
  
  
                                                         queryOutcomeOpportunisticInfection.sas
-361        quit;
-NOTE: The PROCEDURE SQL printed pages 6-9.
+376        quit;
+NOTE: The PROCEDURE SQL printed pages 5-8.
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           1.27 seconds
-      cpu time            1.23 seconds
+      real time           0.77 seconds
+      cpu time            0.59 seconds
       
 
-362        
-363        
-364        proc freq data=icd9_infection; tables Infection_Category Infection_Location OI ;
-365        tables Infection_Category*description/missing list;
-366        where OI^=" " and OI^="N" and OI^="NO";
-367        run;
+377        
+378        
+379        proc freq data=icd9_infection; tables Infection_Category Infection_Location OI ;
+380        tables Infection_Category*description/missing list;
+381        where OI^=" " and OI^="N" and OI^="NO";
+7                                                                   The SAS System                                        10:17 Thursday, May 24, 2018
 
-                                                                  --- AS project ---                                    18:22 Monday, May 21, 2018  10
+382        run;
+
+                                                                  --- AS project ---                                  10:17 Thursday, May 24, 2018   9
 
                                                                   The FREQ Procedure
 
@@ -1174,7 +1112,7 @@ NOTE: PROCEDURE SQL used (Total process time):
  
  
                                                         queryOutcomeOpportunisticInfection.sas
-                                                                  --- AS project ---                                    18:22 Monday, May 21, 2018  11
+                                                                  --- AS project ---                                  10:17 Thursday, May 24, 2018  10
 
                                                                   The FREQ Procedure
 
@@ -1248,7 +1186,7 @@ NOTE: PROCEDURE SQL used (Total process time):
                                                          invasive mold                       
  
                                                         queryOutcomeOpportunisticInfection.sas
-                                                                  --- AS project ---                                    18:22 Monday, May 21, 2018  12
+                                                                  --- AS project ---                                  10:17 Thursday, May 24, 2018  11
 
                                                                   The FREQ Procedure
 
@@ -1322,7 +1260,7 @@ NOTE: PROCEDURE SQL used (Total process time):
   Zygomycosis [Phycomycosis or Mucormycosis]                                                                                                        
  
                                                         queryOutcomeOpportunisticInfection.sas
-                                                                  --- AS project ---                                    18:22 Monday, May 21, 2018  13
+                                                                  --- AS project ---                                  10:17 Thursday, May 24, 2018  12
 
                                                                   The FREQ Procedure
 
@@ -1396,7 +1334,7 @@ NOTE: PROCEDURE SQL used (Total process time):
                                                          1        0.19            65        12.33  
  
                                                         queryOutcomeOpportunisticInfection.sas
-                                                                  --- AS project ---                                    18:22 Monday, May 21, 2018  14
+                                                                  --- AS project ---                                  10:17 Thursday, May 24, 2018  13
 
                                                                   The FREQ Procedure
 
@@ -1470,7 +1408,7 @@ NOTE: PROCEDURE SQL used (Total process time):
                                                          tuberculosis                        
  
                                                         queryOutcomeOpportunisticInfection.sas
-                                                                  --- AS project ---                                    18:22 Monday, May 21, 2018  15
+                                                                  --- AS project ---                                  10:17 Thursday, May 24, 2018  14
 
                                                                   The FREQ Procedure
 
@@ -1544,7 +1482,7 @@ NOTE: PROCEDURE SQL used (Total process time):
   Other specified miliary tuberculosis, tubercle bacilli found (in sputum) by microscopy                                                            
  
                                                         queryOutcomeOpportunisticInfection.sas
-                                                                  --- AS project ---                                    18:22 Monday, May 21, 2018  16
+                                                                  --- AS project ---                                  10:17 Thursday, May 24, 2018  15
 
                                                                   The FREQ Procedure
 
@@ -1618,7 +1556,7 @@ NOTE: PROCEDURE SQL used (Total process time):
                                                          1        0.19           130        24.67  
  
                                                         queryOutcomeOpportunisticInfection.sas
-                                                                  --- AS project ---                                    18:22 Monday, May 21, 2018  17
+                                                                  --- AS project ---                                  10:17 Thursday, May 24, 2018  16
 
                                                                   The FREQ Procedure
 
@@ -1692,7 +1630,7 @@ NOTE: PROCEDURE SQL used (Total process time):
                                                          tuberculosis                        
  
                                                         queryOutcomeOpportunisticInfection.sas
-                                                                  --- AS project ---                                    18:22 Monday, May 21, 2018  18
+                                                                  --- AS project ---                                  10:17 Thursday, May 24, 2018  17
 
                                                                   The FREQ Procedure
 
@@ -1766,7 +1704,7 @@ NOTE: PROCEDURE SQL used (Total process time):
   Tuberculoma of meninges, tubercle bacilli not found by bacteriological examination, but tuberculosis confirmed histologically                     
  
                                                         queryOutcomeOpportunisticInfection.sas
-                                                                  --- AS project ---                                    18:22 Monday, May 21, 2018  19
+                                                                  --- AS project ---                                  10:17 Thursday, May 24, 2018  18
 
                                                                   The FREQ Procedure
 
@@ -1840,7 +1778,7 @@ NOTE: PROCEDURE SQL used (Total process time):
                                                          1        0.19           195        37.00  
  
                                                         queryOutcomeOpportunisticInfection.sas
-                                                                  --- AS project ---                                    18:22 Monday, May 21, 2018  20
+                                                                  --- AS project ---                                  10:17 Thursday, May 24, 2018  19
 
                                                                   The FREQ Procedure
 
@@ -1914,7 +1852,7 @@ NOTE: PROCEDURE SQL used (Total process time):
                                                          tuberculosis                        
  
                                                         queryOutcomeOpportunisticInfection.sas
-                                                                  --- AS project ---                                    18:22 Monday, May 21, 2018  21
+                                                                  --- AS project ---                                  10:17 Thursday, May 24, 2018  20
 
                                                                   The FREQ Procedure
 
@@ -1988,7 +1926,7 @@ NOTE: PROCEDURE SQL used (Total process time):
   Tuberculosis of hip, tubercle bacilli not found by bacteriological or histological examination, but tuberculosis confirmed by other methods [ino  
  
                                                         queryOutcomeOpportunisticInfection.sas
-                                                                  --- AS project ---                                    18:22 Monday, May 21, 2018  22
+                                                                  --- AS project ---                                  10:17 Thursday, May 24, 2018  21
 
                                                                   The FREQ Procedure
 
@@ -2062,7 +2000,7 @@ NOTE: PROCEDURE SQL used (Total process time):
                                                          1        0.19           261        49.53  
  
                                                         queryOutcomeOpportunisticInfection.sas
-                                                                  --- AS project ---                                    18:22 Monday, May 21, 2018  23
+                                                                  --- AS project ---                                  10:17 Thursday, May 24, 2018  22
 
                                                                   The FREQ Procedure
 
@@ -2136,7 +2074,7 @@ NOTE: PROCEDURE SQL used (Total process time):
                                                          tuberculosis                        
  
                                                         queryOutcomeOpportunisticInfection.sas
-                                                                  --- AS project ---                                    18:22 Monday, May 21, 2018  24
+                                                                  --- AS project ---                                  10:17 Thursday, May 24, 2018  23
 
                                                                   The FREQ Procedure
 
@@ -2210,7 +2148,7 @@ NOTE: PROCEDURE SQL used (Total process time):
   Tuberculosis of other female genital organs, tubercle bacilli found (in sputum) by microscopy                                                     
  
                                                         queryOutcomeOpportunisticInfection.sas
-                                                                  --- AS project ---                                    18:22 Monday, May 21, 2018  25
+                                                                  --- AS project ---                                  10:17 Thursday, May 24, 2018  24
 
                                                                   The FREQ Procedure
 
@@ -2284,7 +2222,7 @@ NOTE: PROCEDURE SQL used (Total process time):
                                                          1        0.19           326        61.86  
  
                                                         queryOutcomeOpportunisticInfection.sas
-                                                                  --- AS project ---                                    18:22 Monday, May 21, 2018  26
+                                                                  --- AS project ---                                  10:17 Thursday, May 24, 2018  25
 
                                                                   The FREQ Procedure
 
@@ -2358,7 +2296,7 @@ NOTE: PROCEDURE SQL used (Total process time):
                                                          tuberculosis                        
  
                                                         queryOutcomeOpportunisticInfection.sas
-                                                                  --- AS project ---                                    18:22 Monday, May 21, 2018  27
+                                                                  --- AS project ---                                  10:17 Thursday, May 24, 2018  26
 
                                                                   The FREQ Procedure
 
@@ -2432,7 +2370,7 @@ NOTE: PROCEDURE SQL used (Total process time):
   Tuberculosis of thyroid gland, tubercle bacilli not found by bacteriological examination, but tuberculosis confirmed histologically               
  
                                                         queryOutcomeOpportunisticInfection.sas
-                                                                  --- AS project ---                                    18:22 Monday, May 21, 2018  28
+                                                                  --- AS project ---                                  10:17 Thursday, May 24, 2018  27
 
                                                                   The FREQ Procedure
 
@@ -2506,7 +2444,7 @@ NOTE: PROCEDURE SQL used (Total process time):
                                                          1        0.19           391        74.19  
  
                                                         queryOutcomeOpportunisticInfection.sas
-                                                                  --- AS project ---                                    18:22 Monday, May 21, 2018  29
+                                                                  --- AS project ---                                  10:17 Thursday, May 24, 2018  28
 
                                                                   The FREQ Procedure
 
@@ -2580,7 +2518,7 @@ NOTE: PROCEDURE SQL used (Total process time):
                                                          tuberculosis                        
  
                                                         queryOutcomeOpportunisticInfection.sas
-                                                                  --- AS project ---                                    18:22 Monday, May 21, 2018  30
+                                                                  --- AS project ---                                  10:17 Thursday, May 24, 2018  29
 
                                                                   The FREQ Procedure
 
@@ -2654,7 +2592,7 @@ NOTE: PROCEDURE SQL used (Total process time):
   Tuberculous laryngitis, unspecified                                                                                                               
  
                                                         queryOutcomeOpportunisticInfection.sas
-                                                                  --- AS project ---                                    18:22 Monday, May 21, 2018  31
+                                                                  --- AS project ---                                  10:17 Thursday, May 24, 2018  30
 
                                                                   The FREQ Procedure
 
@@ -2728,7 +2666,7 @@ NOTE: PROCEDURE SQL used (Total process time):
                                                          1        0.19           456        86.53  
  
                                                         queryOutcomeOpportunisticInfection.sas
-                                                                  --- AS project ---                                    18:22 Monday, May 21, 2018  32
+                                                                  --- AS project ---                                  10:17 Thursday, May 24, 2018  31
 
                                                                   The FREQ Procedure
 
@@ -2802,7 +2740,7 @@ NOTE: PROCEDURE SQL used (Total process time):
                                                          zoster                              
  
                                                         queryOutcomeOpportunisticInfection.sas
-                                                                  --- AS project ---                                    18:22 Monday, May 21, 2018  33
+                                                                  --- AS project ---                                  10:17 Thursday, May 24, 2018  32
 
                                                                   The FREQ Procedure
 
@@ -2876,7 +2814,7 @@ NOTE: PROCEDURE SQL used (Total process time):
   Herpes zoster with other specified complications                                                                                                  
  
                                                         queryOutcomeOpportunisticInfection.sas
-                                                                  --- AS project ---                                    18:22 Monday, May 21, 2018  34
+                                                                  --- AS project ---                                  10:17 Thursday, May 24, 2018  33
 
                                                                   The FREQ Procedure
 
@@ -2950,7 +2888,7 @@ NOTE: PROCEDURE SQL used (Total process time):
                                                          1        0.19           521        98.86  
  
                                                         queryOutcomeOpportunisticInfection.sas
-                                                                  --- AS project ---                                    18:22 Monday, May 21, 2018  35
+                                                                  --- AS project ---                                  10:17 Thursday, May 24, 2018  34
 
                                                                   The FREQ Procedure
 
@@ -3026,64 +2964,56 @@ NOTE: PROCEDURE SQL used (Total process time):
                                                         queryOutcomeOpportunisticInfection.sas
 NOTE: There were 527 observations read from the data set WORK.ICD9_INFECTION.
       WHERE OI not in (' ', 'N', 'NO');
-NOTE: The PROCEDURE FREQ printed pages 10-35.
+NOTE: The PROCEDURE FREQ printed pages 9-34.
 NOTE: PROCEDURE FREQ used (Total process time):
-      real time           0.43 seconds
+      real time           0.45 seconds
       cpu time            0.25 seconds
       
 
-7                                                                   The SAS System                                          18:22 Monday, May 21, 2018
+383        data outcome_OI_dx(label="DX of Opportunistic infections");
+384        set outcome_infection_dx;
+385        where OI^=" " and OI^="N" and OI^="NO" and lowcase(Infection_Category) not in ("tuberculosis" "zoster");  /* Deal with TB and zoster in
+385      ! subsequent step */
+386        run;
 
-368        data outcome_OI_dx(label="DX of Opportunistic infections");
-369        set outcome_infection_dx;
-370        where OI^=" " and OI^="N" and OI^="NO" and lowcase(Infection_Category) not in ("tuberculosis" "zoster");  /* Deal with TB and zoster in
-370      ! subsequent step */
-371        run;
-
-NOTE: There were 2562 observations read from the data set WORK.OUTCOME_INFECTION_DX.
+NOTE: There were 835 observations read from the data set WORK.OUTCOME_INFECTION_DX.
       WHERE OI not in (' ', 'N', 'NO') and LOWCASE(Infection_Category) not in ('tuberculosis', 'zoster');
-NOTE: The data set WORK.OUTCOME_OI_DX has 2562 observations and 34 variables.
+NOTE: The data set WORK.OUTCOME_OI_DX has 835 observations and 34 variables.
 NOTE: DATA statement used (Total process time):
-      real time           0.13 seconds
-      cpu time            0.12 seconds
+      real time           0.07 seconds
+      cpu time            0.04 seconds
       
 
-372        proc freq data=outcome_OI_dx; tables Infection_Category ENC_TYPE;
-373        run;
+387        proc freq data=outcome_OI_dx; tables Infection_Category ENC_TYPE;
+388        run;
 
-                                                                  --- AS project ---                                    18:22 Monday, May 21, 2018  36
+                                                                  --- AS project ---                                  10:17 Thursday, May 24, 2018  35
 
                                                                   The FREQ Procedure
 
                                                                                                Cumulative    Cumulative
                               Infection_Category                      Frequency     Percent     Frequency      Percent
                               -----------------------------------------------------------------------------------------
-                              Candidiasis                                    9        0.36             9         0.36  
-                              HSV                                            4        0.16            13         0.53  
-                              actinomycosis                                 68        2.75            81         3.28  
-                              aspergillosis                                140        5.67           221         8.95  
-                              blastomycosis                                 43        1.74           264        10.69  
-                              candidiasis                                 1106       44.78          1370        55.47  
-                              cat-scratch                                    5        0.20          1375        55.67  
-                              coccidioidomycosis                           129        5.22          1504        60.89  
-                              cryptococcosis                                 9        0.36          1513        61.26  
-                              encephalitis                                   4        0.16          1517        61.42  
-                              endemic mycosis                               23        0.93          1540        62.35  
-                              endocarditis                                   7        0.28          1547        62.63  
-                              filarial or other parasitis                    1        0.04          1548        62.67  
-                              gastroenteritis                               13        0.53          1561        63.20  
-                              herpes                                         6        0.24          1567        63.44  
-                              histoplasmosis                               146        5.91          1713        69.35  
-                              invasive mold                                231        9.35          1944        78.70  
-                              listeriosis                                    1        0.04          1945        78.74  
-                              nontuberculosis mycobacteria                 435       17.61          2380        96.36  
-                              pneumocystsis                                 42        1.70          2422        98.06  
-                              pneumonia                                     15        0.61          2437        98.66  
-                              progressive multifocal leukoencephal           9        0.36          2446        99.03  
-                              sporotrichosis                                 8        0.32          2454        99.35  
-                              toxoplasmosis                                 16        0.65          2470       100.00  
+                              actinomycosis                                 41        5.11            41         5.11  
+                              aspergillosis                                 26        3.24            67         8.35  
+                              blastomycosis                                 14        1.75            81        10.10  
+                              candidiasis                                  309       38.53           390        48.63  
+                              cat-scratch                                    3        0.37           393        49.00  
+                              coccidioidomycosis                            64        7.98           457        56.98  
+                              cryptococcosis                                 7        0.87           464        57.86  
+                              endemic mycosis                               19        2.37           483        60.22  
+                              filarial or other parasitis                    1        0.12           484        60.35  
+                              gastroenteritis                                5        0.62           489        60.97  
+                              herpes                                         3        0.37           492        61.35  
+                              histoplasmosis                                60        7.48           552        68.83  
+                              invasive mold                                 71        8.85           623        77.68  
+                              nontuberculosis mycobacteria                 160       19.95           783        97.63  
+                              pneumocystsis                                 13        1.62           796        99.25  
+                              pneumonia                                      2        0.25           798        99.50  
+                              sporotrichosis                                 3        0.37           801        99.88  
+                              toxoplasmosis                                  1        0.12           802       100.00  
 
-                                                               Frequency Missing = 92
+                                                               Frequency Missing = 33
 
 
                                                                    Encounter Type
@@ -3091,11 +3021,17 @@ NOTE: DATA statement used (Total process time):
                                                                                  Cumulative    Cumulative
                                             ENC_TYPE    Frequency     Percent     Frequency      Percent
                                             -------------------------------------------------------------
-                                            AV              1675       65.38          1675        65.38  
-                                            ED                90        3.51          1765        68.89  
-                                            HH                71        2.77          1836        71.66  
-                                            IP               597       23.30          2433        94.96  
-                                            NH               129        5.04          2562       100.00  
+                                            AV               622       74.49           622        74.49  
+                                            ED                26        3.11           648        77.60  
+                                            HH                16        1.92           664        79.52  
+                                            IP               153       18.32           817        97.84  
+                                            NH                18        2.16           835       100.00  
+ 
+ 
+ 
+ 
+ 
+ 
  
  
  
@@ -3125,61 +3061,61 @@ NOTE: DATA statement used (Total process time):
  
  
                                                         queryOutcomeOpportunisticInfection.sas
-NOTE: There were 2562 observations read from the data set WORK.OUTCOME_OI_DX.
-NOTE: The PROCEDURE FREQ printed page 36.
+NOTE: There were 835 observations read from the data set WORK.OUTCOME_OI_DX.
+NOTE: The PROCEDURE FREQ printed page 35.
 NOTE: PROCEDURE FREQ used (Total process time):
-      real time           0.09 seconds
-      cpu time            0.04 seconds
+      real time           0.07 seconds
+      cpu time            0.03 seconds
       
 
-374        
-375        proc print data=outcome_OI_dx(obs=10);;
-376        where  Infection_Category=" ";
-377        run;
+389        
+390        proc print data=outcome_OI_dx(obs=10);;
+391        where  Infection_Category=" ";
+392        run;
 
-                                                                  --- AS project ---                                    18:22 Monday, May 21, 2018  37
+                                                                  --- AS project ---                                  10:17 Thursday, May 24, 2018  36
 
       ICD_9_                                                                                                                  Infection_ Infectious_
   Obs CM_CODE ICD_9_CM_CODE_DESCRIPTION                                        Infection Infection_Category                    Location   Organism
 
-   85  3210   CRYPTOCOCCAL MENINGITIS                                              Y                                                                
-   92  0785   CYTOMEGAL INCLUSION DIS                                              Y                                                                
-   93  0785   CYTOMEGAL INCLUSION DIS                                              Y                                                                
-   94  0785   CYTOMEGAL INCLUSION DIS                                              Y                                                                
-  134  0785   CYTOMEGAL INCLUSION DIS                                              Y                                                                
-  135  0785   CYTOMEGAL INCLUSION DIS                                              Y                                                                
-  136  0785   CYTOMEGAL INCLUSION DIS                                              Y                                                                
-  137  0785   CYTOMEGAL INCLUSION DIS                                              Y                                                                
-  138  0785   CYTOMEGAL INCLUSION DIS                                              Y                                                                
-  302  0785   CYTOMEGAL INCLUSION DIS                                              Y                                                                
+   18  0785   CYTOMEGAL INCLUSION DIS                                              Y                                                                
+   19  0785   CYTOMEGAL INCLUSION DIS                                              Y                                                                
+   20  0785   CYTOMEGAL INCLUSION DIS                                              Y                                                                
+  114  0785   CYTOMEGAL INCLUSION DIS                                              Y                                                                
+  115  0785   CYTOMEGAL INCLUSION DIS                                              Y                                                                
+  290  0785   CYTOMEGAL INCLUSION DIS                                              Y                                                                
+  291  0785   CYTOMEGAL INCLUSION DIS                                              Y                                                                
+  292  0785   CYTOMEGAL INCLUSION DIS                                              Y                                                                
+  293  0785   CYTOMEGAL INCLUSION DIS                                              Y                                                                
+  294  0785   CYTOMEGAL INCLUSION DIS                                              Y                                                                
 
-                      bacterial_ other_types_                          ENR_END_            exposure           exposure    exposure   exposure
-  Obs OI Viral Fungal infection  of_infection database      PATID          DATE DEATH_DATE   Class  exposure    Drug         Start        End
+                      bacterial_ other_types_                              ENR_END_            exposure           exposure    exposure   exposure
+  Obs OI Viral Fungal infection  of_infection  database  patid                 DATE DEATH_DATE   Class  exposure    Drug         Start        End
 
-   85 OI                                      MPCD       104674388   12/31/2010                3     TNF     ETANERCEPT 04/19/2010 12/31/2010
-   92 OI                                      Marketscan 1566958102  06/30/2013                2     DMARD   TACROLIMUS 04/19/2012 06/30/2013
-   93 OI                                      Marketscan 1566958102  06/30/2013                2     DMARD   TACROLIMUS 04/19/2012 06/30/2013
-   94 OI                                      Marketscan 1566958102  06/30/2013                2     DMARD   TACROLIMUS 04/19/2012 06/30/2013
-  134 OI                                      Marketscan 27100298702 12/31/2014                2     DMARD   TACROLIMUS 03/06/2013 12/31/2014
-  135 OI                                      Marketscan 27100298702 12/31/2014                2     DMARD   TACROLIMUS 03/06/2013 12/31/2014
-  136 OI                                      Marketscan 27100298702 12/31/2014                2     DMARD   TACROLIMUS 03/06/2013 12/31/2014
-  137 OI                                      Marketscan 27100298702 12/31/2014                2     DMARD   TACROLIMUS 03/06/2013 12/31/2014
-  138 OI                                      Marketscan 27100298702 12/31/2014                2     DMARD   TACROLIMUS 03/06/2013 12/31/2014
-  302 OI                                      Marketscan 3016602702  12/31/2014                3     TNF     GOLIMUMAB  08/27/2014 12/31/2014
+   18 OI                                      Marketscan 1566958102      06/30/2013                2     DMARD   TACROLIMUS 04/19/2012 06/30/2013
+   19 OI                                      Marketscan 1566958102      06/30/2013                2     DMARD   TACROLIMUS 04/19/2012 06/30/2013
+   20 OI                                      Marketscan 1566958102      06/30/2013                2     DMARD   TACROLIMUS 04/19/2012 06/30/2013
+  114 OI                                      Marketscan 3016602702      12/31/2014                3     TNF     GOLIMUMAB  08/27/2014 12/31/2014
+  115 OI                                      Marketscan 3016602702      12/31/2014                3     TNF     GOLIMUMAB  08/27/2014 12/31/2014
+  290 OI                                      Medicare   4444444ttB84O56 10/31/2016 10/23/2016     2     DMARD   TACROLIMUS 11/04/2010 10/23/2016
+  291 OI                                      Medicare   4444444ttB84O56 10/31/2016 10/23/2016     2     DMARD   TACROLIMUS 11/04/2010 10/23/2016
+  292 OI                                      Medicare   4444444ttB84O56 10/31/2016 10/23/2016     2     DMARD   TACROLIMUS 11/04/2010 10/23/2016
+  293 OI                                      Medicare   4444444ttB84O56 10/31/2016 10/23/2016     2     DMARD   TACROLIMUS 11/04/2010 10/23/2016
+  294 OI                                      Medicare   4444444ttB84O56 10/31/2016 10/23/2016     2     DMARD   TACROLIMUS 11/04/2010 10/23/2016
 
-        days    exposure                                                      DISCHARGE_                                        code            PROV_
-  Obs Exposed      ID      ENCOUNTERID   ENC_TYPE   ADMIT_DATE   BEGIN_DATE      DATE        END_DATE   DX_TYPE    DX    PDX    Type     code   TYPE
+        days   exposure                                                     DISCHARGE_                                   code          PROV_
+  Obs Exposed     ID     ENCOUNTERID      ENC_TYPE  ADMIT_DATE  BEGIN_DATE     DATE       END_DATE  DX_TYPE   DX   PDX   Type    code  TYPE
 
-   85   257        4210    10860201565      AV                   05/25/2010                05/25/2010     09      3210    O    ICD9-DX   3210    66  
-   92   438        6575    301068           IP                   01/31/2013                02/02/2013     09      0785    O    ICD9-DX   0785    1   
-   93   438        6575    301068           IP                   02/03/2013                02/04/2013     09      0785    O    ICD9-DX   0785    1   
-   94   438        6575    301069           IP                   02/12/2013                02/14/2013     09      0785    O    ICD9-DX   0785    1   
-  134   666       12800    340158           IP                   03/06/2014                03/07/2014     09      0785    O    ICD9-DX   0785    1   
-  135   666       12800    .                AV                   03/24/2014                03/24/2014     09      0785    O    ICD9-DX   0785    285 
-  136   666       12800    340159           IP                   03/25/2014                03/25/2014     09      0785    O    ICD9-DX   0785    1   
-  137   666       12800    .                AV                   05/01/2014                05/01/2014     09      0785    O    ICD9-DX   0785    285 
-  138   666       12800    .                AV                   08/27/2014                08/27/2014     09      0785    O    ICD9-DX   0785    204 
-  302   127       18111    1016542          IP                   11/30/2014                12/14/2014     09      0785    O    ICD9-DX   0785    1   
+   18    438      2719   301068              IP                 01/31/2013              02/02/2013    09     0785   O   ICD9-DX  0785   1   
+   19    438      2719   301068              IP                 02/03/2013              02/04/2013    09     0785   O   ICD9-DX  0785   1   
+   20    438      2719   301069              IP                 02/12/2013              02/14/2013    09     0785   O   ICD9-DX  0785   1   
+  114    127      7427   1016542             IP                 11/30/2014              12/14/2014    09     0785   O   ICD9-DX  0785   1   
+  115    127      7427   .                   AV                 12/22/2014              12/22/2014    09     0785   O   ICD9-DX  0785   285 
+  290   2181     19454   444445t8BBOB35J     IP     12/08/2010  12/08/2010  01/03/2011  01/03/2011    09     0785   O   ICD9-DX  0785   02  
+  291   2181     19454   444445t85ttB546     AV                 01/26/2011              01/26/2011    09     0785   O   ICD9-DX  0785   50  
+  292   2181     19454   4444456tBAAJtAJ     AV                 02/02/2011              02/02/2011    09     0785   O   ICD9-DX  0785   83  
+  293   2181     19454   4444OJt56A3A83O     AV                 03/23/2011              03/23/2011    09     0785   O   ICD9-DX  0785   08  
+  294   2181     19454   4444OJA5JJtA353     AV                 05/11/2011              05/11/2011    09     0785   O   ICD9-DX  0785   44  
  
  
  
@@ -3213,16 +3149,16 @@ NOTE: PROCEDURE FREQ used (Total process time):
                                                         queryOutcomeOpportunisticInfection.sas
 NOTE: There were 10 observations read from the data set WORK.OUTCOME_OI_DX.
       WHERE Infection_Category=' ';
-NOTE: The PROCEDURE PRINT printed page 37.
+NOTE: The PROCEDURE PRINT printed page 36.
 NOTE: PROCEDURE PRINT used (Total process time):
       real time           0.07 seconds
       cpu time            0.06 seconds
       
 
-378        
-379        proc freq data=NDC.Anti_fungal_all_2016; table gnn;run;
+393        
+394        proc freq data=NDC.Anti_fungal_all_2016; table gnn;run;
 
-                                                                  --- AS project ---                                    18:22 Monday, May 21, 2018  38
+                                                                  --- AS project ---                                  10:17 Thursday, May 24, 2018  37
 
                                                                   The FREQ Procedure
 
@@ -3297,260 +3233,260 @@ NOTE: PROCEDURE PRINT used (Total process time):
  
                                                         queryOutcomeOpportunisticInfection.sas
 NOTE: There were 413 observations read from the data set NDC.ANTI_FUNGAL_ALL_2016.
-NOTE: The PROCEDURE FREQ printed page 38.
+NOTE: The PROCEDURE FREQ printed page 37.
 NOTE: PROCEDURE FREQ used (Total process time):
       real time           0.09 seconds
-      cpu time            0.01 seconds
+      cpu time            0.04 seconds
       
 
-380        
-381        
-382        data outcome_OI_rx(drop=rc:);
-383            if _N_=1 then do;
-384                declare hash HRX(dataset:"NDC.Anti_fungal_all_2016");
-385                rc = HRX.definekey("Code");
-386        /*        rc = HRX.definedata(ALL:"YES");*/
-387                rc=HRX.definedone();
-388            end;
-389        if 0 then set NDC.Anti_fungal_all_2016(keep=Code);
-390        set &inrxdat. ;
-391        by database exposure patid exposureStart exposureEnd exposureID DISPENSE_DATE;
-392        /*length outcome $20 outcome_date 4;*/
-393        /*format outcome_date mmddyy10.;*/
-394                rc1 =HRX.find(key:NDC);
 395        
-396                if rc1=0 then output outcome_OI_rx;
-397        run;
+396        
+397        data outcome_OI_rx(drop=rc:);
+398            if _N_=1 then do;
+399                declare hash HRX(dataset:"NDC.Anti_fungal_all_2016");
+400                rc = HRX.definekey("Code");
+401        /*        rc = HRX.definedata(ALL:"YES");*/
+402                rc=HRX.definedone();
+403            end;
+404        if 0 then set NDC.Anti_fungal_all_2016(keep=Code);
+405        set &inrxdat. ;
+406        by database exposure patid exposureStart exposureEnd exposureID DISPENSE_DATE;
+407        /*length outcome $20 outcome_date 4;*/
+408        /*format outcome_date mmddyy10.;*/
+409                rc1 =HRX.find(key:NDC);
+8                                                                   The SAS System                                        10:17 Thursday, May 24, 2018
+
+410        
+411                if rc1=0 then output outcome_OI_rx;
+412        run;
 
 NOTE: There were 413 observations read from the data set NDC.ANTI_FUNGAL_ALL_2016.
-NOTE: There were 4273219 observations read from the data set UCB.TEMPINCRXALL.
-NOTE: The data set WORK.OUTCOME_OI_RX has 11848 observations and 16 variables.
+NOTE: There were 1569994 observations read from the data set UCB64.TEMPINCRXALL.
+NOTE: The data set WORK.OUTCOME_OI_RX has 4286 observations and 16 variables.
 NOTE: DATA statement used (Total process time):
-      real time           1.80 seconds
-      cpu time            1.77 seconds
-8                                                                   The SAS System                                          18:22 Monday, May 21, 2018
-
+      real time           0.87 seconds
+      cpu time            0.85 seconds
       
 
-398        
-399        
-400        data outcome_OI_dx_mycobacteria outcome_OI_dx_only outcome_OI_dx1;
-401        set outcome_OI_dx;
-402        if lowcase(Infection_Category) in ("nontuberculosis mycobacteria") then output outcome_OI_dx_mycobacteria;
-403            else if lowcase(Infection_Category) in ("aspergillosis"
-404        "blastomycosis" "coccidioidomycosis" "cryptococcosis" "endemic mycosis" "histoplasmosis") then output outcome_OI_dx1;
-405            else output outcome_OI_dx_only;
-406        run;
+413        
+414        
+415        data outcome_OI_dx_mycobacteria outcome_OI_dx_only outcome_OI_dx1;
+416        set outcome_OI_dx;
+417        if lowcase(Infection_Category) in ("nontuberculosis mycobacteria") then output outcome_OI_dx_mycobacteria;
+418            else if lowcase(Infection_Category) in ("aspergillosis"
+419        "blastomycosis" "coccidioidomycosis" "cryptococcosis" "endemic mycosis" "histoplasmosis") then output outcome_OI_dx1;
+420            else output outcome_OI_dx_only;
+421        run;
 
-NOTE: There were 2562 observations read from the data set WORK.OUTCOME_OI_DX.
-NOTE: The data set WORK.OUTCOME_OI_DX_MYCOBACTERIA has 435 observations and 34 variables.
-NOTE: The data set WORK.OUTCOME_OI_DX_ONLY has 1637 observations and 34 variables.
-NOTE: The data set WORK.OUTCOME_OI_DX1 has 490 observations and 34 variables.
+NOTE: There were 835 observations read from the data set WORK.OUTCOME_OI_DX.
+NOTE: The data set WORK.OUTCOME_OI_DX_MYCOBACTERIA has 160 observations and 34 variables.
+NOTE: The data set WORK.OUTCOME_OI_DX_ONLY has 485 observations and 34 variables.
+NOTE: The data set WORK.OUTCOME_OI_DX1 has 190 observations and 34 variables.
 NOTE: DATA statement used (Total process time):
       real time           0.09 seconds
-      cpu time            0.01 seconds
-      
-
-407        /*proc freq data=outcome_OI_dx1; tables Infection_Category;run;*/
-408        
-409        proc sql;
-410        create table outcome_OI_mycobacteria as
-411        select a.*,
-412            a.begin_date as outcome_start_date length=4 format=mmddyy10.,
-413            b.begin_date as outcome_date length=4 format=mmddyy10.
-414        from outcome_OI_dx_mycobacteria a
-415        join outcome_OI_dx_mycobacteria b
-416        on a.exposureID=b.exposureID and 180>=b.begin_date-a.begin_date>=7
-417        order by database, exposure, patid, exposureStart, exposureEnd, exposureID, outcome_date ;
-NOTE: Table WORK.OUTCOME_OI_MYCOBACTERIA created, with 923 rows and 36 columns.
-
-418        quit;
-NOTE: PROCEDURE SQL used (Total process time):
-      real time           0.11 seconds
-      cpu time            0.09 seconds
-      
-
-419        
-420        proc sort data=outcome_OI_dx1 nodupkey ;by database exposure patid exposureStart exposureEnd exposureID begin_date;run;
-
-NOTE: There were 490 observations read from the data set WORK.OUTCOME_OI_DX1.
-NOTE: 31 observations with duplicate key values were deleted.
-NOTE: The data set WORK.OUTCOME_OI_DX1 has 459 observations and 34 variables.
-NOTE: PROCEDURE SORT used (Total process time):
-      real time           0.04 seconds
       cpu time            0.03 seconds
       
 
-421        
-422        proc sql;
-423        create table outcome_OI_dx_rx_1 as
-424        select *
-425        from outcome_OI_dx1 a
-426        join outcome_OI_rx b
-427        on a.exposureID=b.exposureID and abs(a.begin_date-b.DISPENSE_DATE)<=30
-428        order by database, exposure, patid, exposureStart, exposureEnd, exposureID, begin_date, DISPENSE_DATE ;
+422        /*proc freq data=outcome_OI_dx1; tables Infection_Category;run;*/
+423        
+424        proc sql;
+425        create table outcome_OI_mycobacteria as
+426        select a.*,
+427            a.begin_date as outcome_start_date length=4 format=mmddyy10.,
+428            b.begin_date as outcome_date length=4 format=mmddyy10.
+429        from outcome_OI_dx_mycobacteria a
+430        join outcome_OI_dx_mycobacteria b
+431        on a.exposureID=b.exposureID and 180>=b.begin_date-a.begin_date>=7
+432        order by database, exposure, patid, exposureStart, exposureEnd, exposureID, outcome_date ;
+NOTE: Table WORK.OUTCOME_OI_MYCOBACTERIA created, with 383 rows and 36 columns.
+
+433        quit;
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.09 seconds
+      cpu time            0.10 seconds
+      
+
+434        
+435        proc sort data=outcome_OI_dx1 nodupkey ;by database exposure patid exposureStart exposureEnd exposureID begin_date;run;
+
+NOTE: There were 190 observations read from the data set WORK.OUTCOME_OI_DX1.
+NOTE: 9 observations with duplicate key values were deleted.
+NOTE: The data set WORK.OUTCOME_OI_DX1 has 181 observations and 34 variables.
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           0.04 seconds
+      cpu time            0.01 seconds
+      
+
+436        
+437        proc sql;
+438        create table outcome_OI_dx_rx_1 as
+439        select *
+440        from outcome_OI_dx1 a
+441        join outcome_OI_rx b
+442        on a.exposureID=b.exposureID and abs(a.begin_date-b.DISPENSE_DATE)<=30
+443        order by database, exposure, patid, exposureStart, exposureEnd, exposureID, begin_date, DISPENSE_DATE ;
 WARNING: Column named database is duplicated in a select expression (or a view). Explicit references to it will be to the first one.
 WARNING: Column named exposure is duplicated in a select expression (or a view). Explicit references to it will be to the first one.
 WARNING: Column named patid is duplicated in a select expression (or a view). Explicit references to it will be to the first one.
+9                                                                   The SAS System                                        10:17 Thursday, May 24, 2018
+
 WARNING: Column named exposureStart is duplicated in a select expression (or a view). Explicit references to it will be to the first one.
 WARNING: Column named exposureEnd is duplicated in a select expression (or a view). Explicit references to it will be to the first one.
 WARNING: Column named exposureID is duplicated in a select expression (or a view). Explicit references to it will be to the first one.
 WARNING: Variable Code already exists on file WORK.OUTCOME_OI_DX_RX_1.
 WARNING: Variable database already exists on file WORK.OUTCOME_OI_DX_RX_1.
-WARNING: Variable PATID already exists on file WORK.OUTCOME_OI_DX_RX_1.
+WARNING: Variable patid already exists on file WORK.OUTCOME_OI_DX_RX_1.
 WARNING: Variable ENR_END_DATE already exists on file WORK.OUTCOME_OI_DX_RX_1.
 WARNING: Variable DEATH_DATE already exists on file WORK.OUTCOME_OI_DX_RX_1.
 WARNING: Variable exposureClass already exists on file WORK.OUTCOME_OI_DX_RX_1.
 WARNING: Variable exposure already exists on file WORK.OUTCOME_OI_DX_RX_1.
-9                                                                   The SAS System                                          18:22 Monday, May 21, 2018
-
 WARNING: Variable exposureDrug already exists on file WORK.OUTCOME_OI_DX_RX_1.
 WARNING: Variable exposureStart already exists on file WORK.OUTCOME_OI_DX_RX_1.
 WARNING: Variable exposureEnd already exists on file WORK.OUTCOME_OI_DX_RX_1.
 WARNING: Variable daysExposed already exists on file WORK.OUTCOME_OI_DX_RX_1.
 WARNING: Variable exposureID already exists on file WORK.OUTCOME_OI_DX_RX_1.
-NOTE: Table WORK.OUTCOME_OI_DX_RX_1 created, with 323 rows and 38 columns.
+NOTE: Table WORK.OUTCOME_OI_DX_RX_1 created, with 147 rows and 38 columns.
 
-429        
-430        create table outcome_OI_dx_rx_2(keep=database exposure patid exposureStart exposureEnd exposureID begin_date DISPENSE_DATE outcome:
-430      ! total_sup DISPENSE_SUP NDC Infection_Category dx dx_type date1 date2 ) as
-431        select *, sum(DISPENSE_SUP) as total_sup,
-432            min(begin_date,DISPENSE_DATE) as date1 format=mmddyy10., max(begin_date,DISPENSE_DATE) as date2 format=mmddyy10.,
-433            min(calculated date1) as outcome_start_date length=4 format=mmddyy10.,
-434            max(calculated date2) as outcome_date length=4 format=mmddyy10.
-435        from outcome_OI_dx_rx_1
-436        group by database, exposure, patid, exposureStart, exposureEnd, exposureID, begin_date
-437        order by database, exposure, patid, exposureStart, exposureEnd, exposureID, begin_date, DISPENSE_DATE;
+444        
+445        create table outcome_OI_dx_rx_2(keep=database exposure patid exposureStart exposureEnd exposureID begin_date DISPENSE_DATE outcome:
+445      ! total_sup DISPENSE_SUP NDC Infection_Category dx dx_type date1 date2 ) as
+446        select *, sum(DISPENSE_SUP) as total_sup,
+447            min(begin_date,DISPENSE_DATE) as date1 format=mmddyy10., max(begin_date,DISPENSE_DATE) as date2 format=mmddyy10.,
+448            min(calculated date1) as outcome_start_date length=4 format=mmddyy10.,
+449            max(calculated date2) as outcome_date length=4 format=mmddyy10.
+450        from outcome_OI_dx_rx_1
+451        group by database, exposure, patid, exposureStart, exposureEnd, exposureID, begin_date
+452        order by database, exposure, patid, exposureStart, exposureEnd, exposureID, begin_date, DISPENSE_DATE;
 NOTE: The query requires remerging summary statistics back with the original data.
-NOTE: Table WORK.OUTCOME_OI_DX_RX_2 created, with 323 rows and 18 columns.
+NOTE: Table WORK.OUTCOME_OI_DX_RX_2 created, with 147 rows and 18 columns.
 
-438        quit;
+453        quit;
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           0.20 seconds
-      cpu time            0.12 seconds
-      
-
-439        
-440        proc sort data=outcome_OI_dx_rx_2
-441            out=outcome_OI_dx_rx(keep=database exposure patid exposureStart exposureEnd exposureID outcome_date begin_date outcome_start_date
-441      ! total_sup Infection_Category dx dx_type)
-442            nodupkey;
-443        by database exposure patid exposureStart exposureEnd exposureID outcome_date descending outcome_start_date;
-444        where total_sup>=30;
-445        run;
-
-NOTE: There were 276 observations read from the data set WORK.OUTCOME_OI_DX_RX_2.
-      WHERE total_sup>=30;
-NOTE: 98 observations with duplicate key values were deleted.
-NOTE: The data set WORK.OUTCOME_OI_DX_RX has 178 observations and 13 variables.
-NOTE: PROCEDURE SORT used (Total process time):
-      real time           0.04 seconds
-      cpu time            0.00 seconds
-      
-
-446        
-447        data outcome_OI_dx_only(keep=database exposure patid exposureStart exposureEnd exposureID outcome_date begin_date outcome_start_date
-447      ! Infection_Category dx dx_type);
-448        set outcome_OI_dx_only;
-449        length outcome_start_date outcome_date 4;
-450        format outcome_start_date outcome_date mmddyy10.;
-451        outcome_date=begin_date;
-452        outcome_start_date=begin_date;
-453        run;
-
-NOTE: There were 1637 observations read from the data set WORK.OUTCOME_OI_DX_ONLY.
-NOTE: The data set WORK.OUTCOME_OI_DX_ONLY has 1637 observations and 12 variables.
-NOTE: DATA statement used (Total process time):
-      real time           0.04 seconds
-      cpu time            0.01 seconds
+      real time           0.18 seconds
+      cpu time            0.09 seconds
       
 
 454        
-455        data outcome_OI(keep=database exposure patid exposureStart exposureEnd exposureID outcome_date begin_date outcome_start_date
-455      ! Infection_Category outcome dx dx_type);
-456        set outcome_OI_dx_only
-457        outcome_OI_dx_rx
-458        outcome_OI_dx_mycobacteria;
-459        length outcome $20;
-460        outcome="OI";
-461        run;
+455        proc sort data=outcome_OI_dx_rx_2
+456            out=outcome_OI_dx_rx(keep=database exposure patid exposureStart exposureEnd exposureID outcome_date begin_date outcome_start_date
+456      ! total_sup Infection_Category dx dx_type)
+457            nodupkey;
+458        by database exposure patid exposureStart exposureEnd exposureID outcome_date descending outcome_start_date;
+459        where total_sup>=30;
+460        run;
 
-NOTE: There were 1637 observations read from the data set WORK.OUTCOME_OI_DX_ONLY.
-10                                                                  The SAS System                                          18:22 Monday, May 21, 2018
+NOTE: There were 124 observations read from the data set WORK.OUTCOME_OI_DX_RX_2.
+      WHERE total_sup>=30;
+NOTE: 56 observations with duplicate key values were deleted.
+NOTE: The data set WORK.OUTCOME_OI_DX_RX has 68 observations and 13 variables.
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           0.06 seconds
+      cpu time            0.01 seconds
+      
 
-NOTE: There were 178 observations read from the data set WORK.OUTCOME_OI_DX_RX.
-NOTE: There were 435 observations read from the data set WORK.OUTCOME_OI_DX_MYCOBACTERIA.
-NOTE: The data set WORK.OUTCOME_OI has 2250 observations and 13 variables.
+461        
+462        data outcome_OI_dx_only(keep=database exposure patid exposureStart exposureEnd exposureID outcome_date begin_date outcome_start_date
+462      ! Infection_Category dx dx_type);
+463        set outcome_OI_dx_only;
+464        length outcome_start_date outcome_date 4;
+465        format outcome_start_date outcome_date mmddyy10.;
+466        outcome_date=begin_date;
+467        outcome_start_date=begin_date;
+468        run;
+
+NOTE: There were 485 observations read from the data set WORK.OUTCOME_OI_DX_ONLY.
+NOTE: The data set WORK.OUTCOME_OI_DX_ONLY has 485 observations and 12 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.01 seconds
+      
+
+469        
+10                                                                  The SAS System                                        10:17 Thursday, May 24, 2018
+
+470        data outcome_OI(keep=database exposure patid exposureStart exposureEnd exposureID outcome_date begin_date outcome_start_date
+470      ! Infection_Category outcome dx dx_type);
+471        set outcome_OI_dx_only
+472        outcome_OI_dx_rx
+473        outcome_OI_dx_mycobacteria;
+474        length outcome $20;
+475        outcome="OI";
+476        run;
+
+NOTE: There were 485 observations read from the data set WORK.OUTCOME_OI_DX_ONLY.
+NOTE: There were 68 observations read from the data set WORK.OUTCOME_OI_DX_RX.
+NOTE: There were 160 observations read from the data set WORK.OUTCOME_OI_DX_MYCOBACTERIA.
+NOTE: The data set WORK.OUTCOME_OI has 713 observations and 13 variables.
 NOTE: DATA statement used (Total process time):
       real time           0.04 seconds
       cpu time            0.01 seconds
       
 
-462        
-463        
-464        /*
-465        Check
-466         */
-467        proc sql;
-468          select "Summary of Work.outcome_oi" as table,
-469                 A.database,
-470                 A.infection_category,
-471                 count(distinct A.patid) as countDistinctPatid,
-472                 count(*) as countRows,
-473                 count(*) / denom format = percent8.1 as pctWithinDatabase
-474            from Work.outcome_oi A inner join
-475                 (select database, count(*) as denom from Work.outcome_oi group by database) B  on (A.database = B.database)
-476            group by A.database, A.infection_category;
-                                                                  --- AS project ---                                    18:22 Monday, May 21, 2018  39
+477        
+478        
+479        /*
+480        Check
+481         */
+482        proc sql;
+483          select "Summary of Work.outcome_oi" as table,
+484                 A.database,
+485                 A.infection_category,
+486                 count(distinct A.patid) as countDistinctPatid,
+487                 count(*) as countRows,
+488                 count(*) / denom format = percent8.1 as pctWithinDatabase
+489            from Work.outcome_oi A inner join
+490                 (select database, count(*) as denom from Work.outcome_oi group by database) B  on (A.database = B.database)
+491            group by A.database, A.infection_category;
+                                                                  --- AS project ---                                  10:17 Thursday, May 24, 2018  38
 
                                                                                                       count
                                                                                                    Distinct                pctWithin
                  table                       database    Infection_Category                           Patid  countRows      Database
                  -------------------------------------------------------------------------------------------------------------------
-                 Summary of Work.outcome_oi  MPCD                                                         1          1         1.3% 
-                 Summary of Work.outcome_oi  MPCD        candidiasis                                     14         17        21.8% 
-                 Summary of Work.outcome_oi  MPCD        filarial or other parasitis                      1          1         1.3% 
-                 Summary of Work.outcome_oi  MPCD        histoplasmosis                                   1         29        37.2% 
-                 Summary of Work.outcome_oi  MPCD        nontuberculosis mycobacteria                     5         26        33.3% 
-                 Summary of Work.outcome_oi  MPCD        sporotrichosis                                   3          4         5.1% 
-                 Summary of Work.outcome_oi  Marketscan                                                   3         10         5.0% 
-                 Summary of Work.outcome_oi  Marketscan  HSV                                              1          1         0.5% 
-                 Summary of Work.outcome_oi  Marketscan  actinomycosis                                    5         20        10.1% 
-                 Summary of Work.outcome_oi  Marketscan  aspergillosis                                    1          2         1.0% 
-                 Summary of Work.outcome_oi  Marketscan  candidiasis                                     77        102        51.3% 
-                 Summary of Work.outcome_oi  Marketscan  cat-scratch                                      3          4         2.0% 
-                 Summary of Work.outcome_oi  Marketscan  coccidioidomycosis                               3          7         3.5% 
-                 Summary of Work.outcome_oi  Marketscan  encephalitis                                     1          1         0.5% 
-                 Summary of Work.outcome_oi  Marketscan  gastroenteritis                                  3          4         2.0% 
-                 Summary of Work.outcome_oi  Marketscan  histoplasmosis                                   2          8         4.0% 
-                 Summary of Work.outcome_oi  Marketscan  invasive mold                                   11         16         8.0% 
-                 Summary of Work.outcome_oi  Marketscan  nontuberculosis mycobacteria                     3         15         7.5% 
-                 Summary of Work.outcome_oi  Marketscan  pneumocystsis                                    4          6         3.0% 
-                 Summary of Work.outcome_oi  Marketscan  pneumonia                                        3          3         1.5% 
-                 Summary of Work.outcome_oi  Medicare                                                    23         81         4.1% 
-                 Summary of Work.outcome_oi  Medicare    Candidiasis                                      2          9         0.5% 
-                 Summary of Work.outcome_oi  Medicare    HSV                                              2          3         0.2% 
-                 Summary of Work.outcome_oi  Medicare    actinomycosis                                   26         48         2.4% 
-                 Summary of Work.outcome_oi  Medicare    aspergillosis                                   10         29         1.5% 
-                 Summary of Work.outcome_oi  Medicare    blastomycosis                                    3         18         0.9% 
-                 Summary of Work.outcome_oi  Medicare    candidiasis                                    671        987        50.0% 
-                 Summary of Work.outcome_oi  Medicare    cat-scratch                                      1          1         0.1% 
-                 Summary of Work.outcome_oi  Medicare    coccidioidomycosis                              13         47         2.4% 
-                 Summary of Work.outcome_oi  Medicare    cryptococcosis                                   3          5         0.3% 
-                 Summary of Work.outcome_oi  Medicare    encephalitis                                     3          3         0.2% 
-                 Summary of Work.outcome_oi  Medicare    endemic mycosis                                  3         15         0.8% 
-                 Summary of Work.outcome_oi  Medicare    endocarditis                                     3          7         0.4% 
-                 Summary of Work.outcome_oi  Medicare    gastroenteritis                                  7          9         0.5% 
-                 Summary of Work.outcome_oi  Medicare    herpes                                           5          6         0.3% 
-                 Summary of Work.outcome_oi  Medicare    histoplasmosis                                   3         18         0.9% 
-                 Summary of Work.outcome_oi  Medicare    invasive mold                                  146        215        10.9% 
-                 Summary of Work.outcome_oi  Medicare    listeriosis                                      1          1         0.1% 
-                 Summary of Work.outcome_oi  Medicare    nontuberculosis mycobacteria                    82        394        20.0% 
-                 Summary of Work.outcome_oi  Medicare    pneumocystsis                                   23         36         1.8% 
-                 Summary of Work.outcome_oi  Medicare    pneumonia                                        5         12         0.6% 
-                 Summary of Work.outcome_oi  Medicare    progressive multifocal leukoencephal             2          9         0.5% 
-                 Summary of Work.outcome_oi  Medicare    sporotrichosis                                   4          4         0.2% 
-                 Summary of Work.outcome_oi  Medicare    toxoplasmosis                                    4         16         0.8% 
+                 Summary of Work.outcome_oi  MPCD        candidiasis                                      5          6        46.2% 
+                 Summary of Work.outcome_oi  MPCD        filarial or other parasitis                      1          1         7.7% 
+                 Summary of Work.outcome_oi  MPCD        nontuberculosis mycobacteria                     2          4        30.8% 
+                 Summary of Work.outcome_oi  MPCD        sporotrichosis                                   1          2        15.4% 
+                 Summary of Work.outcome_oi  Marketscan                                                   2          5         6.0% 
+                 Summary of Work.outcome_oi  Marketscan  actinomycosis                                    3         17        20.2% 
+                 Summary of Work.outcome_oi  Marketscan  candidiasis                                     25         29        34.5% 
+                 Summary of Work.outcome_oi  Marketscan  cat-scratch                                      2          3         3.6% 
+                 Summary of Work.outcome_oi  Marketscan  coccidioidomycosis                               3          5         6.0% 
+                 Summary of Work.outcome_oi  Marketscan  gastroenteritis                                  1          1         1.2% 
+                 Summary of Work.outcome_oi  Marketscan  histoplasmosis                                   2          8         9.5% 
+                 Summary of Work.outcome_oi  Marketscan  invasive mold                                    2          4         4.8% 
+                 Summary of Work.outcome_oi  Marketscan  nontuberculosis mycobacteria                     1          6         7.1% 
+                 Summary of Work.outcome_oi  Marketscan  pneumocystsis                                    2          4         4.8% 
+                 Summary of Work.outcome_oi  Marketscan  pneumonia                                        2          2         2.4% 
+                 Summary of Work.outcome_oi  Medicare                                                     8         28         4.5% 
+                 Summary of Work.outcome_oi  Medicare    actinomycosis                                   10         24         3.9% 
+                 Summary of Work.outcome_oi  Medicare    blastomycosis                                    1          6         1.0% 
+                 Summary of Work.outcome_oi  Medicare    candidiasis                                    185        274        44.5% 
+                 Summary of Work.outcome_oi  Medicare    coccidioidomycosis                               6         22         3.6% 
+                 Summary of Work.outcome_oi  Medicare    cryptococcosis                                   2          4         0.6% 
+                 Summary of Work.outcome_oi  Medicare    endemic mycosis                                  1         13         2.1% 
+                 Summary of Work.outcome_oi  Medicare    gastroenteritis                                  2          4         0.6% 
+                 Summary of Work.outcome_oi  Medicare    herpes                                           2          3         0.5% 
+                 Summary of Work.outcome_oi  Medicare    histoplasmosis                                   1         10         1.6% 
+                 Summary of Work.outcome_oi  Medicare    invasive mold                                   42         67        10.9% 
+                 Summary of Work.outcome_oi  Medicare    nontuberculosis mycobacteria                    23        150        24.4% 
+                 Summary of Work.outcome_oi  Medicare    pneumocystsis                                    9          9         1.5% 
+                 Summary of Work.outcome_oi  Medicare    sporotrichosis                                   1          1         0.2% 
+                 Summary of Work.outcome_oi  Medicare    toxoplasmosis                                    1          1         0.2% 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
  
  
  
@@ -3575,27 +3511,27 @@ NOTE: DATA statement used (Total process time):
  
  
                                                         queryOutcomeOpportunisticInfection.sas
-477        quit;
-NOTE: The PROCEDURE SQL printed page 39.
+492        quit;
+NOTE: The PROCEDURE SQL printed page 38.
 NOTE: PROCEDURE SQL used (Total process time):
       real time           0.15 seconds
-      cpu time            0.14 seconds
+      cpu time            0.15 seconds
       
 
-478        
-479        
-480        proc datasets nolist; delete
-481        outcome_OI_dx
-482        outcome_OI_dx_mycobacteria
-483        outcome_OI_dx_only
-484        outcome_OI_dx1
-485        outcome_OI_mycobacteria
-486        outcome_OI_rx
-487        Outcome_oi_dx_rx_1
-488        Outcome_oi_dx_rx_2
-489        outcome_OI_dx_rx
-490        ;
-491        quit;
+493        
+494        
+495        proc datasets nolist; delete
+496        outcome_OI_dx
+497        outcome_OI_dx_mycobacteria
+498        outcome_OI_dx_only
+499        outcome_OI_dx1
+500        outcome_OI_mycobacteria
+501        outcome_OI_rx
+502        Outcome_oi_dx_rx_1
+503        Outcome_oi_dx_rx_2
+504        outcome_OI_dx_rx
+505        ;
+506        quit;
 
 NOTE: Deleting WORK.OUTCOME_OI_DX (memtype=DATA).
 NOTE: Deleting WORK.OUTCOME_OI_DX_MYCOBACTERIA (memtype=DATA).
@@ -3608,237 +3544,239 @@ NOTE: Deleting WORK.OUTCOME_OI_DX_RX_2 (memtype=DATA).
 NOTE: Deleting WORK.OUTCOME_OI_DX_RX (memtype=DATA).
 NOTE: PROCEDURE DATASETS used (Total process time):
       real time           0.09 seconds
-      cpu time            0.01 seconds
+      cpu time            0.03 seconds
       
 
-492        
-493        
-494        
-495        
-496        /*
-497        Deal with TB and zoster HERE
-498        Copy code from outcome_other.sas
-499         */
-500        data outcome_dx_ZOSTER
-501        outcome_DX_TB
-502        ;
-503        set &indxdat. ;
-504        length outcome $20 outcome_date  outcome_start_date 4;
-11                                                                  The SAS System                                          18:22 Monday, May 21, 2018
+507        
+508        
+509        
+11                                                                  The SAS System                                        10:17 Thursday, May 24, 2018
 
-505        format outcome_date outcome_start_date mmddyy10.;
-506        if ENC_TYPE in ('IP') then do;
-507            if compress(DX,".","s") in :('0463')  then  outcome="PML";
-508        end;
-509            if compress(DX,".","s") in :('053')  then  outcome="ZOSTER";
-510            if compress(DX,".","s") in :('010', '011', '012', '013', '014', '015', '016', '017', '018', '6473')  then  outcome="TB";
-511        outcome_date=min(ADMIT_DATE, BEGIN_DATE);
-512        outcome_start_date=outcome_date;
-513        if outcome="ZOSTER" then output outcome_dx_ZOSTER;
-514            else if outcome="TB" then output outcome_DX_TB;
-515        where ENC_TYPE in ('IP' 'ER' 'AV' 'NH' 'HH' 'ED');
-516        run;
+510        
+511        /*
+512        Deal with TB and zoster HERE
+513        Copy code from outcome_other.sas
+514         */
+515        data outcome_dx_ZOSTER
+516        outcome_DX_TB
+517        ;
+518        set &indxdat. ;
+519        length outcome $20 outcome_date  outcome_start_date 4;
+520        format outcome_date outcome_start_date mmddyy10.;
+521        if ENC_TYPE in ('IP') then do;
+522            if compress(DX,".","s") in :('0463')  then  outcome="PML";
+523        end;
+524            if compress(DX,".","s") in :('053')  then  outcome="ZOSTER";
+525            if compress(DX,".","s") in :('010', '011', '012', '013', '014', '015', '016', '017', '018', '6473')  then  outcome="TB";
+526        outcome_date=min(ADMIT_DATE, BEGIN_DATE);
+527        outcome_start_date=outcome_date;
+528        if outcome="ZOSTER" then output outcome_dx_ZOSTER;
+529            else if outcome="TB" then output outcome_DX_TB;
+530        where ENC_TYPE in ('IP' 'ER' 'AV' 'NH' 'HH' 'ED');
+531        run;
 
-NOTE: There were 5928438 observations read from the data set UCB.TEMPINCDXALL.
+NOTE: There were 1935016 observations read from the data set UCB64.TEMPINCDXALL.
       WHERE ENC_TYPE in ('AV', 'ED', 'ER', 'HH', 'IP', 'NH');
 NOTE: Parallel WHERE evaluation suppressed due to sort order on table.
-NOTE: The data set WORK.OUTCOME_DX_ZOSTER has 5055 observations and 26 variables.
-NOTE: The data set WORK.OUTCOME_DX_TB has 636 observations and 26 variables.
+NOTE: The data set WORK.OUTCOME_DX_ZOSTER has 1640 observations and 26 variables.
+NOTE: The data set WORK.OUTCOME_DX_TB has 282 observations and 26 variables.
 NOTE: DATA statement used (Total process time):
-      real time           6.27 seconds
-      cpu time            8.25 seconds
+      real time           1.99 seconds
+      cpu time            2.76 seconds
       
 
-517        proc sort data=outcome_dx_TB nodupkey; by database exposure patid exposureStart exposureEnd exposureID outcome_date outcome;run;
+532        proc sort data=outcome_dx_TB nodupkey; by database exposure patid exposureStart exposureEnd exposureID outcome_date outcome;run;
 
-NOTE: There were 636 observations read from the data set WORK.OUTCOME_DX_TB.
-NOTE: 229 observations with duplicate key values were deleted.
-NOTE: The data set WORK.OUTCOME_DX_TB has 407 observations and 26 variables.
+NOTE: There were 282 observations read from the data set WORK.OUTCOME_DX_TB.
+NOTE: 108 observations with duplicate key values were deleted.
+NOTE: The data set WORK.OUTCOME_DX_TB has 174 observations and 26 variables.
 NOTE: PROCEDURE SORT used (Total process time):
       real time           0.03 seconds
       cpu time            0.01 seconds
       
 
-518        proc sort data=outcome_zoster nodupkey; by database exposure patid exposureStart exposureEnd exposureID outcome_date outcome;run;
+533        proc sort data=outcome_zoster nodupkey; by database exposure patid exposureStart exposureEnd exposureID outcome_date outcome;run;
 ERROR: File WORK.OUTCOME_ZOSTER.DATA does not exist.
 
 NOTE: The SAS System stopped processing this step because of errors.
 NOTE: SAS set option OBS=0 and will continue to check statements. This might cause NOTE: No observations in data set.
 NOTE: PROCEDURE SORT used (Total process time):
-      real time           0.01 seconds
-      cpu time            0.00 seconds
-      
-
-
-519        proc sort data=outcome_dx_TB nodupkey; by database exposure patid exposureStart exposureEnd exposureID outcome_date dx ENC_TYPE outcome;run
-519      ! ;
-
-NOTE: PROCEDURE SORT used (Total process time):
-      real time           0.01 seconds
+      real time           0.03 seconds
       cpu time            0.01 seconds
       
 
-520        
-521        
-522        data _outcome_OP_TB(drop=outcome outcome_date);
-523        set outcome_dx_TB;
-524        by database exposure patid exposureStart exposureEnd exposureID outcome_date;
-525        if first.outcome_date;
-526        where outcome="TB" and ENC_TYPE in ( 'ER' 'AV' 'NH' 'HH' 'ED');
-527        run;
 
-NOTE: The data set WORK._OUTCOME_OP_TB has 0 observations and 24 variables.
-NOTE: DATA statement used (Total process time):
-      real time           0.07 seconds
+534        proc sort data=outcome_dx_TB nodupkey; by database exposure patid exposureStart exposureEnd exposureID outcome_date dx ENC_TYPE outcome;run
+534      ! ;
+
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           0.00 seconds
       cpu time            0.00 seconds
       
 
-528        /*
-529        TB definition 2
-530            2. Any ICD-9 code (010-018, 6473) outpatient physician visit claim
-531            AND pharmacy records indicating prescription for Pyrazinamide(PZA) prescribed  on same day within +/- 90 days
-532            of first code date
-12                                                                  The SAS System                                          18:22 Monday, May 21, 2018
-
-533        
-534        */
 535        
-536        data NDC_PYRAZINAMIDE;
-537        set NDC.TB_ALL_2016;
-538        /*NDC=code;*/
-539        where gnn="PYRAZINAMIDE";
-540        run;
+536        
+537        data _outcome_OP_TB(drop=outcome outcome_date);
+538        set outcome_dx_TB;
+539        by database exposure patid exposureStart exposureEnd exposureID outcome_date;
+540        if first.outcome_date;
+541        where outcome="TB" and ENC_TYPE in ( 'ER' 'AV' 'NH' 'HH' 'ED');
+542        run;
+
+NOTE: The data set WORK._OUTCOME_OP_TB has 0 observations and 24 variables.
+12                                                                  The SAS System                                        10:17 Thursday, May 24, 2018
+
+NOTE: DATA statement used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.01 seconds
+      
+
+543        /*
+544        TB definition 2
+545            2. Any ICD-9 code (010-018, 6473) outpatient physician visit claim
+546            AND pharmacy records indicating prescription for Pyrazinamide(PZA) prescribed  on same day within +/- 90 days
+547            of first code date
+548        
+549        */
+550        
+551        data NDC_PYRAZINAMIDE;
+552        set NDC.TB_ALL_2016;
+553        /*NDC=code;*/
+554        where gnn="PYRAZINAMIDE";
+555        run;
 
 NOTE: The data set WORK.NDC_PYRAZINAMIDE has 0 observations and 6 variables.
 NOTE: DATA statement used (Total process time):
-      real time           0.07 seconds
+      real time           0.04 seconds
       cpu time            0.01 seconds
       
 
-541        
-542        data Work.ndc_zoster;
-543          set NDC.ndc_antiviral;
-544          where zoster = 1;
-545        run;
+556        
+557        data Work.ndc_zoster;
+558          set NDC.ndc_antiviral;
+559          where zoster = 1;
+560        run;
 
 NOTE: The data set WORK.NDC_ZOSTER has 0 observations and 9 variables.
 NOTE: DATA statement used (Total process time):
-      real time           0.06 seconds
-      cpu time            0.00 seconds
+      real time           0.04 seconds
+      cpu time            0.01 seconds
       
 
-546        proc freq data = Work.ndc_zoster;
-547          table zoster * gnn / list;
-548        run;
+561        proc freq data = Work.ndc_zoster;
+562          table zoster * gnn / list;
+563        run;
 
 NOTE: PROCEDURE FREQ used (Total process time):
       real time           0.00 seconds
       cpu time            0.00 seconds
       
 
-549        
-550        data  outcome_rx_TB(drop=rc:) outcome_rx_zoster(drop=rc:);
-551            if _N_=1 then do;
-552                declare hash HTB(dataset:"NDC_PYRAZINAMIDE");
-553                rc = HTB.definekey("code");
-554        /*        rc = HTB.definedata(all:"YES");*/
-555                rc=HTB.definedone();
-556        
-557                declare hash Hzos(dataset:"Work.ndc_zoster");
-558                rc = Hzos.definekey("code");
-559        /*        rc = HTB.definedata(all:"YES");*/
-560                rc=Hzos.definedone();
-561        
-562            end;
-563        if 0 then set NDC.Antibiotics_parenteral_ndc(keep=NDC) NDC_PYRAZINAMIDE(keep=code) Work.ndc_zoster (keep = code);
-564        set &inrxdat. ;
-565        by database exposure patid exposureStart exposureEnd exposureID DISPENSE_DATE;
-566        /*length outcome $20 outcome_date 4;*/
-567        /*format outcome_date mmddyy10.;*/
-568                rc2 =HTB.find(key:NDC);
-569                rc3 = Hzos.find(key:NDC);
-570        
-571                if rc2=0 then output outcome_rx_TB;
-572                if rc3=0 then output outcome_rx_zoster;
-573        run;
+564        
+565        data  outcome_rx_TB(drop=rc:) outcome_rx_zoster(drop=rc:);
+566            if _N_=1 then do;
+567                declare hash HTB(dataset:"NDC_PYRAZINAMIDE");
+568                rc = HTB.definekey("code");
+569        /*        rc = HTB.definedata(all:"YES");*/
+570                rc=HTB.definedone();
+571        
+572                declare hash Hzos(dataset:"Work.ndc_zoster");
+573                rc = Hzos.definekey("code");
+574        /*        rc = HTB.definedata(all:"YES");*/
+575                rc=Hzos.definedone();
+576        
+577            end;
+578        if 0 then set NDC.Antibiotics_parenteral_ndc(keep=NDC) NDC_PYRAZINAMIDE(keep=code) Work.ndc_zoster (keep = code);
+579        set &inrxdat. ;
+580        by database exposure patid exposureStart exposureEnd exposureID DISPENSE_DATE;
+581        /*length outcome $20 outcome_date 4;*/
+582        /*format outcome_date mmddyy10.;*/
+583                rc2 =HTB.find(key:NDC);
+584                rc3 = Hzos.find(key:NDC);
+585        
+586                if rc2=0 then output outcome_rx_TB;
+587                if rc3=0 then output outcome_rx_zoster;
+588        run;
+
+13                                                                  The SAS System                                        10:17 Thursday, May 24, 2018
 
 NOTE: The data set WORK.OUTCOME_RX_TB has 0 observations and 16 variables.
 NOTE: The data set WORK.OUTCOME_RX_ZOSTER has 0 observations and 16 variables.
 NOTE: DATA statement used (Total process time):
       real time           0.14 seconds
-      cpu time            0.03 seconds
+      cpu time            0.07 seconds
       
 
-574        proc sort data=outcome_rx_TB nodupkey; by database exposure patid exposureStart exposureEnd exposureID DISPENSE_DATE;run;
+589        proc sort data=outcome_rx_TB nodupkey; by database exposure patid exposureStart exposureEnd exposureID DISPENSE_DATE;run;
 
 NOTE: PROCEDURE SORT used (Total process time):
-13                                                                  The SAS System                                          18:22 Monday, May 21, 2018
-
-      real time           0.00 seconds
-      cpu time            0.00 seconds
+      real time           0.01 seconds
+      cpu time            0.01 seconds
       
 
-575        proc sort data=outcome_rx_zoster nodupkey; by database exposure patid exposureStart exposureEnd exposureID DISPENSE_DATE;run;
+590        proc sort data=outcome_rx_zoster nodupkey; by database exposure patid exposureStart exposureEnd exposureID DISPENSE_DATE;run;
 
 NOTE: PROCEDURE SORT used (Total process time):
       real time           0.00 seconds
       cpu time            0.00 seconds
       
 
-576        
-577        data outcome_OP_TB(keep=database exposure patid exposureStart exposureEnd exposureID BEGIN_DATE outcome outcome_date DISPENSE_DATE DX
-577      ! ADMIT_DATE ENC_TYPE outcome_start_date infection_category);
-578            if _N_=1 then do;
-579                declare hash HTB(dataset:"outcome_rx_TB" , multidata:"Y");
-580                rc = HTB.definekey("database", "exposure", "PATID", "exposureStart", "exposureEnd", "exposureID");
-581                rc = HTB.definedata("database", "exposure", "PATID", "exposureStart", "exposureEnd", "exposureID","DISPENSE_DATE");
-582                rc=HTB.definedone();
-583            end;
-584        if 0 then set outcome_rx_TB(keep=database exposure patid exposureStart exposureEnd exposureID DISPENSE_DATE);
-585        set _outcome_OP_TB ;
-586        by database exposure patid exposureStart exposureEnd exposureID BEGIN_DATE;
-587        length outcome $20 outcome_date outcome_start_date 4;
-588        format outcome_date outcome_start_date mmddyy10.;
-589                rc =HTB.find(key:database, key:exposure, key:patid, key:exposureStart, key:exposureEnd, key:exposureID);
-590                 do while (rc = 0);
-591                    if abs(begin_date-DISPENSE_DATE)<=90 then do;
-592                        infection_category = "TUBERCULOSIS";
-593                        outcome="OI";
-594                        outcome_date=max(DISPENSE_DATE,begin_date);
-595                        outcome_start_date=min(DISPENSE_DATE,begin_date);
-596                        output;
-597                    end;
-598                    else do;
-599                        outcome="NULL";
-600                        outcome_date=.;
-601                    end;
-602                    rc = HTB.find_next();
-603                 end;
-604        run;
+591        
+592        data outcome_OP_TB(keep=database exposure patid exposureStart exposureEnd exposureID BEGIN_DATE outcome outcome_date DISPENSE_DATE DX
+592      ! ADMIT_DATE ENC_TYPE outcome_start_date infection_category);
+593            if _N_=1 then do;
+594                declare hash HTB(dataset:"outcome_rx_TB" , multidata:"Y");
+595                rc = HTB.definekey("database", "exposure", "PATID", "exposureStart", "exposureEnd", "exposureID");
+596                rc = HTB.definedata("database", "exposure", "PATID", "exposureStart", "exposureEnd", "exposureID","DISPENSE_DATE");
+597                rc=HTB.definedone();
+598            end;
+599        if 0 then set outcome_rx_TB(keep=database exposure patid exposureStart exposureEnd exposureID DISPENSE_DATE);
+600        set _outcome_OP_TB ;
+601        by database exposure patid exposureStart exposureEnd exposureID BEGIN_DATE;
+602        length outcome $20 outcome_date outcome_start_date 4;
+603        format outcome_date outcome_start_date mmddyy10.;
+604                rc =HTB.find(key:database, key:exposure, key:patid, key:exposureStart, key:exposureEnd, key:exposureID);
+605                 do while (rc = 0);
+606                    if abs(begin_date-DISPENSE_DATE)<=90 then do;
+607                        infection_category = "TUBERCULOSIS";
+608                        outcome="OI";
+609                        outcome_date=max(DISPENSE_DATE,begin_date);
+610                        outcome_start_date=min(DISPENSE_DATE,begin_date);
+611                        output;
+612                    end;
+613                    else do;
+614                        outcome="NULL";
+615                        outcome_date=.;
+616                    end;
+617                    rc = HTB.find_next();
+618                 end;
+619        run;
 
 NOTE: The data set WORK.OUTCOME_OP_TB has 0 observations and 15 variables.
 NOTE: DATA statement used (Total process time):
       real time           0.04 seconds
-      cpu time            0.01 seconds
+      cpu time            0.03 seconds
       
 
-605        /* TB definition1
-606            1 Any ICD-9 code (010-018, 6473) on an inpatient
-607          combind def 1 and 2 to outcome_TB;
-608        */
-609        proc sort data=outcome_OP_TB; by database exposure patid exposureStart exposureEnd exposureID outcome_date descending outcome_start_date;
-609      ! run;
+620        /* TB definition1
+621            1 Any ICD-9 code (010-018, 6473) on an inpatient
+622          combind def 1 and 2 to outcome_TB;
+623        */
+624        proc sort data=outcome_OP_TB; by database exposure patid exposureStart exposureEnd exposureID outcome_date descending outcome_start_date;
+624      ! run;
 
 NOTE: PROCEDURE SORT used (Total process time):
       real time           0.00 seconds
       cpu time            0.00 seconds
       
 
-610        data outcome_TB(keep=database exposure patid exposureStart exposureEnd exposureID BEGIN_DATE outcome outcome_date DISPENSE_DATE DX
-610      ! ADMIT_DATE ENC_TYPE outcome_start_date infection_category);
-611        set outcome_OP_TB outcome_dx_TB(where=(outcome="TUBERCULOSIS" and ENC_TYPE in ( 'IP')));
-612        by database exposure patid exposureStart exposureEnd exposureID outcome_date;
-613        run;
+625        data outcome_TB(keep=database exposure patid exposureStart exposureEnd exposureID BEGIN_DATE outcome outcome_date DISPENSE_DATE DX
+625      ! ADMIT_DATE ENC_TYPE outcome_start_date infection_category);
+14                                                                  The SAS System                                        10:17 Thursday, May 24, 2018
+
+626        set outcome_OP_TB outcome_dx_TB(where=(outcome="TUBERCULOSIS" and ENC_TYPE in ( 'IP')));
+627        by database exposure patid exposureStart exposureEnd exposureID outcome_date;
+628        run;
 
 NOTE: The data set WORK.OUTCOME_TB has 0 observations and 15 variables.
 NOTE: DATA statement used (Total process time):
@@ -3846,76 +3784,76 @@ NOTE: DATA statement used (Total process time):
       cpu time            0.01 seconds
       
 
-14                                                                  The SAS System                                          18:22 Monday, May 21, 2018
-
-614        
-615        data outcome_zoster(keep=database exposure patid exposureStart exposureEnd exposureID BEGIN_DATE outcome outcome_date DISPENSE_DATE DX
-615      ! ADMIT_DATE ENC_TYPE outcome_start_date infection_category);
-616            if _N_=1 then do;
-617                declare hash Hzos(dataset:"outcome_rx_zoster" , multidata:"Y");
-618                rc = Hzos.definekey("database", "exposure", "PATID", "exposureStart", "exposureEnd", "exposureID");
-619                rc = Hzos.definedata("database", "exposure", "PATID", "exposureStart", "exposureEnd", "exposureID","DISPENSE_DATE");
-620                rc=Hzos.definedone();
-621            end;
-622        if 0 then set outcome_rx_zoster(keep=database exposure patid exposureStart exposureEnd exposureID DISPENSE_DATE);
-623        set outcome_dx_ZOSTER ;
-624        by database exposure patid exposureStart exposureEnd exposureID BEGIN_DATE;
-625        length outcome $20 outcome_date outcome_start_date 4;
-626        format outcome_date outcome_start_date mmddyy10.;
-627                rc =Hzos.find(key:database, key:exposure, key:patid, key:exposureStart, key:exposureEnd, key:exposureID);
-628                 do while (rc = 0);
-629                    if abs(begin_date-DISPENSE_DATE)<=90 then do;
-630                        infection_category = "ZOSTER";
-631                        outcome="OI";
-632                        outcome_date=max(DISPENSE_DATE,begin_date);
-633                        outcome_start_date=min(DISPENSE_DATE,begin_date);
-634                        output;
-635                    end;
-636                    else do;
-637                        outcome="NULL";
-638                        outcome_date=.;
-639                    end;
-640                    rc = Hzos.find_next();
-641                 end;
-642        run;
+629        
+630        data outcome_zoster(keep=database exposure patid exposureStart exposureEnd exposureID BEGIN_DATE outcome outcome_date DISPENSE_DATE DX
+630      ! ADMIT_DATE ENC_TYPE outcome_start_date infection_category);
+631            if _N_=1 then do;
+632                declare hash Hzos(dataset:"outcome_rx_zoster" , multidata:"Y");
+633                rc = Hzos.definekey("database", "exposure", "PATID", "exposureStart", "exposureEnd", "exposureID");
+634                rc = Hzos.definedata("database", "exposure", "PATID", "exposureStart", "exposureEnd", "exposureID","DISPENSE_DATE");
+635                rc=Hzos.definedone();
+636            end;
+637        if 0 then set outcome_rx_zoster(keep=database exposure patid exposureStart exposureEnd exposureID DISPENSE_DATE);
+638        set outcome_dx_ZOSTER ;
+639        by database exposure patid exposureStart exposureEnd exposureID BEGIN_DATE;
+640        length outcome $20 outcome_date outcome_start_date 4;
+641        format outcome_date outcome_start_date mmddyy10.;
+642                rc =Hzos.find(key:database, key:exposure, key:patid, key:exposureStart, key:exposureEnd, key:exposureID);
+643                 do while (rc = 0);
+644                    if abs(begin_date-DISPENSE_DATE)<=90 then do;
+645                        infection_category = "ZOSTER";
+646                        outcome="OI";
+647                        outcome_date=max(DISPENSE_DATE,begin_date);
+648                        outcome_start_date=min(DISPENSE_DATE,begin_date);
+649                        output;
+650                    end;
+651                    else do;
+652                        outcome="NULL";
+653                        outcome_date=.;
+654                    end;
+655                    rc = Hzos.find_next();
+656                 end;
+657        run;
 
 NOTE: The data set WORK.OUTCOME_ZOSTER has 0 observations and 15 variables.
 NOTE: DATA statement used (Total process time):
       real time           0.04 seconds
-      cpu time            0.03 seconds
+      cpu time            0.01 seconds
       
 
-643        
-644        
-645        
-646        
-647        /*
-648        Write to permanent SAS library
-649         */
-650        proc sql;
+658        
+659        
+660        
+661        
+662        /*
+663        Write to permanent SAS library
+664         */
+665        proc sql;
 NOTE: PROC SQL set option NOEXEC and will continue to check the syntax of statements.
-651          create table DT.opportunInfectionEpisodesInc as
-652            select * from Work.outcome_OI union corr
-653            select * from Work.outcome_TB union corr
-654            select * from Work.outcome_zoster ;
+666          create table DT.opportunInfectionEpisodesInc as
+667            select * from Work.outcome_OI union corr
+668            select * from Work.outcome_TB union corr
+669            select * from Work.outcome_zoster ;
 NOTE: Statement not executed due to NOEXEC option.
-655        quit;
+670        quit;
 NOTE: The SAS System stopped processing this step because of errors.
 NOTE: PROCEDURE SQL used (Total process time):
       real time           0.00 seconds
       cpu time            0.00 seconds
       
-656        
-657        
-658        /*
-659        Data checks
-660         */
+671        
+672        
+673        /*
+674        Data checks
+675         */
+15                                                                  The SAS System                                        10:17 Thursday, May 24, 2018
 
 
-661        proc contents data = DT.opportunInfectionEpisodesInc order = varnum;
-662        run;
 
-                                                                  --- AS project ---                                    18:22 Monday, May 21, 2018  40
+676        proc contents data = DT.opportunInfectionEpisodesInc order = varnum;
+677        run;
+
+                                                                  --- AS project ---                                  10:17 Thursday, May 24, 2018  39
 
                                                                 The CONTENTS Procedure
 
@@ -3990,47 +3928,45 @@ NOTE: PROCEDURE SQL used (Total process time):
  
                                                         queryOutcomeOpportunisticInfection.sas
 NOTE: PROCEDURE CONTENTS used (Total process time):
-      real time           0.07 seconds
-      cpu time            0.04 seconds
+      real time           0.12 seconds
+      cpu time            0.03 seconds
       
-NOTE: The PROCEDURE CONTENTS printed page 40.
-15                                                                  The SAS System                                          18:22 Monday, May 21, 2018
+NOTE: The PROCEDURE CONTENTS printed page 39.
 
-
-663        proc sql;
+678        proc sql;
 NOTE: PROC SQL set option NOEXEC and will continue to check the syntax of statements.
-664          select "Summary of DT.opportunInfectionEpisodesInc" as table,
-665                 database,
-666                 count(*) as denom
-667            from DT.opportunInfectionEpisodesInc
-668            group by database;
+679          select "Summary of DT.opportunInfectionEpisodesInc" as table,
+680                 database,
+681                 count(*) as denom
+682            from DT.opportunInfectionEpisodesInc
+683            group by database;
 NOTE: Statement not executed due to NOEXEC option.
-669          select "Summary of DT.opportunInfectionEpisodesInc" as table,
-670                 A.database,
-671                 A.infection_category,
-672                 count(distinct A.patid) as countDistinctPatid,
-673                 count(*) as countRows,
-674                 count(*) / denom format = percent8.1 as pctWithinDatabase
-675            from DT.opportunInfectionEpisodesInc A inner join
-676                 (select database, count(*) as denom from DT.opportunInfectionEpisodesInc group by database) B  on (A.database = B.database)
-677            group by A.database, A.infection_category;
+684          select "Summary of DT.opportunInfectionEpisodesInc" as table,
+685                 A.database,
+686                 A.infection_category,
+687                 count(distinct A.patid) as countDistinctPatid,
+688                 count(*) as countRows,
+689                 count(*) / denom format = percent8.1 as pctWithinDatabase
+690            from DT.opportunInfectionEpisodesInc A inner join
+691                 (select database, count(*) as denom from DT.opportunInfectionEpisodesInc group by database) B  on (A.database = B.database)
+692            group by A.database, A.infection_category;
 NOTE: Statement not executed due to NOEXEC option.
-678        quit;
+693        quit;
 NOTE: The SAS System stopped processing this step because of errors.
 NOTE: PROCEDURE SQL used (Total process time):
       real time           0.01 seconds
       cpu time            0.01 seconds
       
-679        
-680        
-681        
-682        
-683        ods html close;
+694        
+695        
+696        
+697        
+698        ods html close;
 
 ERROR: Errors printed on page 11.
 
 NOTE: SAS Institute Inc., SAS Campus Drive, Cary, NC USA 27513-2414
 NOTE: The SAS System used:
-      real time           17.00 seconds
-      cpu time            19.15 seconds
+      real time           24.94 seconds
+      cpu time            9.32 seconds
       

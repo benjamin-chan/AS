@@ -1,5 +1,12 @@
-1                                          The SAS System                 19:04 Monday, May 21, 2018
+1                                                          The SAS System                               10:41 Thursday, May 24, 2018
 
+NOTE: Unable to open SASUSER.REGSTRY. WORK.REGSTRY will be opened instead.
+NOTE: All registry changes will be lost at the end of the session.
+
+WARNING: Unable to copy SASUSER registry to WORK registry. Because of this, you will not see registry customizations during this 
+         session.
+NOTE: Unable to open SASUSER.PROFILE. WORK.PROFILE will be opened instead.
+NOTE: All profile changes will be lost at the end of the session.
 NOTE: Copyright (c) 2016 by SAS Institute Inc., Cary, NC, USA. 
 NOTE: SAS (r) Proprietary Software 9.4 (TS1M5) 
       Licensed to UNIVERSITY OF ALABAMA AT BIRMINGHAM - SFA - T&R, Site 70086550.
@@ -28,8 +35,8 @@ of the shared folders.
 
 
 NOTE: SAS initialization used:
-      real time           1.71 seconds
-      cpu time            0.53 seconds
+      real time           5.13 seconds
+      cpu time            0.35 seconds
       
 1          *  University of Alabama at Birmingham                               *
 2          *  AS project                                            *
@@ -57,285 +64,102 @@ NOTE: Libref UCBSTD was successfully assigned as follows:
 NOTE: Libref UCB was successfully assigned as follows: 
       Engine:        SPDE 
       Physical Name: q:\studies\AS\data\UCB\
+NOTE: Libref UCB64 was successfully assigned as follows: 
+      Engine:        SPDE 
+      Physical Name: q:\studies\AS\data\UCB64\
 NOTE: Libref DT was successfully assigned as follows: 
       Engine:        V9 
       Physical Name: V:\studies\AS\data
 NOTE: Libref NDC was successfully assigned as follows: 
       Engine:        V9 
-      Physical Name: W:\onenote\references\drug ndcs\sas data
-128        footnote "&pgm.";
-129        * footnote2 "%sysfunc(datetime(),datetime14.)";
-130        title1 '--- AS project ---';
-131        **********************************************************************;
-132        options macrogen mlogic mprint symbolgen;
-133        options nomacrogen nomlogic nomprint nosymbolgen;
-134        
-135        
-136        
-2                                                                   The SAS System                                          19:04 Monday, May 21, 2018
+2                                                                   The SAS System                                        10:41 Thursday, May 24, 2018
 
-137        ods html
-138          body = "output\&cmt..html"
-139          style = Statistical;
+      Physical Name: W:\onenote\references\drug ndcs\sas data
+143        footnote "&pgm.";
+144        * footnote2 "%sysfunc(datetime(),datetime14.)";
+145        title1 '--- AS project ---';
+146        **********************************************************************;
+147        options macrogen mlogic mprint symbolgen;
+148        options nomacrogen nomlogic nomprint nosymbolgen;
+149        
+150        
+151        
+152        ods html
+153          body = "output\&cmt..html"
+154          style = Statistical;
 NOTE: Writing HTML Body file: output\contentsWorkingDatasets.html
-140        
-141        
-142        data Work.WorkingDatasets;
-143          length lib $8 mem $40;
-144          input lib mem;
-145          dataset = strip(lib) || "." || strip(mem);
-146          call symput ("n", put(_n_, best8.));
-147          cards;
+155        
+156        
+157        data Work.WorkingDatasets;
+158          length lib $8 mem $40;
+159          input lib mem;
+160          dataset = strip(lib) || "." || strip(mem);
+161          call symput ("n", put(_n_, best8.));
+162          cards;
 
 NOTE: The data set WORK.WORKINGDATASETS has 49 observations and 3 variables.
 NOTE: DATA statement used (Total process time):
-      real time           0.21 seconds
-      cpu time            0.07 seconds
+      real time           0.07 seconds
+      cpu time            0.03 seconds
       
 
-197          ;
-198        run;
-199        proc sort data = Work.WorkingDatasets;
-200          by lib mem;
-201        run;
+212          ;
+213        run;
+214        proc sort data = Work.WorkingDatasets;
+215          by lib mem;
+216        run;
 
 NOTE: There were 49 observations read from the data set WORK.WORKINGDATASETS.
 NOTE: The data set WORK.WORKINGDATASETS has 49 observations and 3 variables.
 NOTE: PROCEDURE SORT used (Total process time):
-      real time           0.07 seconds
+      real time           0.04 seconds
       cpu time            0.01 seconds
       
 
-202        
-203        
-204        %macro contents;
-205          %let list = ;
-206          %do i = 1 %to &n;
-207            data _null_;
-208              set Work.WorkingDatasets;
-209              if _n_ = &i then call symput ("dataset", dataset);
-210            run;
-211            proc contents data = &dataset order = varnum out = Work.contents&i noprint;
-212            run;
-213            %let list = &list Work.contents&i;
-214          %end;
-215          data Work.contentsAll;
-216            set &list;
-217          run;
-218        %mend contents;
-219        
-220        %contents;
+217        
+218        
+219        %macro contents;
+220          %let list = ;
+221          %do i = 1 %to &n;
+222            data _null_;
+223              set Work.WorkingDatasets;
+224              if _n_ = &i then call symput ("dataset", dataset);
+225            run;
+226            proc contents data = &dataset order = varnum out = Work.contents&i noprint;
+227            run;
+228            %let list = &list Work.contents&i;
+229          %end;
+230          data Work.contentsAll;
+231            set &list;
+232          run;
+233        %mend contents;
+234        
+235        %contents;
 
 NOTE: There were 49 observations read from the data set WORK.WORKINGDATASETS.
 NOTE: DATA statement used (Total process time):
-      real time           0.00 seconds
-      cpu time            0.00 seconds
+      real time           0.01 seconds
+      cpu time            0.01 seconds
       
 
 
 NOTE: The data set WORK.CONTENTS1 has 17 observations and 41 variables.
 NOTE: PROCEDURE CONTENTS used (Total process time):
-      real time           0.13 seconds
-      cpu time            0.00 seconds
+      real time           0.14 seconds
+3                                                                   The SAS System                                        10:41 Thursday, May 24, 2018
+
+      cpu time            0.01 seconds
       
 
 
 NOTE: There were 49 observations read from the data set WORK.WORKINGDATASETS.
 NOTE: DATA statement used (Total process time):
-      real time           0.01 seconds
-      cpu time            0.01 seconds
+      real time           0.00 seconds
+      cpu time            0.00 seconds
       
-
-3                                                                   The SAS System                                          19:04 Monday, May 21, 2018
 
 
 NOTE: The data set WORK.CONTENTS2 has 13 observations and 41 variables.
-NOTE: PROCEDURE CONTENTS used (Total process time):
-      real time           0.07 seconds
-      cpu time            0.01 seconds
-      
-
-
-NOTE: There were 49 observations read from the data set WORK.WORKINGDATASETS.
-NOTE: DATA statement used (Total process time):
-      real time           0.01 seconds
-      cpu time            0.01 seconds
-      
-
-
-NOTE: The data set WORK.CONTENTS3 has 9 observations and 41 variables.
-NOTE: PROCEDURE CONTENTS used (Total process time):
-      real time           0.07 seconds
-      cpu time            0.01 seconds
-      
-
-
-NOTE: There were 49 observations read from the data set WORK.WORKINGDATASETS.
-NOTE: DATA statement used (Total process time):
-      real time           0.01 seconds
-      cpu time            0.01 seconds
-      
-
-
-NOTE: The data set WORK.CONTENTS4 has 13 observations and 41 variables.
-NOTE: PROCEDURE CONTENTS used (Total process time):
-      real time           0.06 seconds
-      cpu time            0.01 seconds
-      
-
-
-NOTE: There were 49 observations read from the data set WORK.WORKINGDATASETS.
-NOTE: DATA statement used (Total process time):
-      real time           0.01 seconds
-      cpu time            0.01 seconds
-      
-
-
-NOTE: The data set WORK.CONTENTS5 has 11 observations and 41 variables.
-NOTE: PROCEDURE CONTENTS used (Total process time):
-      real time           0.07 seconds
-      cpu time            0.01 seconds
-      
-
-
-NOTE: There were 49 observations read from the data set WORK.WORKINGDATASETS.
-NOTE: DATA statement used (Total process time):
-      real time           0.01 seconds
-      cpu time            0.01 seconds
-      
-
-
-NOTE: The data set WORK.CONTENTS6 has 9 observations and 41 variables.
-NOTE: PROCEDURE CONTENTS used (Total process time):
-      real time           0.06 seconds
-      cpu time            0.00 seconds
-      
-
-
-NOTE: There were 49 observations read from the data set WORK.WORKINGDATASETS.
-NOTE: DATA statement used (Total process time):
-      real time           0.01 seconds
-      cpu time            0.00 seconds
-      
-
-
-NOTE: The data set WORK.CONTENTS7 has 9 observations and 41 variables.
-4                                                                   The SAS System                                          19:04 Monday, May 21, 2018
-
-NOTE: PROCEDURE CONTENTS used (Total process time):
-      real time           0.06 seconds
-      cpu time            0.01 seconds
-      
-
-
-NOTE: There were 49 observations read from the data set WORK.WORKINGDATASETS.
-NOTE: DATA statement used (Total process time):
-      real time           0.00 seconds
-      cpu time            0.00 seconds
-      
-
-
-NOTE: The data set WORK.CONTENTS8 has 6 observations and 41 variables.
-NOTE: PROCEDURE CONTENTS used (Total process time):
-      real time           0.06 seconds
-      cpu time            0.01 seconds
-      
-
-
-NOTE: There were 49 observations read from the data set WORK.WORKINGDATASETS.
-NOTE: DATA statement used (Total process time):
-      real time           0.01 seconds
-      cpu time            0.01 seconds
-      
-
-
-NOTE: The data set WORK.CONTENTS9 has 11 observations and 41 variables.
-NOTE: PROCEDURE CONTENTS used (Total process time):
-      real time           0.06 seconds
-      cpu time            0.01 seconds
-      
-
-
-NOTE: There were 49 observations read from the data set WORK.WORKINGDATASETS.
-NOTE: DATA statement used (Total process time):
-      real time           0.01 seconds
-      cpu time            0.01 seconds
-      
-
-
-NOTE: The data set WORK.CONTENTS10 has 33 observations and 41 variables.
-NOTE: PROCEDURE CONTENTS used (Total process time):
-      real time           0.07 seconds
-      cpu time            0.01 seconds
-      
-
-
-NOTE: There were 49 observations read from the data set WORK.WORKINGDATASETS.
-NOTE: DATA statement used (Total process time):
-      real time           0.01 seconds
-      cpu time            0.01 seconds
-      
-
-
-NOTE: The data set WORK.CONTENTS11 has 33 observations and 41 variables.
-NOTE: PROCEDURE CONTENTS used (Total process time):
-      real time           0.12 seconds
-      cpu time            0.03 seconds
-      
-
-
-NOTE: There were 49 observations read from the data set WORK.WORKINGDATASETS.
-NOTE: DATA statement used (Total process time):
-      real time           0.01 seconds
-      cpu time            0.01 seconds
-      
-
-
-NOTE: The data set WORK.CONTENTS12 has 31 observations and 41 variables.
-NOTE: PROCEDURE CONTENTS used (Total process time):
-      real time           0.06 seconds
-5                                                                   The SAS System                                          19:04 Monday, May 21, 2018
-
-      cpu time            0.01 seconds
-      
-
-
-NOTE: There were 49 observations read from the data set WORK.WORKINGDATASETS.
-NOTE: DATA statement used (Total process time):
-      real time           0.01 seconds
-      cpu time            0.01 seconds
-      
-
-
-NOTE: The data set WORK.CONTENTS13 has 17 observations and 41 variables.
-NOTE: PROCEDURE CONTENTS used (Total process time):
-      real time           0.06 seconds
-      cpu time            0.01 seconds
-      
-
-
-NOTE: There were 49 observations read from the data set WORK.WORKINGDATASETS.
-NOTE: DATA statement used (Total process time):
-      real time           0.00 seconds
-      cpu time            0.00 seconds
-      
-
-
-NOTE: The data set WORK.CONTENTS14 has 13 observations and 41 variables.
-NOTE: PROCEDURE CONTENTS used (Total process time):
-      real time           0.06 seconds
-      cpu time            0.00 seconds
-      
-
-
-NOTE: There were 49 observations read from the data set WORK.WORKINGDATASETS.
-NOTE: DATA statement used (Total process time):
-      real time           0.00 seconds
-      cpu time            0.00 seconds
-      
-
-
-NOTE: The data set WORK.CONTENTS15 has 8 observations and 41 variables.
 NOTE: PROCEDURE CONTENTS used (Total process time):
       real time           0.04 seconds
       cpu time            0.00 seconds
@@ -349,7 +173,93 @@ NOTE: DATA statement used (Total process time):
       
 
 
-NOTE: The data set WORK.CONTENTS16 has 31 observations and 41 variables.
+NOTE: The data set WORK.CONTENTS3 has 9 observations and 41 variables.
+NOTE: PROCEDURE CONTENTS used (Total process time):
+      real time           0.09 seconds
+      cpu time            0.03 seconds
+      
+
+
+NOTE: There were 49 observations read from the data set WORK.WORKINGDATASETS.
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+
+NOTE: The data set WORK.CONTENTS4 has 13 observations and 41 variables.
+NOTE: PROCEDURE CONTENTS used (Total process time):
+      real time           0.06 seconds
+      cpu time            0.00 seconds
+      
+
+
+NOTE: There were 49 observations read from the data set WORK.WORKINGDATASETS.
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+
+NOTE: The data set WORK.CONTENTS5 has 11 observations and 41 variables.
+NOTE: PROCEDURE CONTENTS used (Total process time):
+      real time           0.04 seconds
+      cpu time            0.01 seconds
+      
+
+
+NOTE: There were 49 observations read from the data set WORK.WORKINGDATASETS.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+      
+
+
+NOTE: The data set WORK.CONTENTS6 has 9 observations and 41 variables.
+NOTE: PROCEDURE CONTENTS used (Total process time):
+      real time           0.07 seconds
+      cpu time            0.01 seconds
+      
+4                                                                   The SAS System                                        10:41 Thursday, May 24, 2018
+
+
+
+NOTE: There were 49 observations read from the data set WORK.WORKINGDATASETS.
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+
+NOTE: The data set WORK.CONTENTS7 has 9 observations and 41 variables.
+NOTE: PROCEDURE CONTENTS used (Total process time):
+      real time           0.04 seconds
+      cpu time            0.00 seconds
+      
+
+
+NOTE: There were 49 observations read from the data set WORK.WORKINGDATASETS.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+      
+
+
+NOTE: The data set WORK.CONTENTS8 has 6 observations and 41 variables.
+NOTE: PROCEDURE CONTENTS used (Total process time):
+      real time           0.06 seconds
+      cpu time            0.04 seconds
+      
+
+
+NOTE: There were 49 observations read from the data set WORK.WORKINGDATASETS.
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+
+NOTE: The data set WORK.CONTENTS9 has 11 observations and 41 variables.
 NOTE: PROCEDURE CONTENTS used (Total process time):
       real time           0.07 seconds
       cpu time            0.00 seconds
@@ -363,13 +273,41 @@ NOTE: DATA statement used (Total process time):
       
 
 
-NOTE: The data set WORK.CONTENTS17 has 17 observations and 41 variables.
+NOTE: The data set WORK.CONTENTS10 has 33 observations and 41 variables.
 NOTE: PROCEDURE CONTENTS used (Total process time):
-      real time           0.10 seconds
+      real time           0.06 seconds
       cpu time            0.01 seconds
       
-6                                                                   The SAS System                                          19:04 Monday, May 21, 2018
 
+
+NOTE: There were 49 observations read from the data set WORK.WORKINGDATASETS.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.00 seconds
+      
+
+
+NOTE: The data set WORK.CONTENTS11 has 33 observations and 41 variables.
+NOTE: PROCEDURE CONTENTS used (Total process time):
+      real time           0.09 seconds
+      cpu time            0.01 seconds
+      
+
+
+5                                                                   The SAS System                                        10:41 Thursday, May 24, 2018
+
+NOTE: There were 49 observations read from the data set WORK.WORKINGDATASETS.
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+
+NOTE: The data set WORK.CONTENTS12 has 31 observations and 41 variables.
+NOTE: PROCEDURE CONTENTS used (Total process time):
+      real time           0.07 seconds
+      cpu time            0.01 seconds
+      
 
 
 NOTE: There were 49 observations read from the data set WORK.WORKINGDATASETS.
@@ -379,7 +317,21 @@ NOTE: DATA statement used (Total process time):
       
 
 
-NOTE: The data set WORK.CONTENTS18 has 12 observations and 41 variables.
+NOTE: The data set WORK.CONTENTS13 has 17 observations and 41 variables.
+NOTE: PROCEDURE CONTENTS used (Total process time):
+      real time           0.06 seconds
+      cpu time            0.00 seconds
+      
+
+
+NOTE: There were 49 observations read from the data set WORK.WORKINGDATASETS.
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+
+NOTE: The data set WORK.CONTENTS14 has 13 observations and 41 variables.
 NOTE: PROCEDURE CONTENTS used (Total process time):
       real time           0.06 seconds
       cpu time            0.01 seconds
@@ -393,10 +345,10 @@ NOTE: DATA statement used (Total process time):
       
 
 
-NOTE: The data set WORK.CONTENTS19 has 67 observations and 41 variables.
+NOTE: The data set WORK.CONTENTS15 has 8 observations and 41 variables.
 NOTE: PROCEDURE CONTENTS used (Total process time):
-      real time           0.07 seconds
-      cpu time            0.04 seconds
+      real time           0.06 seconds
+      cpu time            0.01 seconds
       
 
 
@@ -407,10 +359,26 @@ NOTE: DATA statement used (Total process time):
       
 
 
-NOTE: The data set WORK.CONTENTS20 has 8 observations and 41 variables.
+NOTE: The data set WORK.CONTENTS16 has 31 observations and 41 variables.
 NOTE: PROCEDURE CONTENTS used (Total process time):
-      real time           0.09 seconds
-      cpu time            0.01 seconds
+      real time           0.04 seconds
+      cpu time            0.00 seconds
+      
+
+
+NOTE: There were 49 observations read from the data set WORK.WORKINGDATASETS.
+NOTE: DATA statement used (Total process time):
+6                                                                   The SAS System                                        10:41 Thursday, May 24, 2018
+
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+
+NOTE: The data set WORK.CONTENTS17 has 17 observations and 41 variables.
+NOTE: PROCEDURE CONTENTS used (Total process time):
+      real time           0.07 seconds
+      cpu time            0.00 seconds
       
 
 
@@ -418,6 +386,48 @@ NOTE: There were 49 observations read from the data set WORK.WORKINGDATASETS.
 NOTE: DATA statement used (Total process time):
       real time           0.01 seconds
       cpu time            0.01 seconds
+      
+
+
+NOTE: The data set WORK.CONTENTS18 has 12 observations and 41 variables.
+NOTE: PROCEDURE CONTENTS used (Total process time):
+      real time           0.07 seconds
+      cpu time            0.01 seconds
+      
+
+
+NOTE: There were 49 observations read from the data set WORK.WORKINGDATASETS.
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+
+NOTE: The data set WORK.CONTENTS19 has 67 observations and 41 variables.
+NOTE: PROCEDURE CONTENTS used (Total process time):
+      real time           0.06 seconds
+      cpu time            0.00 seconds
+      
+
+
+NOTE: There were 49 observations read from the data set WORK.WORKINGDATASETS.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+      
+
+
+NOTE: The data set WORK.CONTENTS20 has 8 observations and 41 variables.
+NOTE: PROCEDURE CONTENTS used (Total process time):
+      real time           0.06 seconds
+      cpu time            0.03 seconds
+      
+
+
+NOTE: There were 49 observations read from the data set WORK.WORKINGDATASETS.
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
       
 
 NOTE: Data set UCB.ASDMARDCOHORTSTDMPCD_EX2 is in a format that is native to another host. Cross Environment Data Access will be used. This will 
@@ -425,56 +435,6 @@ NOTE: Data set UCB.ASDMARDCOHORTSTDMPCD_EX2 is in a format that is native to ano
 
 NOTE: The data set WORK.CONTENTS21 has 11 observations and 41 variables.
 NOTE: PROCEDURE CONTENTS used (Total process time):
-      real time           0.10 seconds
-      cpu time            0.03 seconds
-      
-
-
-NOTE: There were 49 observations read from the data set WORK.WORKINGDATASETS.
-NOTE: DATA statement used (Total process time):
-      real time           0.01 seconds
-      cpu time            0.01 seconds
-      
-
-NOTE: Data set UCB.ASDMARDCOHORTSTDUCB_EX2 is in a format that is native to another host. Cross Environment Data Access will be used. This will 
-      require additional CPU resources and may reduce performance.
-
-NOTE: The data set WORK.CONTENTS22 has 12 observations and 41 variables.
-NOTE: PROCEDURE CONTENTS used (Total process time):
-      real time           0.07 seconds
-7                                                                   The SAS System                                          19:04 Monday, May 21, 2018
-
-      cpu time            0.03 seconds
-      
-
-
-NOTE: There were 49 observations read from the data set WORK.WORKINGDATASETS.
-NOTE: DATA statement used (Total process time):
-      real time           0.01 seconds
-      cpu time            0.01 seconds
-      
-
-NOTE: Data set UCB.ASDMARDCOHORTSTD_SABR_EX2 is in a format that is native to another host. Cross Environment Data Access will be used. This will 
-      require additional CPU resources and may reduce performance.
-
-NOTE: The data set WORK.CONTENTS23 has 12 observations and 41 variables.
-NOTE: PROCEDURE CONTENTS used (Total process time):
-      real time           0.07 seconds
-      cpu time            0.03 seconds
-      
-
-
-NOTE: There were 49 observations read from the data set WORK.WORKINGDATASETS.
-NOTE: DATA statement used (Total process time):
-      real time           0.01 seconds
-      cpu time            0.01 seconds
-      
-
-NOTE: Data set UCB.ASNSAIDCOHORTSTDMPCD_EX2 is in a format that is native to another host. Cross Environment Data Access will be used. This will 
-      require additional CPU resources and may reduce performance.
-
-NOTE: The data set WORK.CONTENTS24 has 11 observations and 41 variables.
-NOTE: PROCEDURE CONTENTS used (Total process time):
       real time           0.09 seconds
       cpu time            0.03 seconds
       
@@ -482,8 +442,58 @@ NOTE: PROCEDURE CONTENTS used (Total process time):
 
 NOTE: There were 49 observations read from the data set WORK.WORKINGDATASETS.
 NOTE: DATA statement used (Total process time):
-      real time           0.01 seconds
+7                                                                   The SAS System                                        10:41 Thursday, May 24, 2018
+
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+NOTE: Data set UCB.ASDMARDCOHORTSTDUCB_EX2 is in a format that is native to another host. Cross Environment Data Access will be used. This will 
+      require additional CPU resources and may reduce performance.
+
+NOTE: The data set WORK.CONTENTS22 has 12 observations and 41 variables.
+NOTE: PROCEDURE CONTENTS used (Total process time):
+      real time           0.06 seconds
       cpu time            0.01 seconds
+      
+
+
+NOTE: There were 49 observations read from the data set WORK.WORKINGDATASETS.
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+NOTE: Data set UCB.ASDMARDCOHORTSTD_SABR_EX2 is in a format that is native to another host. Cross Environment Data Access will be used. This will 
+      require additional CPU resources and may reduce performance.
+
+NOTE: The data set WORK.CONTENTS23 has 12 observations and 41 variables.
+NOTE: PROCEDURE CONTENTS used (Total process time):
+      real time           0.09 seconds
+      cpu time            0.01 seconds
+      
+
+
+NOTE: There were 49 observations read from the data set WORK.WORKINGDATASETS.
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+NOTE: Data set UCB.ASNSAIDCOHORTSTDMPCD_EX2 is in a format that is native to another host. Cross Environment Data Access will be used. This will 
+      require additional CPU resources and may reduce performance.
+
+NOTE: The data set WORK.CONTENTS24 has 11 observations and 41 variables.
+NOTE: PROCEDURE CONTENTS used (Total process time):
+      real time           0.06 seconds
+      cpu time            0.01 seconds
+      
+
+
+NOTE: There were 49 observations read from the data set WORK.WORKINGDATASETS.
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
       
 
 NOTE: Data set UCB.ASNSAIDCOHORTSTDUCB_EX2 is in a format that is native to another host. Cross Environment Data Access will be used. This will 
@@ -498,17 +508,19 @@ NOTE: PROCEDURE CONTENTS used (Total process time):
 
 NOTE: There were 49 observations read from the data set WORK.WORKINGDATASETS.
 NOTE: DATA statement used (Total process time):
-      real time           0.01 seconds
-      cpu time            0.01 seconds
+      real time           0.00 seconds
+      cpu time            0.00 seconds
       
 
 NOTE: Data set UCB.ASNSAIDCOHORTSTD_SABR_EX2 is in a format that is native to another host. Cross Environment Data Access will be used. This will 
       require additional CPU resources and may reduce performance.
 
 NOTE: The data set WORK.CONTENTS26 has 12 observations and 41 variables.
+8                                                                   The SAS System                                        10:41 Thursday, May 24, 2018
+
 NOTE: PROCEDURE CONTENTS used (Total process time):
-      real time           0.09 seconds
-      cpu time            0.06 seconds
+      real time           0.07 seconds
+      cpu time            0.01 seconds
       
 
 
@@ -516,8 +528,6 @@ NOTE: There were 49 observations read from the data set WORK.WORKINGDATASETS.
 NOTE: DATA statement used (Total process time):
       real time           0.00 seconds
       cpu time            0.00 seconds
-8                                                                   The SAS System                                          19:04 Monday, May 21, 2018
-
       
 
 NOTE: Data set UCB.ASNOEXPCOHORTSTDMPCD_EX2 is in a format that is native to another host. Cross Environment Data Access will be used. This will 
@@ -525,15 +535,15 @@ NOTE: Data set UCB.ASNOEXPCOHORTSTDMPCD_EX2 is in a format that is native to ano
 
 NOTE: The data set WORK.CONTENTS27 has 11 observations and 41 variables.
 NOTE: PROCEDURE CONTENTS used (Total process time):
-      real time           0.09 seconds
+      real time           0.07 seconds
       cpu time            0.03 seconds
       
 
 
 NOTE: There were 49 observations read from the data set WORK.WORKINGDATASETS.
 NOTE: DATA statement used (Total process time):
-      real time           0.01 seconds
-      cpu time            0.01 seconds
+      real time           0.00 seconds
+      cpu time            0.00 seconds
       
 
 NOTE: Data set UCB.ASNOEXPCOHORTSTDUCB_EX2 is in a format that is native to another host. Cross Environment Data Access will be used. This will 
@@ -542,7 +552,7 @@ NOTE: Data set UCB.ASNOEXPCOHORTSTDUCB_EX2 is in a format that is native to anot
 NOTE: The data set WORK.CONTENTS28 has 12 observations and 41 variables.
 NOTE: PROCEDURE CONTENTS used (Total process time):
       real time           0.07 seconds
-      cpu time            0.03 seconds
+      cpu time            0.01 seconds
       
 
 
@@ -557,8 +567,8 @@ NOTE: Data set UCB.ASNOEXPCOHORTSTD_SABR_EX2 is in a format that is native to an
 
 NOTE: The data set WORK.CONTENTS29 has 12 observations and 41 variables.
 NOTE: PROCEDURE CONTENTS used (Total process time):
-      real time           0.09 seconds
-      cpu time            0.04 seconds
+      real time           0.07 seconds
+      cpu time            0.03 seconds
       
 
 
@@ -574,12 +584,14 @@ NOTE: Data set UCB.ASTNFCOHORTSTDMPCD_EX1 is in a format that is native to anoth
 NOTE: The data set WORK.CONTENTS30 has 11 observations and 41 variables.
 NOTE: PROCEDURE CONTENTS used (Total process time):
       real time           0.07 seconds
-      cpu time            0.03 seconds
+      cpu time            0.04 seconds
       
 
 
 NOTE: There were 49 observations read from the data set WORK.WORKINGDATASETS.
 NOTE: DATA statement used (Total process time):
+9                                                                   The SAS System                                        10:41 Thursday, May 24, 2018
+
       real time           0.01 seconds
       cpu time            0.01 seconds
       
@@ -589,10 +601,8 @@ NOTE: Data set UCB.ASTNFCOHORTSTDUCB_EX1 is in a format that is native to anothe
 
 NOTE: The data set WORK.CONTENTS31 has 12 observations and 41 variables.
 NOTE: PROCEDURE CONTENTS used (Total process time):
-      real time           0.20 seconds
-9                                                                   The SAS System                                          19:04 Monday, May 21, 2018
-
-      cpu time            0.01 seconds
+      real time           0.06 seconds
+      cpu time            0.03 seconds
       
 
 
@@ -608,13 +618,13 @@ NOTE: Data set UCB.ASTNFCOHORTSTD_SABR_EX1 is in a format that is native to anot
 NOTE: The data set WORK.CONTENTS32 has 12 observations and 41 variables.
 NOTE: PROCEDURE CONTENTS used (Total process time):
       real time           0.07 seconds
-      cpu time            0.03 seconds
+      cpu time            0.01 seconds
       
 
 
 NOTE: There were 49 observations read from the data set WORK.WORKINGDATASETS.
 NOTE: DATA statement used (Total process time):
-      real time           0.01 seconds
+      real time           0.00 seconds
       cpu time            0.00 seconds
       
 
@@ -623,15 +633,15 @@ NOTE: Data set UCB.CNTLCOHORTSTDC5P is in a format that is native to another hos
 
 NOTE: The data set WORK.CONTENTS33 has 7 observations and 41 variables.
 NOTE: PROCEDURE CONTENTS used (Total process time):
-      real time           0.07 seconds
-      cpu time            0.01 seconds
+      real time           0.06 seconds
+      cpu time            0.00 seconds
       
 
 
 NOTE: There were 49 observations read from the data set WORK.WORKINGDATASETS.
 NOTE: DATA statement used (Total process time):
-      real time           0.01 seconds
-      cpu time            0.01 seconds
+      real time           0.00 seconds
+      cpu time            0.00 seconds
       
 
 NOTE: Data set UCB.CNTLCOHORTSTDMPCD is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
@@ -640,6 +650,24 @@ NOTE: Data set UCB.CNTLCOHORTSTDMPCD is in a format that is native to another ho
 NOTE: The data set WORK.CONTENTS34 has 6 observations and 41 variables.
 NOTE: PROCEDURE CONTENTS used (Total process time):
       real time           0.07 seconds
+      cpu time            0.01 seconds
+      
+
+
+NOTE: There were 49 observations read from the data set WORK.WORKINGDATASETS.
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+NOTE: Data set UCB.COHORTASTDMPCD is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
+      additional CPU resources and may reduce performance.
+
+NOTE: The data set WORK.CONTENTS35 has 9 observations and 41 variables.
+10                                                                  The SAS System                                        10:41 Thursday, May 24, 2018
+
+NOTE: PROCEDURE CONTENTS used (Total process time):
+      real time           0.07 seconds
       cpu time            0.03 seconds
       
 
@@ -648,24 +676,6 @@ NOTE: There were 49 observations read from the data set WORK.WORKINGDATASETS.
 NOTE: DATA statement used (Total process time):
       real time           0.01 seconds
       cpu time            0.01 seconds
-      
-
-NOTE: Data set UCB.COHORTASTDMPCD is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
-      additional CPU resources and may reduce performance.
-
-NOTE: The data set WORK.CONTENTS35 has 9 observations and 41 variables.
-NOTE: PROCEDURE CONTENTS used (Total process time):
-      real time           0.10 seconds
-      cpu time            0.01 seconds
-      
-
-
-NOTE: There were 49 observations read from the data set WORK.WORKINGDATASETS.
-NOTE: DATA statement used (Total process time):
-      real time           0.01 seconds
-      cpu time            0.01 seconds
-10                                                                  The SAS System                                          19:04 Monday, May 21, 2018
-
       
 
 NOTE: Data set UCB.COHORTASTDUCB is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
@@ -673,8 +683,8 @@ NOTE: Data set UCB.COHORTASTDUCB is in a format that is native to another host. 
 
 NOTE: The data set WORK.CONTENTS36 has 10 observations and 41 variables.
 NOTE: PROCEDURE CONTENTS used (Total process time):
-      real time           0.09 seconds
-      cpu time            0.03 seconds
+      real time           0.06 seconds
+      cpu time            0.00 seconds
       
 
 
@@ -690,14 +700,14 @@ NOTE: Data set UCB.COHORTASTD_SABR is in a format that is native to another host
 NOTE: The data set WORK.CONTENTS37 has 10 observations and 41 variables.
 NOTE: PROCEDURE CONTENTS used (Total process time):
       real time           0.07 seconds
-      cpu time            0.04 seconds
+      cpu time            0.01 seconds
       
 
 
 NOTE: There were 49 observations read from the data set WORK.WORKINGDATASETS.
 NOTE: DATA statement used (Total process time):
-      real time           0.01 seconds
-      cpu time            0.01 seconds
+      real time           0.00 seconds
+      cpu time            0.00 seconds
       
 
 NOTE: Data set UCB.TEMPFRACDXALL is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
@@ -705,15 +715,15 @@ NOTE: Data set UCB.TEMPFRACDXALL is in a format that is native to another host. 
 
 NOTE: The data set WORK.CONTENTS38 has 26 observations and 41 variables.
 NOTE: PROCEDURE CONTENTS used (Total process time):
-      real time           0.09 seconds
+      real time           0.07 seconds
       cpu time            0.01 seconds
       
 
 
 NOTE: There were 49 observations read from the data set WORK.WORKINGDATASETS.
 NOTE: DATA statement used (Total process time):
-      real time           0.01 seconds
-      cpu time            0.01 seconds
+      real time           0.00 seconds
+      cpu time            0.00 seconds
       
 
 NOTE: Data set UCB.TEMPFRACDXALLCONTROL is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
@@ -721,13 +731,15 @@ NOTE: Data set UCB.TEMPFRACDXALLCONTROL is in a format that is native to another
 
 NOTE: The data set WORK.CONTENTS39 has 21 observations and 41 variables.
 NOTE: PROCEDURE CONTENTS used (Total process time):
-      real time           0.09 seconds
-      cpu time            0.03 seconds
+      real time           0.07 seconds
+      cpu time            0.01 seconds
       
 
 
 NOTE: There were 49 observations read from the data set WORK.WORKINGDATASETS.
 NOTE: DATA statement used (Total process time):
+11                                                                  The SAS System                                        10:41 Thursday, May 24, 2018
+
       real time           0.00 seconds
       cpu time            0.00 seconds
       
@@ -738,9 +750,7 @@ NOTE: Data set UCB.TEMPFRACPXALL is in a format that is native to another host. 
 NOTE: The data set WORK.CONTENTS40 has 23 observations and 41 variables.
 NOTE: PROCEDURE CONTENTS used (Total process time):
       real time           0.10 seconds
-11                                                                  The SAS System                                          19:04 Monday, May 21, 2018
-
-      cpu time            0.04 seconds
+      cpu time            0.03 seconds
       
 
 
@@ -755,49 +765,21 @@ NOTE: Data set UCB.TEMPFRACPXALLCONTROL is in a format that is native to another
 
 NOTE: The data set WORK.CONTENTS41 has 19 observations and 41 variables.
 NOTE: PROCEDURE CONTENTS used (Total process time):
-      real time           0.40 seconds
-      cpu time            0.32 seconds
+      real time           0.37 seconds
+      cpu time            0.26 seconds
       
 
 
 NOTE: There were 49 observations read from the data set WORK.WORKINGDATASETS.
 NOTE: DATA statement used (Total process time):
-      real time           0.01 seconds
-      cpu time            0.01 seconds
+      real time           0.00 seconds
+      cpu time            0.00 seconds
       
 
 
 NOTE: The data set WORK.CONTENTS42 has 23 observations and 41 variables.
 NOTE: PROCEDURE CONTENTS used (Total process time):
-      real time           0.09 seconds
-      cpu time            0.04 seconds
-      
-
-
-NOTE: There were 49 observations read from the data set WORK.WORKINGDATASETS.
-NOTE: DATA statement used (Total process time):
-      real time           0.01 seconds
-      cpu time            0.01 seconds
-      
-
-
-NOTE: The data set WORK.CONTENTS43 has 21 observations and 41 variables.
-NOTE: PROCEDURE CONTENTS used (Total process time):
-      real time           0.09 seconds
-      cpu time            0.04 seconds
-      
-
-
-NOTE: There were 49 observations read from the data set WORK.WORKINGDATASETS.
-NOTE: DATA statement used (Total process time):
-      real time           0.01 seconds
-      cpu time            0.01 seconds
-      
-
-
-NOTE: The data set WORK.CONTENTS44 has 15 observations and 41 variables.
-NOTE: PROCEDURE CONTENTS used (Total process time):
-      real time           0.09 seconds
+      real time           0.12 seconds
       cpu time            0.03 seconds
       
 
@@ -808,22 +790,50 @@ NOTE: DATA statement used (Total process time):
       cpu time            0.00 seconds
       
 
+
+NOTE: The data set WORK.CONTENTS43 has 21 observations and 41 variables.
+NOTE: PROCEDURE CONTENTS used (Total process time):
+      real time           0.09 seconds
+      cpu time            0.03 seconds
+      
+
+
+NOTE: There were 49 observations read from the data set WORK.WORKINGDATASETS.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.00 seconds
+      
+
+
+NOTE: The data set WORK.CONTENTS44 has 15 observations and 41 variables.
+NOTE: PROCEDURE CONTENTS used (Total process time):
+      real time           0.06 seconds
+      cpu time            0.04 seconds
+      
+
+
+12                                                                  The SAS System                                        10:41 Thursday, May 24, 2018
+
+NOTE: There were 49 observations read from the data set WORK.WORKINGDATASETS.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+      
+
 NOTE: Data set UCB.TEMPPREVDXALL is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
       additional CPU resources and may reduce performance.
 
 NOTE: The data set WORK.CONTENTS45 has 25 observations and 41 variables.
-12                                                                  The SAS System                                          19:04 Monday, May 21, 2018
-
 NOTE: PROCEDURE CONTENTS used (Total process time):
-      real time           0.09 seconds
-      cpu time            0.04 seconds
+      real time           0.07 seconds
+      cpu time            0.00 seconds
       
 
 
 NOTE: There were 49 observations read from the data set WORK.WORKINGDATASETS.
 NOTE: DATA statement used (Total process time):
       real time           0.00 seconds
-      cpu time            0.01 seconds
+      cpu time            0.00 seconds
       
 
 NOTE: Data set UCB.TEMPPREVDXALLCONTROL is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
@@ -831,8 +841,8 @@ NOTE: Data set UCB.TEMPPREVDXALLCONTROL is in a format that is native to another
 
 NOTE: The data set WORK.CONTENTS46 has 19 observations and 41 variables.
 NOTE: PROCEDURE CONTENTS used (Total process time):
-      real time           0.26 seconds
-      cpu time            0.17 seconds
+      real time           0.20 seconds
+      cpu time            0.15 seconds
       
 
 
@@ -847,8 +857,24 @@ NOTE: Data set UCB.TEMPPREVPXALL is in a format that is native to another host. 
 
 NOTE: The data set WORK.CONTENTS47 has 23 observations and 41 variables.
 NOTE: PROCEDURE CONTENTS used (Total process time):
-      real time           0.09 seconds
-      cpu time            0.04 seconds
+      real time           0.07 seconds
+      cpu time            0.01 seconds
+      
+
+
+NOTE: There were 49 observations read from the data set WORK.WORKINGDATASETS.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.00 seconds
+      
+
+NOTE: Data set UCB.TEMPPREVPXALLCONTROL is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
+      additional CPU resources and may reduce performance.
+
+NOTE: The data set WORK.CONTENTS48 has 18 observations and 41 variables.
+NOTE: PROCEDURE CONTENTS used (Total process time):
+      real time           0.34 seconds
+      cpu time            0.25 seconds
       
 
 
@@ -858,36 +884,20 @@ NOTE: DATA statement used (Total process time):
       cpu time            0.00 seconds
       
 
-NOTE: Data set UCB.TEMPPREVPXALLCONTROL is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
-      additional CPU resources and may reduce performance.
-
-NOTE: The data set WORK.CONTENTS48 has 18 observations and 41 variables.
-NOTE: PROCEDURE CONTENTS used (Total process time):
-      real time           0.45 seconds
-      cpu time            0.35 seconds
-      
-
-
-NOTE: There were 49 observations read from the data set WORK.WORKINGDATASETS.
-NOTE: DATA statement used (Total process time):
-      real time           0.01 seconds
-      cpu time            0.01 seconds
-      
-
 NOTE: Data set UCB.TEMPPREVRXALL is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
       additional CPU resources and may reduce performance.
+13                                                                  The SAS System                                        10:41 Thursday, May 24, 2018
+
 
 NOTE: The data set WORK.CONTENTS49 has 17 observations and 41 variables.
 NOTE: PROCEDURE CONTENTS used (Total process time):
-      real time           0.09 seconds
+      real time           0.07 seconds
       cpu time            0.03 seconds
       
 
 
 NOTE: There were 17 observations read from the data set WORK.CONTENTS1.
 NOTE: There were 13 observations read from the data set WORK.CONTENTS2.
-13                                                                  The SAS System                                          19:04 Monday, May 21, 2018
-
 NOTE: There were 9 observations read from the data set WORK.CONTENTS3.
 NOTE: There were 13 observations read from the data set WORK.CONTENTS4.
 NOTE: There were 11 observations read from the data set WORK.CONTENTS5.
@@ -937,231 +947,231 @@ NOTE: There were 18 observations read from the data set WORK.CONTENTS48.
 NOTE: There were 17 observations read from the data set WORK.CONTENTS49.
 NOTE: The data set WORK.CONTENTSALL has 800 observations and 41 variables.
 NOTE: DATA statement used (Total process time):
-      real time           0.18 seconds
-      cpu time            0.09 seconds
+      real time           0.13 seconds
+      cpu time            0.07 seconds
       
 
-221        
-222        
-223        
-224        ods html close;
-225        
-226        proc export
-227          data = Work.contentsAll
-228          outfile = "data\processed\&cmt..csv"
-229          dbms = csv
-230          replace;
-231          delimiter = ",";
-232        run;
+236        
+237        
+238        
+239        ods html close;
+240        
+241        proc export
+242          data = Work.contentsAll
+243          outfile = "data\processed\&cmt..csv"
+244          dbms = csv
+14                                                                  The SAS System                                        10:41 Thursday, May 24, 2018
 
-233         /**********************************************************************
-234         *   PRODUCT:   SAS
-235         *   VERSION:   9.4
-236         *   CREATOR:   External File Interface
-237         *   DATE:      21MAY18
-238         *   DESC:      Generated SAS Datastep Code
-14                                                                  The SAS System                                          19:04 Monday, May 21, 2018
+245          replace;
+246          delimiter = ",";
+247        run;
 
-239         *   TEMPLATE SOURCE:  (None Specified.)
-240         ***********************************************************************/
-241            data _null_;
-242            %let _EFIERR_ = 0; /* set the ERROR detection macro variable */
-243            %let _EFIREC_ = 0;     /* clear export record count macro variable */
-244            file 'data\processed\contentsWorkingDatasets.csv' delimiter=',' DSD DROPOVER lrecl=32767;
-245            if _n_ = 1 then        /* write column names or labels */
-246             do;
-247               put
-248                  "LIBNAME"
-249               ','
-250                  "MEMNAME"
-251               ','
-252                  "MEMLABEL"
-253               ','
-254                  "TYPEMEM"
-255               ','
-256                  "NAME"
-257               ','
-258                  "TYPE"
-259               ','
-260                  "LENGTH"
-261               ','
-262                  "VARNUM"
-263               ','
-264                  "LABEL"
-265               ','
-266                  "FORMAT"
-267               ','
-268                  "FORMATL"
-269               ','
-270                  "FORMATD"
-271               ','
-272                  "INFORMAT"
-273               ','
-274                  "INFORML"
-275               ','
-276                  "INFORMD"
-277               ','
-278                  "JUST"
-279               ','
-280                  "NPOS"
-281               ','
-282                  "NOBS"
-283               ','
-284                  "ENGINE"
-285               ','
-286                  "CRDATE"
-287               ','
-288                  "MODATE"
-289               ','
-290                  "DELOBS"
-291               ','
-292                  "IDXUSAGE"
-293               ','
-294                  "MEMTYPE"
-295               ','
-296                  "IDXCOUNT"
-297               ','
-298                  "PROTECT"
-299               ','
-300                  "FLAGS"
-301               ','
-302                  "COMPRESS"
-303               ','
-304                  "REUSE"
-305               ','
-306                  "SORTED"
-307               ','
-308                  "SORTEDBY"
-309               ','
-310                  "CHARSET"
-15                                                                  The SAS System                                          19:04 Monday, May 21, 2018
+248         /**********************************************************************
+249         *   PRODUCT:   SAS
+250         *   VERSION:   9.4
+251         *   CREATOR:   External File Interface
+252         *   DATE:      24MAY18
+253         *   DESC:      Generated SAS Datastep Code
+254         *   TEMPLATE SOURCE:  (None Specified.)
+255         ***********************************************************************/
+256            data _null_;
+257            %let _EFIERR_ = 0; /* set the ERROR detection macro variable */
+258            %let _EFIREC_ = 0;     /* clear export record count macro variable */
+259            file 'data\processed\contentsWorkingDatasets.csv' delimiter=',' DSD DROPOVER lrecl=32767;
+260            if _n_ = 1 then        /* write column names or labels */
+261             do;
+262               put
+263                  "LIBNAME"
+264               ','
+265                  "MEMNAME"
+266               ','
+267                  "MEMLABEL"
+268               ','
+269                  "TYPEMEM"
+270               ','
+271                  "NAME"
+272               ','
+273                  "TYPE"
+274               ','
+275                  "LENGTH"
+276               ','
+277                  "VARNUM"
+278               ','
+279                  "LABEL"
+280               ','
+281                  "FORMAT"
+282               ','
+283                  "FORMATL"
+284               ','
+285                  "FORMATD"
+286               ','
+287                  "INFORMAT"
+288               ','
+289                  "INFORML"
+290               ','
+291                  "INFORMD"
+292               ','
+293                  "JUST"
+294               ','
+295                  "NPOS"
+296               ','
+297                  "NOBS"
+298               ','
+299                  "ENGINE"
+300               ','
+301                  "CRDATE"
+302               ','
+303                  "MODATE"
+304               ','
+305                  "DELOBS"
+306               ','
+307                  "IDXUSAGE"
+308               ','
+309                  "MEMTYPE"
+310               ','
+311                  "IDXCOUNT"
+312               ','
+313                  "PROTECT"
+314               ','
+315                  "FLAGS"
+15                                                                  The SAS System                                        10:41 Thursday, May 24, 2018
 
-311               ','
-312                  "COLLATE"
-313               ','
-314                  "NODUPKEY"
-315               ','
-316                  "NODUPREC"
-317               ','
-318                  "ENCRYPT"
-319               ','
-320                  "POINTOBS"
-321               ','
-322                  "GENMAX"
-323               ','
-324                  "GENNUM"
-325               ','
-326                  "GENNEXT"
-327               ','
-328                  "TRANSCOD"
-329               ;
-330             end;
-331           set  WORK.CONTENTSALL   end=EFIEOD;
-332               format LIBNAME $8. ;
-333               format MEMNAME $32. ;
-334               format MEMLABEL $256. ;
-335               format TYPEMEM $8. ;
-336               format NAME $32. ;
-337               format TYPE best12. ;
-338               format LENGTH best12. ;
-339               format VARNUM best12. ;
-340               format LABEL $256. ;
-341               format FORMAT $32. ;
-342               format FORMATL best12. ;
-343               format FORMATD best12. ;
-344               format INFORMAT $32. ;
-345               format INFORML best12. ;
-346               format INFORMD best12. ;
-347               format JUST best12. ;
-348               format NPOS best12. ;
-349               format NOBS best12. ;
-350               format ENGINE $8. ;
-351               format CRDATE datetime16. ;
-352               format MODATE datetime16. ;
-353               format DELOBS best12. ;
-354               format IDXUSAGE $9. ;
-355               format MEMTYPE $8. ;
-356               format IDXCOUNT best12. ;
-357               format PROTECT $3. ;
-358               format FLAGS $3. ;
-359               format COMPRESS $8. ;
-360               format REUSE $3. ;
-361               format SORTED best12. ;
-362               format SORTEDBY best12. ;
-363               format CHARSET $8. ;
-364               format COLLATE $8. ;
-365               format NODUPKEY $3. ;
-366               format NODUPREC $3. ;
-367               format ENCRYPT $8. ;
-368               format POINTOBS $3. ;
-369               format GENMAX best12. ;
-370               format GENNUM best12. ;
-371               format GENNEXT best12. ;
-372               format TRANSCOD $3. ;
-373             do;
-374               EFIOUT + 1;
-375               put LIBNAME $ @;
-376               put MEMNAME $ @;
-377               put MEMLABEL $ @;
-378               put TYPEMEM $ @;
-379               put NAME $ @;
-380               put TYPE @;
-381               put LENGTH @;
-382               put VARNUM @;
-16                                                                  The SAS System                                          19:04 Monday, May 21, 2018
+316               ','
+317                  "COMPRESS"
+318               ','
+319                  "REUSE"
+320               ','
+321                  "SORTED"
+322               ','
+323                  "SORTEDBY"
+324               ','
+325                  "CHARSET"
+326               ','
+327                  "COLLATE"
+328               ','
+329                  "NODUPKEY"
+330               ','
+331                  "NODUPREC"
+332               ','
+333                  "ENCRYPT"
+334               ','
+335                  "POINTOBS"
+336               ','
+337                  "GENMAX"
+338               ','
+339                  "GENNUM"
+340               ','
+341                  "GENNEXT"
+342               ','
+343                  "TRANSCOD"
+344               ;
+345             end;
+346           set  WORK.CONTENTSALL   end=EFIEOD;
+347               format LIBNAME $8. ;
+348               format MEMNAME $32. ;
+349               format MEMLABEL $256. ;
+350               format TYPEMEM $8. ;
+351               format NAME $32. ;
+352               format TYPE best12. ;
+353               format LENGTH best12. ;
+354               format VARNUM best12. ;
+355               format LABEL $256. ;
+356               format FORMAT $32. ;
+357               format FORMATL best12. ;
+358               format FORMATD best12. ;
+359               format INFORMAT $32. ;
+360               format INFORML best12. ;
+361               format INFORMD best12. ;
+362               format JUST best12. ;
+363               format NPOS best12. ;
+364               format NOBS best12. ;
+365               format ENGINE $8. ;
+366               format CRDATE datetime16. ;
+367               format MODATE datetime16. ;
+368               format DELOBS best12. ;
+369               format IDXUSAGE $9. ;
+370               format MEMTYPE $8. ;
+371               format IDXCOUNT best12. ;
+372               format PROTECT $3. ;
+373               format FLAGS $3. ;
+374               format COMPRESS $8. ;
+375               format REUSE $3. ;
+376               format SORTED best12. ;
+377               format SORTEDBY best12. ;
+378               format CHARSET $8. ;
+379               format COLLATE $8. ;
+380               format NODUPKEY $3. ;
+381               format NODUPREC $3. ;
+382               format ENCRYPT $8. ;
+383               format POINTOBS $3. ;
+384               format GENMAX best12. ;
+385               format GENNUM best12. ;
+386               format GENNEXT best12. ;
+387               format TRANSCOD $3. ;
+16                                                                  The SAS System                                        10:41 Thursday, May 24, 2018
 
-383               put LABEL $ @;
-384               put FORMAT $ @;
-385               put FORMATL @;
-386               put FORMATD @;
-387               put INFORMAT $ @;
-388               put INFORML @;
-389               put INFORMD @;
-390               put JUST @;
-391               put NPOS @;
-392               put NOBS @;
-393               put ENGINE $ @;
-394               put CRDATE @;
-395               put MODATE @;
-396               put DELOBS @;
-397               put IDXUSAGE $ @;
-398               put MEMTYPE $ @;
-399               put IDXCOUNT @;
-400               put PROTECT $ @;
-401               put FLAGS $ @;
-402               put COMPRESS $ @;
-403               put REUSE $ @;
-404               put SORTED @;
-405               put SORTEDBY @;
-406               put CHARSET $ @;
-407               put COLLATE $ @;
-408               put NODUPKEY $ @;
-409               put NODUPREC $ @;
-410               put ENCRYPT $ @;
-411               put POINTOBS $ @;
-412               put GENMAX @;
-413               put GENNUM @;
-414               put GENNEXT @;
-415               put TRANSCOD $ ;
-416               ;
-417             end;
-418            if _ERROR_ then call symputx('_EFIERR_',1);  /* set ERROR detection macro variable */
-419            if EFIEOD then call symputx('_EFIREC_',EFIOUT);
-420            run;
+388             do;
+389               EFIOUT + 1;
+390               put LIBNAME $ @;
+391               put MEMNAME $ @;
+392               put MEMLABEL $ @;
+393               put TYPEMEM $ @;
+394               put NAME $ @;
+395               put TYPE @;
+396               put LENGTH @;
+397               put VARNUM @;
+398               put LABEL $ @;
+399               put FORMAT $ @;
+400               put FORMATL @;
+401               put FORMATD @;
+402               put INFORMAT $ @;
+403               put INFORML @;
+404               put INFORMD @;
+405               put JUST @;
+406               put NPOS @;
+407               put NOBS @;
+408               put ENGINE $ @;
+409               put CRDATE @;
+410               put MODATE @;
+411               put DELOBS @;
+412               put IDXUSAGE $ @;
+413               put MEMTYPE $ @;
+414               put IDXCOUNT @;
+415               put PROTECT $ @;
+416               put FLAGS $ @;
+417               put COMPRESS $ @;
+418               put REUSE $ @;
+419               put SORTED @;
+420               put SORTEDBY @;
+421               put CHARSET $ @;
+422               put COLLATE $ @;
+423               put NODUPKEY $ @;
+424               put NODUPREC $ @;
+425               put ENCRYPT $ @;
+426               put POINTOBS $ @;
+427               put GENMAX @;
+428               put GENNUM @;
+429               put GENNEXT @;
+430               put TRANSCOD $ ;
+431               ;
+432             end;
+433            if _ERROR_ then call symputx('_EFIERR_',1);  /* set ERROR detection macro variable */
+434            if EFIEOD then call symputx('_EFIREC_',EFIOUT);
+435            run;
 
 NOTE: The file 'data\processed\contentsWorkingDatasets.csv' is:
       Filename=U:\studies\AS\pgms\bchan\data\processed\contentsWorkingDatasets.csv,
       RECFM=V,LRECL=32767,File Size (bytes)=0,
-      Last Modified=21May2018:19:04:32,
-      Create Time=21May2018:19:04:32
+      Last Modified=24May2018:10:41:43,
+      Create Time=24May2018:10:41:43
 
 NOTE: 801 records were written to the file 'data\processed\contentsWorkingDatasets.csv'.
       The minimum record length was 129.
       The maximum record length was 306.
 NOTE: There were 800 observations read from the data set WORK.CONTENTSALL.
 NOTE: DATA statement used (Total process time):
-      real time           0.04 seconds
-      cpu time            0.03 seconds
+      real time           0.03 seconds
+      cpu time            0.01 seconds
       
 
 800 records created in data\processed\contentsWorkingDatasets.csv from WORK.CONTENTSALL.
@@ -1169,15 +1179,17 @@ NOTE: DATA statement used (Total process time):
   
 NOTE: "data\processed\contentsWorkingDatasets.csv" file was successfully created.
 NOTE: PROCEDURE EXPORT used (Total process time):
-      real time           0.29 seconds
-      cpu time            0.18 seconds
+      real time           0.24 seconds
+      cpu time            0.17 seconds
       
+17                                                                  The SAS System                                        10:41 Thursday, May 24, 2018
 
-421        
-422        
-423        ods html close;
+
+436        
+437        
+438        ods html close;
 NOTE: SAS Institute Inc., SAS Campus Drive, Cary, NC USA 27513-2414
 NOTE: The SAS System used:
-      real time           10.51 seconds
-      cpu time            4.38 seconds
+      real time           23.77 seconds
+      cpu time            3.02 seconds
       

@@ -1,5 +1,12 @@
-1                                         The SAS System                17:45 Monday, May 21, 2018
+1                                                          The SAS System                               09:40 Thursday, May 24, 2018
 
+NOTE: Unable to open SASUSER.REGSTRY. WORK.REGSTRY will be opened instead.
+NOTE: All registry changes will be lost at the end of the session.
+
+WARNING: Unable to copy SASUSER registry to WORK registry. Because of this, you will not see registry customizations during this 
+         session.
+NOTE: Unable to open SASUSER.PROFILE. WORK.PROFILE will be opened instead.
+NOTE: All profile changes will be lost at the end of the session.
 NOTE: Copyright (c) 2016 by SAS Institute Inc., Cary, NC, USA. 
 NOTE: SAS (r) Proprietary Software 9.4 (TS1M5) 
       Licensed to UNIVERSITY OF ALABAMA AT BIRMINGHAM - SFA - T&R, Site 70086550.
@@ -28,8 +35,8 @@ of the shared folders.
 
 
 NOTE: SAS initialization used:
-      real time           4.61 seconds
-      cpu time            0.29 seconds
+      real time           6.59 seconds
+      cpu time            0.32 seconds
       
 1          *  University of Alabama at Birmingham                               *
 2          *  AS project                                            *
@@ -57,313 +64,307 @@ NOTE: Libref UCBSTD was successfully assigned as follows:
 NOTE: Libref UCB was successfully assigned as follows: 
       Engine:        SPDE 
       Physical Name: q:\studies\AS\data\UCB\
+NOTE: Libref UCB64 was successfully assigned as follows: 
+      Engine:        SPDE 
+      Physical Name: q:\studies\AS\data\UCB64\
 NOTE: Libref DT was successfully assigned as follows: 
       Engine:        V9 
       Physical Name: V:\studies\AS\data
 NOTE: Libref NDC was successfully assigned as follows: 
       Engine:        V9 
+2                                                                   The SAS System                                        09:40 Thursday, May 24, 2018
+
       Physical Name: W:\onenote\references\drug ndcs\sas data
-128        footnote "&pgm.";
-129        * footnote2 "%sysfunc(datetime(),datetime14.)";
-130        title1 '--- AS project ---';
-131        **********************************************************************;
-132        options macrogen mlogic mprint symbolgen;
-133        options nomacrogen nomlogic nomprint nosymbolgen;
-134        
-135        
-136        ods html
-2                                                                   The SAS System                                          17:45 Monday, May 21, 2018
-
-137          body = "output\&cmt..html"
-138          style = Statistical;
+143        footnote "&pgm.";
+144        * footnote2 "%sysfunc(datetime(),datetime14.)";
+145        title1 '--- AS project ---';
+146        **********************************************************************;
+147        options macrogen mlogic mprint symbolgen;
+148        options nomacrogen nomlogic nomprint nosymbolgen;
+149        
+150        
+151        ods html
+152          body = "output\&cmt..html"
+153          style = Statistical;
 NOTE: Writing HTML Body file: output\queryFractures.html
-139        
-140        
-141        /*
-142        FRACTURES
-143        
-144        See "ALGORITHMS TO ENHANCE SPECIFICITY OF FRACTURE IDENTIFICATION_ 100316.docx"
-145        
-146        Adapted from Lang's code in "001_fx_data.sas"
-147        
-148        
-149        From: Chen, Lang [mailto:langchen@uabmc.edu]
-150        Sent: Monday, July 24, 2017 8:56 AM
-151        To: Benjamin Chan <chanb@ohsu.edu>
-152        Subject: RE: fracture identification algorithm
-153        
-154        Here it is.
-155        For 001_fx_data, find all fx related claim and run the algorithm.
-156        Please ignore any code after line 476
-157        Modify code from line 1 -50
+154        
+155        
+156        /*
+157        FRACTURES
 158        
-159        For 002_fx_epi_data
-160        Define fx episode.
-161        
-162        Final output data is fx_dgns_&firstyr._&lastyr._4. Please let me if you have any questions.
-163         */
-164        
-165        
-166        /*
-167        START OF 001_fx_data.sas
-168         */
-169        
-170        
-171        /*Assign "Broad" fracture site (fx_site) for all ICD9 diagnoses, outputting separately, so some records are cloned, then combining into one
-171      !  file */
-172        /*No longer using matched trauma files here*/
+159        See "ALGORITHMS TO ENHANCE SPECIFICITY OF FRACTURE IDENTIFICATION_ 100316.docx"
+160        
+161        Adapted from Lang's code in "001_fx_data.sas"
+162        
+163        
+164        From: Chen, Lang [mailto:langchen@uabmc.edu]
+165        Sent: Monday, July 24, 2017 8:56 AM
+166        To: Benjamin Chan <chanb@ohsu.edu>
+167        Subject: RE: fracture identification algorithm
+168        
+169        Here it is.
+170        For 001_fx_data, find all fx related claim and run the algorithm.
+171        Please ignore any code after line 476
+172        Modify code from line 1 -50
 173        
-174        %macro comballfxdgns;
-175            data fx_dgns;
-176                set UCB.tempFracDxAll (where = (diagCodeType = "Fracture code"));
-177                    length fx_site $30 ;
-178                    fx_site = '';
-179                    if strip(DX) in: ('800' '801' '802' '803' '804') then           do; fx_site='(800-804) skull/face'; output; end;
-180                    if strip(DX) in: ('805', '806') or strip(DX)='73313' then       do; fx_site='(805, 806, 73313) spine'; output; end;
-181                    if strip(DX) in: ('807') then                                           do; fx_site='(807) rib/sternum/trachea'; output; end;
-182                    if strip(DX) in: ('808') then                                           do; fx_site='(808) pelvis'; output; end;
-183                    if strip(DX) in: ('809') then                                           do; fx_site='(809) trunk bones'; output; end;
-184                    if strip(DX) in: ('810') then                                           do; fx_site='(810) clavicle'; output; end;
-185                    if strip(DX) in: ('811') then                                           do; fx_site='(811) scapula'; output; end;
-186                    if strip(DX) in: ('812') or strip(DX)='73311' then              do; fx_site='(812, 73311) humerus'; output; end;
-187                    if strip(DX) in: ('813') or strip(DX)='73312' then              do; fx_site='(813, 73312) radius_ulna'; output; end;
-188                    if strip(DX) in: ('814') then                                           do; fx_site='(814) carpal'; output; end;
-189                    if strip(DX) in: ('815' '816' '817') then                           do; fx_site='(815-817) hand/fingers'; output; end;
-190                    if strip(DX) in: ('818' '819') then                                     do; fx_site='(818-819) arms mult'; output; end;
-191                    if strip(DX) in: ('820') or strip(DX) = '73314' then                do; fx_site='(820, 73314) hip'; output; end;
-192                    if strip(DX) in: ('821') or strip(DX)='73315' then              do; fx_site='(821, 73315) femur'; output; end;
-193                    if strip(DX) in: ('822') then                                           do; fx_site='(822) patella'; output; end;
-194                    if strip(DX) in: ('823') or strip(DX)='73316' then              do; fx_site='(823, 73316) tib_fib'; output; end;
-195                    if strip(DX) in: ('824') then                                           do; fx_site='(824) ankle'; output; end;
-196                    if strip(DX) in: ('825') then                                           do; fx_site='(825) tarsal_metatarsal'; output; end;
-197                    if strip(DX) in: ('826') then                                           do; fx_site='(826) foot_phalanges'; output; end;
-198                    if strip(DX) in: ('827') then                                           do; fx_site='(827) lower_limb'; output; end;
-199                    if strip(DX) in: ('828') then                                           do; fx_site='(828) legs+arm/rib'; output; end;
-200                    if strip(DX) in: ('829') then                                           do; fx_site='(829) fx_nos'; output; end;
-201                    if strip(DX) in ('73310' '73319' '7331') then                 do; fx_site='(7331) pathologic nos/nec'; output; end;
-202            data fx_excare;
-203                set UCB.tempFracDxAll (where = (diagCodeType = "Extended care code"));
-204                    length fx_site $30 ;
-205                    fx_site = '';
-206                    /*Expanded Diagnosis Codes - Fracture Aftercare Codes*/
-3                                                                   The SAS System                                          17:45 Monday, May 21, 2018
+174        For 002_fx_epi_data
+175        Define fx episode.
+176        
+177        Final output data is fx_dgns_&firstyr._&lastyr._4. Please let me if you have any questions.
+178         */
+179        
+180        
+181        /*
+182        START OF 001_fx_data.sas
+183         */
+184        
+185        
+186        /*Assign "Broad" fracture site (fx_site) for all ICD9 diagnoses, outputting separately, so some records are cloned, then combining into one
+186      !  file */
+187        /*No longer using matched trauma files here*/
+188        
+189        %macro comballfxdgns;
+190            data fx_dgns;
+191                set UCB64.tempFracDxAll (where = (diagCodeType = "Fracture code"));
+192                    length fx_site $30 ;
+193                    fx_site = '';
+194                    if strip(DX) in: ('800' '801' '802' '803' '804') then           do; fx_site='(800-804) skull/face'; output; end;
+195                    if strip(DX) in: ('805', '806') or strip(DX)='73313' then       do; fx_site='(805, 806, 73313) spine'; output; end;
+196                    if strip(DX) in: ('807') then                                           do; fx_site='(807) rib/sternum/trachea'; output; end;
+197                    if strip(DX) in: ('808') then                                           do; fx_site='(808) pelvis'; output; end;
+198                    if strip(DX) in: ('809') then                                           do; fx_site='(809) trunk bones'; output; end;
+199                    if strip(DX) in: ('810') then                                           do; fx_site='(810) clavicle'; output; end;
+200                    if strip(DX) in: ('811') then                                           do; fx_site='(811) scapula'; output; end;
+201                    if strip(DX) in: ('812') or strip(DX)='73311' then              do; fx_site='(812, 73311) humerus'; output; end;
+202                    if strip(DX) in: ('813') or strip(DX)='73312' then              do; fx_site='(813, 73312) radius_ulna'; output; end;
+203                    if strip(DX) in: ('814') then                                           do; fx_site='(814) carpal'; output; end;
+204                    if strip(DX) in: ('815' '816' '817') then                           do; fx_site='(815-817) hand/fingers'; output; end;
+205                    if strip(DX) in: ('818' '819') then                                     do; fx_site='(818-819) arms mult'; output; end;
+206                    if strip(DX) in: ('820') or strip(DX) = '73314' then                do; fx_site='(820, 73314) hip'; output; end;
+207                    if strip(DX) in: ('821') or strip(DX)='73315' then              do; fx_site='(821, 73315) femur'; output; end;
+208                    if strip(DX) in: ('822') then                                           do; fx_site='(822) patella'; output; end;
+209                    if strip(DX) in: ('823') or strip(DX)='73316' then              do; fx_site='(823, 73316) tib_fib'; output; end;
+210                    if strip(DX) in: ('824') then                                           do; fx_site='(824) ankle'; output; end;
+211                    if strip(DX) in: ('825') then                                           do; fx_site='(825) tarsal_metatarsal'; output; end;
+3                                                                   The SAS System                                        09:40 Thursday, May 24, 2018
 
-207                    if strip(DX) in ('V5410' 'V5420') then                          do; fx_site='(812, 73311) humerus'; output;
-208                                                                                                     fx_site='(813, 73312) radius_ulna'; output;
-208      ! end;
-209                    if strip(DX) in ('V5411' 'V5421') then                          do; fx_site='(812, 73311) humerus'; output; end;
-210                    if strip(DX) in ('V5412' 'V5422') then                          do; fx_site='(813, 73312) radius_ulna'; output;
-211                                                                                                     fx_site='(814) carpal'; output; end;
-212                    if strip(DX) in ('V5413' 'V5423') then                          do; fx_site='(820, 73314) hip'; output; end;
-213                    if strip(DX) in ('V5414' 'V5424') then                          do; fx_site='(820, 73314) hip'; output;
-214                                                                                                     fx_site='(821, 73315) femur'; output;
-215                                                                                                     fx_site='(822) patella'; output;
-216                                                                                                     fx_site='(824) ankle'; output;
-217                                                                                                     fx_site='(823, 73316) tib_fib'; output; end;
-218                    if strip(DX) in ('V5415' 'V5425') then                          do; fx_site='(820, 73314) hip'; output;
-219                                                                                                     fx_site='(821, 73315) femur'; output;
-220                                                                                                     fx_site='(822) patella'; output; end;
-221                    if strip(DX) in ('V5416' 'V5426') then                          do; fx_site='(824) ankle'; output;
-222                                                                                                     fx_site='(822) patella'; output;
-223                                                                                                     fx_site='(823, 73316) tib_fib'; output; end;
-224                    if strip(DX) in ('V5417' 'V5427') then                          do; fx_site='(805, 806, 73313) spine'; output; end;
-225                    if strip(DX) in: ('V542') then                                       do; fx_site='(7331) pathologic nos/nec'; output; end;
-226                    if strip(DX) in: ('V541') then                                       do; fx_site='(829) fx_nos'; output; end;
-227            run;
-228        
-229            /* proc sort data=fx_dgns; by patid BEGIN_DATE fx_site; run;
-230            proc sort data=fx_excare; by patid BEGIN_DATE fx_site; run; */
-231        %mend;
-232        %comballfxdgns;
-NOTE: Data set UCB.TEMPFRACDXALL is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
-      additional CPU resources and may reduce performance.
-The SAS supervisor will process queries for foreign datasets. No parallel where-clause processing will occur.
-
-NOTE: There were 133449 observations read from the data set UCB.TEMPFRACDXALL.
-      WHERE diagCodeType='Fracture code';
-NOTE: The data set WORK.FX_DGNS has 133449 observations and 27 variables.
-NOTE: DATA statement used (Total process time):
-      real time           0.48 seconds
-      cpu time            0.40 seconds
-      
-
-NOTE: Data set UCB.TEMPFRACDXALL is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
-      additional CPU resources and may reduce performance.
-The SAS supervisor will process queries for foreign datasets. No parallel where-clause processing will occur.
-
-NOTE: There were 9611 observations read from the data set UCB.TEMPFRACDXALL.
-      WHERE diagCodeType='Extended care code';
-NOTE: The data set WORK.FX_EXCARE has 21870 observations and 27 variables.
-NOTE: DATA statement used (Total process time):
-      real time           0.12 seconds
-      cpu time            0.10 seconds
-      
-
-233        
-234        /*Now, assign a more specific fracture site (e.g., closed, other) (site) that is used in the CQ algorithms*/
-235        /*Since Expanded Diagnosis Codes (V Codes) apply to sub-categories of each broad fracture site, clone records for these so they appear in
-235      ! both places*/
-236        
-237        data fx_dgns_2;
-238            set fx_dgns;
-239        
-240            length site $30;
-241        
-242            site="";
+212                    if strip(DX) in: ('826') then                                           do; fx_site='(826) foot_phalanges'; output; end;
+213                    if strip(DX) in: ('827') then                                           do; fx_site='(827) lower_limb'; output; end;
+214                    if strip(DX) in: ('828') then                                           do; fx_site='(828) legs+arm/rib'; output; end;
+215                    if strip(DX) in: ('829') then                                           do; fx_site='(829) fx_nos'; output; end;
+216                    if strip(DX) in ('73310' '73319' '7331') then                 do; fx_site='(7331) pathologic nos/nec'; output; end;
+217            data fx_excare;
+218                set UCB64.tempFracDxAll (where = (diagCodeType = "Extended care code"));
+219                    length fx_site $30 ;
+220                    fx_site = '';
+221                    /*Expanded Diagnosis Codes - Fracture Aftercare Codes*/
+222                    if strip(DX) in ('V5410' 'V5420') then                          do; fx_site='(812, 73311) humerus'; output;
+223                                                                                                     fx_site='(813, 73312) radius_ulna'; output;
+223      ! end;
+224                    if strip(DX) in ('V5411' 'V5421') then                          do; fx_site='(812, 73311) humerus'; output; end;
+225                    if strip(DX) in ('V5412' 'V5422') then                          do; fx_site='(813, 73312) radius_ulna'; output;
+226                                                                                                     fx_site='(814) carpal'; output; end;
+227                    if strip(DX) in ('V5413' 'V5423') then                          do; fx_site='(820, 73314) hip'; output; end;
+228                    if strip(DX) in ('V5414' 'V5424') then                          do; fx_site='(820, 73314) hip'; output;
+229                                                                                                     fx_site='(821, 73315) femur'; output;
+230                                                                                                     fx_site='(822) patella'; output;
+231                                                                                                     fx_site='(824) ankle'; output;
+232                                                                                                     fx_site='(823, 73316) tib_fib'; output; end;
+233                    if strip(DX) in ('V5415' 'V5425') then                          do; fx_site='(820, 73314) hip'; output;
+234                                                                                                     fx_site='(821, 73315) femur'; output;
+235                                                                                                     fx_site='(822) patella'; output; end;
+236                    if strip(DX) in ('V5416' 'V5426') then                          do; fx_site='(824) ankle'; output;
+237                                                                                                     fx_site='(822) patella'; output;
+238                                                                                                     fx_site='(823, 73316) tib_fib'; output; end;
+239                    if strip(DX) in ('V5417' 'V5427') then                          do; fx_site='(805, 806, 73313) spine'; output; end;
+240                    if strip(DX) in: ('V542') then                                       do; fx_site='(7331) pathologic nos/nec'; output; end;
+241                    if strip(DX) in: ('V541') then                                       do; fx_site='(829) fx_nos'; output; end;
+242            run;
 243        
-244            *Spine-closed and Spine-other;
-245            if fx_site='(805, 806, 73313) spine' then
-246                do;
-247                    site = 'spine_cls'; /*Includes V Codes and 73313 here*/
-248                    if substr(strip(DX),1,3) in ('805' '806') and substr(strip(DX),1,4) ^in ('8050', '8052', '8054', '8058') then
-249                        site = 'spine_oth';
-250                end;
+244            /* proc sort data=fx_dgns; by patid BEGIN_DATE fx_site; run;
+245            proc sort data=fx_excare; by patid BEGIN_DATE fx_site; run; */
+246        %mend;
+247        %comballfxdgns;
+
+NOTE: There were 31384 observations read from the data set UCB64.TEMPFRACDXALL.
+      WHERE diagCodeType='Fracture code';
+NOTE: Parallel WHERE evaluation suppressed due to sort order on table.
+NOTE: The data set WORK.FX_DGNS has 31384 observations and 27 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.42 seconds
+      cpu time            0.17 seconds
+      
+
+
+NOTE: There were 1825 observations read from the data set UCB64.TEMPFRACDXALL.
+      WHERE diagCodeType='Extended care code';
+NOTE: Parallel WHERE evaluation suppressed due to sort order on table.
+NOTE: The data set WORK.FX_EXCARE has 4120 observations and 27 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.07 seconds
+      cpu time            0.03 seconds
+      
+
+248        
+249        /*Now, assign a more specific fracture site (e.g., closed, other) (site) that is used in the CQ algorithms*/
+250        /*Since Expanded Diagnosis Codes (V Codes) apply to sub-categories of each broad fracture site, clone records for these so they appear in
+250      ! both places*/
 251        
-252            *Pelvis-closed and Pelvis-other... No V Codes;
-4                                                                   The SAS System                                          17:45 Monday, May 21, 2018
+252        data fx_dgns_2;
+253            set fx_dgns;
+254        
+255            length site $30;
+256        
+257            site="";
+258        
+259            *Spine-closed and Spine-other;
+260            if fx_site='(805, 806, 73313) spine' then
+261                do;
+4                                                                   The SAS System                                        09:40 Thursday, May 24, 2018
 
-253            if fx_site='(808) pelvis' then
-254                do;
-255                    site = 'pelvis_cls';
-256                    if substr(strip(DX),1,3)='808' and substr(strip(DX),1,4) ^in ('8080', '8082', '8084', '8088') then
-257                        site = 'pelvis_oth';
-258                end;
-259        
-260            *Clavicle-closed and Clavicle-other.... No V Codes;
-261            if fx_site='(810) clavicle' then
-262                do;
-263                    site = 'clv_cls';
-264                    if substr(strip(DX),1,3) = '810' and substr(strip(DX),1,4) ^in ('8100') then
-265                        site = 'clv_oth';
-266                end;
-267        
-268            *Humerus-closed and Humerus-other;
-269            if fx_site='(812, 73311) humerus' then
-270                do;
-271                    site = 'hmrs_cls'; /*Includes V Codes and 73311 here*/
-272                    if substr(strip(DX),1,3)= '812' and substr(strip(DX),1,4) ^in ('8120', '8122', '8124') then
-273                        site = 'hmrs_oth';
-274                end;
-275        
-276            *Distal radius/ulna and Radius/ulna-other;
-277            if fx_site='(813, 73312) radius_ulna' then
-278                do;
-279                 site = 'dist4arm'; /*Includes V Codes and 73312 here*/
-280                    if substr(strip(DX),1,3) = '813' and substr(strip(DX),1,4) ^in ('8134', '8135') then
-281                        site = 'rad_ul_oth';
-282                end;
-283        
-284            *Carpal... V Codes present but only one category;
-285            if fx_site='(814) carpal' then
-286                do;
-287                    site = 'carpal';
-288                 end;
-289        
-290            *Hip-closed and Hip-other;
-291            if fx_site='(820, 73314) hip' then
-292                    do;
-293                    site = 'hip_cls'; /*Includes V Codes and 73314 here*/
-294                    if substr(strip(DX),1,3)='820' and substr(strip(DX),1,4) ^in ('8200', '8202', '8208') then
-295                        site = 'hip_oth';
-296                end;
-297        
-298            *Other femur-closed and Other femur-other;
-299            if fx_site='(821, 73315) femur' then
-300                do;
-301                    site = 'oth_fem_cls'; /*Includes V Codes and 73315 here*/
-302                    if substr(strip(DX),1,3)='821' and substr(strip(DX),1,4) ^in ('8210', '8212') then
-303                        site = 'oth_fem_oth';
-304                end;
-305        
-306            *Tib/fib-closed and Tib/fib-other;
-307            if fx_site='(823, 73316) tib_fib' then
-308                do;
-309                    site = 'tib_fib_cls'; /*Includes V Codes and 73316 here*/
-310                    if substr(strip(DX),1,3)='823' and substr(strip(DX),1,4) ^in ('8230', '8232', '8238') then
-311                        site = 'tib_fib_oth';
-312                end;
-313        
-314            *Ankle... V Codes present but only one category;
-315            if fx_site='(824) ankle' then
-316                do;
-317                    site = 'ankle';
-318                end;
-319        
-320            /*Assign site for other fx_sites that do not have CQ algorithm and thus no sub categories*/
-321            if site = "" then do;
-322                site = fx_site;
-323            end;
-324        
-5                                                                   The SAS System                                          17:45 Monday, May 21, 2018
-
-325            label site = 'CQ Algorithm Fracture Site (Specific)';
-326        
-327        run;
-
-NOTE: Invalid third argument to function SUBSTR at line 280 column 50.
-database=MPCD exposure=No exposure PATID=104237646 indexGNN=NoExp indexDate=07/20/2007 age=61 SEX=M ASdate=07/20/2007 ENR_START_DATE=01/01/2007
-ENR_END_DATE=12/31/2009 AScohortDate=07/20/2007 DEATH_DATE= indexID=3923 ENCOUNTERID=10986231261 ENC_TYPE=AV ADMIT_DATE= BEGIN_DATE=03/26/2007
-DISCHARGE_DATE= END_DATE=03/26/2007 DX_TYPE=09 DX=813 PDX=O codeType=ICD9-DX code=813 PROV_TYPE=8 diagCodeType=Fracture code
-fx_site=(813, 73312) radius_ulna site=rad_ul_oth _ERROR_=1 _N_=1181
-NOTE: There were 133449 observations read from the data set WORK.FX_DGNS.
-NOTE: The data set WORK.FX_DGNS_2 has 133449 observations and 28 variables.
-NOTE: DATA statement used (Total process time):
-      real time           0.29 seconds
-      cpu time            0.26 seconds
-      
-
+262                    site = 'spine_cls'; /*Includes V Codes and 73313 here*/
+263                    if substr(strip(DX),1,3) in ('805' '806') and substr(strip(DX),1,4) ^in ('8050', '8052', '8054', '8058') then
+264                        site = 'spine_oth';
+265                end;
+266        
+267            *Pelvis-closed and Pelvis-other... No V Codes;
+268            if fx_site='(808) pelvis' then
+269                do;
+270                    site = 'pelvis_cls';
+271                    if substr(strip(DX),1,3)='808' and substr(strip(DX),1,4) ^in ('8080', '8082', '8084', '8088') then
+272                        site = 'pelvis_oth';
+273                end;
+274        
+275            *Clavicle-closed and Clavicle-other.... No V Codes;
+276            if fx_site='(810) clavicle' then
+277                do;
+278                    site = 'clv_cls';
+279                    if substr(strip(DX),1,3) = '810' and substr(strip(DX),1,4) ^in ('8100') then
+280                        site = 'clv_oth';
+281                end;
+282        
+283            *Humerus-closed and Humerus-other;
+284            if fx_site='(812, 73311) humerus' then
+285                do;
+286                    site = 'hmrs_cls'; /*Includes V Codes and 73311 here*/
+287                    if substr(strip(DX),1,3)= '812' and substr(strip(DX),1,4) ^in ('8120', '8122', '8124') then
+288                        site = 'hmrs_oth';
+289                end;
+290        
+291            *Distal radius/ulna and Radius/ulna-other;
+292            if fx_site='(813, 73312) radius_ulna' then
+293                do;
+294                 site = 'dist4arm'; /*Includes V Codes and 73312 here*/
+295                    if substr(strip(DX),1,3) = '813' and substr(strip(DX),1,4) ^in ('8134', '8135') then
+296                        site = 'rad_ul_oth';
+297                end;
+298        
+299            *Carpal... V Codes present but only one category;
+300            if fx_site='(814) carpal' then
+301                do;
+302                    site = 'carpal';
+303                 end;
+304        
+305            *Hip-closed and Hip-other;
+306            if fx_site='(820, 73314) hip' then
+307                    do;
+308                    site = 'hip_cls'; /*Includes V Codes and 73314 here*/
+309                    if substr(strip(DX),1,3)='820' and substr(strip(DX),1,4) ^in ('8200', '8202', '8208') then
+310                        site = 'hip_oth';
+311                end;
+312        
+313            *Other femur-closed and Other femur-other;
+314            if fx_site='(821, 73315) femur' then
+315                do;
+316                    site = 'oth_fem_cls'; /*Includes V Codes and 73315 here*/
+317                    if substr(strip(DX),1,3)='821' and substr(strip(DX),1,4) ^in ('8210', '8212') then
+318                        site = 'oth_fem_oth';
+319                end;
+320        
+321            *Tib/fib-closed and Tib/fib-other;
+322            if fx_site='(823, 73316) tib_fib' then
+323                do;
+324                    site = 'tib_fib_cls'; /*Includes V Codes and 73316 here*/
+325                    if substr(strip(DX),1,3)='823' and substr(strip(DX),1,4) ^in ('8230', '8232', '8238') then
+326                        site = 'tib_fib_oth';
+327                end;
 328        
-329        /*###########################################################################################################*/
-330        /***************************************************Intermediate Fracture Diagnosis File**********************/
-331        /*Combine CQ diagnosis files*******************************************************/
-332        data fx_dgns_3;
-333            set fx_dgns_2
-334        /*    fx_excare_*/
-335                ;
-336        run;
+329            *Ankle... V Codes present but only one category;
+330            if fx_site='(824) ankle' then
+331                do;
+332                    site = 'ankle';
+333                end;
+5                                                                   The SAS System                                        09:40 Thursday, May 24, 2018
 
-NOTE: There were 133449 observations read from the data set WORK.FX_DGNS_2.
-NOTE: The data set WORK.FX_DGNS_3 has 133449 observations and 28 variables.
+334        
+335            /*Assign site for other fx_sites that do not have CQ algorithm and thus no sub categories*/
+336            if site = "" then do;
+337                site = fx_site;
+338            end;
+339        
+340            label site = 'CQ Algorithm Fracture Site (Specific)';
+341        
+342        run;
+
+NOTE: There were 31384 observations read from the data set WORK.FX_DGNS.
+NOTE: The data set WORK.FX_DGNS_2 has 31384 observations and 28 variables.
 NOTE: DATA statement used (Total process time):
-      real time           0.23 seconds
-      cpu time            0.20 seconds
+      real time           0.07 seconds
+      cpu time            0.04 seconds
       
 
-337        
-338        proc freq data=fx_dgns_3;
-339            tables fx_site site;
-340        run;
+343        
+344        /*###########################################################################################################*/
+345        /***************************************************Intermediate Fracture Diagnosis File**********************/
+346        /*Combine CQ diagnosis files*******************************************************/
+347        data fx_dgns_3;
+348            set fx_dgns_2
+349        /*    fx_excare_*/
+350                ;
+351        run;
 
-                                                                  --- AS project ---                                    17:45 Monday, May 21, 2018   1
+NOTE: There were 31384 observations read from the data set WORK.FX_DGNS_2.
+NOTE: The data set WORK.FX_DGNS_3 has 31384 observations and 28 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.07 seconds
+      cpu time            0.04 seconds
+      
+
+352        
+353        proc freq data=fx_dgns_3;
+354            tables fx_site site;
+355        run;
+
+                                                                  --- AS project ---                                  09:40 Thursday, May 24, 2018   1
 
                                                                   The FREQ Procedure
 
                                                                                           Cumulative    Cumulative
                                     fx_site                      Frequency     Percent     Frequency      Percent
                                     ------------------------------------------------------------------------------
-                                    (7331) pathologic nos/nec        1163        0.87          1163         0.87  
-                                    (800-804) skull/face             3312        2.48          4475         3.35  
-                                    (805, 806, 73313) spine         46513       34.85         50988        38.21  
-                                    (807) rib/sternum/trachea        6627        4.97         57615        43.17  
-                                    (808) pelvis                     3458        2.59         61073        45.77  
-                                    (809) trunk bones                  98        0.07         61171        45.84  
-                                    (810) clavicle                   2003        1.50         63174        47.34  
-                                    (811) scapula                     485        0.36         63659        47.70  
-                                    (812, 73311) humerus             9187        6.88         72846        54.59  
-                                    (813, 73312) radius_ulna         9477        7.10         82323        61.69  
-                                    (814) carpal                     1727        1.29         84050        62.98  
-                                    (815-817) hand/fingers           5923        4.44         89973        67.42  
-                                    (818-819) arms mult                74        0.06         90047        67.48  
-                                    (820, 73314) hip                12517        9.38        102564        76.86  
-                                    (821, 73315) femur               4294        3.22        106858        80.07  
-                                    (822) patella                    1446        1.08        108304        81.16  
-                                    (823, 73316) tib_fib             5000        3.75        113304        84.90  
-                                    (824) ankle                      6821        5.11        120125        90.02  
-                                    (825) tarsal_metatarsal          8629        6.47        128754        96.48  
-                                    (826) foot_phalanges             3740        2.80        132494        99.28  
-                                    (827) lower_limb                  113        0.08        132607        99.37  
-                                    (828) legs+arm/rib                  8        0.01        132615        99.38  
-                                    (829) fx_nos                      834        0.62        133449       100.00  
+                                    (7331) pathologic nos/nec         330        1.05           330         1.05  
+                                    (800-804) skull/face              927        2.95          1257         4.01  
+                                    (805, 806, 73313) spine          8622       27.47          9879        31.48  
+                                    (807) rib/sternum/trachea        1551        4.94         11430        36.42  
+                                    (808) pelvis                      747        2.38         12177        38.80  
+                                    (809) trunk bones                   6        0.02         12183        38.82  
+                                    (810) clavicle                    727        2.32         12910        41.14  
+                                    (811) scapula                      86        0.27         12996        41.41  
+                                    (812, 73311) humerus             1989        6.34         14985        47.75  
+                                    (813, 73312) radius_ulna         2836        9.04         17821        56.78  
+                                    (814) carpal                      629        2.00         18450        58.79  
+                                    (815-817) hand/fingers           1973        6.29         20423        65.07  
+                                    (818-819) arms mult                12        0.04         20435        65.11  
+                                    (820, 73314) hip                 2676        8.53         23111        73.64  
+                                    (821, 73315) femur                925        2.95         24036        76.59  
+                                    (822) patella                     414        1.32         24450        77.91  
+                                    (823, 73316) tib_fib             1086        3.46         25536        81.37  
+                                    (824) ankle                      1578        5.03         27114        86.39  
+                                    (825) tarsal_metatarsal          2865        9.13         29979        95.52  
+                                    (826) foot_phalanges             1204        3.84         31183        99.36  
+                                    (827) lower_limb                   28        0.09         31211        99.45  
+                                    (828) legs+arm/rib                  6        0.02         31217        99.47  
+                                    (829) fx_nos                      167        0.53         31384       100.00  
 
 
                                                         CQ Algorithm Fracture Site (Specific)
@@ -371,36 +372,36 @@ NOTE: DATA statement used (Total process time):
                                                                                           Cumulative    Cumulative
                                     site                         Frequency     Percent     Frequency      Percent
                                     ------------------------------------------------------------------------------
-                                    (7331) pathologic nos/nec        1163        0.87          1163         0.87  
-                                    (800-804) skull/face             3312        2.48          4475         3.35  
-                                    (807) rib/sternum/trachea        6627        4.97         11102         8.32  
-                                    (809) trunk bones                  98        0.07         11200         8.39  
-                                    (811) scapula                     485        0.36         11685         8.76  
-                                    (815-817) hand/fingers           5923        4.44         17608        13.19  
-                                    (818-819) arms mult                74        0.06         17682        13.25  
-                                    (822) patella                    1446        1.08         19128        14.33  
-                                    (825) tarsal_metatarsal          8629        6.47         27757        20.80  
-                                    (826) foot_phalanges             3740        2.80         31497        23.60  
-                                    (827) lower_limb                  113        0.08         31610        23.69  
-                                    (828) legs+arm/rib                  8        0.01         31618        23.69  
-                                    (829) fx_nos                      834        0.62         32452        24.32  
-                                    ankle                            6821        5.11         39273        29.43  
-                                    carpal                           1727        1.29         41000        30.72  
-                                    clv_cls                          2003        1.50         43003        32.22  
-                                    dist4arm                         6581        4.93         49584        37.16  
-                                    hip_cls                         12236        9.17         61820        46.32  
-                                    hip_oth                           281        0.21         62101        46.54  
-                                    hmrs_cls                         9068        6.80         71169        53.33  
-                                    hmrs_oth                          119        0.09         71288        53.42  
-                                    oth_fem_cls                      4188        3.14         75476        56.56  
-                                    oth_fem_oth                       106        0.08         75582        56.64  
-                                    pelvis_cls                       3369        2.52         78951        59.16  
-                                    pelvis_oth                         89        0.07         79040        59.23  
-                                    rad_ul_oth                       2896        2.17         81936        61.40  
-                                    spine_cls                       41260       30.92        123196        92.32  
-                                    spine_oth                        5253        3.94        128449        96.25  
-                                    tib_fib_cls                      4803        3.60        133252        99.85  
-                                    tib_fib_oth                       197        0.15        133449       100.00  
+                                    (7331) pathologic nos/nec         330        1.05           330         1.05  
+                                    (800-804) skull/face              927        2.95          1257         4.01  
+                                    (807) rib/sternum/trachea        1551        4.94          2808         8.95  
+                                    (809) trunk bones                   6        0.02          2814         8.97  
+                                    (811) scapula                      86        0.27          2900         9.24  
+                                    (815-817) hand/fingers           1973        6.29          4873        15.53  
+                                    (818-819) arms mult                12        0.04          4885        15.57  
+                                    (822) patella                     414        1.32          5299        16.88  
+                                    (825) tarsal_metatarsal          2865        9.13          8164        26.01  
+                                    (826) foot_phalanges             1204        3.84          9368        29.85  
+                                    (827) lower_limb                   28        0.09          9396        29.94  
+                                    (828) legs+arm/rib                  6        0.02          9402        29.96  
+                                    (829) fx_nos                      167        0.53          9569        30.49  
+                                    ankle                            1578        5.03         11147        35.52  
+                                    carpal                            629        2.00         11776        37.52  
+                                    clv_cls                           727        2.32         12503        39.84  
+                                    dist4arm                         1977        6.30         14480        46.14  
+                                    hip_cls                          2607        8.31         17087        54.44  
+                                    hip_oth                            69        0.22         17156        54.66  
+                                    hmrs_cls                         1978        6.30         19134        60.97  
+                                    hmrs_oth                           11        0.04         19145        61.00  
+                                    oth_fem_cls                       890        2.84         20035        63.84  
+                                    oth_fem_oth                        35        0.11         20070        63.95  
+                                    pelvis_cls                        718        2.29         20788        66.24  
+                                    pelvis_oth                         29        0.09         20817        66.33  
+                                    rad_ul_oth                        859        2.74         21676        69.07  
+                                    spine_cls                        7534       24.01         29210        93.07  
+                                    spine_oth                        1088        3.47         30298        96.54  
+                                    tib_fib_cls                      1042        3.32         31340        99.86  
+                                    tib_fib_oth                        44        0.14         31384       100.00  
  
  
  
@@ -408,364 +409,360 @@ NOTE: DATA statement used (Total process time):
  
  
                                                                   queryFractures.sas
-NOTE: There were 133449 observations read from the data set WORK.FX_DGNS_3.
+NOTE: There were 31384 observations read from the data set WORK.FX_DGNS_3.
 NOTE: The PROCEDURE FREQ printed page 1.
 NOTE: PROCEDURE FREQ used (Total process time):
-      real time           0.17 seconds
-      cpu time            0.14 seconds
-      
-
-341        
-342        proc sort data=fx_dgns_3;
-343            by patid ENCOUNTERID fx_site site;
-344        run;
-
-NOTE: There were 133449 observations read from the data set WORK.FX_DGNS_3.
-NOTE: The data set WORK.FX_DGNS_3 has 133449 observations and 28 variables.
-NOTE: PROCEDURE SORT used (Total process time):
-      real time           0.40 seconds
-      cpu time            0.54 seconds
-      
-
-345        
-346        
-347        /*###########################################################################################################*/
-348        /*************************************************************************************************************/
-349        /*Look for repair procedures and assign treatment site*******************/
-350        /*This code has been updated to include hip/femur replacement with matching diagnosis code, also looked in claim strip(DX) not just primary
-350      !  strip(DX)
-351        /*Not accepting contiguous sites until later*/
-352        /*Excluding procedures from DME files*/
-353        /*******************************Select All Spine Imaging Codes from STD Procedure Files for CQ=4/5 algorithms*/
-354        
-355        %macro fx_prcd;
-356            data fx_prcd spine_xray;
-357                set UCB.tempFracPxAll;
-358        
-6                                                                   The SAS System                                          17:45 Monday, May 21, 2018
-
-359                    length tx_site $30;
-360                    length HLAT $1;
-361        
-362                    if strip(px) in ('21300' '21310' '21315' '21320' '21325' '21330' '21335' '21336' '21337' '21338' '21339' '21340' '21343'
-362      ! '21344' '21345' '21346' '21347' '21348'
-363                                         '21355' '21356' '21360' '21365' '21366' '21385' '21386' '21387' '21390' '21395' '21400' '21401' '21406'
-363      ! '21407' '21408' '21421' '21422' '21423'
-364                                         '21431' '21432' '21433' '21435' '21436' '21440' '21445' '21450' '21451' '21452' '21453' '21454' '21461'
-364      ! '21462' '21465' '21470'
-365                                         '62000' '62005' '62010')  and lengthn(strip(px)) = 5 then do;
-366                        tx_site='(800-804) skull/face'; output fx_prcd; end;
-367        
-368                    if strip(px) in ('22305' '22310' '22315' '22318' '22319' '22325' '22326' '22327' '22328' '22520' '22521' '22522' '22523'
-368      ! '22524' '22525' '76012' '76013'
-369                                         'S2360' 'S2361' 'S2362' 'S2363' '72291' '72292')  and lengthn(strip(px)) = 5 then do;
-370                        tx_site = '(805, 806, 73313) spine'; output fx_prcd; end;
-371        
-372                    if  strip(px) in ('21493' '21494' '21495' '21800' '21805' '21810' '21820' '21825' ) then do;
-373                        tx_site='(807) rib/sternum/trachea'; output fx_prcd; end;
-374        
-375                    if strip(px) in ('27193' '27194' '27215' '27216' '27217' '27218' '27220' '27222' '27226' '27227' '27228')  and
-375      ! lengthn(strip(px)) = 5 then do;
-376                        tx_site = '(808) pelvis'; output fx_prcd; end;
-377        
-378                    if strip(px) in ('23500' '23505' '23515')  and lengthn(strip(px)) = 5 then do;
-379                        tx_site = '(810) clavicle'; output fx_prcd; end;
-380        
-381                    if strip(px) in ('23570' '23575' '23585') then do;
-382                        tx_site= '(811) scapula'; output fx_prcd; end;
-383        
-384                    if strip(px) in ('23600' '23605' '23615' '23616' '23620' '23625' '23630' '23665' '24500' '24505' '24515' '24516' '24530'
-384      ! '24535' '24538' '24545' '24546' '24560'
-385                                 '24565' '24566' '24575' '24576' '24577' '24579' '24582')  and lengthn(strip(px)) = 5 then do;
-386                        tx_site = '(812, 73311) humerus'; output fx_prcd; end;
-387        
-388                    if strip(px) in ('25600' '25605' '25606' '25607' '25608' '25609' '25620' '25650' '25651' '25652')  and lengthn(strip(px)) = 5
-388      ! then do;
-389                        tx_site = '(813, 73312) radius_ulna'; output fx_prcd; end; /*Procedure codes are the same for both categories*/
-390        
-391                    if strip(px) in ('24650' '24655' '24665' '24666' '24670' '24675' '24685' '25500' '25505' '25515' '25520' '25525' '25526'
-391      ! '25530' '25535' '25545' '25560' '25565'
-392                                 '25574' '25575')  and lengthn(strip(px)) = 5 then do;
-393                        tx_site = '(813, 73312) radius_ulna'; output fx_prcd; end; /*Procedure codes are the same for both categories*/
-394        
-395                    if strip(px) in ('25622' '25624' '25628' '25630' '25635' '25645' '25680' '25685')  and lengthn(strip(px)) = 5 then do;
-396                        tx_site = '(814) carpal'; output fx_prcd; end;
-397        
-398                    if strip(px) in ('26600' '26605' '26607' '26608' '26615' '26645' '26650' '26665' '26720' '26725' '26727' '26735' '26740'
-398      ! '26742' '26746' '26750' '26755' '26756' '26765' )
-399                               and lengthn(strip(px)) = 5 then do;
-400                        tx_site='(815-817) hand/fingers'; output fx_prcd; end;
-401        
-402                    if '27230' <= strip(px) <= '27248' and lengthn(strip(px)) = 5 then do;
-403                        tx_site = '(820, 73314) hip'; output fx_prcd; end;
-404        
-405                    if '27500' <= strip(px) <= '27514'  and lengthn(strip(px)) = 5 then do;
-406                        tx_site = '(821, 73315) femur'; output fx_prcd; end;
-407        
-408                    if strip(px) in ('27520' '27524')  and lengthn(strip(px)) = 5 then do;
-409                        tx_site = '(822) patella'; output fx_prcd; end;
-410        
-411                    if ('27530' <= strip(px) <= '27536' or '27750' <= strip(px) <= '27759' or '27780' <= strip(px) <= '27784' or '27824' <=
-411      ! strip(px) <= '27828') and lengthn(strip(px)) = 5  then do;
-412                        tx_site = '(823, 73316) tib_fib'; output fx_prcd; end;
-413        
-414                    if strip(px) in ('27760' '27762' '27766' '27786' '27788' '27792' '27808' '27810' '27814' '27816' '27818' '27822' '27823'
-414      ! '28430' '28435' '28436' '28445')  and lengthn(strip(px)) = 5 then do;
-415                        tx_site = '(824) ankle'; output fx_prcd; end;
-416        
-417                    if strip(px) in ('28320' '28322' '28400' '28405' '28406' '28415' '28420' ) and lengthn(strip(px)) = 5 then do;
-418                        tx_site='(825) tarsal_metatarsal'; output fx_prcd; end;
-419        
-7                                                                   The SAS System                                          17:45 Monday, May 21, 2018
-
-420                 /********************************Hip/Femur Additions - must be matched with DGNS to be included*/
-421                 /*Hip replacement codes*/
-422                    /*Hip*/
-423                    if strip(px) in ('27130' '27125') and lengthn(strip(px)) = 5  then do;
-424                        HLAT='1'; tx_site = '(820, 73314) hip'; output fx_prcd; end;
-425        
-426                    /*Codes below are the only ICD9 Procedure Codes that we are using for "repair"*/
-427                    if strip(px) in ('8151' '8152') and lengthn(strip(px)) = 4 then do;
-428                        HLAT = '1'; tx_site = '(820, 73314) hip'; output fx_prcd; end;
-429        
-430                    /*Femur repair codes, assigned to both Hip and Femur treatment sites... CHECK - MAYBE WE NEED TO DO THIS THE OTHER WAY AS
-430      ! WELL*/
-431                    /*Hip*/
-432                    if strip(px) in ('7855' '7905' '7915' '7925' '7935' '7965') and lengthn(strip(px)) = 4 then do;
-433                        HLAT = '1'; tx_site = '(820, 73314) hip'; output fx_prcd; end;
-434        
-435                    /*Femur*/
-436                    if strip(px) in ('7855' '7905' '7915' '7925' '7935' '7965') and lengthn(strip(px)) = 4 then do;
-437                        HLAT = '1'; tx_site = '(821, 73315) femur'; output fx_prcd; end;
-438                     /*spine image*/
-439                        if '72010' <= strip(px) <= '72159' or '72240' <= strip(px) <= '72285' or strip(px) = '72295' then do;   /*Spine Imaging
-439      ! Codes*/
-440                        tx_site='(805, 806, 73313) spine';
-441                        output spine_xray; end;
-442        
-443            run;
-444        
-445            data fx_prcd;
-446                set fx_prcd;
-447                /*To add laterality info*/
-448        /*        array hcpcs{*} hcpcs_1st_mdfr_cd hcpcs_2nd_mdfr_cd hcpcs_3rd_mdfr_cd hcpcs_4th_mdfr_cd ; */
-449                if HLAT='1' then do;
-450                    repair_right='0'; repair_left='0';
-451                end;
-452        /*        if HLAT='1' then */
-453        /*            do i=1 to dim(hcpcs);*/
-454        /*                if hcpcs{i} = 'RT' then repair_right='1';*/
-455        /*                else if hcpcs{i} = 'LT' then repair_left='1';*/
-456        /*            end;*/
-457            run;
-458            proc sort data=fx_prcd nodupkey; by patid ENCOUNTERID px_date tx_site; run;
-459        
-460            data spine_xray;
-461                set spine_xray;
-462                keep patid px_date tx_site  ENCOUNTERID begin_date;
-463            run;
-464            proc sort data=spine_xray nodupkey; by patid px_date; run;
-465        %mend;
-466        %fx_prcd;
-NOTE: Data set UCB.TEMPFRACPXALL is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
-      additional CPU resources and may reduce performance.
-
-NOTE: There were 35975283 observations read from the data set UCB.TEMPFRACPXALL.
-NOTE: The data set WORK.FX_PRCD has 26787 observations and 25 variables.
-NOTE: The data set WORK.SPINE_XRAY has 393415 observations and 25 variables.
-NOTE: DATA statement used (Total process time):
-      real time           1:06.28
-      cpu time            1:02.38
-      
-
-
-NOTE: There were 26787 observations read from the data set WORK.FX_PRCD.
-NOTE: The data set WORK.FX_PRCD has 26787 observations and 27 variables.
-NOTE: DATA statement used (Total process time):
-      real time           0.06 seconds
-      cpu time            0.01 seconds
-      
-
-
-NOTE: There were 26787 observations read from the data set WORK.FX_PRCD.
-NOTE: 13338 observations with duplicate key values were deleted.
-NOTE: The data set WORK.FX_PRCD has 13449 observations and 27 variables.
-8                                                                   The SAS System                                          17:45 Monday, May 21, 2018
-
-NOTE: PROCEDURE SORT used (Total process time):
-      real time           0.07 seconds
-      cpu time            0.04 seconds
-      
-
-
-NOTE: There were 393415 observations read from the data set WORK.SPINE_XRAY.
-NOTE: The data set WORK.SPINE_XRAY has 393415 observations and 5 variables.
-NOTE: DATA statement used (Total process time):
-      real time           0.27 seconds
-      cpu time            0.23 seconds
-      
-
-
-NOTE: There were 393415 observations read from the data set WORK.SPINE_XRAY.
-NOTE: 272427 observations with duplicate key values were deleted.
-NOTE: The data set WORK.SPINE_XRAY has 120988 observations and 5 variables.
-NOTE: PROCEDURE SORT used (Total process time):
-      real time           0.31 seconds
-      cpu time            0.59 seconds
-      
-
-467        
-468        
-469        
-470        data trauma (rename=(begin_date=trauma_dt));
-471                set UCB.tempFracDxAll (where = (diagCodeType = "Trauma code"));
-NOTE: Data set UCB.TEMPFRACDXALL is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
-      additional CPU resources and may reduce performance.
-The SAS supervisor will process queries for foreign datasets. No parallel where-clause processing will occur.
-472        run;
-
-NOTE: There were 23930 observations read from the data set UCB.TEMPFRACDXALL.
-      WHERE diagCodeType='Trauma code';
-NOTE: The data set WORK.TRAUMA has 23930 observations and 26 variables.
-NOTE: DATA statement used (Total process time):
-      real time           0.09 seconds
+      real time           0.18 seconds
       cpu time            0.07 seconds
       
 
-473        proc sort data= trauma(keep=patid trauma_dt) nodupkey; by patid trauma_dt;run;
+356        
+357        proc sort data=fx_dgns_3;
+358            by patid ENCOUNTERID fx_site site;
+359        run;
 
-NOTE: There were 23930 observations read from the data set WORK.TRAUMA.
-NOTE: 13114 observations with duplicate key values were deleted.
-NOTE: The data set WORK.TRAUMA has 10816 observations and 2 variables.
+NOTE: There were 31384 observations read from the data set WORK.FX_DGNS_3.
+NOTE: The data set WORK.FX_DGNS_3 has 31384 observations and 28 variables.
 NOTE: PROCEDURE SORT used (Total process time):
-      real time           0.09 seconds
-      cpu time            0.04 seconds
+      real time           0.15 seconds
+      cpu time            0.07 seconds
       
 
+360        
+361        
+362        /*###########################################################################################################*/
+363        /*************************************************************************************************************/
+364        /*Look for repair procedures and assign treatment site*******************/
+365        /*This code has been updated to include hip/femur replacement with matching diagnosis code, also looked in claim strip(DX) not just primary
+365      !  strip(DX)
+366        /*Not accepting contiguous sites until later*/
+367        /*Excluding procedures from DME files*/
+368        /*******************************Select All Spine Imaging Codes from STD Procedure Files for CQ=4/5 algorithms*/
+369        
+370        %macro fx_prcd;
+371            data fx_prcd spine_xray;
+372                set UCB64.tempFracPxAll;
+6                                                                   The SAS System                                        09:40 Thursday, May 24, 2018
+
+373        
+374                    length tx_site $30;
+375                    length HLAT $1;
+376        
+377                    if strip(px) in ('21300' '21310' '21315' '21320' '21325' '21330' '21335' '21336' '21337' '21338' '21339' '21340' '21343'
+377      ! '21344' '21345' '21346' '21347' '21348'
+378                                         '21355' '21356' '21360' '21365' '21366' '21385' '21386' '21387' '21390' '21395' '21400' '21401' '21406'
+378      ! '21407' '21408' '21421' '21422' '21423'
+379                                         '21431' '21432' '21433' '21435' '21436' '21440' '21445' '21450' '21451' '21452' '21453' '21454' '21461'
+379      ! '21462' '21465' '21470'
+380                                         '62000' '62005' '62010')  and lengthn(strip(px)) = 5 then do;
+381                        tx_site='(800-804) skull/face'; output fx_prcd; end;
+382        
+383                    if strip(px) in ('22305' '22310' '22315' '22318' '22319' '22325' '22326' '22327' '22328' '22520' '22521' '22522' '22523'
+383      ! '22524' '22525' '76012' '76013'
+384                                         'S2360' 'S2361' 'S2362' 'S2363' '72291' '72292')  and lengthn(strip(px)) = 5 then do;
+385                        tx_site = '(805, 806, 73313) spine'; output fx_prcd; end;
+386        
+387                    if  strip(px) in ('21493' '21494' '21495' '21800' '21805' '21810' '21820' '21825' ) then do;
+388                        tx_site='(807) rib/sternum/trachea'; output fx_prcd; end;
+389        
+390                    if strip(px) in ('27193' '27194' '27215' '27216' '27217' '27218' '27220' '27222' '27226' '27227' '27228')  and
+390      ! lengthn(strip(px)) = 5 then do;
+391                        tx_site = '(808) pelvis'; output fx_prcd; end;
+392        
+393                    if strip(px) in ('23500' '23505' '23515')  and lengthn(strip(px)) = 5 then do;
+394                        tx_site = '(810) clavicle'; output fx_prcd; end;
+395        
+396                    if strip(px) in ('23570' '23575' '23585') then do;
+397                        tx_site= '(811) scapula'; output fx_prcd; end;
+398        
+399                    if strip(px) in ('23600' '23605' '23615' '23616' '23620' '23625' '23630' '23665' '24500' '24505' '24515' '24516' '24530'
+399      ! '24535' '24538' '24545' '24546' '24560'
+400                                 '24565' '24566' '24575' '24576' '24577' '24579' '24582')  and lengthn(strip(px)) = 5 then do;
+401                        tx_site = '(812, 73311) humerus'; output fx_prcd; end;
+402        
+403                    if strip(px) in ('25600' '25605' '25606' '25607' '25608' '25609' '25620' '25650' '25651' '25652')  and lengthn(strip(px)) = 5
+403      ! then do;
+404                        tx_site = '(813, 73312) radius_ulna'; output fx_prcd; end; /*Procedure codes are the same for both categories*/
+405        
+406                    if strip(px) in ('24650' '24655' '24665' '24666' '24670' '24675' '24685' '25500' '25505' '25515' '25520' '25525' '25526'
+406      ! '25530' '25535' '25545' '25560' '25565'
+407                                 '25574' '25575')  and lengthn(strip(px)) = 5 then do;
+408                        tx_site = '(813, 73312) radius_ulna'; output fx_prcd; end; /*Procedure codes are the same for both categories*/
+409        
+410                    if strip(px) in ('25622' '25624' '25628' '25630' '25635' '25645' '25680' '25685')  and lengthn(strip(px)) = 5 then do;
+411                        tx_site = '(814) carpal'; output fx_prcd; end;
+412        
+413                    if strip(px) in ('26600' '26605' '26607' '26608' '26615' '26645' '26650' '26665' '26720' '26725' '26727' '26735' '26740'
+413      ! '26742' '26746' '26750' '26755' '26756' '26765' )
+414                               and lengthn(strip(px)) = 5 then do;
+415                        tx_site='(815-817) hand/fingers'; output fx_prcd; end;
+416        
+417                    if '27230' <= strip(px) <= '27248' and lengthn(strip(px)) = 5 then do;
+418                        tx_site = '(820, 73314) hip'; output fx_prcd; end;
+419        
+420                    if '27500' <= strip(px) <= '27514'  and lengthn(strip(px)) = 5 then do;
+421                        tx_site = '(821, 73315) femur'; output fx_prcd; end;
+422        
+423                    if strip(px) in ('27520' '27524')  and lengthn(strip(px)) = 5 then do;
+424                        tx_site = '(822) patella'; output fx_prcd; end;
+425        
+426                    if ('27530' <= strip(px) <= '27536' or '27750' <= strip(px) <= '27759' or '27780' <= strip(px) <= '27784' or '27824' <=
+426      ! strip(px) <= '27828') and lengthn(strip(px)) = 5  then do;
+427                        tx_site = '(823, 73316) tib_fib'; output fx_prcd; end;
+428        
+429                    if strip(px) in ('27760' '27762' '27766' '27786' '27788' '27792' '27808' '27810' '27814' '27816' '27818' '27822' '27823'
+429      ! '28430' '28435' '28436' '28445')  and lengthn(strip(px)) = 5 then do;
+430                        tx_site = '(824) ankle'; output fx_prcd; end;
+431        
+432                    if strip(px) in ('28320' '28322' '28400' '28405' '28406' '28415' '28420' ) and lengthn(strip(px)) = 5 then do;
+433                        tx_site='(825) tarsal_metatarsal'; output fx_prcd; end;
+7                                                                   The SAS System                                        09:40 Thursday, May 24, 2018
+
+434        
+435                 /********************************Hip/Femur Additions - must be matched with DGNS to be included*/
+436                 /*Hip replacement codes*/
+437                    /*Hip*/
+438                    if strip(px) in ('27130' '27125') and lengthn(strip(px)) = 5  then do;
+439                        HLAT='1'; tx_site = '(820, 73314) hip'; output fx_prcd; end;
+440        
+441                    /*Codes below are the only ICD9 Procedure Codes that we are using for "repair"*/
+442                    if strip(px) in ('8151' '8152') and lengthn(strip(px)) = 4 then do;
+443                        HLAT = '1'; tx_site = '(820, 73314) hip'; output fx_prcd; end;
+444        
+445                    /*Femur repair codes, assigned to both Hip and Femur treatment sites... CHECK - MAYBE WE NEED TO DO THIS THE OTHER WAY AS
+445      ! WELL*/
+446                    /*Hip*/
+447                    if strip(px) in ('7855' '7905' '7915' '7925' '7935' '7965') and lengthn(strip(px)) = 4 then do;
+448                        HLAT = '1'; tx_site = '(820, 73314) hip'; output fx_prcd; end;
+449        
+450                    /*Femur*/
+451                    if strip(px) in ('7855' '7905' '7915' '7925' '7935' '7965') and lengthn(strip(px)) = 4 then do;
+452                        HLAT = '1'; tx_site = '(821, 73315) femur'; output fx_prcd; end;
+453                     /*spine image*/
+454                        if '72010' <= strip(px) <= '72159' or '72240' <= strip(px) <= '72285' or strip(px) = '72295' then do;   /*Spine Imaging
+454      ! Codes*/
+455                        tx_site='(805, 806, 73313) spine';
+456                        output spine_xray; end;
+457        
+458            run;
+459        
+460            data fx_prcd;
+461                set fx_prcd;
+462                /*To add laterality info*/
+463        /*        array hcpcs{*} hcpcs_1st_mdfr_cd hcpcs_2nd_mdfr_cd hcpcs_3rd_mdfr_cd hcpcs_4th_mdfr_cd ; */
+464                if HLAT='1' then do;
+465                    repair_right='0'; repair_left='0';
+466                end;
+467        /*        if HLAT='1' then */
+468        /*            do i=1 to dim(hcpcs);*/
+469        /*                if hcpcs{i} = 'RT' then repair_right='1';*/
+470        /*                else if hcpcs{i} = 'LT' then repair_left='1';*/
+471        /*            end;*/
+472            run;
+473            proc sort data=fx_prcd nodupkey; by patid ENCOUNTERID px_date tx_site; run;
 474        
-475        
-476        /*subset the spine xray procedure claim for patients with fx diagnosis code only*/
-477        /*so SAS will not run out of memory*/
-478        data fx_spine_xray(keep=patid tx_site px_date ENCOUNTERID begin_date);
-479        if _n_=1 then do;
-480          declare hash hid(dataset:"fx_dgns_3(where=(fx_site='(805, 806, 73313) spine')))", multidata:"N", hashexp:20);
-481          rc=hid.defineKey("patid");
-482          rc=hid.defineDone();
-483        end;
-484        set spine_xray;
-485        rc=hid.find();
-486        if rc=0;
-487        run;
+475            data spine_xray;
+476                set spine_xray;
+477                keep patid px_date tx_site  ENCOUNTERID begin_date;
+478            run;
+479            proc sort data=spine_xray nodupkey; by patid px_date; run;
+480        %mend;
+481        %fx_prcd;
 
-NOTE: There were 46513 observations read from the data set WORK.FX_DGNS_3.
-      WHERE fx_site='(805, 806, 73313) spine';
-NOTE: There were 120988 observations read from the data set WORK.SPINE_XRAY.
-NOTE: The data set WORK.FX_SPINE_XRAY has 29694 observations and 5 variables.
+NOTE: There were 11239197 observations read from the data set UCB64.TEMPFRACPXALL.
+NOTE: The data set WORK.FX_PRCD has 7518 observations and 25 variables.
+NOTE: The data set WORK.SPINE_XRAY has 126693 observations and 25 variables.
 NOTE: DATA statement used (Total process time):
-      real time           0.23 seconds
-      cpu time            0.17 seconds
-9                                                                   The SAS System                                          17:45 Monday, May 21, 2018
-
+      real time           17.58 seconds
+      cpu time            17.31 seconds
       
 
-488        /*subset the Trauma code for patients with fx diagnosis code only*/
-489        /*so SAS will not run out of memory*/
-490        data fx_trauma(drop=rc);
-491        if _n_=1 then do;
-492          declare hash hid(dataset:"fx_dgns_3", multidata:"N", hashexp:20);
-493          rc=hid.defineKey("patid");
-494          rc=hid.defineDone();
-495        end;
-496        set trauma;
-497        rc=hid.find();
-498        if rc=0;
-499        run;
 
-NOTE: There were 133449 observations read from the data set WORK.FX_DGNS_3.
-NOTE: There were 10816 observations read from the data set WORK.TRAUMA.
-NOTE: The data set WORK.FX_TRAUMA has 6107 observations and 2 variables.
+NOTE: There were 7518 observations read from the data set WORK.FX_PRCD.
+NOTE: The data set WORK.FX_PRCD has 7518 observations and 27 variables.
 NOTE: DATA statement used (Total process time):
-      real time           0.13 seconds
+      real time           0.04 seconds
+      cpu time            0.03 seconds
+      
+
+
+NOTE: There were 7518 observations read from the data set WORK.FX_PRCD.
+NOTE: 3914 observations with duplicate key values were deleted.
+NOTE: The data set WORK.FX_PRCD has 3604 observations and 27 variables.
+NOTE: PROCEDURE SORT used (Total process time):
+8                                                                   The SAS System                                        09:40 Thursday, May 24, 2018
+
+      real time           0.04 seconds
+      cpu time            0.03 seconds
+      
+
+
+NOTE: There were 126693 observations read from the data set WORK.SPINE_XRAY.
+NOTE: The data set WORK.SPINE_XRAY has 126693 observations and 5 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.10 seconds
+      cpu time            0.06 seconds
+      
+
+
+NOTE: There were 126693 observations read from the data set WORK.SPINE_XRAY.
+NOTE: 89219 observations with duplicate key values were deleted.
+NOTE: The data set WORK.SPINE_XRAY has 37474 observations and 5 variables.
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           0.15 seconds
       cpu time            0.12 seconds
       
 
-500        /************************************Link Fracture Claims (ICD9 Diagnosis) with Repair Claims (CPT/HCPCS, some ICD9 procedure
-500      ! code)***************/
-501        
-502        data fx_dgns_4(drop=rc: px_date tx_site xray_date trauma_dt);
-503        if _n_=1 then do;
-504          declare hash hid(dataset:"fx_prcd", multidata:"N", hashexp:20);
-505          rc=hid.defineKey("patid", "px_date", "tx_site");
-506        /*  rc=hid.defineData("px_date", "tx_site");*/
-507          rc=hid.defineDone();
-508          declare hash hxray(dataset:"fx_spine_xray(rename=px_date=xray_date)", multidata:"Y", hashexp:20);
-509          rc=hxray.defineKey("patid", "tx_site");
-510          rc=hxray.defineData("xray_date");
-511          rc=hxray.defineDone();
-512          declare hash htrauma(dataset:"fx_trauma", multidata:"Y", hashexp:20);
-513          rc=htrauma.defineKey("patid");
-514          rc=htrauma.defineData("trauma_dt");
-515          rc=htrauma.defineDone();
-516        end;
-517        if 0 then set fx_prcd(keep=patid px_date tx_site)
-518                      fx_spine_xray(keep=patid px_date tx_site rename=px_date=xray_date)
-519                      fx_trauma;
-520        set fx_dgns_3;
-521        length cq $4 spine_image trauma_date 4 trauma $1;
-522        format spine_image trauma_date mmddyy10.;
-523        cq="0000";
-524        rc=hid.find(key:patid, key:begin_date,key:fx_site);
-525        if rc^=0 then do;
-526            px_date=.;
-527            tx_site=" ";
-528        end;
-529        if enc_type="IP" then do;
-530        /*CQ = 1 Inpatient claim with primary diagnosis code */
-531            if pdx="P" then substr(cq,1,1)="1";
-532        /*CQ = 2 Inpatient claim with secondary diagnosis code*/
-533            else substr(cq,2,1)="2";
-534        end; else do;
-535        /*CQ = 3 outpatient diagnosis code AND carrier line with repair/replace HCPCS*/
-536            if rc=0 then substr(cq,3,1)="3";
-537            rc1=hxray.find(key:patid, key:fx_site);
-538            do while (rc1 = 0);
-539                if begin_date-10 <=xray_date<= begin_date then do;
-540                    if enc_type in ("AV" "IF" "NH" "HH" "ER" "ED") then do;
-541        /*CQ = 4 outpatient [Physician E&M codes] diagnosis code with spine image/x-ray within 10 day early*/
-542                        substr(cq,4,1)="4";
-543                        spine_image=min(spine_image,xray_date);
-544                    end;
-545                end;
-546                rc1=hxray.find_next(key:patid, key:fx_site);
-547            end;
-10                                                                  The SAS System                                          17:45 Monday, May 21, 2018
+482        
+483        
+484        
+485        data trauma (rename=(begin_date=trauma_dt));
+486                set UCB64.tempFracDxAll (where = (diagCodeType = "Trauma code"));
+487        run;
 
-548        end;
-549        /*is there trauma dx within 14 days*/
-550        rc2=htrauma.find(key:patid);
-551        do while (rc2 = 0) ;
-552            if 0<=abs(trauma_dt-begin_date)<=14 then do;
-553                    trauma="1";
-554                    trauma_date=min(trauma_date,trauma_dt);
-555           end ;
-556           rc2=htrauma.find_next(key:patid) ;
-557        end;
-558        
-559        run;
-
-NOTE: There were 13449 observations read from the data set WORK.FX_PRCD.
-NOTE: There were 29694 observations read from the data set WORK.FX_SPINE_XRAY.
-NOTE: There were 6107 observations read from the data set WORK.FX_TRAUMA.
-NOTE: There were 133449 observations read from the data set WORK.FX_DGNS_3.
-NOTE: The data set WORK.FX_DGNS_4 has 133449 observations and 32 variables.
+NOTE: There were 7261 observations read from the data set UCB64.TEMPFRACDXALL.
+      WHERE diagCodeType='Trauma code';
+NOTE: Parallel WHERE evaluation suppressed due to sort order on table.
+NOTE: The data set WORK.TRAUMA has 7261 observations and 26 variables.
 NOTE: DATA statement used (Total process time):
-      real time           0.54 seconds
-      cpu time            0.46 seconds
+      real time           0.09 seconds
+      cpu time            0.06 seconds
       
 
-560        proc freq data=fx_dgns_4; tables enc_type*cq fx_site*cq trauma/missing;run;
+488        proc sort data= trauma(keep=patid trauma_dt) nodupkey; by patid trauma_dt;run;
 
-                                                                  --- AS project ---                                    17:45 Monday, May 21, 2018   2
+NOTE: There were 7261 observations read from the data set WORK.TRAUMA.
+NOTE: 4102 observations with duplicate key values were deleted.
+NOTE: The data set WORK.TRAUMA has 3159 observations and 2 variables.
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           0.07 seconds
+      cpu time            0.01 seconds
+      
+
+489        
+490        
+491        /*subset the spine xray procedure claim for patients with fx diagnosis code only*/
+492        /*so SAS will not run out of memory*/
+493        data fx_spine_xray(keep=patid tx_site px_date ENCOUNTERID begin_date);
+494        if _n_=1 then do;
+495          declare hash hid(dataset:"fx_dgns_3(where=(fx_site='(805, 806, 73313) spine')))", multidata:"N", hashexp:20);
+496          rc=hid.defineKey("patid");
+497          rc=hid.defineDone();
+498        end;
+499        set spine_xray;
+500        rc=hid.find();
+501        if rc=0;
+502        run;
+
+NOTE: There were 8622 observations read from the data set WORK.FX_DGNS_3.
+      WHERE fx_site='(805, 806, 73313) spine';
+NOTE: There were 37474 observations read from the data set WORK.SPINE_XRAY.
+NOTE: The data set WORK.FX_SPINE_XRAY has 5641 observations and 5 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.15 seconds
+      cpu time            0.07 seconds
+      
+
+503        /*subset the Trauma code for patients with fx diagnosis code only*/
+9                                                                   The SAS System                                        09:40 Thursday, May 24, 2018
+
+504        /*so SAS will not run out of memory*/
+505        data fx_trauma(drop=rc);
+506        if _n_=1 then do;
+507          declare hash hid(dataset:"fx_dgns_3", multidata:"N", hashexp:20);
+508          rc=hid.defineKey("patid");
+509          rc=hid.defineDone();
+510        end;
+511        set trauma;
+512        rc=hid.find();
+513        if rc=0;
+514        run;
+
+NOTE: There were 31384 observations read from the data set WORK.FX_DGNS_3.
+NOTE: There were 3159 observations read from the data set WORK.TRAUMA.
+NOTE: The data set WORK.FX_TRAUMA has 1472 observations and 2 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.09 seconds
+      cpu time            0.06 seconds
+      
+
+515        /************************************Link Fracture Claims (ICD9 Diagnosis) with Repair Claims (CPT/HCPCS, some ICD9 procedure
+515      ! code)***************/
+516        
+517        data fx_dgns_4(drop=rc: px_date tx_site xray_date trauma_dt);
+518        if _n_=1 then do;
+519          declare hash hid(dataset:"fx_prcd", multidata:"N", hashexp:20);
+520          rc=hid.defineKey("patid", "px_date", "tx_site");
+521        /*  rc=hid.defineData("px_date", "tx_site");*/
+522          rc=hid.defineDone();
+523          declare hash hxray(dataset:"fx_spine_xray(rename=px_date=xray_date)", multidata:"Y", hashexp:20);
+524          rc=hxray.defineKey("patid", "tx_site");
+525          rc=hxray.defineData("xray_date");
+526          rc=hxray.defineDone();
+527          declare hash htrauma(dataset:"fx_trauma", multidata:"Y", hashexp:20);
+528          rc=htrauma.defineKey("patid");
+529          rc=htrauma.defineData("trauma_dt");
+530          rc=htrauma.defineDone();
+531        end;
+532        if 0 then set fx_prcd(keep=patid px_date tx_site)
+533                      fx_spine_xray(keep=patid px_date tx_site rename=px_date=xray_date)
+534                      fx_trauma;
+535        set fx_dgns_3;
+536        length cq $4 spine_image trauma_date 4 trauma $1;
+537        format spine_image trauma_date mmddyy10.;
+538        cq="0000";
+539        rc=hid.find(key:patid, key:begin_date,key:fx_site);
+540        if rc^=0 then do;
+541            px_date=.;
+542            tx_site=" ";
+543        end;
+544        if enc_type="IP" then do;
+545        /*CQ = 1 Inpatient claim with primary diagnosis code */
+546            if pdx="P" then substr(cq,1,1)="1";
+547        /*CQ = 2 Inpatient claim with secondary diagnosis code*/
+548            else substr(cq,2,1)="2";
+549        end; else do;
+550        /*CQ = 3 outpatient diagnosis code AND carrier line with repair/replace HCPCS*/
+551            if rc=0 then substr(cq,3,1)="3";
+552            rc1=hxray.find(key:patid, key:fx_site);
+553            do while (rc1 = 0);
+554                if begin_date-10 <=xray_date<= begin_date then do;
+555                    if enc_type in ("AV" "IF" "NH" "HH" "ER" "ED") then do;
+556        /*CQ = 4 outpatient [Physician E&M codes] diagnosis code with spine image/x-ray within 10 day early*/
+557                        substr(cq,4,1)="4";
+558                        spine_image=min(spine_image,xray_date);
+559                    end;
+560                end;
+561                rc1=hxray.find_next(key:patid, key:fx_site);
+562            end;
+563        end;
+564        /*is there trauma dx within 14 days*/
+565        rc2=htrauma.find(key:patid);
+10                                                                  The SAS System                                        09:40 Thursday, May 24, 2018
+
+566        do while (rc2 = 0) ;
+567            if 0<=abs(trauma_dt-begin_date)<=14 then do;
+568                    trauma="1";
+569                    trauma_date=min(trauma_date,trauma_dt);
+570           end ;
+571           rc2=htrauma.find_next(key:patid) ;
+572        end;
+573        
+574        run;
+
+NOTE: There were 3604 observations read from the data set WORK.FX_PRCD.
+NOTE: There were 5641 observations read from the data set WORK.FX_SPINE_XRAY.
+NOTE: There were 1472 observations read from the data set WORK.FX_TRAUMA.
+NOTE: There were 31384 observations read from the data set WORK.FX_DGNS_3.
+NOTE: The data set WORK.FX_DGNS_4 has 31384 observations and 32 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.18 seconds
+      cpu time            0.15 seconds
+      
+
+575        proc freq data=fx_dgns_4; tables enc_type*cq fx_site*cq trauma/missing;run;
+
+                                                                  --- AS project ---                                  09:40 Thursday, May 24, 2018   2
 
                                                                   The FREQ Procedure
 
@@ -778,33 +775,33 @@ NOTE: DATA statement used (Total process time):
                                        Row Pct  |
                                        Col Pct  |0000    |0004    |0030    |0034    |0200    |1000    |  Total
                                        ---------+--------+--------+--------+--------+--------+--------+
-                                       AV       |  53602 |  10970 |   2512 |    248 |      0 |      0 |  67332
-                                                |  40.17 |   8.22 |   1.88 |   0.19 |   0.00 |   0.00 |  50.46
-                                                |  79.61 |  16.29 |   3.73 |   0.37 |   0.00 |   0.00 |
-                                                |  62.26 |  57.54 |  35.60 |  52.43 |   0.00 |   0.00 |
+                                       AV       |  15013 |   2352 |    692 |     84 |      0 |      0 |  18141
+                                                |  47.84 |   7.49 |   2.20 |   0.27 |   0.00 |   0.00 |  57.80
+                                                |  82.76 |  12.97 |   3.81 |   0.46 |   0.00 |   0.00 |
+                                                |  68.19 |  64.44 |  34.43 |  62.22 |   0.00 |   0.00 |
                                        ---------+--------+--------+--------+--------+--------+--------+
-                                       ED       |  17629 |   6313 |   4522 |    225 |      0 |      0 |  28689
-                                                |  13.21 |   4.73 |   3.39 |   0.17 |   0.00 |   0.00 |  21.50
-                                                |  61.45 |  22.00 |  15.76 |   0.78 |   0.00 |   0.00 |
-                                                |  20.48 |  33.11 |  64.09 |  47.57 |   0.00 |   0.00 |
+                                       ED       |   4518 |   1122 |   1308 |     51 |      0 |      0 |   6999
+                                                |  14.40 |   3.58 |   4.17 |   0.16 |   0.00 |   0.00 |  22.30
+                                                |  64.55 |  16.03 |  18.69 |   0.73 |   0.00 |   0.00 |
+                                                |  20.52 |  30.74 |  65.07 |  37.78 |   0.00 |   0.00 |
                                        ---------+--------+--------+--------+--------+--------+--------+
-                                       HH       |   1356 |    142 |      2 |      0 |      0 |      0 |   1500
-                                                |   1.02 |   0.11 |   0.00 |   0.00 |   0.00 |   0.00 |   1.12
-                                                |  90.40 |   9.47 |   0.13 |   0.00 |   0.00 |   0.00 |
-                                                |   1.58 |   0.74 |   0.03 |   0.00 |   0.00 |   0.00 |
+                                       HH       |    219 |     22 |      2 |      0 |      0 |      0 |    243
+                                                |   0.70 |   0.07 |   0.01 |   0.00 |   0.00 |   0.00 |   0.77
+                                                |  90.12 |   9.05 |   0.82 |   0.00 |   0.00 |   0.00 |
+                                                |   0.99 |   0.60 |   0.10 |   0.00 |   0.00 |   0.00 |
                                        ---------+--------+--------+--------+--------+--------+--------+
-                                       IP       |      0 |      0 |      0 |      0 |  14334 |   6428 |  20762
-                                                |   0.00 |   0.00 |   0.00 |   0.00 |  10.74 |   4.82 |  15.56
-                                                |   0.00 |   0.00 |   0.00 |   0.00 |  69.04 |  30.96 |
+                                       IP       |      0 |      0 |      0 |      0 |   2416 |   1157 |   3573
+                                                |   0.00 |   0.00 |   0.00 |   0.00 |   7.70 |   3.69 |  11.38
+                                                |   0.00 |   0.00 |   0.00 |   0.00 |  67.62 |  32.38 |
                                                 |   0.00 |   0.00 |   0.00 |   0.00 | 100.00 | 100.00 |
                                        ---------+--------+--------+--------+--------+--------+--------+
-                                       NH       |  13505 |   1641 |     20 |      0 |      0 |      0 |  15166
-                                                |  10.12 |   1.23 |   0.01 |   0.00 |   0.00 |   0.00 |  11.36
-                                                |  89.05 |  10.82 |   0.13 |   0.00 |   0.00 |   0.00 |
-                                                |  15.69 |   8.61 |   0.28 |   0.00 |   0.00 |   0.00 |
+                                       NH       |   2266 |    154 |      8 |      0 |      0 |      0 |   2428
+                                                |   7.22 |   0.49 |   0.03 |   0.00 |   0.00 |   0.00 |   7.74
+                                                |  93.33 |   6.34 |   0.33 |   0.00 |   0.00 |   0.00 |
+                                                |  10.29 |   4.22 |   0.40 |   0.00 |   0.00 |   0.00 |
                                        ---------+--------+--------+--------+--------+--------+--------+
-                                       Total       86092    19066     7056      473    14334     6428   133449
-                                                   64.51    14.29     5.29     0.35    10.74     4.82   100.00
+                                       Total       22016     3650     2010      135     2416     1157    31384
+                                                   70.15    11.63     6.40     0.43     7.70     3.69   100.00
 
 
  
@@ -839,7 +836,7 @@ NOTE: DATA statement used (Total process time):
  
  
                                                                   queryFractures.sas
-                                                                  --- AS project ---                                    17:45 Monday, May 21, 2018   3
+                                                                  --- AS project ---                                  09:40 Thursday, May 24, 2018   3
 
                                                                   The FREQ Procedure
 
@@ -852,48 +849,48 @@ NOTE: DATA statement used (Total process time):
                                    Row Pct          |
                                    Col Pct          |0000    |0004    |0030    |0034    |0200    |1000    |  Total
                                    -----------------+--------+--------+--------+--------+--------+--------+
-                                   (7331) pathologi |   1059 |      0 |      0 |      0 |     83 |     21 |   1163
-                                   c nos/nec        |   0.79 |   0.00 |   0.00 |   0.00 |   0.06 |   0.02 |   0.87
-                                                    |  91.06 |   0.00 |   0.00 |   0.00 |   7.14 |   1.81 |
-                                                    |   1.23 |   0.00 |   0.00 |   0.00 |   0.58 |   0.33 |
+                                   (7331) pathologi |    320 |      0 |      0 |      0 |      7 |      3 |    330
+                                   c nos/nec        |   1.02 |   0.00 |   0.00 |   0.00 |   0.02 |   0.01 |   1.05
+                                                    |  96.97 |   0.00 |   0.00 |   0.00 |   2.12 |   0.91 |
+                                                    |   1.45 |   0.00 |   0.00 |   0.00 |   0.29 |   0.26 |
                                    -----------------+--------+--------+--------+--------+--------+--------+
-                                   (800-804) skull/ |   2423 |      0 |    283 |      0 |    474 |    132 |   3312
-                                   face             |   1.82 |   0.00 |   0.21 |   0.00 |   0.36 |   0.10 |   2.48
-                                                    |  73.16 |   0.00 |   8.54 |   0.00 |  14.31 |   3.99 |
-                                                    |   2.81 |   0.00 |   4.01 |   0.00 |   3.31 |   2.05 |
+                                   (800-804) skull/ |    728 |      0 |     77 |      0 |     88 |     34 |    927
+                                   face             |   2.32 |   0.00 |   0.25 |   0.00 |   0.28 |   0.11 |   2.95
+                                                    |  78.53 |   0.00 |   8.31 |   0.00 |   9.49 |   3.67 |
+                                                    |   3.31 |   0.00 |   3.83 |   0.00 |   3.64 |   2.94 |
                                    -----------------+--------+--------+--------+--------+--------+--------+
-                                   (805, 806, 73313 |  16262 |  19066 |     36 |    473 |   7324 |   3352 |  46513
-                                   ) spine          |  12.19 |  14.29 |   0.03 |   0.35 |   5.49 |   2.51 |  34.85
-                                                    |  34.96 |  40.99 |   0.08 |   1.02 |  15.75 |   7.21 |
-                                                    |  18.89 | 100.00 |   0.51 | 100.00 |  51.10 |  52.15 |
+                                   (805, 806, 73313 |   3386 |   3650 |     13 |    135 |    966 |    472 |   8622
+                                   ) spine          |  10.79 |  11.63 |   0.04 |   0.43 |   3.08 |   1.50 |  27.47
+                                                    |  39.27 |  42.33 |   0.15 |   1.57 |  11.20 |   5.47 |
+                                                    |  15.38 | 100.00 |   0.65 | 100.00 |  39.98 |  40.80 |
                                    -----------------+--------+--------+--------+--------+--------+--------+
-                                   (807) rib/sternu |   4764 |      0 |    787 |      0 |    892 |    184 |   6627
-                                   m/trachea        |   3.57 |   0.00 |   0.59 |   0.00 |   0.67 |   0.14 |   4.97
-                                                    |  71.89 |   0.00 |  11.88 |   0.00 |  13.46 |   2.78 |
-                                                    |   5.53 |   0.00 |  11.15 |   0.00 |   6.22 |   2.86 |
+                                   (807) rib/sternu |   1148 |      0 |    189 |      0 |    181 |     33 |   1551
+                                   m/trachea        |   3.66 |   0.00 |   0.60 |   0.00 |   0.58 |   0.11 |   4.94
+                                                    |  74.02 |   0.00 |  12.19 |   0.00 |  11.67 |   2.13 |
+                                                    |   5.21 |   0.00 |   9.40 |   0.00 |   7.49 |   2.85 |
                                    -----------------+--------+--------+--------+--------+--------+--------+
-                                   (808) pelvis     |   2728 |      0 |    134 |      0 |    441 |    155 |   3458
-                                                    |   2.04 |   0.00 |   0.10 |   0.00 |   0.33 |   0.12 |   2.59
-                                                    |  78.89 |   0.00 |   3.88 |   0.00 |  12.75 |   4.48 |
-                                                    |   3.17 |   0.00 |   1.90 |   0.00 |   3.08 |   2.41 |
+                                   (808) pelvis     |    580 |      0 |     39 |      0 |     93 |     35 |    747
+                                                    |   1.85 |   0.00 |   0.12 |   0.00 |   0.30 |   0.11 |   2.38
+                                                    |  77.64 |   0.00 |   5.22 |   0.00 |  12.45 |   4.69 |
+                                                    |   2.63 |   0.00 |   1.94 |   0.00 |   3.85 |   3.03 |
                                    -----------------+--------+--------+--------+--------+--------+--------+
-                                   (809) trunk bone |     96 |      0 |      0 |      0 |      2 |      0 |     98
-                                   s                |   0.07 |   0.00 |   0.00 |   0.00 |   0.00 |   0.00 |   0.07
-                                                    |  97.96 |   0.00 |   0.00 |   0.00 |   2.04 |   0.00 |
-                                                    |   0.11 |   0.00 |   0.00 |   0.00 |   0.01 |   0.00 |
+                                   (809) trunk bone |      5 |      0 |      0 |      0 |      1 |      0 |      6
+                                   s                |   0.02 |   0.00 |   0.00 |   0.00 |   0.00 |   0.00 |   0.02
+                                                    |  83.33 |   0.00 |   0.00 |   0.00 |  16.67 |   0.00 |
+                                                    |   0.02 |   0.00 |   0.00 |   0.00 |   0.04 |   0.00 |
                                    -----------------+--------+--------+--------+--------+--------+--------+
-                                   (810) clavicle   |   1572 |      0 |    276 |      0 |    127 |     28 |   2003
-                                                    |   1.18 |   0.00 |   0.21 |   0.00 |   0.10 |   0.02 |   1.50
-                                                    |  78.48 |   0.00 |  13.78 |   0.00 |   6.34 |   1.40 |
-                                                    |   1.83 |   0.00 |   3.91 |   0.00 |   0.89 |   0.44 |
+                                   (810) clavicle   |    571 |      0 |    129 |      0 |     23 |      4 |    727
+                                                    |   1.82 |   0.00 |   0.41 |   0.00 |   0.07 |   0.01 |   2.32
+                                                    |  78.54 |   0.00 |  17.74 |   0.00 |   3.16 |   0.55 |
+                                                    |   2.59 |   0.00 |   6.42 |   0.00 |   0.95 |   0.35 |
                                    -----------------+--------+--------+--------+--------+--------+--------+
-                                   (811) scapula    |    375 |      0 |     57 |      0 |     45 |      8 |    485
-                                                    |   0.28 |   0.00 |   0.04 |   0.00 |   0.03 |   0.01 |   0.36
-                                                    |  77.32 |   0.00 |  11.75 |   0.00 |   9.28 |   1.65 |
-                                                    |   0.44 |   0.00 |   0.81 |   0.00 |   0.31 |   0.12 |
+                                   (811) scapula    |     74 |      0 |      5 |      0 |      5 |      2 |     86
+                                                    |   0.24 |   0.00 |   0.02 |   0.00 |   0.02 |   0.01 |   0.27
+                                                    |  86.05 |   0.00 |   5.81 |   0.00 |   5.81 |   2.33 |
+                                                    |   0.34 |   0.00 |   0.25 |   0.00 |   0.21 |   0.17 |
                                    -----------------+--------+--------+--------+--------+--------+--------+
-                                   Total               86092    19066     7056      473    14334     6428   133449
-                                                       64.51    14.29     5.29     0.35    10.74     4.82   100.00
+                                   Total               22016     3650     2010      135     2416     1157    31384
+                                                       70.15    11.63     6.40     0.43     7.70     3.69   100.00
                                    (Continued)
  
  
@@ -913,7 +910,7 @@ NOTE: DATA statement used (Total process time):
  
  
                                                                   queryFractures.sas
-                                                                  --- AS project ---                                    17:45 Monday, May 21, 2018   4
+                                                                  --- AS project ---                                  09:40 Thursday, May 24, 2018   4
 
                                                                   The FREQ Procedure
 
@@ -926,48 +923,48 @@ NOTE: DATA statement used (Total process time):
                                    Row Pct          |
                                    Col Pct          |0000    |0004    |0030    |0034    |0200    |1000    |  Total
                                    -----------------+--------+--------+--------+--------+--------+--------+
-                                   (812, 73311) hum |   7479 |      0 |    794 |      0 |    609 |    305 |   9187
-                                   erus             |   5.60 |   0.00 |   0.59 |   0.00 |   0.46 |   0.23 |   6.88
-                                                    |  81.41 |   0.00 |   8.64 |   0.00 |   6.63 |   3.32 |
-                                                    |   8.69 |   0.00 |  11.25 |   0.00 |   4.25 |   4.74 |
+                                   (812, 73311) hum |   1632 |      0 |    180 |      0 |    109 |     68 |   1989
+                                   erus             |   5.20 |   0.00 |   0.57 |   0.00 |   0.35 |   0.22 |   6.34
+                                                    |  82.05 |   0.00 |   9.05 |   0.00 |   5.48 |   3.42 |
+                                                    |   7.41 |   0.00 |   8.96 |   0.00 |   4.51 |   5.88 |
                                    -----------------+--------+--------+--------+--------+--------+--------+
-                                   (813, 73312) rad |   7404 |      0 |   1528 |      0 |    405 |    140 |   9477
-                                   ius_ulna         |   5.55 |   0.00 |   1.15 |   0.00 |   0.30 |   0.10 |   7.10
-                                                    |  78.13 |   0.00 |  16.12 |   0.00 |   4.27 |   1.48 |
-                                                    |   8.60 |   0.00 |  21.66 |   0.00 |   2.83 |   2.18 |
+                                   (813, 73312) rad |   2337 |      0 |    382 |      0 |     84 |     33 |   2836
+                                   ius_ulna         |   7.45 |   0.00 |   1.22 |   0.00 |   0.27 |   0.11 |   9.04
+                                                    |  82.40 |   0.00 |  13.47 |   0.00 |   2.96 |   1.16 |
+                                                    |  10.62 |   0.00 |  19.00 |   0.00 |   3.48 |   2.85 |
                                    -----------------+--------+--------+--------+--------+--------+--------+
-                                   (814) carpal     |   1523 |      0 |    160 |      0 |     43 |      1 |   1727
-                                                    |   1.14 |   0.00 |   0.12 |   0.00 |   0.03 |   0.00 |   1.29
-                                                    |  88.19 |   0.00 |   9.26 |   0.00 |   2.49 |   0.06 |
-                                                    |   1.77 |   0.00 |   2.27 |   0.00 |   0.30 |   0.02 |
+                                   (814) carpal     |    516 |      0 |    100 |      0 |     13 |      0 |    629
+                                                    |   1.64 |   0.00 |   0.32 |   0.00 |   0.04 |   0.00 |   2.00
+                                                    |  82.03 |   0.00 |  15.90 |   0.00 |   2.07 |   0.00 |
+                                                    |   2.34 |   0.00 |   4.98 |   0.00 |   0.54 |   0.00 |
                                    -----------------+--------+--------+--------+--------+--------+--------+
-                                   (815-817) hand/f |   4789 |      0 |   1001 |      0 |    115 |     18 |   5923
-                                   ingers           |   3.59 |   0.00 |   0.75 |   0.00 |   0.09 |   0.01 |   4.44
-                                                    |  80.85 |   0.00 |  16.90 |   0.00 |   1.94 |   0.30 |
-                                                    |   5.56 |   0.00 |  14.19 |   0.00 |   0.80 |   0.28 |
+                                   (815-817) hand/f |   1568 |      0 |    360 |      0 |     37 |      8 |   1973
+                                   ingers           |   5.00 |   0.00 |   1.15 |   0.00 |   0.12 |   0.03 |   6.29
+                                                    |  79.47 |   0.00 |  18.25 |   0.00 |   1.88 |   0.41 |
+                                                    |   7.12 |   0.00 |  17.91 |   0.00 |   1.53 |   0.69 |
                                    -----------------+--------+--------+--------+--------+--------+--------+
-                                   (818-819) arms m |     72 |      0 |      0 |      0 |      2 |      0 |     74
-                                   ult              |   0.05 |   0.00 |   0.00 |   0.00 |   0.00 |   0.00 |   0.06
-                                                    |  97.30 |   0.00 |   0.00 |   0.00 |   2.70 |   0.00 |
-                                                    |   0.08 |   0.00 |   0.00 |   0.00 |   0.01 |   0.00 |
+                                   (818-819) arms m |     12 |      0 |      0 |      0 |      0 |      0 |     12
+                                   ult              |   0.04 |   0.00 |   0.00 |   0.00 |   0.00 |   0.00 |   0.04
+                                                    | 100.00 |   0.00 |   0.00 |   0.00 |   0.00 |   0.00 |
+                                                    |   0.05 |   0.00 |   0.00 |   0.00 |   0.00 |   0.00 |
                                    -----------------+--------+--------+--------+--------+--------+--------+
-                                   (820, 73314) hip |   8697 |      0 |    594 |      0 |   1985 |   1241 |  12517
-                                                    |   6.52 |   0.00 |   0.45 |   0.00 |   1.49 |   0.93 |   9.38
-                                                    |  69.48 |   0.00 |   4.75 |   0.00 |  15.86 |   9.91 |
-                                                    |  10.10 |   0.00 |   8.42 |   0.00 |  13.85 |  19.31 |
+                                   (820, 73314) hip |   1878 |      0 |    144 |      0 |    384 |    270 |   2676
+                                                    |   5.98 |   0.00 |   0.46 |   0.00 |   1.22 |   0.86 |   8.53
+                                                    |  70.18 |   0.00 |   5.38 |   0.00 |  14.35 |  10.09 |
+                                                    |   8.53 |   0.00 |   7.16 |   0.00 |  15.89 |  23.34 |
                                    -----------------+--------+--------+--------+--------+--------+--------+
-                                   (821, 73315) fem |   3263 |      0 |    217 |      0 |    522 |    292 |   4294
-                                   ur               |   2.45 |   0.00 |   0.16 |   0.00 |   0.39 |   0.22 |   3.22
-                                                    |  75.99 |   0.00 |   5.05 |   0.00 |  12.16 |   6.80 |
-                                                    |   3.79 |   0.00 |   3.08 |   0.00 |   3.64 |   4.54 |
+                                   (821, 73315) fem |    667 |      0 |     69 |      0 |    117 |     72 |    925
+                                   ur               |   2.13 |   0.00 |   0.22 |   0.00 |   0.37 |   0.23 |   2.95
+                                                    |  72.11 |   0.00 |   7.46 |   0.00 |  12.65 |   7.78 |
+                                                    |   3.03 |   0.00 |   3.43 |   0.00 |   4.84 |   6.22 |
                                    -----------------+--------+--------+--------+--------+--------+--------+
-                                   (822) patella    |   1113 |      0 |    150 |      0 |    131 |     52 |   1446
-                                                    |   0.83 |   0.00 |   0.11 |   0.00 |   0.10 |   0.04 |   1.08
-                                                    |  76.97 |   0.00 |  10.37 |   0.00 |   9.06 |   3.60 |
-                                                    |   1.29 |   0.00 |   2.13 |   0.00 |   0.91 |   0.81 |
+                                   (822) patella    |    321 |      0 |     43 |      0 |     36 |     14 |    414
+                                                    |   1.02 |   0.00 |   0.14 |   0.00 |   0.11 |   0.04 |   1.32
+                                                    |  77.54 |   0.00 |  10.39 |   0.00 |   8.70 |   3.38 |
+                                                    |   1.46 |   0.00 |   2.14 |   0.00 |   1.49 |   1.21 |
                                    -----------------+--------+--------+--------+--------+--------+--------+
-                                   Total               86092    19066     7056      473    14334     6428   133449
-                                                       64.51    14.29     5.29     0.35    10.74     4.82   100.00
+                                   Total               22016     3650     2010      135     2416     1157    31384
+                                                       70.15    11.63     6.40     0.43     7.70     3.69   100.00
                                    (Continued)
  
  
@@ -987,7 +984,7 @@ NOTE: DATA statement used (Total process time):
  
  
                                                                   queryFractures.sas
-                                                                  --- AS project ---                                    17:45 Monday, May 21, 2018   5
+                                                                  --- AS project ---                                  09:40 Thursday, May 24, 2018   5
 
                                                                   The FREQ Procedure
 
@@ -1000,50 +997,50 @@ NOTE: DATA statement used (Total process time):
                                    Row Pct          |
                                    Col Pct          |0000    |0004    |0030    |0034    |0200    |1000    |  Total
                                    -----------------+--------+--------+--------+--------+--------+--------+
-                                   (823, 73316) tib |   4152 |      0 |    314 |      0 |    361 |    173 |   5000
-                                   _fib             |   3.11 |   0.00 |   0.24 |   0.00 |   0.27 |   0.13 |   3.75
-                                                    |  83.04 |   0.00 |   6.28 |   0.00 |   7.22 |   3.46 |
-                                                    |   4.82 |   0.00 |   4.45 |   0.00 |   2.52 |   2.69 |
+                                   (823, 73316) tib |    920 |      0 |     65 |      0 |     67 |     34 |   1086
+                                   _fib             |   2.93 |   0.00 |   0.21 |   0.00 |   0.21 |   0.11 |   3.46
+                                                    |  84.71 |   0.00 |   5.99 |   0.00 |   6.17 |   3.13 |
+                                                    |   4.18 |   0.00 |   3.23 |   0.00 |   2.77 |   2.94 |
                                    -----------------+--------+--------+--------+--------+--------+--------+
-                                   (824) ankle      |   5426 |      0 |    639 |      0 |    497 |    259 |   6821
-                                                    |   4.07 |   0.00 |   0.48 |   0.00 |   0.37 |   0.19 |   5.11
-                                                    |  79.55 |   0.00 |   9.37 |   0.00 |   7.29 |   3.80 |
-                                                    |   6.30 |   0.00 |   9.06 |   0.00 |   3.47 |   4.03 |
+                                   (824) ankle      |   1215 |      0 |    202 |      0 |    110 |     51 |   1578
+                                                    |   3.87 |   0.00 |   0.64 |   0.00 |   0.35 |   0.16 |   5.03
+                                                    |  77.00 |   0.00 |  12.80 |   0.00 |   6.97 |   3.23 |
+                                                    |   5.52 |   0.00 |  10.05 |   0.00 |   4.55 |   4.41 |
                                    -----------------+--------+--------+--------+--------+--------+--------+
-                                   (825) tarsal_met |   8288 |      0 |     86 |      0 |    193 |     62 |   8629
-                                   atarsal          |   6.21 |   0.00 |   0.06 |   0.00 |   0.14 |   0.05 |   6.47
-                                                    |  96.05 |   0.00 |   1.00 |   0.00 |   2.24 |   0.72 |
-                                                    |   9.63 |   0.00 |   1.22 |   0.00 |   1.35 |   0.96 |
+                                   (825) tarsal_met |   2762 |      0 |     13 |      0 |     69 |     21 |   2865
+                                   atarsal          |   8.80 |   0.00 |   0.04 |   0.00 |   0.22 |   0.07 |   9.13
+                                                    |  96.40 |   0.00 |   0.45 |   0.00 |   2.41 |   0.73 |
+                                                    |  12.55 |   0.00 |   0.65 |   0.00 |   2.86 |   1.82 |
                                    -----------------+--------+--------+--------+--------+--------+--------+
-                                   (826) foot_phala |   3682 |      0 |      0 |      0 |     53 |      5 |   3740
-                                   nges             |   2.76 |   0.00 |   0.00 |   0.00 |   0.04 |   0.00 |   2.80
-                                                    |  98.45 |   0.00 |   0.00 |   0.00 |   1.42 |   0.13 |
-                                                    |   4.28 |   0.00 |   0.00 |   0.00 |   0.37 |   0.08 |
+                                   (826) foot_phala |   1181 |      0 |      0 |      0 |     20 |      3 |   1204
+                                   nges             |   3.76 |   0.00 |   0.00 |   0.00 |   0.06 |   0.01 |   3.84
+                                                    |  98.09 |   0.00 |   0.00 |   0.00 |   1.66 |   0.25 |
+                                                    |   5.36 |   0.00 |   0.00 |   0.00 |   0.83 |   0.26 |
                                    -----------------+--------+--------+--------+--------+--------+--------+
-                                   (827) lower_limb |    110 |      0 |      0 |      0 |      3 |      0 |    113
-                                                    |   0.08 |   0.00 |   0.00 |   0.00 |   0.00 |   0.00 |   0.08
-                                                    |  97.35 |   0.00 |   0.00 |   0.00 |   2.65 |   0.00 |
-                                                    |   0.13 |   0.00 |   0.00 |   0.00 |   0.02 |   0.00 |
+                                   (827) lower_limb |     27 |      0 |      0 |      0 |      1 |      0 |     28
+                                                    |   0.09 |   0.00 |   0.00 |   0.00 |   0.00 |   0.00 |   0.09
+                                                    |  96.43 |   0.00 |   0.00 |   0.00 |   3.57 |   0.00 |
+                                                    |   0.12 |   0.00 |   0.00 |   0.00 |   0.04 |   0.00 |
                                    -----------------+--------+--------+--------+--------+--------+--------+
-                                   (828) legs+arm/r |      5 |      0 |      0 |      0 |      3 |      0 |      8
-                                   ib               |   0.00 |   0.00 |   0.00 |   0.00 |   0.00 |   0.00 |   0.01
-                                                    |  62.50 |   0.00 |   0.00 |   0.00 |  37.50 |   0.00 |
-                                                    |   0.01 |   0.00 |   0.00 |   0.00 |   0.02 |   0.00 |
+                                   (828) legs+arm/r |      3 |      0 |      0 |      0 |      3 |      0 |      6
+                                   ib               |   0.01 |   0.00 |   0.00 |   0.00 |   0.01 |   0.00 |   0.02
+                                                    |  50.00 |   0.00 |   0.00 |   0.00 |  50.00 |   0.00 |
+                                                    |   0.01 |   0.00 |   0.00 |   0.00 |   0.12 |   0.00 |
                                    -----------------+--------+--------+--------+--------+--------+--------+
-                                   (829) fx_nos     |    810 |      0 |      0 |      0 |     24 |      0 |    834
-                                                    |   0.61 |   0.00 |   0.00 |   0.00 |   0.02 |   0.00 |   0.62
-                                                    |  97.12 |   0.00 |   0.00 |   0.00 |   2.88 |   0.00 |
-                                                    |   0.94 |   0.00 |   0.00 |   0.00 |   0.17 |   0.00 |
+                                   (829) fx_nos     |    165 |      0 |      0 |      0 |      2 |      0 |    167
+                                                    |   0.53 |   0.00 |   0.00 |   0.00 |   0.01 |   0.00 |   0.53
+                                                    |  98.80 |   0.00 |   0.00 |   0.00 |   1.20 |   0.00 |
+                                                    |   0.75 |   0.00 |   0.00 |   0.00 |   0.08 |   0.00 |
                                    -----------------+--------+--------+--------+--------+--------+--------+
-                                   Total               86092    19066     7056      473    14334     6428   133449
-                                                       64.51    14.29     5.29     0.35    10.74     4.82   100.00
+                                   Total               22016     3650     2010      135     2416     1157    31384
+                                                       70.15    11.63     6.40     0.43     7.70     3.69   100.00
 
 
                                                                                 Cumulative    Cumulative
                                              trauma    Frequency     Percent     Frequency      Percent
                                              -----------------------------------------------------------
-                                                         115725       86.72        115725        86.72  
-                                             1            17724       13.28        133449       100.00  
+                                                          26835       85.51         26835        85.51  
+                                             1             4549       14.49         31384       100.00  
  
  
  
@@ -1061,234 +1058,234 @@ NOTE: DATA statement used (Total process time):
  
  
                                                                   queryFractures.sas
-NOTE: There were 133449 observations read from the data set WORK.FX_DGNS_4.
+NOTE: There were 31384 observations read from the data set WORK.FX_DGNS_4.
 NOTE: The PROCEDURE FREQ printed pages 2-5.
 NOTE: PROCEDURE FREQ used (Total process time):
-      real time           0.42 seconds
-      cpu time            0.28 seconds
+      real time           0.39 seconds
+      cpu time            0.21 seconds
       
 
-561        
-562        *goto 002_fx_epi.sas;
-563        
-564        
-565        
-566        
-567        /*
-568        START OF 002_fx_data.sas
-569         */
-570        
-571        /*all the claims to define episode sequence */
-572        data _dat0(keep=
-573        PATID ENCOUNTERID ADMIT_DATE DISCHARGE_DATE BEGIN_DATE END_DATE DX DX_TYPE PDX  /* SOURCE */ ENC_TYPE fx_site px px_date
-574        site cq spine_image trauma_date trauma );
-575        set fx_dgns_4 fx_excare Fx_prcd(rename=tx_site=fx_site);
-576        run;
+576        
+577        *goto 002_fx_epi.sas;
+578        
+579        
+580        
+581        
+582        /*
+583        START OF 002_fx_data.sas
+584         */
+585        
+586        /*all the claims to define episode sequence */
+587        data _dat0(keep=
+588        PATID ENCOUNTERID ADMIT_DATE DISCHARGE_DATE BEGIN_DATE END_DATE DX DX_TYPE PDX  /* SOURCE */ ENC_TYPE fx_site px px_date
+589        site cq spine_image trauma_date trauma );
+590        set fx_dgns_4 fx_excare Fx_prcd(rename=tx_site=fx_site);
+591        run;
 
-NOTE: There were 133449 observations read from the data set WORK.FX_DGNS_4.
-NOTE: There were 21870 observations read from the data set WORK.FX_EXCARE.
-NOTE: There were 13449 observations read from the data set WORK.FX_PRCD.
-NOTE: The data set WORK._DAT0 has 168768 observations and 18 variables.
+NOTE: There were 31384 observations read from the data set WORK.FX_DGNS_4.
+NOTE: There were 4120 observations read from the data set WORK.FX_EXCARE.
+NOTE: There were 3604 observations read from the data set WORK.FX_PRCD.
+NOTE: The data set WORK._DAT0 has 39108 observations and 18 variables.
 NOTE: DATA statement used (Total process time):
-      real time           0.18 seconds
-      cpu time            0.15 seconds
+      real time           0.06 seconds
+      cpu time            0.01 seconds
       
 
-577        proc sort data=_dat0; by PATID fx_site BEGIN_DATE END_DATE; run;
+592        proc sort data=_dat0; by PATID fx_site BEGIN_DATE END_DATE; run;
 
-NOTE: There were 168768 observations read from the data set WORK._DAT0.
-NOTE: The data set WORK._DAT0 has 168768 observations and 18 variables.
+NOTE: There were 39108 observations read from the data set WORK._DAT0.
+NOTE: The data set WORK._DAT0 has 39108 observations and 18 variables.
 NOTE: PROCEDURE SORT used (Total process time):
-      real time           0.31 seconds
-      cpu time            0.45 seconds
+      real time           0.10 seconds
+      cpu time            0.06 seconds
       
 
-578        /*for each claim define start and end date applicable to IP NH and NH*/
-579        data _dat1;
-580        set _dat0;
-581        length start_date end_date 4;
-582        format start_date end_date mmddyy10.;
-11                                                                  The SAS System                                          17:45 Monday, May 21, 2018
+593        /*for each claim define start and end date applicable to IP NH and NH*/
+594        data _dat1;
+595        set _dat0;
+596        length start_date end_date 4;
+597        format start_date end_date mmddyy10.;
+598        by PATID fx_site BEGIN_DATE END_DATE;
+599        start_date=min(ADMIT_DATE, BEGIN_DATE);
+600        end_date=max(DISCHARGE_DATE, End_DATE);
+11                                                                  The SAS System                                        09:40 Thursday, May 24, 2018
 
-583        by PATID fx_site BEGIN_DATE END_DATE;
-584        start_date=min(ADMIT_DATE, BEGIN_DATE);
-585        end_date=max(DISCHARGE_DATE, End_DATE);
-586        run;
+601        run;
 
 NOTE: Missing values were generated as a result of performing an operation on missing values.
       Each place is given by: (Number of times) at (Line):(Column).
-      616 at 584:12   
-NOTE: There were 168768 observations read from the data set WORK._DAT0.
-NOTE: The data set WORK._DAT1 has 168768 observations and 19 variables.
+      166 at 599:12   
+NOTE: There were 39108 observations read from the data set WORK._DAT0.
+NOTE: The data set WORK._DAT1 has 39108 observations and 19 variables.
 NOTE: DATA statement used (Total process time):
-      real time           0.18 seconds
-      cpu time            0.15 seconds
+      real time           0.07 seconds
+      cpu time            0.04 seconds
       
 
-587        proc sort data=_dat1; by PATID fx_site start_date end_date; run;
+602        proc sort data=_dat1; by PATID fx_site start_date end_date; run;
 
-NOTE: There were 168768 observations read from the data set WORK._DAT1.
-NOTE: The data set WORK._DAT1 has 168768 observations and 19 variables.
+NOTE: There were 39108 observations read from the data set WORK._DAT1.
+NOTE: The data set WORK._DAT1 has 39108 observations and 19 variables.
 NOTE: PROCEDURE SORT used (Total process time):
-      real time           0.29 seconds
-      cpu time            0.51 seconds
+      real time           0.11 seconds
+      cpu time            0.07 seconds
       
 
-588        
-589        /* generate unique episode sequence ID */
-590        data _dat2(drop=end_date_max lag_end_date_max _gap);
-591        set _dat1;
-592        length lag_end_date_max end_date_max 4;
-593        format lag_end_date_max end_date_max mmddyy10.;
-594        
-595        by PATID fx_site start_date end_date;
-596        retain seq 0;
-597        
-598        /*if current claims end date > all previouse claim end date in sequence, then update*/
-599        end_date_max=max(end_date,end_date_max);
-600        lag_end_date_max=lag(end_date_max);
-601        
-602        if first.fx_site then lag_end_date_max=.;
-603        _gap=start_date-lag_end_date_max;
-604        
-605        /*if current claims start date >90 days after all previouse claim end date in sequence,
-606        then start new sequence*/
-607        if first.fx_site or start_date-lag_end_date_max>90 then do;
-608            end_date_max=end_date;
+603        
+604        /* generate unique episode sequence ID */
+605        data _dat2(drop=end_date_max lag_end_date_max _gap);
+606        set _dat1;
+607        length lag_end_date_max end_date_max 4;
+608        format lag_end_date_max end_date_max mmddyy10.;
 609        
-610            seq+1;
-611        end;
-612        run;
+610        by PATID fx_site start_date end_date;
+611        retain seq 0;
+612        
+613        /*if current claims end date > all previouse claim end date in sequence, then update*/
+614        end_date_max=max(end_date,end_date_max);
+615        lag_end_date_max=lag(end_date_max);
+616        
+617        if first.fx_site then lag_end_date_max=.;
+618        _gap=start_date-lag_end_date_max;
+619        
+620        /*if current claims start date >90 days after all previouse claim end date in sequence,
+621        then start new sequence*/
+622        if first.fx_site or start_date-lag_end_date_max>90 then do;
+623            end_date_max=end_date;
+624        
+625            seq+1;
+626        end;
+627        run;
 
 NOTE: Missing values were generated as a result of performing an operation on missing values.
       Each place is given by: (Number of times) at (Line):(Column).
-      19391 at 603:16   19391 at 607:31   
-NOTE: There were 168768 observations read from the data set WORK._DAT1.
-NOTE: The data set WORK._DAT2 has 168768 observations and 20 variables.
+      4647 at 618:16   4647 at 622:31   
+NOTE: There were 39108 observations read from the data set WORK._DAT1.
+NOTE: The data set WORK._DAT2 has 39108 observations and 20 variables.
 NOTE: DATA statement used (Total process time):
-      real time           0.20 seconds
-      cpu time            0.18 seconds
+      real time           0.07 seconds
+      cpu time            0.06 seconds
       
 
-613        proc sort data=_dat2; by seq;run;
+628        proc sort data=_dat2; by seq;run;
 
-NOTE: There were 168768 observations read from the data set WORK._DAT2.
-NOTE: The data set WORK._DAT2 has 168768 observations and 20 variables.
+NOTE: There were 39108 observations read from the data set WORK._DAT2.
+NOTE: The data set WORK._DAT2 has 39108 observations and 20 variables.
 NOTE: PROCEDURE SORT used (Total process time):
-      real time           0.27 seconds
-      cpu time            0.34 seconds
+      real time           0.09 seconds
+      cpu time            0.06 seconds
       
 
-614        proc sql;
-615        /*episode sequence start date*/
-616        create table seq_start as
-12                                                                  The SAS System                                          17:45 Monday, May 21, 2018
+629        proc sql;
+630        /*episode sequence start date*/
+631        create table seq_start as
+632        select patid, seq, min(start_date) as seq_start_date length=4 format=mmddyy10.
+633         from _dat2
+634         where substr(dx,1,4) not in ('V541' 'V542')
+12                                                                  The SAS System                                        09:40 Thursday, May 24, 2018
 
-617        select patid, seq, min(start_date) as seq_start_date length=4 format=mmddyy10.
-618         from _dat2
-619         where substr(dx,1,4) not in ('V541' 'V542')
-620         group by patid, seq
-621         order by patid, seq;
-NOTE: Table WORK.SEQ_START created, with 20307 rows and 3 columns.
+635         group by patid, seq
+636         order by patid, seq;
+NOTE: Table WORK.SEQ_START created, with 5041 rows and 3 columns.
 
-622        /*episode sequence end date*/
-623        create table seq_end as
-624        select patid, seq,
-625         max(start_date) as seq_end_date length=4 format=mmddyy10. from _dat2
-626         group by patid, seq
-627         order by patid, seq;
-NOTE: Table WORK.SEQ_END created, with 24352 rows and 3 columns.
+637        /*episode sequence end date*/
+638        create table seq_end as
+639        select patid, seq,
+640         max(start_date) as seq_end_date length=4 format=mmddyy10. from _dat2
+641         group by patid, seq
+642         order by patid, seq;
+NOTE: Table WORK.SEQ_END created, with 5801 rows and 3 columns.
 
-628        quit;
+643        quit;
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           0.46 seconds
-      cpu time            0.59 seconds
+      real time           0.45 seconds
+      cpu time            0.32 seconds
       
 
-629        /*episode sequence case qualifier indicator and trauma*/
-630        data seq_cq(keep=patid seq seq_cq seq_trauma fx_site);
-631        set _dat2;
-632        by patid seq;
-633        length seq_cq $4 seq_trauma $1;
-634        retain seq_cq seq_trauma;
-635        if first.seq then do;
-636            seq_cq="0000";
-637            seq_trauma="0";
-638        end;
-639        if trauma="1" then seq_trauma=trauma;
-640        do i=1 to 4;
-641        if substr(cq,i,1)>substr(seq_cq,i,1) then substr(seq_cq,i,1)=substr(cq,i,1);
-642        end;
-643        if last.seq then output;
-644        run;
+644        /*episode sequence case qualifier indicator and trauma*/
+645        data seq_cq(keep=patid seq seq_cq seq_trauma fx_site);
+646        set _dat2;
+647        by patid seq;
+648        length seq_cq $4 seq_trauma $1;
+649        retain seq_cq seq_trauma;
+650        if first.seq then do;
+651            seq_cq="0000";
+652            seq_trauma="0";
+653        end;
+654        if trauma="1" then seq_trauma=trauma;
+655        do i=1 to 4;
+656        if substr(cq,i,1)>substr(seq_cq,i,1) then substr(seq_cq,i,1)=substr(cq,i,1);
+657        end;
+658        if last.seq then output;
+659        run;
 
-NOTE: There were 168768 observations read from the data set WORK._DAT2.
-NOTE: The data set WORK.SEQ_CQ has 24352 observations and 5 variables.
+NOTE: There were 39108 observations read from the data set WORK._DAT2.
+NOTE: The data set WORK.SEQ_CQ has 5801 observations and 5 variables.
 NOTE: DATA statement used (Total process time):
-      real time           0.17 seconds
-      cpu time            0.15 seconds
+      real time           0.07 seconds
+      cpu time            0.06 seconds
       
 
-645        proc freq data=seq_cq; tables seq_cq seq_trauma fx_site; run;
+660        proc freq data=seq_cq; tables seq_cq seq_trauma fx_site; run;
 
-                                                                  --- AS project ---                                    17:45 Monday, May 21, 2018   6
+                                                                  --- AS project ---                                  09:40 Thursday, May 24, 2018   6
 
                                                                   The FREQ Procedure
 
                                                                                 Cumulative    Cumulative
                                              seq_cq    Frequency     Percent     Frequency      Percent
                                              -----------------------------------------------------------
-                                             0000         15963       65.55         15963        65.55  
-                                             0004          1502        6.17         17465        71.72  
-                                             0030          1140        4.68         18605        76.40  
-                                             0034            41        0.17         18646        76.57  
-                                             0200          1827        7.50         20473        84.07  
-                                             0204           289        1.19         20762        85.26  
-                                             0230            78        0.32         20840        85.58  
-                                             0234             8        0.03         20848        85.61  
-                                             1000           458        1.88         21306        87.49  
-                                             1004           191        0.78         21497        88.28  
-                                             1030            76        0.31         21573        88.59  
-                                             1034            12        0.05         21585        88.64  
-                                             1200          1396        5.73         22981        94.37  
-                                             1204          1062        4.36         24043        98.73  
-                                             1230           250        1.03         24293        99.76  
-                                             1234            59        0.24         24352       100.00  
+                                             0000          4176       71.99          4176        71.99  
+                                             0004           369        6.36          4545        78.35  
+                                             0030           350        6.03          4895        84.38  
+                                             0034             8        0.14          4903        84.52  
+                                             0200           300        5.17          5203        89.69  
+                                             0204            26        0.45          5229        90.14  
+                                             0230            14        0.24          5243        90.38  
+                                             1000            97        1.67          5340        92.05  
+                                             1004            35        0.60          5375        92.66  
+                                             1030            17        0.29          5392        92.95  
+                                             1034             1        0.02          5393        92.97  
+                                             1200           245        4.22          5638        97.19  
+                                             1204           109        1.88          5747        99.07  
+                                             1230            46        0.79          5793        99.86  
+                                             1234             8        0.14          5801       100.00  
 
 
                                              seq_                               Cumulative    Cumulative
                                              trauma    Frequency     Percent     Frequency      Percent
                                              -----------------------------------------------------------
-                                             0            21808       89.55         21808        89.55  
-                                             1             2544       10.45         24352       100.00  
+                                             0             5190       89.47          5190        89.47  
+                                             1              611       10.53          5801       100.00  
 
 
                                                                                           Cumulative    Cumulative
                                     fx_site                      Frequency     Percent     Frequency      Percent
                                     ------------------------------------------------------------------------------
-                                    (7331) pathologic nos/nec         604        2.48           604         2.48  
-                                    (800-804) skull/face              523        2.15          1127         4.63  
-                                    (805, 806, 73313) spine          5937       24.38          7064        29.01  
-                                    (807) rib/sternum/trachea        1314        5.40          8378        34.40  
-                                    (808) pelvis                      506        2.08          8884        36.48  
-                                    (809) trunk bones                  24        0.10          8908        36.58  
-                                    (810) clavicle                    292        1.20          9200        37.78  
-                                    (811) scapula                     114        0.47          9314        38.25  
-                                    (812, 73311) humerus              994        4.08         10308        42.33  
-                                    (813, 73312) radius_ulna         1220        5.01         11528        47.34  
-                                    (814) carpal                      482        1.98         12010        49.32  
-                                    (815-817) hand/fingers            861        3.54         12871        52.85  
-                                    (818-819) arms mult                25        0.10         12896        52.96  
-                                    (820, 73314) hip                 3319       13.63         16215        66.59  
-                                    (821, 73315) femur               1103        4.53         17318        71.12  
-                                    (822) patella                     624        2.56         17942        73.68  
-                                    (823, 73316) tib_fib              831        3.41         18773        77.09  
-                                    (824) ankle                       984        4.04         19757        81.13  
-                                    (825) tarsal_metatarsal          1180        4.85         20937        85.98  
-                                    (826) foot_phalanges              688        2.83         21625        88.80  
-                                    (827) lower_limb                   37        0.15         21662        88.95  
-                                    (828) legs+arm/rib                  7        0.03         21669        88.98  
-                                    (829) fx_nos                     2683       11.02         24352       100.00  
+                                    (7331) pathologic nos/nec         109        1.88           109         1.88  
+                                    (800-804) skull/face              126        2.17           235         4.05  
+                                    (805, 806, 73313) spine          1145       19.74          1380        23.79  
+                                    (807) rib/sternum/trachea         290        5.00          1670        28.79  
+                                    (808) pelvis                      111        1.91          1781        30.70  
+                                    (809) trunk bones                   4        0.07          1785        30.77  
+                                    (810) clavicle                    103        1.78          1888        32.55  
+                                    (811) scapula                      23        0.40          1911        32.94  
+                                    (812, 73311) humerus              217        3.74          2128        36.68  
+                                    (813, 73312) radius_ulna          356        6.14          2484        42.82  
+                                    (814) carpal                      140        2.41          2624        45.23  
+                                    (815-817) hand/fingers            294        5.07          2918        50.30  
+                                    (818-819) arms mult                 4        0.07          2922        50.37  
+                                    (820, 73314) hip                  909       15.67          3831        66.04  
+                                    (821, 73315) femur                230        3.96          4061        70.01  
+                                    (822) patella                     162        2.79          4223        72.80  
+                                    (823, 73316) tib_fib              194        3.34          4417        76.14  
+                                    (824) ankle                       268        4.62          4685        80.76  
+                                    (825) tarsal_metatarsal           390        6.72          5075        87.48  
+                                    (826) foot_phalanges              229        3.95          5304        91.43  
+                                    (827) lower_limb                   13        0.22          5317        91.66  
+                                    (828) legs+arm/rib                  5        0.09          5322        91.74  
+                                    (829) fx_nos                      479        8.26          5801       100.00  
+ 
  
  
  
@@ -1305,107 +1302,107 @@ NOTE: DATA statement used (Total process time):
  
  
                                                                   queryFractures.sas
-NOTE: There were 24352 observations read from the data set WORK.SEQ_CQ.
+NOTE: There were 5801 observations read from the data set WORK.SEQ_CQ.
 NOTE: The PROCEDURE FREQ printed page 6.
 NOTE: PROCEDURE FREQ used (Total process time):
-      real time           0.14 seconds
-      cpu time            0.06 seconds
-      
-
-646        
-647        data seq_cq_date;
-648        merge seq_cq seq_start seq_end;
-649        by patid seq;
-650        length site_order $1;
-651        if fx_site='(820, 73314) hip' then site_order='1';
-652        if fx_site='(821, 73315) femur' then site_order='2';
-653        if fx_site='(808) pelvis' then site_order='3';
-654        if fx_site='(805, 806, 73313) spine' then site_order='4';
-655        if fx_site='(812, 73311) humerus' then site_order='5';
-656        if fx_site='(813, 73312) radius_ulna' then site_order='6';
-657        if fx_site='(823, 73316) tib_fib' then site_order='7';
-658        if fx_site='(824) ankle' then site_order='8';
-659        if fx_site='(810) clavicle' then site_order='9';
-660        run;
-
-NOTE: There were 24352 observations read from the data set WORK.SEQ_CQ.
-NOTE: There were 20307 observations read from the data set WORK.SEQ_START.
-13                                                                  The SAS System                                          17:45 Monday, May 21, 2018
-
-NOTE: There were 24352 observations read from the data set WORK.SEQ_END.
-NOTE: The data set WORK.SEQ_CQ_DATE has 24352 observations and 8 variables.
-NOTE: DATA statement used (Total process time):
-      real time           0.07 seconds
-      cpu time            0.06 seconds
+      real time           0.09 seconds
+      cpu time            0.04 seconds
       
 
 661        
-662        data _tmp_combo;
-663        set seq_cq_date;
-664        where site_order^=" " and seq_cq^="0000" and seq_cq^=" ";
-665        run;
+662        data seq_cq_date;
+663        merge seq_cq seq_start seq_end;
+664        by patid seq;
+665        length site_order $1;
+666        if fx_site='(820, 73314) hip' then site_order='1';
+667        if fx_site='(821, 73315) femur' then site_order='2';
+668        if fx_site='(808) pelvis' then site_order='3';
+669        if fx_site='(805, 806, 73313) spine' then site_order='4';
+670        if fx_site='(812, 73311) humerus' then site_order='5';
+671        if fx_site='(813, 73312) radius_ulna' then site_order='6';
+672        if fx_site='(823, 73316) tib_fib' then site_order='7';
+673        if fx_site='(824) ankle' then site_order='8';
+674        if fx_site='(810) clavicle' then site_order='9';
+675        run;
 
-NOTE: There were 6969 observations read from the data set WORK.SEQ_CQ_DATE.
-      WHERE (site_order not = ' ') and seq_cq not in (' ', '0000');
-NOTE: The data set WORK._TMP_COMBO has 6969 observations and 8 variables.
+NOTE: There were 5801 observations read from the data set WORK.SEQ_CQ.
+NOTE: There were 5041 observations read from the data set WORK.SEQ_START.
+NOTE: There were 5801 observations read from the data set WORK.SEQ_END.
+NOTE: The data set WORK.SEQ_CQ_DATE has 5801 observations and 8 variables.
 NOTE: DATA statement used (Total process time):
-      real time           0.04 seconds
+13                                                                  The SAS System                                        09:40 Thursday, May 24, 2018
+
+      real time           0.06 seconds
       cpu time            0.03 seconds
       
 
-666        
-667        * define combo or alone fx;
-668        data seq_COMBO(
-669        keep=patid seq seq_cq seq_start_date alone_combo fx_site site_order)
-670        ;
-671        if _n_=1 then do;
-672            declare hash hpid(dataset:"_tmp_combo(where=(seq_cq^='0000' and seq_cq^=' ')
-673                    rename=(seq_start_date=seq_start_date2  fx_site= fx_site_combo seq=seq_COMBO))", ordered: 'a', multidata:"Y");
-674            rc=hpid.defineKey("patid");
-675            rc=hpid.defineData("patid","seq_start_date2", "fx_site_combo", "seq_COMBO");
-676            rc=hpid.defineDone();
-677        end;
-678        if 0 then set _tmp_combo(rename=(seq_start_date=seq_start_date2 fx_site= fx_site_combo seq=seq_COMBO));
-679        set _tmp_combo(where=(seq_cq^="0000" and seq_cq^=" ") );
-680        by patid seq;
-681        length  index_fx_begin 4 alone_combo $5;
-682        alone_combo="alone";
-683            format index_fx_begin mmddyy10.;
-684            index_fx_begin=seq_start_date;
-685        
-686         rc=hpid.find(key:patid);
-687        
-688         do while (rc = 0);
-689         if rc=0 and abs(seq_start_date-seq_start_date2) <=30 and fx_site_combo^=fx_site then alone_combo= 'combo';
-690         rc=hpid.find_next();
-691         *hpid.has_next(result:r);
-692        end;
-693        if alone_combo="alone" then do;
-694            seq_start_date2=.; fx_site_combo=" "; seq_COMBO=.;
-695        end;
-696        run;
+676        
+677        data _tmp_combo;
+678        set seq_cq_date;
+679        where site_order^=" " and seq_cq^="0000" and seq_cq^=" ";
+680        run;
 
-NOTE: There were 6969 observations read from the data set WORK._TMP_COMBO.
-      WHERE seq_cq not in (' ', '0000');
-NOTE: There were 6969 observations read from the data set WORK._TMP_COMBO.
-      WHERE seq_cq not in (' ', '0000');
-NOTE: The data set WORK.SEQ_COMBO has 6969 observations and 7 variables.
+NOTE: There were 1292 observations read from the data set WORK.SEQ_CQ_DATE.
+      WHERE (site_order not = ' ') and seq_cq not in (' ', '0000');
+NOTE: The data set WORK._TMP_COMBO has 1292 observations and 8 variables.
 NOTE: DATA statement used (Total process time):
-      real time           0.07 seconds
-      cpu time            0.06 seconds
+      real time           0.03 seconds
+      cpu time            0.00 seconds
       
 
-697        proc freq data=seq_COMBO; tables alone_combo; run;
+681        
+682        * define combo or alone fx;
+683        data seq_COMBO(
+684        keep=patid seq seq_cq seq_start_date alone_combo fx_site site_order)
+685        ;
+686        if _n_=1 then do;
+687            declare hash hpid(dataset:"_tmp_combo(where=(seq_cq^='0000' and seq_cq^=' ')
+688                    rename=(seq_start_date=seq_start_date2  fx_site= fx_site_combo seq=seq_COMBO))", ordered: 'a', multidata:"Y");
+689            rc=hpid.defineKey("patid");
+690            rc=hpid.defineData("patid","seq_start_date2", "fx_site_combo", "seq_COMBO");
+691            rc=hpid.defineDone();
+692        end;
+693        if 0 then set _tmp_combo(rename=(seq_start_date=seq_start_date2 fx_site= fx_site_combo seq=seq_COMBO));
+694        set _tmp_combo(where=(seq_cq^="0000" and seq_cq^=" ") );
+695        by patid seq;
+696        length  index_fx_begin 4 alone_combo $5;
+697        alone_combo="alone";
+698            format index_fx_begin mmddyy10.;
+699            index_fx_begin=seq_start_date;
+700        
+701         rc=hpid.find(key:patid);
+702        
+703         do while (rc = 0);
+704         if rc=0 and abs(seq_start_date-seq_start_date2) <=30 and fx_site_combo^=fx_site then alone_combo= 'combo';
+705         rc=hpid.find_next();
+706         *hpid.has_next(result:r);
+707        end;
+708        if alone_combo="alone" then do;
+709            seq_start_date2=.; fx_site_combo=" "; seq_COMBO=.;
+710        end;
+711        run;
 
-                                                                  --- AS project ---                                    17:45 Monday, May 21, 2018   7
+NOTE: There were 1292 observations read from the data set WORK._TMP_COMBO.
+      WHERE seq_cq not in (' ', '0000');
+NOTE: There were 1292 observations read from the data set WORK._TMP_COMBO.
+      WHERE seq_cq not in (' ', '0000');
+NOTE: The data set WORK.SEQ_COMBO has 1292 observations and 7 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.06 seconds
+      cpu time            0.04 seconds
+      
+
+712        proc freq data=seq_COMBO; tables alone_combo; run;
+
+                                                                  --- AS project ---                                  09:40 Thursday, May 24, 2018   7
 
                                                                   The FREQ Procedure
 
                                              alone_                             Cumulative    Cumulative
                                              combo     Frequency     Percent     Frequency      Percent
                                              -----------------------------------------------------------
-                                             alone         6128       87.93          6128        87.93  
-                                             combo          841       12.07          6969       100.00  
+                                             alone         1146       88.70          1146        88.70  
+                                             combo          146       11.30          1292       100.00  
  
  
  
@@ -1471,86 +1468,86 @@ NOTE: DATA statement used (Total process time):
  
  
                                                                   queryFractures.sas
-NOTE: There were 6969 observations read from the data set WORK.SEQ_COMBO.
+NOTE: There were 1292 observations read from the data set WORK.SEQ_COMBO.
 NOTE: The PROCEDURE FREQ printed page 7.
 NOTE: PROCEDURE FREQ used (Total process time):
       real time           0.06 seconds
       cpu time            0.00 seconds
       
 
-14                                                                  The SAS System                                          17:45 Monday, May 21, 2018
+713        
+714        proc sort data = Work.seq_COMBO;
+715          by patid seq_start_date;
+14                                                                  The SAS System                                        09:40 Thursday, May 24, 2018
 
-698        
-699        proc sort data = Work.seq_COMBO;
-700          by patid seq_start_date;
-701        run;
+716        run;
 
-NOTE: There were 6969 observations read from the data set WORK.SEQ_COMBO.
-NOTE: The data set WORK.SEQ_COMBO has 6969 observations and 7 variables.
+NOTE: There were 1292 observations read from the data set WORK.SEQ_COMBO.
+NOTE: The data set WORK.SEQ_COMBO has 1292 observations and 7 variables.
 NOTE: PROCEDURE SORT used (Total process time):
       real time           0.04 seconds
       cpu time            0.01 seconds
       
 
-702        
-703        data combo_seq;
-704        set seq_COMBO;
-705        by patid seq_start_date;
-706        length combo_fx_site $30. combo_seq 4;
-707        retain combo_seq 0 combo_fx_site;
-708        if first.patid or seq_start_date-lag(seq_start_date) then combo_seq=1+combo_seq;
-709        where seq_cq^='0000' and seq_cq^=' ';
-710        if combo_fx_site=" " or ""<site_order<lag(site_order) then combo_fx_site=fx_site;
-711        run;
+717        
+718        data combo_seq;
+719        set seq_COMBO;
+720        by patid seq_start_date;
+721        length combo_fx_site $30. combo_seq 4;
+722        retain combo_seq 0 combo_fx_site;
+723        if first.patid or seq_start_date-lag(seq_start_date) then combo_seq=1+combo_seq;
+724        where seq_cq^='0000' and seq_cq^=' ';
+725        if combo_fx_site=" " or ""<site_order<lag(site_order) then combo_fx_site=fx_site;
+726        run;
 
 NOTE: Missing values were generated as a result of performing an operation on missing values.
       Each place is given by: (Number of times) at (Line):(Column).
-      1 at 708:33   
-NOTE: There were 6969 observations read from the data set WORK.SEQ_COMBO.
+      1 at 723:33   
+NOTE: There were 1292 observations read from the data set WORK.SEQ_COMBO.
       WHERE seq_cq not in (' ', '0000');
-NOTE: The data set WORK.COMBO_SEQ has 6969 observations and 9 variables.
+NOTE: The data set WORK.COMBO_SEQ has 1292 observations and 9 variables.
 NOTE: DATA statement used (Total process time):
       real time           0.04 seconds
       cpu time            0.01 seconds
       
 
-712        
-713        proc sort data = Work.seq_COMBO;
-714          by patid seq;
-715        run;
+727        
+728        proc sort data = Work.seq_COMBO;
+729          by patid seq;
+730        run;
 
-NOTE: There were 6969 observations read from the data set WORK.SEQ_COMBO.
-NOTE: The data set WORK.SEQ_COMBO has 6969 observations and 7 variables.
+NOTE: There were 1292 observations read from the data set WORK.SEQ_COMBO.
+NOTE: The data set WORK.SEQ_COMBO has 1292 observations and 7 variables.
 NOTE: PROCEDURE SORT used (Total process time):
       real time           0.04 seconds
       cpu time            0.01 seconds
       
 
-716        
-717        data FX_CLM_DB;
-718        merge _dat2 seq_start seq_end seq_cq(drop=fx_site) seq_COMBO(keep=patid seq alone_combo);
-719        by patid seq;
-720        run;
+731        
+732        data FX_CLM_DB;
+733        merge _dat2 seq_start seq_end seq_cq(drop=fx_site) seq_COMBO(keep=patid seq alone_combo);
+734        by patid seq;
+735        run;
 
-NOTE: There were 168768 observations read from the data set WORK._DAT2.
-NOTE: There were 20307 observations read from the data set WORK.SEQ_START.
-NOTE: There were 24352 observations read from the data set WORK.SEQ_END.
-NOTE: There were 24352 observations read from the data set WORK.SEQ_CQ.
-NOTE: There were 6969 observations read from the data set WORK.SEQ_COMBO.
-NOTE: The data set WORK.FX_CLM_DB has 168768 observations and 25 variables.
+NOTE: There were 39108 observations read from the data set WORK._DAT2.
+NOTE: There were 5041 observations read from the data set WORK.SEQ_START.
+NOTE: There were 5801 observations read from the data set WORK.SEQ_END.
+NOTE: There were 5801 observations read from the data set WORK.SEQ_CQ.
+NOTE: There were 1292 observations read from the data set WORK.SEQ_COMBO.
+NOTE: The data set WORK.FX_CLM_DB has 39108 observations and 25 variables.
 NOTE: DATA statement used (Total process time):
-      real time           0.31 seconds
-      cpu time            0.28 seconds
+      real time           0.12 seconds
+      cpu time            0.11 seconds
       
 
-721        
-722        proc sql;
-723        select count(distinct seq) from FX_CLM_DB;
-                                                                  --- AS project ---                                    17:45 Monday, May 21, 2018   8
+736        
+737        proc sql;
+738        select count(distinct seq) from FX_CLM_DB;
+                                                                  --- AS project ---                                  09:40 Thursday, May 24, 2018   8
 
                                                                                
                                                                        --------
-                                                                          24352
+                                                                           5801
  
  
  
@@ -1620,102 +1617,102 @@ NOTE: DATA statement used (Total process time):
  
  
                                                                   queryFractures.sas
-724        quit;
+739        quit;
 NOTE: The PROCEDURE SQL printed page 8.
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           0.17 seconds
-      cpu time            0.15 seconds
-      
-15                                                                  The SAS System                                          17:45 Monday, May 21, 2018
-
-
-725        
-726        
-727        
-728        
-729        /*
-730        Collapse to fracture episodes
-731        
-732        Q: Why are some seq_start_date values missing?
-733         */
-734        proc sort
-735          data = Work.fx_clm_db
-736          out = Work.fractureEpisodes (drop = seq
-737                                       rename = (seq_start_date = fractureEpisodeStart
-738                                                 seq_end_date = fractureEpisodeEnd
-739                                                 fx_site = fractureSite))
-740          nodupkey;
-741          by patid seq seq_start_date seq_end_date fx_site;
-742        run;
-
-NOTE: There were 168768 observations read from the data set WORK.FX_CLM_DB.
-NOTE: 144416 observations with duplicate key values were deleted.
-NOTE: The data set WORK.FRACTUREEPISODES has 24352 observations and 24 variables.
-NOTE: PROCEDURE SORT used (Total process time):
-      real time           0.26 seconds
-      cpu time            0.39 seconds
+      real time           0.07 seconds
+      cpu time            0.03 seconds
       
 
+740        
+741        
+15                                                                  The SAS System                                        09:40 Thursday, May 24, 2018
+
+742        
 743        
-744        proc sql;
-745          create table DT.fractureEpisodesPrev as
-746            select A.database,
-747                   A.exposure,
-748                   A.indexGNN,
-749                   A.indexDate,
-750                   A.ASCohortDate,
-751                   A.indexID,
-752                   A.age,
-753                   A.sex,
-754                   B.*,
-755                   case
-756                     when prxmatch("/spine/", B.fractureSite) then "Clinical vertebral fracture"
-757                     when prxmatch("/(hip)|(pelvis)|(femur)|(humerus)|(radius)|(ulna)/", B.fractureSite) then "Non-vertebral osteoporotic fracture"
-758                     else ""
-759                     end as fractureType
-760            from DT.indexLookup A inner join
-761                 Work.fractureEpisodes B on (A.patid = B.patid);
-NOTE: Table DT.FRACTUREEPISODESPREV created, with 10161 rows and 33 columns.
+744        /*
+745        Collapse to fracture episodes
+746        
+747        Q: Why are some seq_start_date values missing?
+748         */
+749        proc sort
+750          data = Work.fx_clm_db
+751          out = Work.fractureEpisodes (drop = seq
+752                                       rename = (seq_start_date = fractureEpisodeStart
+753                                                 seq_end_date = fractureEpisodeEnd
+754                                                 fx_site = fractureSite))
+755          nodupkey;
+756          by patid seq seq_start_date seq_end_date fx_site;
+757        run;
 
-762          create table Work.summaryFractureEpisodesPrev as
-763            select "DT.fractureEpisodesPrev" as table,
-764                   fractureType, fractureSite,
-765                   count(distinct patid) as countDistinctPatid,
-766                   count(*) as countFractureEpisodes
-767            from DT.fractureEpisodesPrev
-768            group by fractureType, fractureSite;
+NOTE: There were 39108 observations read from the data set WORK.FX_CLM_DB.
+NOTE: 33307 observations with duplicate key values were deleted.
+NOTE: The data set WORK.FRACTUREEPISODES has 5801 observations and 24 variables.
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           0.10 seconds
+      cpu time            0.06 seconds
+      
+
+758        
+759        proc sql;
+760          create table DT.fractureEpisodesPrev as
+761            select A.database,
+762                   A.exposure,
+763                   A.indexGNN,
+764                   A.indexDate,
+765                   A.ASCohortDate,
+766                   A.indexID,
+767                   A.age,
+768                   A.sex,
+769                   B.*,
+770                   case
+771                     when prxmatch("/spine/", B.fractureSite) then "Clinical vertebral fracture"
+772                     when prxmatch("/(hip)|(pelvis)|(femur)|(humerus)|(radius)|(ulna)/", B.fractureSite) then "Non-vertebral osteoporotic fracture"
+773                     else ""
+774                     end as fractureType
+775            from DT.indexLookup A inner join
+776                 Work.fractureEpisodes B on (A.patid = B.patid);
+NOTE: Table DT.FRACTUREEPISODESPREV created, with 10306 rows and 33 columns.
+
+777          create table Work.summaryFractureEpisodesPrev as
+778            select "DT.fractureEpisodesPrev" as table,
+779                   fractureType, fractureSite,
+780                   count(distinct patid) as countDistinctPatid,
+781                   count(*) as countFractureEpisodes
+782            from DT.fractureEpisodesPrev
+783            group by fractureType, fractureSite;
 NOTE: Table WORK.SUMMARYFRACTUREEPISODESPREV created, with 23 rows and 5 columns.
 
-769          select * from Work.summaryFractureEpisodesPrev;
-                                                                  --- AS project ---                                    17:45 Monday, May 21, 2018   9
+784          select * from Work.summaryFractureEpisodesPrev;
+                                                                  --- AS project ---                                  09:40 Thursday, May 24, 2018   9
 
                                                                                                                     count         count
                                                                                                                  Distinct      Fracture
                table                    fractureType                         fractureSite                           Patid      Episodes
                ------------------------------------------------------------------------------------------------------------------------
-               DT.fractureEpisodesPrev                                       (7331) pathologic nos/nec                 90           209
-               DT.fractureEpisodesPrev                                       (800-804) skull/face                     112           228
-               DT.fractureEpisodesPrev                                       (807) rib/sternum/trachea                257           514
+               DT.fractureEpisodesPrev                                       (7331) pathologic nos/nec                 91           211
+               DT.fractureEpisodesPrev                                       (800-804) skull/face                     116           235
+               DT.fractureEpisodesPrev                                       (807) rib/sternum/trachea                259           516
                DT.fractureEpisodesPrev                                       (809) trunk bones                          4             5
-               DT.fractureEpisodesPrev                                       (810) clavicle                            88           184
+               DT.fractureEpisodesPrev                                       (810) clavicle                            92           188
                DT.fractureEpisodesPrev                                       (811) scapula                             21            35
-               DT.fractureEpisodesPrev                                       (814) carpal                             128           271
-               DT.fractureEpisodesPrev                                       (815-817) hand/fingers                   266           521
+               DT.fractureEpisodesPrev                                       (814) carpal                             129           273
+               DT.fractureEpisodesPrev                                       (815-817) hand/fingers                   274           530
                DT.fractureEpisodesPrev                                       (818-819) arms mult                        4             8
-               DT.fractureEpisodesPrev                                       (822) patella                            128           267
-               DT.fractureEpisodesPrev                                       (823, 73316) tib_fib                     148           304
-               DT.fractureEpisodesPrev                                       (824) ankle                              216           425
-               DT.fractureEpisodesPrev                                       (825) tarsal_metatarsal                  298           677
-               DT.fractureEpisodesPrev                                       (826) foot_phalanges                     210           415
+               DT.fractureEpisodesPrev                                       (822) patella                            131           270
+               DT.fractureEpisodesPrev                                       (823, 73316) tib_fib                     151           308
+               DT.fractureEpisodesPrev                                       (824) ankle                              222           437
+               DT.fractureEpisodesPrev                                       (825) tarsal_metatarsal                  307           691
+               DT.fractureEpisodesPrev                                       (826) foot_phalanges                     215           421
                DT.fractureEpisodesPrev                                       (827) lower_limb                          11            21
-               DT.fractureEpisodesPrev                                       (828) legs+arm/rib                         4             5
-               DT.fractureEpisodesPrev                                       (829) fx_nos                             399           852
-               DT.fractureEpisodesPrev  Clinical vertebral fracture          (805, 806, 73313) spine                  705          2027
-               DT.fractureEpisodesPrev  Non-vertebral osteoporotic fracture  (808) pelvis                              96           183
-               DT.fractureEpisodesPrev  Non-vertebral osteoporotic fracture  (812, 73311) humerus                     165           360
-               DT.fractureEpisodesPrev  Non-vertebral osteoporotic fracture  (813, 73312) radius_ulna                 292           627
-               DT.fractureEpisodesPrev  Non-vertebral osteoporotic fracture  (820, 73314) hip                         703          1626
-               DT.fractureEpisodesPrev  Non-vertebral osteoporotic fracture  (821, 73315) femur                       180           397
+               DT.fractureEpisodesPrev                                       (828) legs+arm/rib                         5             6
+               DT.fractureEpisodesPrev                                       (829) fx_nos                             410           867
+               DT.fractureEpisodesPrev  Clinical vertebral fracture          (805, 806, 73313) spine                  726          2061
+               DT.fractureEpisodesPrev  Non-vertebral osteoporotic fracture  (808) pelvis                             100           188
+               DT.fractureEpisodesPrev  Non-vertebral osteoporotic fracture  (812, 73311) humerus                     168           364
+               DT.fractureEpisodesPrev  Non-vertebral osteoporotic fracture  (813, 73312) radius_ulna                 298           635
+               DT.fractureEpisodesPrev  Non-vertebral osteoporotic fracture  (820, 73314) hip                         715          1638
+               DT.fractureEpisodesPrev  Non-vertebral osteoporotic fracture  (821, 73315) femur                       181           398
  
  
  
@@ -1761,16 +1758,16 @@ NOTE: Table WORK.SUMMARYFRACTUREEPISODESPREV created, with 23 rows and 5 columns
  
  
                                                                   queryFractures.sas
-770          select "DT.fractureEpisodesPrev" as table,
-771                 sum(countDistinctPatid) as sumDistinctPatid,
-772                 sum(countFractureEpisodes) as sumFractureEpisodes
-773            from Work.summaryFractureEpisodesPrev;
-                                                                  --- AS project ---                                    17:45 Monday, May 21, 2018  10
+785          select "DT.fractureEpisodesPrev" as table,
+786                 sum(countDistinctPatid) as sumDistinctPatid,
+787                 sum(countFractureEpisodes) as sumFractureEpisodes
+788            from Work.summaryFractureEpisodesPrev;
+                                                                  --- AS project ---                                  09:40 Thursday, May 24, 2018  10
 
                                                                            sumDistinct   sumFracture
                                                  table                           Patid      Episodes
                                                  ---------------------------------------------------
-                                                 DT.fractureEpisodesPrev          4525         10161
+                                                 DT.fractureEpisodesPrev          4630         10306
  
  
  
@@ -1839,67 +1836,67 @@ NOTE: Table WORK.SUMMARYFRACTUREEPISODESPREV created, with 23 rows and 5 columns
  
  
                                                                   queryFractures.sas
-774        
-775          create table DT.fractureEpisodesInc as
-776            select A.database,
-777                   A.ENR_END_DATE,
-778                   A.DEATH_DATE,
-779                   A.exposure,
-780                   A.exposureStart,
-781                   A.exposureEnd,
-782                   A.daysExposed,
-16                                                                  The SAS System                                          17:45 Monday, May 21, 2018
+789        
+790          create table DT.fractureEpisodesInc as
+791            select A.database,
+792                   A.ENR_END_DATE,
+793                   A.DEATH_DATE,
+794                   A.exposure,
+795                   A.exposureStart,
+796                   A.exposureEnd,
+797                   A.daysExposed,
+798                   A.exposureID,
+799                   B.*,
+800                   case
+16                                                                  The SAS System                                        09:40 Thursday, May 24, 2018
 
-783                   A.exposureID,
-784                   B.*,
-785                   case
-786                     when prxmatch("/spine/", B.fractureSite) then "Clinical vertebral fracture"
-787                     when prxmatch("/(hip)|(pelvis)|(femur)|(humerus)|(radius)|(ulna)/", B.fractureSite) then "Non-vertebral osteoporotic fracture"
-788                     else ""
-789                     end as fractureType
-790            from DT.exposureTimeline A inner join
-791                 Work.fractureEpisodes B on (A.patid = B.patid  & A.exposureStart <= B.fractureEpisodeStart <= A.exposureEnd);
-NOTE: Table DT.FRACTUREEPISODESINC created, with 2818 rows and 33 columns.
+801                     when prxmatch("/spine/", B.fractureSite) then "Clinical vertebral fracture"
+802                     when prxmatch("/(hip)|(pelvis)|(femur)|(humerus)|(radius)|(ulna)/", B.fractureSite) then "Non-vertebral osteoporotic fracture"
+803                     else ""
+804                     end as fractureType
+805            from DT.exposureTimeline A inner join
+806                 Work.fractureEpisodes B on (A.patid = B.patid  & A.exposureStart <= B.fractureEpisodeStart <= A.exposureEnd);
+NOTE: Table DT.FRACTUREEPISODESINC created, with 2872 rows and 33 columns.
 
-792          create table Work.summaryFractureEpisodesInc as
-793            select "DT.fractureEpisodesInc" as table,
-794                   fractureType, fractureSite,
-795                   count(distinct patid) as countDistinctPatid,
-796                   count(*) as countFractureEpisodes
-797            from DT.fractureEpisodesInc
-798            group by fractureType, fractureSite;
+807          create table Work.summaryFractureEpisodesInc as
+808            select "DT.fractureEpisodesInc" as table,
+809                   fractureType, fractureSite,
+810                   count(distinct patid) as countDistinctPatid,
+811                   count(*) as countFractureEpisodes
+812            from DT.fractureEpisodesInc
+813            group by fractureType, fractureSite;
 NOTE: Table WORK.SUMMARYFRACTUREEPISODESINC created, with 23 rows and 5 columns.
 
-799          select * from Work.summaryFractureEpisodesInc;
-                                                                  --- AS project ---                                    17:45 Monday, May 21, 2018  11
+814          select * from Work.summaryFractureEpisodesInc;
+                                                                  --- AS project ---                                  09:40 Thursday, May 24, 2018  11
 
                                                                                                                    count         count
                                                                                                                 Distinct      Fracture
                table                   fractureType                         fractureSite                           Patid      Episodes
                -----------------------------------------------------------------------------------------------------------------------
-               DT.fractureEpisodesInc                                       (7331) pathologic nos/nec                 33            42
-               DT.fractureEpisodesInc                                       (800-804) skull/face                      60            65
-               DT.fractureEpisodesInc                                       (807) rib/sternum/trachea                162           179
+               DT.fractureEpisodesInc                                       (7331) pathologic nos/nec                 34            43
+               DT.fractureEpisodesInc                                       (800-804) skull/face                      62            67
+               DT.fractureEpisodesInc                                       (807) rib/sternum/trachea                163           180
                DT.fractureEpisodesInc                                       (809) trunk bones                          2             2
-               DT.fractureEpisodesInc                                       (810) clavicle                            50            52
+               DT.fractureEpisodesInc                                       (810) clavicle                            51            53
                DT.fractureEpisodesInc                                       (811) scapula                             16            18
-               DT.fractureEpisodesInc                                       (814) carpal                              53            58
-               DT.fractureEpisodesInc                                       (815-817) hand/fingers                   153           164
+               DT.fractureEpisodesInc                                       (814) carpal                              54            59
+               DT.fractureEpisodesInc                                       (815-817) hand/fingers                   157           168
                DT.fractureEpisodesInc                                       (818-819) arms mult                        3             3
-               DT.fractureEpisodesInc                                       (822) patella                             26            34
-               DT.fractureEpisodesInc                                       (823, 73316) tib_fib                      58            70
-               DT.fractureEpisodesInc                                       (824) ankle                              108           119
-               DT.fractureEpisodesInc                                       (825) tarsal_metatarsal                  167           207
-               DT.fractureEpisodesInc                                       (826) foot_phalanges                     118           121
+               DT.fractureEpisodesInc                                       (822) patella                             27            35
+               DT.fractureEpisodesInc                                       (823, 73316) tib_fib                      59            71
+               DT.fractureEpisodesInc                                       (824) ankle                              110           123
+               DT.fractureEpisodesInc                                       (825) tarsal_metatarsal                  169           209
+               DT.fractureEpisodesInc                                       (826) foot_phalanges                     120           124
                DT.fractureEpisodesInc                                       (827) lower_limb                           4             4
-               DT.fractureEpisodesInc                                       (828) legs+arm/rib                         2             2
+               DT.fractureEpisodesInc                                       (828) legs+arm/rib                         3             3
                DT.fractureEpisodesInc                                       (829) fx_nos                              27            33
-               DT.fractureEpisodesInc  Clinical vertebral fracture          (805, 806, 73313) spine                  445           649
-               DT.fractureEpisodesInc  Non-vertebral osteoporotic fracture  (808) pelvis                              57            59
-               DT.fractureEpisodesInc  Non-vertebral osteoporotic fracture  (812, 73311) humerus                      91           110
-               DT.fractureEpisodesInc  Non-vertebral osteoporotic fracture  (813, 73312) radius_ulna                 150           173
-               DT.fractureEpisodesInc  Non-vertebral osteoporotic fracture  (820, 73314) hip                         401           505
-               DT.fractureEpisodesInc  Non-vertebral osteoporotic fracture  (821, 73315) femur                       126           149
+               DT.fractureEpisodesInc  Clinical vertebral fracture          (805, 806, 73313) spine                  459           665
+               DT.fractureEpisodesInc  Non-vertebral osteoporotic fracture  (808) pelvis                              59            61
+               DT.fractureEpisodesInc  Non-vertebral osteoporotic fracture  (812, 73311) humerus                      93           112
+               DT.fractureEpisodesInc  Non-vertebral osteoporotic fracture  (813, 73312) radius_ulna                 155           178
+               DT.fractureEpisodesInc  Non-vertebral osteoporotic fracture  (820, 73314) hip                         407           511
+               DT.fractureEpisodesInc  Non-vertebral osteoporotic fracture  (821, 73315) femur                       127           150
  
  
  
@@ -1945,16 +1942,16 @@ NOTE: Table WORK.SUMMARYFRACTUREEPISODESINC created, with 23 rows and 5 columns.
  
  
                                                                   queryFractures.sas
-800          select "DT.fractureEpisodesInc" as table,
-801                 sum(countDistinctPatid) as sumDistinctPatid,
-802                 sum(countFractureEpisodes) as sumFractureEpisodes
-803            from Work.summaryFractureEpisodesInc;
-                                                                  --- AS project ---                                    17:45 Monday, May 21, 2018  12
+815          select "DT.fractureEpisodesInc" as table,
+816                 sum(countDistinctPatid) as sumDistinctPatid,
+817                 sum(countFractureEpisodes) as sumFractureEpisodes
+818            from Work.summaryFractureEpisodesInc;
+                                                                  --- AS project ---                                  09:40 Thursday, May 24, 2018  12
 
                                                                            sumDistinct   sumFracture
                                                   table                          Patid      Episodes
                                                   --------------------------------------------------
-                                                  DT.fractureEpisodesInc          2312          2818
+                                                  DT.fractureEpisodesInc          2361          2872
  
  
  
@@ -2023,98 +2020,98 @@ NOTE: Table WORK.SUMMARYFRACTUREEPISODESINC created, with 23 rows and 5 columns.
  
  
                                                                   queryFractures.sas
-804        quit;
+819        quit;
 NOTE: The PROCEDURE SQL printed pages 9-12.
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           0.92 seconds
-      cpu time            0.67 seconds
+      real time           1.01 seconds
+      cpu time            0.32 seconds
       
 
-805        
-806        
-807        
-808        
-809        /*
-810        CLEAN UP
-811        
-812        proc sql;
-813          drop table UCB.tempFracDxMPCD;
-814          drop table UCB.tempFracDxUCB;
-815          drop table UCB.tempFracDxSABR;
-816          drop table UCB.tempFracPxMPCD;
-817          drop table UCB.tempFracPxUCB;
-818          drop table UCB.tempFracPxSABR;
-819        quit;
-820         */
+820        
 821        
 822        
-823        proc export
-824          data = Work.summaryFractureEpisodesInc
-825          outfile = "data\processed\&cmt..csv"
-826          dbms = csv
-827          replace;
-828          delimiter = '09'x;
-829        run;
+823        
+824        /*
+825        CLEAN UP
+826        
+827        proc sql;
+828          drop table UCB64.tempFracDxMPCD;
+829          drop table UCB64.tempFracDxUCB;
+830          drop table UCB64.tempFracDxSABR;
+831          drop table UCB64.tempFracPxMPCD;
+832          drop table UCB64.tempFracPxUCB;
+833          drop table UCB64.tempFracPxSABR;
+834        quit;
+835         */
+836        
+837        
+838        proc export
+839          data = Work.summaryFractureEpisodesInc
+840          outfile = "data\processed\&cmt..csv"
+841          dbms = csv
+842          replace;
+843          delimiter = '09'x;
+844        run;
 
-830         /**********************************************************************
-831         *   PRODUCT:   SAS
-832         *   VERSION:   9.4
-833         *   CREATOR:   External File Interface
-834         *   DATE:      21MAY18
-835         *   DESC:      Generated SAS Datastep Code
-836         *   TEMPLATE SOURCE:  (None Specified.)
-837         ***********************************************************************/
-838            data _null_;
-839            %let _EFIERR_ = 0; /* set the ERROR detection macro variable */
-840            %let _EFIREC_ = 0;     /* clear export record count macro variable */
-841            file 'data\processed\queryFractures.csv' delimiter='09'x DSD DROPOVER lrecl=32767;
-842            if _n_ = 1 then        /* write column names or labels */
-843             do;
-17                                                                  The SAS System                                          17:45 Monday, May 21, 2018
+845         /**********************************************************************
+846         *   PRODUCT:   SAS
+847         *   VERSION:   9.4
+848         *   CREATOR:   External File Interface
+849         *   DATE:      24MAY18
+850         *   DESC:      Generated SAS Datastep Code
+851         *   TEMPLATE SOURCE:  (None Specified.)
+852         ***********************************************************************/
+853            data _null_;
+854            %let _EFIERR_ = 0; /* set the ERROR detection macro variable */
+855            %let _EFIREC_ = 0;     /* clear export record count macro variable */
+856            file 'data\processed\queryFractures.csv' delimiter='09'x DSD DROPOVER lrecl=32767;
+857            if _n_ = 1 then        /* write column names or labels */
+858             do;
+859               put
+860                  "table"
+861               '09'x
+17                                                                  The SAS System                                        09:40 Thursday, May 24, 2018
 
-844               put
-845                  "table"
-846               '09'x
-847                  "fractureType"
-848               '09'x
-849                  "fractureSite"
-850               '09'x
-851                  "countDistinctPatid"
-852               '09'x
-853                  "countFractureEpisodes"
-854               ;
-855             end;
-856           set  WORK.SUMMARYFRACTUREEPISODESINC   end=EFIEOD;
-857               format table $22. ;
-858               format fractureType $35. ;
-859               format fractureSite $30. ;
-860               format countDistinctPatid best12. ;
-861               format countFractureEpisodes best12. ;
-862             do;
-863               EFIOUT + 1;
-864               put table $ @;
-865               put fractureType $ @;
-866               put fractureSite $ @;
-867               put countDistinctPatid @;
-868               put countFractureEpisodes ;
+862                  "fractureType"
+863               '09'x
+864                  "fractureSite"
+865               '09'x
+866                  "countDistinctPatid"
+867               '09'x
+868                  "countFractureEpisodes"
 869               ;
 870             end;
-871            if _ERROR_ then call symputx('_EFIERR_',1);  /* set ERROR detection macro variable */
-872            if EFIEOD then call symputx('_EFIREC_',EFIOUT);
-873            run;
+871           set  WORK.SUMMARYFRACTUREEPISODESINC   end=EFIEOD;
+872               format table $22. ;
+873               format fractureType $35. ;
+874               format fractureSite $30. ;
+875               format countDistinctPatid best12. ;
+876               format countFractureEpisodes best12. ;
+877             do;
+878               EFIOUT + 1;
+879               put table $ @;
+880               put fractureType $ @;
+881               put fractureSite $ @;
+882               put countDistinctPatid @;
+883               put countFractureEpisodes ;
+884               ;
+885             end;
+886            if _ERROR_ then call symputx('_EFIERR_',1);  /* set ERROR detection macro variable */
+887            if EFIEOD then call symputx('_EFIREC_',EFIOUT);
+888            run;
 
 NOTE: The file 'data\processed\queryFractures.csv' is:
       Filename=U:\studies\AS\pgms\bchan\data\processed\queryFractures.csv,
       RECFM=V,LRECL=32767,File Size (bytes)=0,
-      Last Modified=21May2018:17:46:49,
-      Create Time=21May2018:17:46:49
+      Last Modified=24May2018:09:41:35,
+      Create Time=24May2018:09:41:35
 
 NOTE: 24 records were written to the file 'data\processed\queryFractures.csv'.
       The minimum record length was 42.
       The maximum record length was 91.
 NOTE: There were 23 observations read from the data set WORK.SUMMARYFRACTUREEPISODESINC.
 NOTE: DATA statement used (Total process time):
-      real time           0.03 seconds
+      real time           0.06 seconds
       cpu time            0.01 seconds
       
 
@@ -2123,15 +2120,15 @@ NOTE: DATA statement used (Total process time):
   
 NOTE: "data\processed\queryFractures.csv" file was successfully created.
 NOTE: PROCEDURE EXPORT used (Total process time):
-      real time           0.21 seconds
-      cpu time            0.15 seconds
+      real time           1.49 seconds
+      cpu time            0.18 seconds
       
 
-874        
-875        
-876        ods html close;
+889        
+890        
+891        ods html close;
 NOTE: SAS Institute Inc., SAS Campus Drive, Cary, NC USA 27513-2414
 NOTE: The SAS System used:
-      real time           1:31.66
-      cpu time            1:11.49
+      real time           44.52 seconds
+      cpu time            21.16 seconds
       

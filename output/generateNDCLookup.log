@@ -1,5 +1,12 @@
-1                                          The SAS System                 18:55 Monday, May 21, 2018
+1                                                          The SAS System                               10:33 Thursday, May 24, 2018
 
+NOTE: Unable to open SASUSER.REGSTRY. WORK.REGSTRY will be opened instead.
+NOTE: All registry changes will be lost at the end of the session.
+
+WARNING: Unable to copy SASUSER registry to WORK registry. Because of this, you will not see registry customizations during this 
+         session.
+NOTE: Unable to open SASUSER.PROFILE. WORK.PROFILE will be opened instead.
+NOTE: All profile changes will be lost at the end of the session.
 NOTE: Copyright (c) 2016 by SAS Institute Inc., Cary, NC, USA. 
 NOTE: SAS (r) Proprietary Software 9.4 (TS1M5) 
       Licensed to UNIVERSITY OF ALABAMA AT BIRMINGHAM - SFA - T&R, Site 70086550.
@@ -28,8 +35,8 @@ of the shared folders.
 
 
 NOTE: SAS initialization used:
-      real time           0.49 seconds
-      cpu time            0.40 seconds
+      real time           4.66 seconds
+      cpu time            0.38 seconds
       
 1          *  University of Alabama at Birmingham                               *
 2          *  BRONCHIECTASIS project                                            *
@@ -57,92 +64,97 @@ NOTE: Libref UCBSTD was successfully assigned as follows:
 NOTE: Libref UCB was successfully assigned as follows: 
       Engine:        SPDE 
       Physical Name: q:\studies\AS\data\UCB\
+NOTE: Libref UCB64 was successfully assigned as follows: 
+      Engine:        SPDE 
+      Physical Name: q:\studies\AS\data\UCB64\
 NOTE: Libref DT was successfully assigned as follows: 
       Engine:        V9 
       Physical Name: V:\studies\AS\data
 NOTE: Libref NDC was successfully assigned as follows: 
       Engine:        V9 
-      Physical Name: W:\onenote\references\drug ndcs\sas data
-128        footnote "&pgm.";
-129        * footnote2 "%sysfunc(datetime(),datetime14.)";
-130        title1 '--- BRONCHIECTASIS project ---';
-131        **********************************************************************;
-132        options macrogen mlogic mprint symbolgen;
-133        options nomacrogen nomlogic nomprint nosymbolgen;
-134        
-135        
-136        
-2                                                                   The SAS System                                          18:55 Monday, May 21, 2018
+2                                                                   The SAS System                                        10:33 Thursday, May 24, 2018
 
-137        ods html
-138          body = "output\&cmt..html"
-139          style = Statistical;
-NOTE: Writing HTML Body file: output\generateNDCLookup.html
-140        
-141        
-142        /*
-143        From: Yang, Shuo [mailto:shuoyang@uabmc.edu]
-144        Sent: Wednesday, August 24, 2016 12:06 PM
-145        To: Benjamin Chan <chanb@ohsu.edu>; Chen, Lang <langchen@uabmc.edu>
-146        Cc: Emily Henkle <henkle@ohsu.edu>; Matthews, Robert S <rsm@uab.edu>; Curtis, Jeffrey R <jrcurtis@uabmc.edu>
-147        Subject: RE: oral steroids for bronchiectasis
-148        
-149        Hi Ben,
+      Physical Name: W:\onenote\references\drug ndcs\sas data
+143        footnote "&pgm.";
+144        * footnote2 "%sysfunc(datetime(),datetime14.)";
+145        title1 '--- BRONCHIECTASIS project ---';
+146        **********************************************************************;
+147        options macrogen mlogic mprint symbolgen;
+148        options nomacrogen nomlogic nomprint nosymbolgen;
+149        
 150        
-151        I copied 1 SAS datasets to "Q:\pgms\bchan\FDB" folder:
-152        
-153        * FDB_ETC_NDC_15:
-154        
-155          * It's the First Data Bank data with 'Enhanced Therapeutic Class'
-156            identifiers. And this is the most often used data for searching target
-157            generic names and NDCs.
-158        
-159          * If you have the accurate generic name list, then you can search generic
-160            names in 'GNN', 'GNN60' variables, which are generic name and generic name
-161            in 60 characters; or search generic/brand names in 'BN', 'LN', 'LN60'
-162            variables, which are brand name, label name and label name in 60
-163            characters. Then you can get the NDC lists. Or
-164        
-165          * If you don't have a complete/accurate generic names, you can search one or
-166            several generic names which you are sure they should be correct, then get
-167            the 'ETC_NAME' and 'ETC_ID' of them, which they stands for 'Enhanced
-168            Therapeutic Class Names' and 'Enhanced Therapeutic Class IDs', and then go
-169            back to search those 'ETC_ID' in the FDB_ETC_NDC_15 data. This step will
-170            give you medicines assigned in the same therapeutic class. Then you can
-171            review the generic name list to drop anything you don't need.
-172        
-173          * Notes:
-174        
-175            * Key variables you would be interested are: ETC_NAME, ETC_ID, GNN, GNN60,
-176              BN, LN, LN60, RT, STR, STR60. And in which,
-177        
-178              * RT stands for Route
+151        
+152        ods html
+153          body = "output\&cmt..html"
+154          style = Statistical;
+NOTE: Writing HTML Body file: output\generateNDCLookup.html
+155        
+156        
+157        /*
+158        From: Yang, Shuo [mailto:shuoyang@uabmc.edu]
+159        Sent: Wednesday, August 24, 2016 12:06 PM
+160        To: Benjamin Chan <chanb@ohsu.edu>; Chen, Lang <langchen@uabmc.edu>
+161        Cc: Emily Henkle <henkle@ohsu.edu>; Matthews, Robert S <rsm@uab.edu>; Curtis, Jeffrey R <jrcurtis@uabmc.edu>
+162        Subject: RE: oral steroids for bronchiectasis
+163        
+164        Hi Ben,
+165        
+166        I copied 1 SAS datasets to "Q:\pgms\bchan\FDB" folder:
+167        
+168        * FDB_ETC_NDC_15:
+169        
+170          * It's the First Data Bank data with 'Enhanced Therapeutic Class'
+171            identifiers. And this is the most often used data for searching target
+172            generic names and NDCs.
+173        
+174          * If you have the accurate generic name list, then you can search generic
+175            names in 'GNN', 'GNN60' variables, which are generic name and generic name
+176            in 60 characters; or search generic/brand names in 'BN', 'LN', 'LN60'
+177            variables, which are brand name, label name and label name in 60
+178            characters. Then you can get the NDC lists. Or
 179        
-180              * STR stands for Strength; and STR60 stands for Strength info in 60
-181                characters (longer format)
-182        
-183            * In the results of any search, the RT variable should not be 'MISCELL',
-184              which stands for 'MISCELLANEOUS' and the medicine in this type are 'Bulk
-185              Chemicals' and we don't think they are real medicines prescribed to
-186              patients.
+180          * If you don't have a complete/accurate generic names, you can search one or
+181            several generic names which you are sure they should be correct, then get
+182            the 'ETC_NAME' and 'ETC_ID' of them, which they stands for 'Enhanced
+183            Therapeutic Class Names' and 'Enhanced Therapeutic Class IDs', and then go
+184            back to search those 'ETC_ID' in the FDB_ETC_NDC_15 data. This step will
+185            give you medicines assigned in the same therapeutic class. Then you can
+186            review the generic name list to drop anything you don't need.
 187        
-188          * An example of SAS codes to search for biologic drugs that I used are
-189            pasted below.
-190        
-191        Feel free to let me know if you have any question.
+188          * Notes:
+189        
+190            * Key variables you would be interested are: ETC_NAME, ETC_ID, GNN, GNN60,
+191              BN, LN, LN60, RT, STR, STR60. And in which,
 192        
-193        Best,
+193              * RT stands for Route
 194        
-195        Shawn
-196         */
-197        libname FDB "Q:\pgms\bchan\FDB" access = readonly;
+195              * STR stands for Strength; and STR60 stands for Strength info in 60
+196                characters (longer format)
+197        
+198            * In the results of any search, the RT variable should not be 'MISCELL',
+199              which stands for 'MISCELLANEOUS' and the medicine in this type are 'Bulk
+200              Chemicals' and we don't think they are real medicines prescribed to
+201              patients.
+202        
+203          * An example of SAS codes to search for biologic drugs that I used are
+204            pasted below.
+205        
+206        Feel free to let me know if you have any question.
+207        
+208        Best,
+209        
+210        Shawn
+211         */
+212        libname FDB "Q:\pgms\bchan\FDB" access = readonly;
+3                                                                   The SAS System                                        10:33 Thursday, May 24, 2018
+
 NOTE: Libref FDB was successfully assigned as follows: 
       Engine:        V9 
       Physical Name: Q:\pgms\bchan\FDB
-198        proc contents data = FDB.FDB_ETC_NDC_15 order = varnum;
-199        run;
+213        proc contents data = FDB.FDB_ETC_NDC_15 order = varnum;
+214        run;
 
-                                                            --- BRONCHIECTASIS project ---                              18:55 Monday, May 21, 2018   1
+                                                            --- BRONCHIECTASIS project ---                            10:33 Thursday, May 24, 2018   1
 
                                                                 The CONTENTS Procedure
 
@@ -217,87 +229,85 @@ NOTE: Libref FDB was successfully assigned as follows:
  
                                                                 generateNDCLookup.sas
 NOTE: PROCEDURE CONTENTS used (Total process time):
-      real time           0.20 seconds
+      real time           0.15 seconds
       cpu time            0.06 seconds
       
-3                                                                   The SAS System                                          18:55 Monday, May 21, 2018
-
 NOTE: The PROCEDURE CONTENTS printed page 1.
 
-200        
-201        
-202        /*
-203        For oral steroids, integrate UAB's Ndc_oralsteroids data set
-204        
-205        
-206        From: Yang, Shuo [mailto:shuoyang@uabmc.edu]
-207        Sent: Monday, September 19, 2016 11:28 AM
-208        To: Biostatistics & Design Program <bdp@ohsu.edu>; Benjamin Chan <chanb@ohsu.edu>
-209        Cc: Chen, Lang <langchen@uabmc.edu>; Kevin Winthrop <winthrop@ohsu.edu>; Curtis, Jeffrey R <jrcurtis@uabmc.edu>
-210        Subject: Oral Steroids NDC List with Converted Prednisone Equivalent Dose
-211        
-212        Hi Ben and All,
-213        
-214        The cleaned oral steroids NDC list (with Prednisone equivalent dose) are at
-215        our shared server SAS library :
+215        
 216        
-217        libname ndc "W:\onenote\references\Drug NDCs\SAS Data";
-218        
-219        And named: Ndc_oralsteroids
+217        /*
+218        For oral steroids, integrate UAB's Ndc_oralsteroids data set
+219        
 220        
-221        There are 8 unique GNNs found,
-222        
-223        BETAMETHASONE
-224        BUDESONIDE
-225        CORTISONE
-226        DEXAMETHASONE
-227        HYDROCORTISONE
-228        PREDNISOLONE
-229        PREDNISONE
-230        TRIAMCINOLONE
+221        From: Yang, Shuo [mailto:shuoyang@uabmc.edu]
+222        Sent: Monday, September 19, 2016 11:28 AM
+223        To: Biostatistics & Design Program <bdp@ohsu.edu>; Benjamin Chan <chanb@ohsu.edu>
+224        Cc: Chen, Lang <langchen@uabmc.edu>; Kevin Winthrop <winthrop@ohsu.edu>; Curtis, Jeffrey R <jrcurtis@uabmc.edu>
+225        Subject: Oral Steroids NDC List with Converted Prednisone Equivalent Dose
+226        
+227        Hi Ben and All,
+228        
+229        The cleaned oral steroids NDC list (with Prednisone equivalent dose) are at
+230        our shared server SAS library :
 231        
-232        with 3360 unique NDCs;
+232        libname ndc "W:\onenote\references\Drug NDCs\SAS Data";
 233        
-234        And the variable "Prednisone_EQ_Dose" in the SAS data gives the converted
-235        doses; The 'coeff' variable gives the converting coefficient based on below
-236        algorithm.
+234        And named: Ndc_oralsteroids
+235        
+236        There are 8 unique GNNs found,
 237        
-238        Target Steroids    | xx mg = | xx mg Prednisone
-239        -------------------|---------|-----------------
-240        BETAMETHASONE      | 1 =     | 25/3
-241        CORTISONE          | 1 =     | 1/5
-242        DEXAMETHASONE      | 1 =     | 20/3
-243        FLUDROCORTISONE    | 1 =     | 1/5
-244        HYDROCORTISONE     | 1 =     | 1/4
-245        METHYLPREDNISOLONE | 1 =     | 5/4
-246        PREDNISOLONE       | 1 =     | 1
-247        TRIAMCINOLONE      | 1 =     | 5/4
-248        BUDESONIDE         | 1 =     | N/A (confirmed there is no coefficient by Lang on 9/13/2016)
-249        
-250        Let me know if you have any difficulty to find or view the SAS data.
-251         */
-252        libname NDC "W:\onenote\references\Drug NDCs\SAS Data" access = readonly;
+238        BETAMETHASONE
+239        BUDESONIDE
+240        CORTISONE
+241        DEXAMETHASONE
+242        HYDROCORTISONE
+243        PREDNISOLONE
+244        PREDNISONE
+245        TRIAMCINOLONE
+246        
+247        with 3360 unique NDCs;
+248        
+249        And the variable "Prednisone_EQ_Dose" in the SAS data gives the converted
+250        doses; The 'coeff' variable gives the converting coefficient based on below
+251        algorithm.
+252        
+253        Target Steroids    | xx mg = | xx mg Prednisone
+254        -------------------|---------|-----------------
+255        BETAMETHASONE      | 1 =     | 25/3
+256        CORTISONE          | 1 =     | 1/5
+257        DEXAMETHASONE      | 1 =     | 20/3
+258        FLUDROCORTISONE    | 1 =     | 1/5
+259        HYDROCORTISONE     | 1 =     | 1/4
+260        METHYLPREDNISOLONE | 1 =     | 5/4
+261        PREDNISOLONE       | 1 =     | 1
+262        TRIAMCINOLONE      | 1 =     | 5/4
+263        BUDESONIDE         | 1 =     | N/A (confirmed there is no coefficient by Lang on 9/13/2016)
+264        
+265        Let me know if you have any difficulty to find or view the SAS data.
+266         */
+267        libname NDC "W:\onenote\references\Drug NDCs\SAS Data" access = readonly;
 NOTE: Libref NDC was successfully assigned as follows: 
       Engine:        V9 
       Physical Name: W:\onenote\references\Drug NDCs\SAS Data
-253        proc contents data = NDC.Ndc_oralsteroids order = varnum;
+268        proc contents data = NDC.Ndc_oralsteroids order = varnum;
 ERROR: File NDC.NDC_ORALSTEROIDS.DATA does not exist.
-254        run;
+269        run;
+
+4                                                                   The SAS System                                        10:33 Thursday, May 24, 2018
 
 NOTE: Statements not processed because of errors noted above.
 NOTE: PROCEDURE CONTENTS used (Total process time):
-      real time           0.03 seconds
-      cpu time            0.03 seconds
+      real time           0.01 seconds
+      cpu time            0.00 seconds
       
 NOTE: The SAS System stopped processing this step because of errors.
 
 
-255        proc contents data = NDC.NDC_DMARD_Bio_All order = varnum;
-256        run;
-4                                                                   The SAS System                                          18:55 Monday, May 21, 2018
+270        proc contents data = NDC.NDC_DMARD_Bio_All order = varnum;
+271        run;
 
-
-                                                            --- BRONCHIECTASIS project ---                              18:55 Monday, May 21, 2018   2
+                                                            --- BRONCHIECTASIS project ---                            10:33 Thursday, May 24, 2018   2
 
                                                                 The CONTENTS Procedure
 
@@ -372,81 +382,81 @@ NOTE: The SAS System stopped processing this step because of errors.
  
                                                                 generateNDCLookup.sas
 NOTE: PROCEDURE CONTENTS used (Total process time):
-      real time           0.06 seconds
-      cpu time            0.03 seconds
+      real time           0.09 seconds
+      cpu time            0.04 seconds
       
 NOTE: The PROCEDURE CONTENTS printed page 2.
 
-257        
-258        
-259        proc sql;
-260        /*
-261        Create table of search strings used in LIKE operators
-262         */
-263          create table Work.LikeStr (class char(32), rt char(10), drug char(32), likeStr1 char(32), likeStr2 char(28));
+272        
+273        
+274        proc sql;
+275        /*
+276        Create table of search strings used in LIKE operators
+277         */
+278          create table Work.LikeStr (class char(32), rt char(10), drug char(32), likeStr1 char(32), likeStr2 char(28));
 NOTE: Table WORK.LIKESTR created, with 0 rows and 5 columns.
-264          insert into Work.LikeStr
-265            values ("macrolide", "oral", "azithromycin", '%azithromycin%', 'macrolides')
-266            values ("macrolide", "oral", "clarithromycin", '%clarithromycin%', 'macrolides')
-267            values ("macrolide", "oral", "erythromycin", '%erythromycin%', 'macrolides');
+279          insert into Work.LikeStr
+280            values ("macrolide", "oral", "azithromycin", '%azithromycin%', 'macrolides')
+281            values ("macrolide", "oral", "clarithromycin", '%clarithromycin%', 'macrolides')
+282            values ("macrolide", "oral", "erythromycin", '%erythromycin%', 'macrolides');
 NOTE: 3 rows were inserted into WORK.LIKESTR.
 
-268          insert into Work.LikeStr
-269            values ("antitubercular", "oral", "ethambutol", '%ethambutol%', '%antitubercular%')
-270            values ("antitubercular", "oral", "rifamycin", '%rifa%', '%antitubercular%')
-271            values ("antitubercular", "oral", "rifabutin", '%rifabutin%', '%antitubercular%')
-272            values ("antitubercular", "oral", "pyrazinamide", '%pyrazinamide%', '%antitubercular%');
+283          insert into Work.LikeStr
+284            values ("antitubercular", "oral", "ethambutol", '%ethambutol%', '%antitubercular%')
+285            values ("antitubercular", "oral", "rifamycin", '%rifa%', '%antitubercular%')
+286            values ("antitubercular", "oral", "rifabutin", '%rifabutin%', '%antitubercular%')
+287            values ("antitubercular", "oral", "pyrazinamide", '%pyrazinamide%', '%antitubercular%');
 NOTE: 4 rows were inserted into WORK.LIKESTR.
 
-273          insert into Work.LikeStr
-274            values ("inhaled steroid", "inhalation", "beclomethasone", '%beclomethasone%', '%asthma%')
-275            values ("inhaled steroid", "inhalation", "budesonide", '%budesonide%', '%asthma%')
-276            values ("inhaled steroid", "inhalation", "flunisolide", '%flunisolide%', '%asthma%')
-277            values ("inhaled steroid", "inhalation", "fluticasone", '%fluticasone%', '%asthma%')
-278            values ("inhaled steroid", "inhalation", "mometasone", '%mometasone%', '%asthma%')
-279            values ("inhaled steroid", "inhalation", "triamcinolone", '%triamcinolone%', '%asthma%');
+288          insert into Work.LikeStr
+289            values ("inhaled steroid", "inhalation", "beclomethasone", '%beclomethasone%', '%asthma%')
+290            values ("inhaled steroid", "inhalation", "budesonide", '%budesonide%', '%asthma%')
+291            values ("inhaled steroid", "inhalation", "flunisolide", '%flunisolide%', '%asthma%')
+292            values ("inhaled steroid", "inhalation", "fluticasone", '%fluticasone%', '%asthma%')
+293            values ("inhaled steroid", "inhalation", "mometasone", '%mometasone%', '%asthma%')
+294            values ("inhaled steroid", "inhalation", "triamcinolone", '%triamcinolone%', '%asthma%');
 NOTE: 6 rows were inserted into WORK.LIKESTR.
 
-280          insert into Work.LikeStr
-281            values ("combined steroid/bronchodilator", "inhalation", "ipratropium/albuterol", '%ipratropium%albuterol%', '%asthma%')
-282            values ("combined steroid/bronchodilator", "inhalation", "budesonide/formoterol", '%budesonide%formoterol%', '%asthma%')
-283            values ("combined steroid/bronchodilator", "inhalation", "fluticasone/salmeterol", '%fluticasone%salmeterol%', '%asthma%');
+295          insert into Work.LikeStr
+296            values ("combined steroid/bronchodilator", "inhalation", "ipratropium/albuterol", '%ipratropium%albuterol%', '%asthma%')
+297            values ("combined steroid/bronchodilator", "inhalation", "budesonide/formoterol", '%budesonide%formoterol%', '%asthma%')
+298            values ("combined steroid/bronchodilator", "inhalation", "fluticasone/salmeterol", '%fluticasone%salmeterol%', '%asthma%');
 NOTE: 3 rows were inserted into WORK.LIKESTR.
 
-284          insert into Work.LikeStr
-285            values ("antibiotic", "oral", "levofloxacin", '%levofloxacin%', '%fluoroquinolone%antibiotic%')
-286            values ("antibiotic", "oral", "moxifloxacin", '%moxifloxacin%', '%fluoroquinolone%antibiotic%')
-287            values ("antibiotic", "oral", "ciprofloxacin", '%ciprofloxacin%', '%fluoroquinolone%antibiotic%')
-288            values ("antibiotic", "oral", "amoxicillin", '%amoxicillin%', '%aminopenicillin%antibiotic%')
-289            values ("antibiotic", "oral", "amoxicillin", '%amoxicillin%clavulanate', '%aminopenicillin%antibiotic%')
-290            values ("antibiotic", "oral", "doxycycline", '%doxycycline', '%tetracycline%antibiotic%')
-291            values ("antibiotic", "oral", "minocycline", '%minocycline%', '%tetracycline%antibiotic%')
-292            values ("antibiotic", "oral", "sulfamethoxazole/trimethoprim", '%sulfa%trim', '%antibac%')
-293            values ("antibiotic", "oral", "linezolid", '%linezolid%', '%oxazolidinone%antibiotic%');
+299          insert into Work.LikeStr
+300            values ("antibiotic", "oral", "levofloxacin", '%levofloxacin%', '%fluoroquinolone%antibiotic%')
+301            values ("antibiotic", "oral", "moxifloxacin", '%moxifloxacin%', '%fluoroquinolone%antibiotic%')
+302            values ("antibiotic", "oral", "ciprofloxacin", '%ciprofloxacin%', '%fluoroquinolone%antibiotic%')
+303            values ("antibiotic", "oral", "amoxicillin", '%amoxicillin%', '%aminopenicillin%antibiotic%')
+304            values ("antibiotic", "oral", "amoxicillin", '%amoxicillin%clavulanate', '%aminopenicillin%antibiotic%')
+305            values ("antibiotic", "oral", "doxycycline", '%doxycycline', '%tetracycline%antibiotic%')
+306            values ("antibiotic", "oral", "minocycline", '%minocycline%', '%tetracycline%antibiotic%')
+307            values ("antibiotic", "oral", "sulfamethoxazole/trimethoprim", '%sulfa%trim', '%antibac%')
+308            values ("antibiotic", "oral", "linezolid", '%linezolid%', '%oxazolidinone%antibiotic%');
 NOTE: 9 rows were inserted into WORK.LIKESTR.
 
-294          insert into Work.LikeStr
-295            values ("antibiotic", "inhalation", "aztreonam", '%aztreonam%', '%antibiotic%')
-296            values ("antibiotic", "inhalation", "tobramycin", '%tobram%', '%antibiotic%')
-297            values ("antibiotic", "inhalation", "amikacin", '%amikac%', '%antibiotic%')
-298            values ("antibiotic", "inhalation", "colistin", '%colistin%', '%polymyxin%')
-299            values ("antibiotic", "inhalation", "gentamicin", '%gentam%', '%antibiotic%')
-300            values ("antibiotic", "intraven", "aztreonam", '%aztreonam%', '%antibiotic%')
-301            values ("antibiotic", "intraven", "tobramycin", '%tobram%', '%antibiotic%')
-302            values ("antibiotic", "intraven", "amikacin", '%amikac%', '%antibiotic%')
-303            values ("antibiotic", "intraven", "colistin", '%colistin%', '%polymyxin%')
-304            values ("antibiotic", "intraven", "gentamicin", '%gentam%', '%antibiotic%')
-305            values ("antibiotic", "injection", "aztreonam", '%aztreonam%', '%antibiotic%')
-306            values ("antibiotic", "injection", "tobramycin", '%tobram%', '%antibiotic%')
-307            values ("antibiotic", "injection", "amikacin", '%amikac%', '%antibiotic%')
-308            values ("antibiotic", "injection", "colistin", '%colistin%', '%polymyxin%')
-309            values ("antibiotic", "injection", "gentamicin", '%gentam%', '%antibiotic%');
+309          insert into Work.LikeStr
+310            values ("antibiotic", "inhalation", "aztreonam", '%aztreonam%', '%antibiotic%')
+311            values ("antibiotic", "inhalation", "tobramycin", '%tobram%', '%antibiotic%')
+312            values ("antibiotic", "inhalation", "amikacin", '%amikac%', '%antibiotic%')
+313            values ("antibiotic", "inhalation", "colistin", '%colistin%', '%polymyxin%')
+314            values ("antibiotic", "inhalation", "gentamicin", '%gentam%', '%antibiotic%')
+315            values ("antibiotic", "intraven", "aztreonam", '%aztreonam%', '%antibiotic%')
+5                                                                   The SAS System                                        10:33 Thursday, May 24, 2018
+
+316            values ("antibiotic", "intraven", "tobramycin", '%tobram%', '%antibiotic%')
+317            values ("antibiotic", "intraven", "amikacin", '%amikac%', '%antibiotic%')
+318            values ("antibiotic", "intraven", "colistin", '%colistin%', '%polymyxin%')
+319            values ("antibiotic", "intraven", "gentamicin", '%gentam%', '%antibiotic%')
+320            values ("antibiotic", "injection", "aztreonam", '%aztreonam%', '%antibiotic%')
+321            values ("antibiotic", "injection", "tobramycin", '%tobram%', '%antibiotic%')
+322            values ("antibiotic", "injection", "amikacin", '%amikac%', '%antibiotic%')
+323            values ("antibiotic", "injection", "colistin", '%colistin%', '%polymyxin%')
+324            values ("antibiotic", "injection", "gentamicin", '%gentam%', '%antibiotic%');
 NOTE: 15 rows were inserted into WORK.LIKESTR.
-5                                                                   The SAS System                                          18:55 Monday, May 21, 2018
 
-
-310          select "Work.LikeStr" as table, * from Work.LikeStr;
-                                                            --- BRONCHIECTASIS project ---                              18:55 Monday, May 21, 2018   3
+325          select "Work.LikeStr" as table, * from Work.LikeStr;
+                                                            --- BRONCHIECTASIS project ---                            10:33 Thursday, May 24, 2018   3
 
             table         class                             rt          drug                              likeStr1
             likeStr2
@@ -520,7 +530,7 @@ NOTE: 15 rows were inserted into WORK.LIKESTR.
  
  
                                                                 generateNDCLookup.sas
-                                                            --- BRONCHIECTASIS project ---                              18:55 Monday, May 21, 2018   4
+                                                            --- BRONCHIECTASIS project ---                            10:33 Thursday, May 24, 2018   4
 
             table         class                             rt          drug                              likeStr1
             likeStr2
@@ -594,157 +604,157 @@ NOTE: 15 rows were inserted into WORK.LIKESTR.
  
  
                                                                 generateNDCLookup.sas
-311        /*
-312        Create NDC lookup table
-313        Use LIKE string 1 on brand name, generic name permutations, label name permutations, and tradename
-314        Use LIKE string 2 on etc_name
-315         */
-316          create table DT.lookupNDC as
-317            select distinct
-318              A.*,
-319              . as prednisoneMultiplier,
-320              . as prednisodeEquivalentDose,
-321            "" as category,
-322            "" as subcategory,
-323            "" as source
-324            from
-325              FDB.FDB_ETC_NDC_15 A inner join
-326              Work.LikeStr B on (lowcase(A.rt) = B.rt &
-327                                 (lowcase(A.bn) like compress(B.likeStr1) |
-328                                  lowcase(A.gnn) like compress(B.likeStr1) |
-329                                  lowcase(A.gnn60) like compress(B.likeStr1) |
-330                                  lowcase(A.ln) like compress(B.likeStr1) |
-331                                  lowcase(A.ln25) like compress(B.likeStr1) |
-332                                  lowcase(A.ln60) like compress(B.likeStr1) |
-333                                  lowcase(A.tradename) like compress(B.likeStr1)) &
-334                                 lowcase(etc_name) like compress(B.likeStr2))
-335            union all
-336            select
-337              A.*,
-338              C.coeff as prednisoneMultiplier,
-339              C.Prednisone_EQ_Dose as prednisodeEquivalentDose,
-340              "" as category,
-341              "" as subcategory,
-342              "NDC_ORALSTEROIDS" as source
-343            from
-344              FDB.FDB_ETC_NDC_15 A inner join
-345              NDC.Ndc_oralsteroids C on (A.NDC = C.Code)
-346            union all
-347            select
-348              A.*,
-349              . as prednisoneMultiplier,
-350              . as prednisodeEquivalentDose,
-351              D.category,
-352              D.subcate as subcategory,
-353              D.source
-354            from
-355              FDB.FDB_ETC_NDC_15 A inner join
-356              (select codeType, code, category, subcate, "NDC_ALOPU" as source from NDC.NDC_ALOPU union corr
-357               select codeType, code, category, subcate, "NDC_DMARD_BIO_ALL" as source from NDC.NDC_DMARD_BIO_ALL) D on (A.NDC = D.Code)
-358            where D.codeType = "NDC"
-359            union all
-360            select
-361              A.*, . as prednisoneMultiplier, . as prednisodeEquivalentDose, "" as category, "" as subcategory, E.source
-362            from
-363              FDB.FDB_ETC_NDC_15 A inner join
-364              (/* select codeType, code, "NDC_ALOPU" as source from NDC.NDC_ALOPU union corr */
-365               select codeType, code, "NDC_ANTI_FUNGAL" as source from NDC.NDC_ANTI_FUNGAL union corr
-366               select codeType, code, "NDC_ANTI_HYPERTENSIVE" as source from NDC.NDC_ANTI_HYPERTENSIVE union corr
-367               select codeType, code, "NDC_ANTIBIOTICS" as source from NDC.NDC_ANTIBIOTICS union corr
-368               select codeType, code, "NDC_ANTICOAGULANTS" as source from NDC.NDC_ANTICOAGULANTS union corr
-369               select codeType, code, "NDC_ANTIHYPERLIPID" as source from NDC.NDC_ANTIHYPERLIPID union corr
-370               select codeType, code, "NDC_ANTIVIRAL" as source from NDC.NDC_ANTIVIRAL union corr
-371               select codeType, code, "NDC_BETABLOCKERS" as source from NDC.NDC_BETABLOCKERS union corr
-372               select codeType, code, "NDC_BISPHOSPHONATES" as source from NDC.NDC_BISPHOSPHONATES union corr
-373               /* select codeType, code, "NDC_DMARD_BIO_ALL" as source from NDC.NDC_DMARD_BIO_ALL union corr */
-374               select codeType, code, "NDC_FOLIC_ACID" as source from NDC.NDC_FOLIC_ACID union corr
-375               select codeType, code, "NDC_GANCICLOVIR" as source from NDC.NDC_GANCICLOVIR union corr
-376               select codeType, code, "NDC_INSULIN" as source from NDC.NDC_INSULIN union corr
-377               select codeType, code, "NDC_JIA_DMARDS" as source from NDC.NDC_JIA_DMARDS union corr
-378               select codeType, code, "NDC_NARCOTICS" as source from NDC.NDC_NARCOTICS union corr
-379               select codeType, code, "NDC_NSAIDCOX" as source from NDC.NDC_NSAIDCOX union corr
-380               select codeType, code, "NDC_NSAIDNONCOX" as source from NDC.NDC_NSAIDNONCOX union corr
-6                                                                   The SAS System                                          18:55 Monday, May 21, 2018
+326        /*
+327        Create NDC lookup table
+328        Use LIKE string 1 on brand name, generic name permutations, label name permutations, and tradename
+329        Use LIKE string 2 on etc_name
+330         */
+331          create table DT.lookupNDC as
+332            select distinct
+333              A.*,
+334              . as prednisoneMultiplier,
+335              . as prednisodeEquivalentDose,
+336            "" as category,
+337            "" as subcategory,
+338            "" as source
+339            from
+340              FDB.FDB_ETC_NDC_15 A inner join
+341              Work.LikeStr B on (lowcase(A.rt) = B.rt &
+342                                 (lowcase(A.bn) like compress(B.likeStr1) |
+343                                  lowcase(A.gnn) like compress(B.likeStr1) |
+344                                  lowcase(A.gnn60) like compress(B.likeStr1) |
+345                                  lowcase(A.ln) like compress(B.likeStr1) |
+346                                  lowcase(A.ln25) like compress(B.likeStr1) |
+347                                  lowcase(A.ln60) like compress(B.likeStr1) |
+348                                  lowcase(A.tradename) like compress(B.likeStr1)) &
+349                                 lowcase(etc_name) like compress(B.likeStr2))
+350            union all
+351            select
+352              A.*,
+353              C.coeff as prednisoneMultiplier,
+354              C.Prednisone_EQ_Dose as prednisodeEquivalentDose,
+355              "" as category,
+356              "" as subcategory,
+357              "NDC_ORALSTEROIDS" as source
+358            from
+359              FDB.FDB_ETC_NDC_15 A inner join
+360              NDC.Ndc_oralsteroids C on (A.NDC = C.Code)
+361            union all
+362            select
+363              A.*,
+364              . as prednisoneMultiplier,
+365              . as prednisodeEquivalentDose,
+366              D.category,
+367              D.subcate as subcategory,
+368              D.source
+369            from
+370              FDB.FDB_ETC_NDC_15 A inner join
+371              (select codeType, code, category, subcate, "NDC_ALOPU" as source from NDC.NDC_ALOPU union corr
+372               select codeType, code, category, subcate, "NDC_DMARD_BIO_ALL" as source from NDC.NDC_DMARD_BIO_ALL) D on (A.NDC = D.Code)
+373            where D.codeType = "NDC"
+374            union all
+375            select
+376              A.*, . as prednisoneMultiplier, . as prednisodeEquivalentDose, "" as category, "" as subcategory, E.source
+377            from
+378              FDB.FDB_ETC_NDC_15 A inner join
+379              (/* select codeType, code, "NDC_ALOPU" as source from NDC.NDC_ALOPU union corr */
+380               select codeType, code, "NDC_ANTI_FUNGAL" as source from NDC.NDC_ANTI_FUNGAL union corr
+381               select codeType, code, "NDC_ANTI_HYPERTENSIVE" as source from NDC.NDC_ANTI_HYPERTENSIVE union corr
+382               select codeType, code, "NDC_ANTIBIOTICS" as source from NDC.NDC_ANTIBIOTICS union corr
+383               select codeType, code, "NDC_ANTICOAGULANTS" as source from NDC.NDC_ANTICOAGULANTS union corr
+384               select codeType, code, "NDC_ANTIHYPERLIPID" as source from NDC.NDC_ANTIHYPERLIPID union corr
+385               select codeType, code, "NDC_ANTIVIRAL" as source from NDC.NDC_ANTIVIRAL union corr
+6                                                                   The SAS System                                        10:33 Thursday, May 24, 2018
 
-381               /* select codeType, code, "NDC_ORALSTEROIDS" as source from NDC.NDC_ORALSTEROIDS union corr */
-382               select codeType, code, "NDC_PPIS" as source from NDC.NDC_PPIS union corr
-383               select codeType, code, "NDC_PULMONARY_EMBOLISM" as source from NDC.NDC_PULMONARY_EMBOLISM union corr
-384               select codeType, code, "NDC_STATIN" as source from NDC.NDC_STATIN union corr
-385               /* select codeType, code, "NDC_STATIN_OLD15" as source from NDC.NDC_STATIN_OLD15 union corr
-386               select codeType, code, "NDC_STATINS" as source from NDC.NDC_STATINS union corr
-387               select codeType, code, "NDC_STATINS_OBSOLETE" as source from NDC.NDC_STATINS_OBSOLETE union corr */
-388               select codeType, code, "NDC_STEROIDS" as source from NDC.NDC_STEROIDS union corr
-389               select codeType, code, "NDC_TB" as source from NDC.NDC_TB union corr
-390               select codeType, code, "NDC_TOPICALSTEROIDS" as source from NDC.NDC_TOPICALSTEROIDS union corr
-391               select codeType, code, "NDC_VASCULITIS" as source from NDC.NDC_VASCULITIS union corr
-392               select codeType, code, "NDC_ZOSVAC" as source from NDC.NDC_ZOSVAC) E on (A.NDC = E.Code)
-393            where E.codeType = "NDC";
+386               select codeType, code, "NDC_BETABLOCKERS" as source from NDC.NDC_BETABLOCKERS union corr
+387               select codeType, code, "NDC_BISPHOSPHONATES" as source from NDC.NDC_BISPHOSPHONATES union corr
+388               /* select codeType, code, "NDC_DMARD_BIO_ALL" as source from NDC.NDC_DMARD_BIO_ALL union corr */
+389               select codeType, code, "NDC_FOLIC_ACID" as source from NDC.NDC_FOLIC_ACID union corr
+390               select codeType, code, "NDC_GANCICLOVIR" as source from NDC.NDC_GANCICLOVIR union corr
+391               select codeType, code, "NDC_INSULIN" as source from NDC.NDC_INSULIN union corr
+392               select codeType, code, "NDC_JIA_DMARDS" as source from NDC.NDC_JIA_DMARDS union corr
+393               select codeType, code, "NDC_NARCOTICS" as source from NDC.NDC_NARCOTICS union corr
+394               select codeType, code, "NDC_NSAIDCOX" as source from NDC.NDC_NSAIDCOX union corr
+395               select codeType, code, "NDC_NSAIDNONCOX" as source from NDC.NDC_NSAIDNONCOX union corr
+396               /* select codeType, code, "NDC_ORALSTEROIDS" as source from NDC.NDC_ORALSTEROIDS union corr */
+397               select codeType, code, "NDC_PPIS" as source from NDC.NDC_PPIS union corr
+398               select codeType, code, "NDC_PULMONARY_EMBOLISM" as source from NDC.NDC_PULMONARY_EMBOLISM union corr
+399               select codeType, code, "NDC_STATIN" as source from NDC.NDC_STATIN union corr
+400               /* select codeType, code, "NDC_STATIN_OLD15" as source from NDC.NDC_STATIN_OLD15 union corr
+401               select codeType, code, "NDC_STATINS" as source from NDC.NDC_STATINS union corr
+402               select codeType, code, "NDC_STATINS_OBSOLETE" as source from NDC.NDC_STATINS_OBSOLETE union corr */
+403               select codeType, code, "NDC_STEROIDS" as source from NDC.NDC_STEROIDS union corr
+404               select codeType, code, "NDC_TB" as source from NDC.NDC_TB union corr
+405               select codeType, code, "NDC_TOPICALSTEROIDS" as source from NDC.NDC_TOPICALSTEROIDS union corr
+406               select codeType, code, "NDC_VASCULITIS" as source from NDC.NDC_VASCULITIS union corr
+407               select codeType, code, "NDC_ZOSVAC" as source from NDC.NDC_ZOSVAC) E on (A.NDC = E.Code)
+408            where E.codeType = "NDC";
 ERROR: File NDC.NDC_ORALSTEROIDS.DATA does not exist.
 ERROR: File NDC.NDC_TOPICALSTEROIDS.DATA does not exist.
 NOTE: PROC SQL set option NOEXEC and will continue to check the syntax of statements.
-394        
-395          create table DT.lookupJcodes as
-396            select A.* from NDC.NDC_DMARD_Bio_All A where A.codeType = "HCPCS" union corr
-397            select "" as gnn,
-398                   "HCPCS" as codeType,
-399                   description as descript,
-400                   hcpcs_cd as code,
-401                   "" as str,
-402                   "" as rt,
-403                   "Inhaled antibiotic" as category,
-404                   "" as subCate
-405              from NDC.Antibiotics_parenteral_hcpcs
-406              where description like '%amikac%' |
-407                    description like '%aztreo%' |
-408                    description like '%colist%' |
-409                    description like '%gentam%' |
-410                    description like '%tobram%'
-411            order by category, subCate, code;
+409        
+410          create table DT.lookupJcodes as
+411            select A.* from NDC.NDC_DMARD_Bio_All A where A.codeType = "HCPCS" union corr
+412            select "" as gnn,
+413                   "HCPCS" as codeType,
+414                   description as descript,
+415                   hcpcs_cd as code,
+416                   "" as str,
+417                   "" as rt,
+418                   "Inhaled antibiotic" as category,
+419                   "" as subCate
+420              from NDC.Antibiotics_parenteral_hcpcs
+421              where description like '%amikac%' |
+422                    description like '%aztreo%' |
+423                    description like '%colist%' |
+424                    description like '%gentam%' |
+425                    description like '%tobram%'
+426            order by category, subCate, code;
 NOTE: Statement not executed due to NOEXEC option.
-412        
-413          create table Work.summaryLookupNDC as
-414            select "Summary of DT.lookupNDC" as table,
-415                   etc_name,
-416                   rt,
-417                   gnn60,
-418                   count(*) as n
-419            from DT.lookupNDC
-420            group by gnn60, rt, etc_name;
+427        
+428          create table Work.summaryLookupNDC as
+429            select "Summary of DT.lookupNDC" as table,
+430                   etc_name,
+431                   rt,
+432                   gnn60,
+433                   count(*) as n
+434            from DT.lookupNDC
+435            group by gnn60, rt, etc_name;
 NOTE: Statement not executed due to NOEXEC option.
-421          select * from Work.summaryLookupNDC;
+436          select * from Work.summaryLookupNDC;
 ERROR: File WORK.SUMMARYLOOKUPNDC.DATA does not exist.
-422          create table Work.summaryOralSteroids as
-423            select "Summary of oral steroids" as table,
-424                   etc_name,
-425                   rt,
-426                   gnn60,
-427                   count(*) as n,
-428                   round(min(prednisodeEquivalentDose), 0.01) as minPrednisodeEqDose,
-429                   round(max(prednisodeEquivalentDose), 0.01) as maxPrednisodeEqDose
-430            from DT.lookupNDC
-431            where ^missing(prednisodeEquivalentDose)
-432            group by gnn60, rt, etc_name;
+437          create table Work.summaryOralSteroids as
+438            select "Summary of oral steroids" as table,
+439                   etc_name,
+440                   rt,
+441                   gnn60,
+442                   count(*) as n,
+443                   round(min(prednisodeEquivalentDose), 0.01) as minPrednisodeEqDose,
+444                   round(max(prednisodeEquivalentDose), 0.01) as maxPrednisodeEqDose
+445            from DT.lookupNDC
+446            where ^missing(prednisodeEquivalentDose)
+447            group by gnn60, rt, etc_name;
 NOTE: Statement not executed due to NOEXEC option.
-433          select * from Work.summaryOralSteroids;
+448          select * from Work.summaryOralSteroids;
 ERROR: File WORK.SUMMARYORALSTEROIDS.DATA does not exist.
-434        quit;
+449        quit;
+7                                                                   The SAS System                                        10:33 Thursday, May 24, 2018
+
 NOTE: The SAS System stopped processing this step because of errors.
 NOTE: SAS set option OBS=0 and will continue to check statements. This might cause NOTE: No observations in data set.
 NOTE: The PROCEDURE SQL printed pages 3-4.
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           1.46 seconds
-      cpu time            0.21 seconds
+      real time           1.30 seconds
+      cpu time            0.26 seconds
       
-435        
-436        
-
-7                                                                   The SAS System                                          18:55 Monday, May 21, 2018
+450        
+451        
 
 
-437        proc contents data = DT.lookupNDC order = varnum;
-438        run;
+452        proc contents data = DT.lookupNDC order = varnum;
+453        run;
 
-                                                            --- BRONCHIECTASIS project ---                              18:55 Monday, May 21, 2018   5
+                                                            --- BRONCHIECTASIS project ---                            10:33 Thursday, May 24, 2018   5
 
                                                                 The CONTENTS Procedure
 
@@ -819,15 +829,15 @@ NOTE: PROCEDURE SQL used (Total process time):
  
                                                                 generateNDCLookup.sas
 NOTE: PROCEDURE CONTENTS used (Total process time):
-      real time           0.12 seconds
+      real time           0.09 seconds
       cpu time            0.04 seconds
       
 NOTE: The PROCEDURE CONTENTS printed page 5.
 
-439        proc contents data = DT.lookupJcodes order = varnum;
-440        run;
+454        proc contents data = DT.lookupJcodes order = varnum;
+455        run;
 
-                                                            --- BRONCHIECTASIS project ---                              18:55 Monday, May 21, 2018   6
+                                                            --- BRONCHIECTASIS project ---                            10:33 Thursday, May 24, 2018   6
 
                                                                 The CONTENTS Procedure
 
@@ -902,77 +912,77 @@ NOTE: The PROCEDURE CONTENTS printed page 5.
  
                                                                 generateNDCLookup.sas
 NOTE: PROCEDURE CONTENTS used (Total process time):
-      real time           0.07 seconds
+      real time           0.04 seconds
       cpu time            0.03 seconds
       
 NOTE: The PROCEDURE CONTENTS printed page 6.
 
-441        
-442        
-443        proc export
+456        
+457        
+458        proc export
 NOTE: PROCEDURE EXPORT used (Total process time):
       real time           0.00 seconds
       cpu time            0.00 seconds
       
 NOTE: The SAS System stopped processing this step because of errors.
-444          data = DT.lookupNDC
-445          outfile = "data\processed\lookupNDC.csv"
-446          dbms = csv
-447          replace;
-448          delimiter = ",";
-449        run;
+459          data = DT.lookupNDC
+460          outfile = "data\processed\lookupNDC.csv"
+461          dbms = csv
+462          replace;
+463          delimiter = ",";
+464        run;
 
 
-450        proc export
+465        proc export
 NOTE: PROCEDURE EXPORT used (Total process time):
       real time           0.00 seconds
       cpu time            0.00 seconds
       
 NOTE: The SAS System stopped processing this step because of errors.
-451          data = DT.lookupJcodes
-452          outfile = "data\processed\lookupJcodes.csv"
-453          dbms = csv
-454          replace;
-455          delimiter = ",";
-456        run;
+466          data = DT.lookupJcodes
+467          outfile = "data\processed\lookupJcodes.csv"
+468          dbms = csv
+469          replace;
+470          delimiter = ",";
+471        run;
 
 
-457        proc export
+472        proc export
 NOTE: PROCEDURE EXPORT used (Total process time):
       real time           0.00 seconds
       cpu time            0.00 seconds
       
 NOTE: The SAS System stopped processing this step because of errors.
-458          data = Work.summaryLookupNDC
-459          outfile = "data\processed\summaryLookupNDC.csv"
-460          dbms = csv
-461          replace;
-462          delimiter = ",";
-463        run;
+473          data = Work.summaryLookupNDC
+474          outfile = "data\processed\summaryLookupNDC.csv"
+475          dbms = csv
+476          replace;
+477          delimiter = ",";
+478        run;
+
+8                                                                   The SAS System                                        10:33 Thursday, May 24, 2018
 
 
-464        proc export
+479        proc export
 NOTE: PROCEDURE EXPORT used (Total process time):
       real time           0.00 seconds
       cpu time            0.00 seconds
       
 NOTE: The SAS System stopped processing this step because of errors.
-465          data = Work.summaryOralSteroids
-466          outfile = "data\processed\summaryOralSteroids.csv"
-467          dbms = csv
-8                                                                   The SAS System                                          18:55 Monday, May 21, 2018
-
-468          replace;
-469          delimiter = ",";
-470        run;
-471        
-472        
-473        ods html close;
+480          data = Work.summaryOralSteroids
+481          outfile = "data\processed\summaryOralSteroids.csv"
+482          dbms = csv
+483          replace;
+484          delimiter = ",";
+485        run;
+486        
+487        
+488        ods html close;
 
 ERROR: Errors printed on pages 3,6.
 
 NOTE: SAS Institute Inc., SAS Campus Drive, Cary, NC USA 27513-2414
 NOTE: The SAS System used:
-      real time           3.49 seconds
-      cpu time            1.62 seconds
+      real time           20.62 seconds
+      cpu time            1.38 seconds
       

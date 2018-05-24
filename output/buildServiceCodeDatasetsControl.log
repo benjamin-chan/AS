@@ -1,5 +1,12 @@
-1                                         The SAS System                17:44 Monday, May 21, 2018
+1                                                          The SAS System                               00:39 Thursday, May 24, 2018
 
+NOTE: Unable to open SASUSER.REGSTRY. WORK.REGSTRY will be opened instead.
+NOTE: All registry changes will be lost at the end of the session.
+
+WARNING: Unable to copy SASUSER registry to WORK registry. Because of this, you will not see registry customizations during this 
+         session.
+NOTE: Unable to open SASUSER.PROFILE. WORK.PROFILE will be opened instead.
+NOTE: All profile changes will be lost at the end of the session.
 NOTE: Copyright (c) 2016 by SAS Institute Inc., Cary, NC, USA. 
 NOTE: SAS (r) Proprietary Software 9.4 (TS1M5) 
       Licensed to UNIVERSITY OF ALABAMA AT BIRMINGHAM - SFA - T&R, Site 70086550.
@@ -28,8 +35,8 @@ of the shared folders.
 
 
 NOTE: SAS initialization used:
-      real time           4.89 seconds
-      cpu time            0.34 seconds
+      real time           2.85 seconds
+      cpu time            0.38 seconds
       
 1          *  University of Alabama at Birmingham                               *
 2          *  AS project                                            *
@@ -57,272 +64,756 @@ NOTE: Libref UCBSTD was successfully assigned as follows:
 NOTE: Libref UCB was successfully assigned as follows: 
       Engine:        SPDE 
       Physical Name: q:\studies\AS\data\UCB\
+NOTE: Libref UCB64 was successfully assigned as follows: 
+      Engine:        SPDE 
+      Physical Name: q:\studies\AS\data\UCB64\
 NOTE: Libref DT was successfully assigned as follows: 
       Engine:        V9 
       Physical Name: V:\studies\AS\data
 NOTE: Libref NDC was successfully assigned as follows: 
       Engine:        V9 
+2                                                                   The SAS System                                        00:39 Thursday, May 24, 2018
+
       Physical Name: W:\onenote\references\drug ndcs\sas data
-128        footnote "&pgm.";
-129        * footnote2 "%sysfunc(datetime(),datetime14.)";
-130        title1 '--- AS project ---';
-131        **********************************************************************;
-132        options macrogen mlogic mprint symbolgen;
-133        options nomacrogen nomlogic nomprint nosymbolgen;
-134        
-135        
-136        ods html
-2                                                                   The SAS System                                          17:44 Monday, May 21, 2018
-
-137          body = "output\&cmt..html"
-138          style = Statistical;
+143        footnote "&pgm.";
+144        * footnote2 "%sysfunc(datetime(),datetime14.)";
+145        title1 '--- AS project ---';
+146        **********************************************************************;
+147        options macrogen mlogic mprint symbolgen;
+148        options nomacrogen nomlogic nomprint nosymbolgen;
+149        
+150        
+151        ods html
+152          body = "output\&cmt..html"
+153          style = Statistical;
 NOTE: Writing HTML Body file: output\buildServiceCodeDatasetsControl.html
-139        
-140        
-141        /*
-142        From: Chen, Lang [mailto:langchen@uabmc.edu]
-143        Sent: Monday, September 11, 2017 1:59 PM
-144        To: Benjamin Chan <chanb@ohsu.edu>; Curtis, Jeffrey R <jrcurtis@uabmc.edu>; Kevin Winthrop <winthrop@ohsu.edu>
-145        Cc: Atul Deodhar <deodhara@ohsu.edu>; Sarah Siegel <siegels@ohsu.edu>; Yang, Shuo <shuoyang@uabmc.edu>; Xie, Fenglong
-145      ! <fenglongxie@uabmc.edu>
-146        Subject: RE: quick summary of AS call
-147        
-148        physician-diagnosed codes is usually define by IP AV ED NH and HH. We usually
-149        do not use provider type field. Provider type is provider specialty and MPCD
-150        and CMS use different coding system.
-151         */
-152        
-153        
-154        /*
-155        Service code data sets for prevalence (non-fracture outcomes)
-156         */
-157        %let type = Prev;
-158        %let select1 = select A.*, B.enc_type, B.admit_date, B.begin_date, B.discharge_date, B.end_date, B.dx_type, B.dx, B.pdx, "ICD9-DX" as
-158      ! codeType, B.dx as code;
-159        %let on1 = on (A.patid = B.patid);
-160        %let select2 = select A.patid, A.enc_type, A.admit_date, A.begin_date, A.discharge_date, A.end_date, A.dx_type, A.dx, A.pdx;
-161        %let where2 = where A.dx_type = "09" & A.enc_type in ("IP", "AV", "ED", "NH", "HH");
-162        %let selectfrom3 = select * from DT.controlLookup;
-163        
-164        %include "lib\buildDxControl.sas";  /* Call script to query ICD-9 diagnosis codes */
-ERROR: Foreign datasets cannot be modified.
+154        
+155        
+156        /*
+157        From: Chen, Lang [mailto:langchen@uabmc.edu]
+158        Sent: Monday, September 11, 2017 1:59 PM
+159        To: Benjamin Chan <chanb@ohsu.edu>; Curtis, Jeffrey R <jrcurtis@uabmc.edu>; Kevin Winthrop <winthrop@ohsu.edu>
+160        Cc: Atul Deodhar <deodhara@ohsu.edu>; Sarah Siegel <siegels@ohsu.edu>; Yang, Shuo <shuoyang@uabmc.edu>; Xie, Fenglong
+160      ! <fenglongxie@uabmc.edu>
+161        Subject: RE: quick summary of AS call
+162        
+163        physician-diagnosed codes is usually define by IP AV ED NH and HH. We usually
+164        do not use provider type field. Provider type is provider specialty and MPCD
+165        and CMS use different coding system.
+166         */
+167        
+168        
+169        /*
+170        Service code data sets for prevalence (non-fracture outcomes)
+171         */
+172        %let type = Prev;
+173        %let select1 = select A.*, B.enc_type, B.admit_date, B.begin_date, B.discharge_date, B.end_date, B.dx_type, B.dx, B.pdx, "ICD9-DX" as
+173      ! codeType, B.dx as code;
+174        %let on1 = on (A.patid = B.patid);
+175        %let select2 = select A.patid, A.enc_type, A.admit_date, A.begin_date, A.discharge_date, A.end_date, A.dx_type, A.dx, A.pdx;
+176        %let where2 = where A.dx_type = "09" & A.enc_type in ("IP", "AV", "ED", "NH", "HH");
+177        %let selectfrom3 = select * from DT.controlLookup;
+178        
+179        %include "lib\buildDxControl.sas";  /* Call script to query ICD-9 diagnosis codes */
+NOTE: Compressing data set UCB64.TEMPLOOKUPMPCDCONTROL decreased size by 79.59 percent.
+NOTE: Table UCB64.TEMPLOOKUPMPCDCONTROL created, with 1139225 rows and 9 columns.
 
-NOTE: PROC SQL set option NOEXEC and will continue to check the syntax of statements.
-NOTE: Statement not executed due to NOEXEC option.
-NOTE: Statement not executed due to NOEXEC option.
-NOTE: Statement not executed due to NOEXEC option.
-NOTE: Statement not executed due to NOEXEC option.
-NOTE: Statement not executed due to NOEXEC option.
-NOTE: Statement not executed due to NOEXEC option.
-NOTE: Statement not executed due to NOEXEC option.
-NOTE: Statement not executed due to NOEXEC option.
-NOTE: Statement not executed due to NOEXEC option.
-NOTE: Statement not executed due to NOEXEC option.
-NOTE: Statement not executed due to NOEXEC option.
-NOTE: Statement not executed due to NOEXEC option.
-NOTE: Statement not executed due to NOEXEC option.
-NOTE: Statement not executed due to NOEXEC option.
-NOTE: Statement not executed due to NOEXEC option.
-NOTE: Statement not executed due to NOEXEC option.
-NOTE: Statement not executed due to NOEXEC option.
-NOTE: Statement not executed due to NOEXEC option.
-NOTE: Statement not executed due to NOEXEC option.
-NOTE: Statement not executed due to NOEXEC option.
-NOTE: Statement not executed due to NOEXEC option.
-NOTE: Statement not executed due to NOEXEC option.
-NOTE: Statement not executed due to NOEXEC option.
-NOTE: Statement not executed due to NOEXEC option.
-NOTE: Data set UCB.TEMPPREVDXALLCONTROL is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
+NOTE: Compressing data set UCB64.TEMP0710 decreased size by 79.51 percent.
+NOTE: Table UCB64.TEMP0710 created, with 176326981 rows and 9 columns.
+
+NOTE: Compressing data set UCB64.TEMPPREVDXMPCDCONTROL decreased size by 87.99 percent.
+NOTE: Table UCB64.TEMPPREVDXMPCDCONTROL created, with 94506830 rows and 19 columns.
+
+NOTE: Table UCB64.TEMP0710 has been dropped.
+NOTE: Compressing data set UCB64.TEMPLOOKUPMEDICARECONTROL decreased size by 69.82 percent.
+NOTE: Table UCB64.TEMPLOOKUPMEDICARECONTROL created, with 1854650 rows and 9 columns.
+
+NOTE: Data set STDC5P.STD_DX_2006 is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
       additional CPU resources and may reduce performance.
-NOTE: Statement not executed due to NOEXEC option.
-NOTE: Statement not executed due to NOEXEC option.
-NOTE: Statement not executed due to NOEXEC option.
-NOTE: The SAS System stopped processing this step because of errors.
-NOTE: SAS set option OBS=0 and will continue to check statements. This might cause NOTE: No observations in data set.
-NOTE: PROCEDURE SQL used (Total process time):
-      real time           0.29 seconds
-      cpu time            0.20 seconds
-      
-211        
-212        %let select1 = select A.*,
-213                              B.admit_date, B.begin_date, B.discharge_date, B.end_date, B.px_date, B.px_type, B.px,
-3                                                                   The SAS System                                          17:44 Monday, May 21, 2018
+The SAS supervisor will process queries for foreign datasets. No parallel where-clause processing will occur.
+NOTE: Compressing data set UCB64.TEMP06 decreased size by 76.31 percent.
+NOTE: Table UCB64.TEMP06 created, with 70079498 rows and 9 columns.
 
-214                              case
-215                                when B.px_type = "09" then "ICD9-PX"
-216                                when B.px_type = "C1" | ^anyalpha(strip(B.px)) then "CPT"
-217                                when B.px_type = "H1" & anyalpha(substr(strip(B.px), 1, 1)) & ^anyalpha(strip(B.px), 2) then "HCPCS"
-218                                else ""
-219                                end as codeType,
-220                              B.px as code;
-221        %let select2 = select patid, admit_date, begin_date, discharge_date, end_date, px_date, px_type, px;
-222        
-223        %include "lib\buildPxControl.sas";  /* Call script to query procedure codes */
-
-
-NOTE: PROC SQL set option NOEXEC and will continue to check the syntax of statements.
-NOTE: Statement not executed due to NOEXEC option.
-NOTE: Statement not executed due to NOEXEC option.
-NOTE: Statement not executed due to NOEXEC option.
-NOTE: Statement not executed due to NOEXEC option.
-NOTE: Statement not executed due to NOEXEC option.
-NOTE: Statement not executed due to NOEXEC option.
-NOTE: Statement not executed due to NOEXEC option.
-NOTE: Statement not executed due to NOEXEC option.
-NOTE: Statement not executed due to NOEXEC option.
-NOTE: Statement not executed due to NOEXEC option.
-NOTE: Statement not executed due to NOEXEC option.
-NOTE: Statement not executed due to NOEXEC option.
-NOTE: Statement not executed due to NOEXEC option.
-NOTE: Statement not executed due to NOEXEC option.
-NOTE: Statement not executed due to NOEXEC option.
-NOTE: Statement not executed due to NOEXEC option.
-NOTE: Statement not executed due to NOEXEC option.
-NOTE: Statement not executed due to NOEXEC option.
-NOTE: Statement not executed due to NOEXEC option.
-NOTE: Statement not executed due to NOEXEC option.
-NOTE: Statement not executed due to NOEXEC option.
-NOTE: Statement not executed due to NOEXEC option.
-NOTE: Statement not executed due to NOEXEC option.
-NOTE: Data set UCB.TEMPPREVPXALLCONTROL is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
+NOTE: Data set STDC5P.STD_DX_2007 is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
       additional CPU resources and may reduce performance.
-NOTE: Statement not executed due to NOEXEC option.
-NOTE: Statement not executed due to NOEXEC option.
-NOTE: Statement not executed due to NOEXEC option.
-NOTE: The SAS System stopped processing this step because of errors.
-NOTE: PROCEDURE SQL used (Total process time):
-      real time           0.35 seconds
-      cpu time            0.24 seconds
-      
-268        
-269        
-270        /*
-271        Service code data sets for fracture outcomes
-272        Fracture service code data sets are used for both prevalence and incidence;
-273        unlike non-fracture service code data sets
-274         */
-275        %let type = Frac;
-276        %let select1 = select A.*,
-277                              B.encounterID, B.enc_type, B.admit_date, B.begin_date, B.discharge_date, B.end_date, B.dx_type, B.dx, B.pdx,
-277      ! "ICD9-DX" as codeType, B.dx as code,
-278                              B.diagCodeType;
-279        %let on1 = on (A.patid = B.patid);
-280        %let select2 = select A.patid, A.encounterID, A.enc_type, A.admit_date, A.begin_date, A.discharge_date, A.end_date, A.dx_type, A.dx, A.pdx,
-281                              case
-282                                when '800' <= substr(A.dx, 1, 3) <= '829' or substr(A.dx, 1, 4) = '7331' then "Fracture code"
-283                                when substr(A.dx, 1, 4) in ('V541' 'V542') then "Extended care code"
-284                                when 'E800' <= substr(A.dx, 1, 4) <= 'E848' or
-285                                     'E881' <= substr(A.dx, 1, 4) <= 'E884' or
-286                                     'E908' <= substr(A.dx, 1, 4) <= 'E909' or
-287                                     'E916' <= substr(A.dx, 1, 4) <= 'E928'
-288                                  then "Trauma code"
-289                                else ""
-290                                end as diagCodeType;
-291        %let where2 = where A.dx_type = "09" & A.enc_type in ("IP", "AV", "ED", "NH", "HH") & ^missing(calculated diagCodeType);
-292        %let selectfrom3 = select * from DT.controlLookup;
-4                                                                   The SAS System                                          17:44 Monday, May 21, 2018
+The SAS supervisor will process queries for foreign datasets. No parallel where-clause processing will occur.
+NOTE: Compressing data set UCB64.TEMP07 decreased size by 76.56 percent.
+NOTE: Table UCB64.TEMP07 created, with 71395751 rows and 9 columns.
 
-293        
-294        %include "lib\buildDxControl.sas";  /* Call script to query ICD-9 diagnosis codes */
-
-
-NOTE: PROC SQL set option NOEXEC and will continue to check the syntax of statements.
-NOTE: Statement not executed due to NOEXEC option.
-NOTE: Statement not executed due to NOEXEC option.
-NOTE: Statement not executed due to NOEXEC option.
-NOTE: Statement not executed due to NOEXEC option.
-NOTE: Statement not executed due to NOEXEC option.
-NOTE: Statement not executed due to NOEXEC option.
-NOTE: Statement not executed due to NOEXEC option.
-NOTE: Statement not executed due to NOEXEC option.
-NOTE: Statement not executed due to NOEXEC option.
-NOTE: Statement not executed due to NOEXEC option.
-NOTE: Statement not executed due to NOEXEC option.
-NOTE: Statement not executed due to NOEXEC option.
-NOTE: Statement not executed due to NOEXEC option.
-NOTE: Statement not executed due to NOEXEC option.
-NOTE: Statement not executed due to NOEXEC option.
-NOTE: Statement not executed due to NOEXEC option.
-NOTE: Statement not executed due to NOEXEC option.
-NOTE: Statement not executed due to NOEXEC option.
-NOTE: Statement not executed due to NOEXEC option.
-NOTE: Statement not executed due to NOEXEC option.
-NOTE: Statement not executed due to NOEXEC option.
-NOTE: Statement not executed due to NOEXEC option.
-NOTE: Statement not executed due to NOEXEC option.
-NOTE: Statement not executed due to NOEXEC option.
-NOTE: Statement not executed due to NOEXEC option.
-NOTE: Data set UCB.TEMPFRACDXALLCONTROL is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
+NOTE: Data set STDC5P.STD_DX_2008 is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
       additional CPU resources and may reduce performance.
-NOTE: Statement not executed due to NOEXEC option.
-NOTE: Statement not executed due to NOEXEC option.
-NOTE: Statement not executed due to NOEXEC option.
-NOTE: The SAS System stopped processing this step because of errors.
-NOTE: PROCEDURE SQL used (Total process time):
-      real time           0.07 seconds
-      cpu time            0.03 seconds
-      
-341        
-342        %let select1 = select A.*,
-343                              B.encounterID, B.admit_date, B.begin_date, B.discharge_date, B.end_date, B.px_date, B.px_type, B.px,
-344                              case
-345                                when B.px_type = "09" then "ICD9-PX"
-346                                when B.px_type = "C1" | ^anyalpha(strip(B.px)) then "CPT"
-347                                when B.px_type = "H1" & anyalpha(substr(strip(B.px), 1, 1)) & ^anyalpha(strip(B.px), 2) then "HCPCS"
-348                                else ""
-349                                end as codeType,
-350                              B.px as code;
-351        %let select2 = select patid, encounterID, admit_date, begin_date, discharge_date, end_date, px_date, px_type, px;
-352        
-353        %include "lib\buildPxControl.sas";  /* Call script to query procedure codes */
+The SAS supervisor will process queries for foreign datasets. No parallel where-clause processing will occur.
+NOTE: Compressing data set UCB64.TEMP08 decreased size by 76.80 percent.
+NOTE: Table UCB64.TEMP08 created, with 72901254 rows and 9 columns.
 
+3                                                                   The SAS System                                        00:39 Thursday, May 24, 2018
 
-NOTE: PROC SQL set option NOEXEC and will continue to check the syntax of statements.
-NOTE: Statement not executed due to NOEXEC option.
-NOTE: Statement not executed due to NOEXEC option.
-NOTE: Statement not executed due to NOEXEC option.
-NOTE: Statement not executed due to NOEXEC option.
-NOTE: Statement not executed due to NOEXEC option.
-NOTE: Statement not executed due to NOEXEC option.
-NOTE: Statement not executed due to NOEXEC option.
-NOTE: Statement not executed due to NOEXEC option.
-NOTE: Statement not executed due to NOEXEC option.
-NOTE: Statement not executed due to NOEXEC option.
-NOTE: Statement not executed due to NOEXEC option.
-NOTE: Statement not executed due to NOEXEC option.
-NOTE: Statement not executed due to NOEXEC option.
-NOTE: Statement not executed due to NOEXEC option.
-NOTE: Statement not executed due to NOEXEC option.
-NOTE: Statement not executed due to NOEXEC option.
-5                                                                   The SAS System                                          17:44 Monday, May 21, 2018
-
-NOTE: Statement not executed due to NOEXEC option.
-NOTE: Statement not executed due to NOEXEC option.
-NOTE: Statement not executed due to NOEXEC option.
-NOTE: Statement not executed due to NOEXEC option.
-NOTE: Statement not executed due to NOEXEC option.
-NOTE: Statement not executed due to NOEXEC option.
-NOTE: Statement not executed due to NOEXEC option.
-NOTE: Data set UCB.TEMPFRACPXALLCONTROL is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
+NOTE: Data set STDC5P.STD_DX_2009 is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
       additional CPU resources and may reduce performance.
-NOTE: Statement not executed due to NOEXEC option.
-NOTE: Statement not executed due to NOEXEC option.
-NOTE: Statement not executed due to NOEXEC option.
-NOTE: The SAS System stopped processing this step because of errors.
+The SAS supervisor will process queries for foreign datasets. No parallel where-clause processing will occur.
+NOTE: Compressing data set UCB64.TEMP09 decreased size by 76.92 percent.
+NOTE: Table UCB64.TEMP09 created, with 75322391 rows and 9 columns.
+
+NOTE: Data set STDC5P.STD_DX_2010 is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
+      additional CPU resources and may reduce performance.
+The SAS supervisor will process queries for foreign datasets. No parallel where-clause processing will occur.
+NOTE: Compressing data set UCB64.TEMP10 decreased size by 77.94 percent.
+NOTE: Table UCB64.TEMP10 created, with 82724178 rows and 9 columns.
+
+NOTE: Data set STDC5P.STD_DX_2011 is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
+      additional CPU resources and may reduce performance.
+The SAS supervisor will process queries for foreign datasets. No parallel where-clause processing will occur.
+NOTE: Compressing data set UCB64.TEMP11 decreased size by 79.45 percent.
+NOTE: Table UCB64.TEMP11 created, with 105073869 rows and 9 columns.
+
+NOTE: Data set STDC5P.STD_DX_2012 is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
+      additional CPU resources and may reduce performance.
+The SAS supervisor will process queries for foreign datasets. No parallel where-clause processing will occur.
+NOTE: Compressing data set UCB64.TEMP12 decreased size by 79.49 percent.
+NOTE: Table UCB64.TEMP12 created, with 106954237 rows and 9 columns.
+
+NOTE: Data set STDC5P.STD_DX_2013 is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
+      additional CPU resources and may reduce performance.
+The SAS supervisor will process queries for foreign datasets. No parallel where-clause processing will occur.
+NOTE: Compressing data set UCB64.TEMP13 decreased size by 79.68 percent.
+NOTE: Table UCB64.TEMP13 created, with 111463089 rows and 9 columns.
+
+NOTE: Data set STDC5P.STD_DX_2014 is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
+      additional CPU resources and may reduce performance.
+The SAS supervisor will process queries for foreign datasets. No parallel where-clause processing will occur.
+NOTE: Compressing data set UCB64.TEMP14 decreased size by 79.75 percent.
+NOTE: Table UCB64.TEMP14 created, with 107440003 rows and 9 columns.
+
+NOTE: Compressing data set UCB64.TEMPPREVDXSABRCONTROL decreased size by 89.76 percent.
+NOTE: Table UCB64.TEMPPREVDXSABRCONTROL created, with 451956518 rows and 19 columns.
+
+NOTE: Table UCB64.TEMP06 has been dropped.
+NOTE: Table UCB64.TEMP07 has been dropped.
+NOTE: Table UCB64.TEMP08 has been dropped.
+NOTE: Table UCB64.TEMP09 has been dropped.
+NOTE: Table UCB64.TEMP10 has been dropped.
+NOTE: Table UCB64.TEMP11 has been dropped.
+NOTE: Table UCB64.TEMP12 has been dropped.
+NOTE: Table UCB64.TEMP13 has been dropped.
+NOTE: Table UCB64.TEMP14 has been dropped.
+NOTE: Compressing data set UCB64.TEMPPREVDXALLCONTROL decreased size by 89.77 percent.
+NOTE: Table UCB64.TEMPPREVDXALLCONTROL created, with 530234905 rows and 19 columns.
+
+                                                                  --- AS project ---                                  00:39 Thursday, May 24, 2018   1
+
+                                              table                       database                     n
+                                              ----------------------------------------------------------
+                                              UCB64.tempPrevDxAllControl  MPCD                78,278,387
+                                              UCB64.tempPrevDxAllControl  Medicare           451,956,518
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+                                                         buildServiceCodeDatasetsControl.sas
+NOTE: Table UCB64.TEMPPREVDXMPCDCONTROL has been dropped.
+NOTE: Table UCB64.TEMPPREVDXSABRCONTROL has been dropped.
+NOTE: The PROCEDURE SQL printed page 1.
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           0.48 seconds
-      cpu time            0.28 seconds
+      real time           1:45:39.60
+      cpu time            2:06:45.61
       
-398        
-399        
-400        
-401        
-402        ods html close;
 
-ERROR: Errors printed on page 2.
+226        
+227        %let select1 = select A.*,
+228                              B.admit_date, B.begin_date, B.discharge_date, B.end_date, B.px_date, B.px_type, B.px,
+229                              case
+230                                when B.px_type = "09" then "ICD9-PX"
+231                                when B.px_type = "C1" | ^anyalpha(strip(B.px)) then "CPT"
+232                                when B.px_type = "H1" & anyalpha(substr(strip(B.px), 1, 1)) & ^anyalpha(strip(B.px), 2) then "HCPCS"
+233                                else ""
+234                                end as codeType,
+235                              B.px as code;
+236        %let select2 = select patid, admit_date, begin_date, discharge_date, end_date, px_date, px_type, px;
+237        
+238        %include "lib\buildPxControl.sas";  /* Call script to query procedure codes */
+4                                                                   The SAS System                                        00:39 Thursday, May 24, 2018
 
+NOTE: Compressing data set UCB64.TEMP0710 decreased size by 75.87 percent.
+NOTE: Table UCB64.TEMP0710 created, with 346484578 rows and 8 columns.
+
+NOTE: Compressing data set UCB64.TEMPPREVPXMPCDCONTROL decreased size by 84.99 percent.
+NOTE: Table UCB64.TEMPPREVPXMPCDCONTROL created, with 168458870 rows and 18 columns.
+
+NOTE: Table UCB64.TEMP0710 has been dropped.
+NOTE: Data set STDC5P.STD_PX_2006 is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
+      additional CPU resources and may reduce performance.
+NOTE: Compressing data set UCB64.TEMP06 decreased size by 80.55 percent.
+NOTE: Table UCB64.TEMP06 created, with 137802721 rows and 8 columns.
+
+NOTE: Data set STDC5P.STD_PX_2007 is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
+      additional CPU resources and may reduce performance.
+NOTE: Compressing data set UCB64.TEMP07 decreased size by 77.55 percent.
+NOTE: Table UCB64.TEMP07 created, with 141996458 rows and 8 columns.
+
+NOTE: Data set STDC5P.STD_PX_2008 is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
+      additional CPU resources and may reduce performance.
+NOTE: Compressing data set UCB64.TEMP08 decreased size by 77.88 percent.
+NOTE: Table UCB64.TEMP08 created, with 147118053 rows and 8 columns.
+
+NOTE: Data set STDC5P.STD_PX_2009 is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
+      additional CPU resources and may reduce performance.
+NOTE: Compressing data set UCB64.TEMP09 decreased size by 78.09 percent.
+NOTE: Table UCB64.TEMP09 created, with 152579039 rows and 8 columns.
+
+NOTE: Data set STDC5P.STD_PX_2010 is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
+      additional CPU resources and may reduce performance.
+NOTE: Compressing data set UCB64.TEMP10 decreased size by 77.97 percent.
+NOTE: Table UCB64.TEMP10 created, with 154866267 rows and 8 columns.
+
+NOTE: Data set STDC5P.STD_PX_2011 is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
+      additional CPU resources and may reduce performance.
+NOTE: Compressing data set UCB64.TEMP11 decreased size by 78.05 percent.
+NOTE: Table UCB64.TEMP11 created, with 157181115 rows and 8 columns.
+
+NOTE: Data set STDC5P.STD_PX_2012 is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
+      additional CPU resources and may reduce performance.
+NOTE: Compressing data set UCB64.TEMP12 decreased size by 78.22 percent.
+NOTE: Table UCB64.TEMP12 created, with 161224747 rows and 8 columns.
+
+NOTE: Data set STDC5P.STD_PX_2013 is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
+      additional CPU resources and may reduce performance.
+NOTE: Compressing data set UCB64.TEMP13 decreased size by 78.17 percent.
+NOTE: Table UCB64.TEMP13 created, with 164298030 rows and 8 columns.
+
+NOTE: Data set STDC5P.STD_PX_2014 is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
+      additional CPU resources and may reduce performance.
+NOTE: Compressing data set UCB64.TEMP14 decreased size by 78.50 percent.
+NOTE: Table UCB64.TEMP14 created, with 166228741 rows and 8 columns.
+
+NOTE: Compressing data set UCB64.TEMPPREVPXSABRCONTROL decreased size by 89.23 percent.
+NOTE: Table UCB64.TEMPPREVPXSABRCONTROL created, with 899660428 rows and 18 columns.
+
+NOTE: Table UCB64.TEMP06 has been dropped.
+NOTE: Table UCB64.TEMP07 has been dropped.
+NOTE: Table UCB64.TEMP08 has been dropped.
+NOTE: Table UCB64.TEMP09 has been dropped.
+NOTE: Table UCB64.TEMP10 has been dropped.
+NOTE: Table UCB64.TEMP11 has been dropped.
+NOTE: Table UCB64.TEMP12 has been dropped.
+NOTE: Table UCB64.TEMP13 has been dropped.
+NOTE: Table UCB64.TEMP14 has been dropped.
+NOTE: Compressing data set UCB64.TEMPPREVPXALLCONTROL decreased size by 89.10 percent.
+NOTE: Table UCB64.TEMPPREVPXALLCONTROL created, with 1041729028 rows and 18 columns.
+
+                                                                  --- AS project ---                                  00:39 Thursday, May 24, 2018   2
+
+                                              table                       database                     n
+                                              ----------------------------------------------------------
+                                              UCB64.tempPrevPxAllControl  MPCD               142,068,600
+                                              UCB64.tempPrevPxAllControl  Medicare           899,660,428
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+                                                         buildServiceCodeDatasetsControl.sas
+NOTE: Table UCB64.TEMPPREVPXMPCDCONTROL has been dropped.
+NOTE: Table UCB64.TEMPPREVPXSABRCONTROL has been dropped.
+NOTE: The PROCEDURE SQL printed page 2.
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           3:02:05.58
+5                                                                   The SAS System                                        00:39 Thursday, May 24, 2018
+
+      cpu time            3:42:45.40
+      
+
+283        
+284        
+285        /*
+286        Service code data sets for fracture outcomes
+287        Fracture service code data sets are used for both prevalence and incidence;
+288        unlike non-fracture service code data sets
+289         */
+290        %let type = Frac;
+291        %let select1 = select A.*,
+292                              B.encounterID, B.enc_type, B.admit_date, B.begin_date, B.discharge_date, B.end_date, B.dx_type, B.dx, B.pdx,
+292      ! "ICD9-DX" as codeType, B.dx as code,
+293                              B.diagCodeType;
+294        %let on1 = on (A.patid = B.patid);
+295        %let select2 = select A.patid, A.encounterID, A.enc_type, A.admit_date, A.begin_date, A.discharge_date, A.end_date, A.dx_type, A.dx, A.pdx,
+296                              case
+297                                when '800' <= substr(A.dx, 1, 3) <= '829' or substr(A.dx, 1, 4) = '7331' then "Fracture code"
+298                                when substr(A.dx, 1, 4) in ('V541' 'V542') then "Extended care code"
+299                                when 'E800' <= substr(A.dx, 1, 4) <= 'E848' or
+300                                     'E881' <= substr(A.dx, 1, 4) <= 'E884' or
+301                                     'E908' <= substr(A.dx, 1, 4) <= 'E909' or
+302                                     'E916' <= substr(A.dx, 1, 4) <= 'E928'
+303                                  then "Trauma code"
+304                                else ""
+305                                end as diagCodeType;
+306        %let where2 = where A.dx_type = "09" & A.enc_type in ("IP", "AV", "ED", "NH", "HH") & ^missing(calculated diagCodeType);
+307        %let selectfrom3 = select * from DT.controlLookup;
+308        
+309        %include "lib\buildDxControl.sas";  /* Call script to query ICD-9 diagnosis codes */
+NOTE: Compressing data set UCB64.TEMPLOOKUPMPCDCONTROL decreased size by 79.59 percent.
+NOTE: Table UCB64.TEMPLOOKUPMPCDCONTROL created, with 1139225 rows and 9 columns.
+
+NOTE: Compressing data set UCB64.TEMP0710 decreased size by 77.40 percent.
+NOTE: Table UCB64.TEMP0710 created, with 1649572 rows and 11 columns.
+
+NOTE: Compressing data set UCB64.TEMPFRACDXMPCDCONTROL decreased size by 85.08 percent.
+NOTE: Table UCB64.TEMPFRACDXMPCDCONTROL created, with 831426 rows and 21 columns.
+
+NOTE: Table UCB64.TEMP0710 has been dropped.
+NOTE: Compressing data set UCB64.TEMPLOOKUPMEDICARECONTROL decreased size by 69.82 percent.
+NOTE: Table UCB64.TEMPLOOKUPMEDICARECONTROL created, with 1854650 rows and 9 columns.
+
+NOTE: Data set STDC5P.STD_DX_2006 is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
+      additional CPU resources and may reduce performance.
+The SAS supervisor will process queries for foreign datasets. No parallel where-clause processing will occur.
+NOTE: Compressing data set UCB64.TEMP06 decreased size by 70.43 percent.
+NOTE: Table UCB64.TEMP06 created, with 635901 rows and 11 columns.
+
+NOTE: Data set STDC5P.STD_DX_2007 is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
+      additional CPU resources and may reduce performance.
+The SAS supervisor will process queries for foreign datasets. No parallel where-clause processing will occur.
+NOTE: Compressing data set UCB64.TEMP07 decreased size by 70.42 percent.
+NOTE: Table UCB64.TEMP07 created, with 641100 rows and 11 columns.
+
+NOTE: Data set STDC5P.STD_DX_2008 is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
+      additional CPU resources and may reduce performance.
+The SAS supervisor will process queries for foreign datasets. No parallel where-clause processing will occur.
+NOTE: Compressing data set UCB64.TEMP08 decreased size by 70.54 percent.
+NOTE: Table UCB64.TEMP08 created, with 639137 rows and 11 columns.
+
+NOTE: Data set STDC5P.STD_DX_2009 is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
+      additional CPU resources and may reduce performance.
+The SAS supervisor will process queries for foreign datasets. No parallel where-clause processing will occur.
+NOTE: Compressing data set UCB64.TEMP09 decreased size by 70.52 percent.
+NOTE: Table UCB64.TEMP09 created, with 684664 rows and 11 columns.
+
+NOTE: Data set STDC5P.STD_DX_2010 is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
+      additional CPU resources and may reduce performance.
+The SAS supervisor will process queries for foreign datasets. No parallel where-clause processing will occur.
+NOTE: Compressing data set UCB64.TEMP10 decreased size by 73.07 percent.
+6                                                                   The SAS System                                        00:39 Thursday, May 24, 2018
+
+NOTE: Table UCB64.TEMP10 created, with 840661 rows and 11 columns.
+
+NOTE: Data set STDC5P.STD_DX_2011 is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
+      additional CPU resources and may reduce performance.
+The SAS supervisor will process queries for foreign datasets. No parallel where-clause processing will occur.
+NOTE: Compressing data set UCB64.TEMP11 decreased size by 75.26 percent.
+NOTE: Table UCB64.TEMP11 created, with 1047155 rows and 11 columns.
+
+NOTE: Data set STDC5P.STD_DX_2012 is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
+      additional CPU resources and may reduce performance.
+The SAS supervisor will process queries for foreign datasets. No parallel where-clause processing will occur.
+NOTE: Compressing data set UCB64.TEMP12 decreased size by 75.19 percent.
+NOTE: Table UCB64.TEMP12 created, with 1047926 rows and 11 columns.
+
+NOTE: Data set STDC5P.STD_DX_2013 is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
+      additional CPU resources and may reduce performance.
+The SAS supervisor will process queries for foreign datasets. No parallel where-clause processing will occur.
+NOTE: Compressing data set UCB64.TEMP13 decreased size by 75.17 percent.
+NOTE: Table UCB64.TEMP13 created, with 1076616 rows and 11 columns.
+
+NOTE: Data set STDC5P.STD_DX_2014 is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
+      additional CPU resources and may reduce performance.
+The SAS supervisor will process queries for foreign datasets. No parallel where-clause processing will occur.
+NOTE: Compressing data set UCB64.TEMP14 decreased size by 75.46 percent.
+NOTE: Table UCB64.TEMP14 created, with 1075778 rows and 11 columns.
+
+NOTE: Compressing data set UCB64.TEMPFRACDXSABRCONTROL decreased size by 84.80 percent.
+NOTE: Table UCB64.TEMPFRACDXSABRCONTROL created, with 4545087 rows and 21 columns.
+
+NOTE: Table UCB64.TEMP06 has been dropped.
+NOTE: Table UCB64.TEMP07 has been dropped.
+NOTE: Table UCB64.TEMP08 has been dropped.
+NOTE: Table UCB64.TEMP09 has been dropped.
+NOTE: Table UCB64.TEMP10 has been dropped.
+NOTE: Table UCB64.TEMP11 has been dropped.
+NOTE: Table UCB64.TEMP12 has been dropped.
+NOTE: Table UCB64.TEMP13 has been dropped.
+NOTE: Table UCB64.TEMP14 has been dropped.
+NOTE: Compressing data set UCB64.TEMPFRACDXALLCONTROL decreased size by 85.17 percent.
+NOTE: Table UCB64.TEMPFRACDXALLCONTROL created, with 5315845 rows and 21 columns.
+
+                                                                  --- AS project ---                                  00:39 Thursday, May 24, 2018   3
+
+                                              table                       database                     n
+                                              ----------------------------------------------------------
+                                              UCB64.tempFracDxAllControl  MPCD                   770,758
+                                              UCB64.tempFracDxAllControl  Medicare             4,545,087
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+                                                         buildServiceCodeDatasetsControl.sas
+NOTE: Table UCB64.TEMPFRACDXMPCDCONTROL has been dropped.
+NOTE: Table UCB64.TEMPFRACDXSABRCONTROL has been dropped.
+NOTE: The PROCEDURE SQL printed page 3.
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           18:52.23
+      cpu time            19:28.68
+      
+
+356        
+357        %let select1 = select A.*,
+358                              B.encounterID, B.admit_date, B.begin_date, B.discharge_date, B.end_date, B.px_date, B.px_type, B.px,
+359                              case
+360                                when B.px_type = "09" then "ICD9-PX"
+361                                when B.px_type = "C1" | ^anyalpha(strip(B.px)) then "CPT"
+362                                when B.px_type = "H1" & anyalpha(substr(strip(B.px), 1, 1)) & ^anyalpha(strip(B.px), 2) then "HCPCS"
+363                                else ""
+364                                end as codeType,
+365                              B.px as code;
+366        %let select2 = select patid, encounterID, admit_date, begin_date, discharge_date, end_date, px_date, px_type, px;
+367        
+368        %include "lib\buildPxControl.sas";  /* Call script to query procedure codes */
+NOTE: Compressing data set UCB64.TEMP0710 decreased size by 72.58 percent.
+NOTE: Table UCB64.TEMP0710 created, with 346484578 rows and 9 columns.
+
+NOTE: Compressing data set UCB64.TEMPFRACPXMPCDCONTROL decreased size by 82.43 percent.
+NOTE: Table UCB64.TEMPFRACPXMPCDCONTROL created, with 168458870 rows and 19 columns.
+
+NOTE: Table UCB64.TEMP0710 has been dropped.
+NOTE: Data set STDC5P.STD_PX_2006 is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
+      additional CPU resources and may reduce performance.
+NOTE: Compressing data set UCB64.TEMP06 decreased size by 76.89 percent.
+7                                                                   The SAS System                                        00:39 Thursday, May 24, 2018
+
+NOTE: Table UCB64.TEMP06 created, with 137802721 rows and 9 columns.
+
+NOTE: Data set STDC5P.STD_PX_2007 is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
+      additional CPU resources and may reduce performance.
+NOTE: Compressing data set UCB64.TEMP07 decreased size by 75.36 percent.
+NOTE: Table UCB64.TEMP07 created, with 141996458 rows and 9 columns.
+
+NOTE: Data set STDC5P.STD_PX_2008 is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
+      additional CPU resources and may reduce performance.
+NOTE: Compressing data set UCB64.TEMP08 decreased size by 75.79 percent.
+NOTE: Table UCB64.TEMP08 created, with 147118053 rows and 9 columns.
+
+NOTE: Data set STDC5P.STD_PX_2009 is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
+      additional CPU resources and may reduce performance.
+NOTE: Compressing data set UCB64.TEMP09 decreased size by 76.25 percent.
+NOTE: Table UCB64.TEMP09 created, with 152579039 rows and 9 columns.
+
+NOTE: Data set STDC5P.STD_PX_2010 is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
+      additional CPU resources and may reduce performance.
+NOTE: Compressing data set UCB64.TEMP10 decreased size by 76.18 percent.
+NOTE: Table UCB64.TEMP10 created, with 154866267 rows and 9 columns.
+
+NOTE: Data set STDC5P.STD_PX_2011 is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
+      additional CPU resources and may reduce performance.
+NOTE: Compressing data set UCB64.TEMP11 decreased size by 76.06 percent.
+NOTE: Table UCB64.TEMP11 created, with 157181115 rows and 9 columns.
+
+NOTE: Data set STDC5P.STD_PX_2012 is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
+      additional CPU resources and may reduce performance.
+NOTE: Compressing data set UCB64.TEMP12 decreased size by 76.34 percent.
+NOTE: Table UCB64.TEMP12 created, with 161224747 rows and 9 columns.
+
+NOTE: Data set STDC5P.STD_PX_2013 is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
+      additional CPU resources and may reduce performance.
+NOTE: Compressing data set UCB64.TEMP13 decreased size by 76.47 percent.
+NOTE: Table UCB64.TEMP13 created, with 164298030 rows and 9 columns.
+
+NOTE: Data set STDC5P.STD_PX_2014 is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
+      additional CPU resources and may reduce performance.
+NOTE: Compressing data set UCB64.TEMP14 decreased size by 77.24 percent.
+NOTE: Table UCB64.TEMP14 created, with 166228741 rows and 9 columns.
+
+NOTE: Compressing data set UCB64.TEMPFRACPXSABRCONTROL decreased size by 87.47 percent.
+NOTE: Table UCB64.TEMPFRACPXSABRCONTROL created, with 944505931 rows and 19 columns.
+
+NOTE: Table UCB64.TEMP06 has been dropped.
+NOTE: Table UCB64.TEMP07 has been dropped.
+NOTE: Table UCB64.TEMP08 has been dropped.
+NOTE: Table UCB64.TEMP09 has been dropped.
+NOTE: Table UCB64.TEMP10 has been dropped.
+NOTE: Table UCB64.TEMP11 has been dropped.
+NOTE: Table UCB64.TEMP12 has been dropped.
+NOTE: Table UCB64.TEMP13 has been dropped.
+NOTE: Table UCB64.TEMP14 has been dropped.
+NOTE: Compressing data set UCB64.TEMPFRACPXALLCONTROL decreased size by 87.02 percent.
+NOTE: Table UCB64.TEMPFRACPXALLCONTROL created, with 1112964801 rows and 19 columns.
+
+                                                                  --- AS project ---                                  00:39 Thursday, May 24, 2018   4
+
+                                              table                       database                     n
+                                              ----------------------------------------------------------
+                                              UCB64.tempFracPxAllControl  MPCD               168,458,870
+                                              UCB64.tempFracPxAllControl  Medicare           944,505,931
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+                                                         buildServiceCodeDatasetsControl.sas
+NOTE: Table UCB64.TEMPFRACPXMPCDCONTROL has been dropped.
+NOTE: Table UCB64.TEMPFRACPXSABRCONTROL has been dropped.
+NOTE: The PROCEDURE SQL printed page 4.
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           3:54:36.30
+      cpu time            4:24:04.53
+      
+
+413        
+414        
+415        
+416        
+417        ods html close;
 NOTE: SAS Institute Inc., SAS Campus Drive, Cary, NC USA 27513-2414
 NOTE: The SAS System used:
-      real time           18.82 seconds
-      cpu time            1.73 seconds
+8                                                                   The SAS System                                        00:39 Thursday, May 24, 2018
+
+      real time           9:01:19.66
+      cpu time            10:33:05.29
       

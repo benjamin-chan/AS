@@ -1,5 +1,12 @@
-1                                          The SAS System                 18:21 Monday, May 21, 2018
+1                                                          The SAS System                               10:16 Thursday, May 24, 2018
 
+NOTE: Unable to open SASUSER.REGSTRY. WORK.REGSTRY will be opened instead.
+NOTE: All registry changes will be lost at the end of the session.
+
+WARNING: Unable to copy SASUSER registry to WORK registry. Because of this, you will not see registry customizations during this 
+         session.
+NOTE: Unable to open SASUSER.PROFILE. WORK.PROFILE will be opened instead.
+NOTE: All profile changes will be lost at the end of the session.
 NOTE: Copyright (c) 2016 by SAS Institute Inc., Cary, NC, USA. 
 NOTE: SAS (r) Proprietary Software 9.4 (TS1M5) 
       Licensed to UNIVERSITY OF ALABAMA AT BIRMINGHAM - SFA - T&R, Site 70086550.
@@ -28,8 +35,8 @@ of the shared folders.
 
 
 NOTE: SAS initialization used:
-      real time           0.38 seconds
-      cpu time            0.38 seconds
+      real time           4.71 seconds
+      cpu time            0.31 seconds
       
 1          *  University of Alabama at Birmingham                               *
 2          *  AS project                                            *
@@ -65,105 +72,109 @@ NOTE: Libref MPSTD was successfully assigned as follows:
 NOTE: Libref UCBSTD was successfully assigned as follows: 
       Engine:        SPDE 
       Physical Name: q:\studies\AS\data\stddata\
+2                                                                   The SAS System                                        10:16 Thursday, May 24, 2018
+
 NOTE: Libref UCB was successfully assigned as follows: 
       Engine:        SPDE 
       Physical Name: q:\studies\AS\data\UCB\
+NOTE: Libref UCB64 was successfully assigned as follows: 
+      Engine:        SPDE 
+      Physical Name: q:\studies\AS\data\UCB64\
 NOTE: Libref DT was successfully assigned as follows: 
       Engine:        V9 
       Physical Name: V:\studies\AS\data
 NOTE: Libref NDC was successfully assigned as follows: 
-2                                                                   The SAS System                                          18:21 Monday, May 21, 2018
-
       Engine:        V9 
       Physical Name: W:\onenote\references\drug ndcs\sas data
-139        footnote "&pgm.";
-140        * footnote2 "%sysfunc(datetime(),datetime14.)";
-141        title1 '--- AS project ---';
-142        **********************************************************************;
-143        options macrogen mlogic mprint symbolgen;
-144        options nomacrogen nomlogic nomprint nosymbolgen;
-145        
-146        
-147        ods html
-148          body = "output\&cmt..html"
-149          style = Statistical;
-NOTE: Writing HTML Body file: output\queryOutcomeHospitalizedInfection.html
-150        
-151        
-152        /*
-153        TO-DO
-154        
-155        Kevin's request 4/25/2018:
-156        Exclude OI's from hospitalized infection capture
-157         */
-158        
-159        
-160        *To edit the following two lines only;
+154        footnote "&pgm.";
+155        * footnote2 "%sysfunc(datetime(),datetime14.)";
+156        title1 '--- AS project ---';
+157        **********************************************************************;
+158        options macrogen mlogic mprint symbolgen;
+159        options nomacrogen nomlogic nomprint nosymbolgen;
+160        
 161        
-162        %let indxdat = UCB.tempIncDxAll;
-163        %let inpxdat = UCB.tempIncPxAll;
-164        %let inrxdat = UCB.tempIncRxAll;
-165        proc sort data = &indxdat; by database exposure patid exposureStart exposureEnd exposureID begin_date;
-166        run;
-
-NOTE: There were 5928438 observations read from the data set UCB.TEMPINCDXALL.
-NOTE: The data set UCB.TEMPINCDXALL has 5928438 observations and 23 variables.
-NOTE: PROCEDURE SORT used (Total process time):
-      real time           8.45 seconds
-      cpu time            14.49 seconds
-      
-
-167        proc sort data = &inpxdat; by database exposure patid exposureStart exposureEnd exposureID px_date;
-168        run;
-
-NOTE: There were 8264248 observations read from the data set UCB.TEMPINCPXALL.
-NOTE: The data set UCB.TEMPINCPXALL has 8264248 observations and 21 variables.
-NOTE: PROCEDURE SORT used (Total process time):
-      real time           13.71 seconds
-      cpu time            25.55 seconds
-      
-
-169        proc sort data = &inrxdat; by database exposure patid exposureStart exposureEnd exposureID dispense_date;
-170        run;
-
-NOTE: There were 4273219 observations read from the data set UCB.TEMPINCRXALL.
-NOTE: The data set UCB.TEMPINCRXALL has 4273219 observations and 15 variables.
-NOTE: PROCEDURE SORT used (Total process time):
-      real time           4.83 seconds
-      cpu time            8.97 seconds
-      
-
+162        ods html
+163          body = "output\&cmt..html"
+164          style = Statistical;
+NOTE: Writing HTML Body file: output\queryOutcomeHospitalizedInfection.html
+165        
+166        
+167        /*
+168        Kevin's request 4/25/2018:
+169        Exclude OI's from hospitalized infection capture
+170         */
 171        
-172        /*
-173        Keep only the HCPCS codes
-174        Re-length the px variable
-175         */
-176        data Work.tempIncPxAll;
-177          length px $5;
-178          set &inpxdat.;
-179          if px_type = "H1" then output;
-180        run;
+172        
+173        *To edit the following two lines only;
+174        
+175        %let indxdat = UCB64.tempIncDxAll;
+176        %let inpxdat = UCB64.tempIncPxAll;
+177        %let inrxdat = UCB64.tempIncRxAll;
+178        proc sort data = &indxdat; by database exposure patid exposureStart exposureEnd exposureID begin_date;
+179        run;
+
+NOTE: There were 1935016 observations read from the data set UCB64.TEMPINCDXALL.
+NOTE: The data set UCB64.TEMPINCDXALL has 1935016 observations and 23 variables.
+NOTE: Compressing data set UCB64.TEMPINCDXALL decreased size by 91.48 percent.
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           3.88 seconds
+      cpu time            7.69 seconds
+      
+
+180        proc sort data = &inpxdat; by database exposure patid exposureStart exposureEnd exposureID px_date;
+181        run;
+
+NOTE: There were 2681309 observations read from the data set UCB64.TEMPINCPXALL.
+NOTE: The data set UCB64.TEMPINCPXALL has 2681309 observations and 21 variables.
+NOTE: Compressing data set UCB64.TEMPINCPXALL decreased size by 89.83 percent.
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           3.77 seconds
+      cpu time            7.55 seconds
+      
+
+182        proc sort data = &inrxdat; by database exposure patid exposureStart exposureEnd exposureID dispense_date;
+183        run;
+
+NOTE: There were 1569994 observations read from the data set UCB64.TEMPINCRXALL.
+NOTE: The data set UCB64.TEMPINCRXALL has 1569994 observations and 15 variables.
+NOTE: Compressing data set UCB64.TEMPINCRXALL decreased size by 90.63 percent.
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           2.82 seconds
+      cpu time            4.86 seconds
+      
+
+184        
+185        /*
+3                                                                   The SAS System                                        10:16 Thursday, May 24, 2018
+
+186        Keep only the HCPCS codes
+187        Re-length the px variable
+188         */
+189        data Work.tempIncPxAll;
+190          length px $5;
+191          set &inpxdat.;
+192          if px_type = "H1" then output;
+193        run;
 
 WARNING: Multiple lengths were specified for the variable px by input data set(s). This can cause truncation of data.
-NOTE: There were 8264248 observations read from the data set UCB.TEMPINCPXALL.
-3                                                                   The SAS System                                          18:21 Monday, May 21, 2018
-
-NOTE: The data set WORK.TEMPINCPXALL has 1987380 observations and 21 variables.
+NOTE: There were 2681309 observations read from the data set UCB64.TEMPINCPXALL.
+NOTE: The data set WORK.TEMPINCPXALL has 578745 observations and 21 variables.
 NOTE: DATA statement used (Total process time):
-      real time           1.63 seconds
-      cpu time            1.60 seconds
+      real time           0.73 seconds
+      cpu time            0.70 seconds
       
 
-181        proc sql;
-182          select "Check length of px variable in Work.tempIncPxAll" as table,  px_type, length(px) as lengthPx, count(*) as n
-183          from Work.tempIncPxAll
-184          group by px_type, calculated lengthPx;
-                                                                  --- AS project ---                                    18:21 Monday, May 21, 2018   1
+194        proc sql;
+195          select "Check length of px variable in Work.tempIncPxAll" as table,  px_type, length(px) as lengthPx, count(*) as n
+196          from Work.tempIncPxAll
+197          group by px_type, calculated lengthPx;
+                                                                  --- AS project ---                                  10:16 Thursday, May 24, 2018   1
 
                                                                                      Procedure
                                    table                                             Code Type  lengthPx         n
                                    -------------------------------------------------------------------------------
-                                   Check length of px variable in Work.tempIncPxAll  H1                5   1987380
+                                   Check length of px variable in Work.tempIncPxAll  H1                5    578745
  
  
  
@@ -232,110 +243,110 @@ NOTE: DATA statement used (Total process time):
  
  
                                                         queryOutcomeHospitalizedInfection.sas
-185        quit;
+198        quit;
 NOTE: The PROCEDURE SQL printed page 1.
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           1.09 seconds
-      cpu time            1.79 seconds
+      real time           0.40 seconds
+      cpu time            0.62 seconds
       
 
-186        %let inpxdat = Work.tempIncPxAll;
-187        
-188        /*
-189        proc datasets nolist; delete
-190        icd9_infection
-191        icd9_inf
-192        outcome_infection_dx
-193        outcome_rx_TB
-194        NDC_PYRAZINAMIDE
-195        outcome_infection_px
-196        outcome_infection_rx
-197        outcome_infection_trt
-198        outcome_infection
-199        ;
-200        quit;
-201         */
-202        proc import datafile='U:\studies\AS\pgms\bchan\data\raw\AHRQ_CCS.csv'
-203            out=icd9_infection dbms = csv replace;
-204            guessingrows = 1000;
-205        run;
+199        %let inpxdat = Work.tempIncPxAll;
+200        
+201        /*
+202        proc datasets nolist; delete
+203        icd9_infection
+204        icd9_inf
+205        outcome_infection_dx
+206        outcome_rx_TB
+207        NDC_PYRAZINAMIDE
+208        outcome_infection_px
+209        outcome_infection_rx
+210        outcome_infection_trt
+211        outcome_infection
+212        ;
+213        quit;
+214         */
+215        proc import datafile='U:\studies\AS\pgms\bchan\data\raw\AHRQ_CCS.csv'
+216            out=icd9_infection dbms = csv replace;
+217            guessingrows = 1000;
+218        run;
 
 Number of names found is less than number of variables found. 
 Number of names found is less than number of variables found. 
-206         /**********************************************************************
-207         *   PRODUCT:   SAS
-208         *   VERSION:   9.4
-209         *   CREATOR:   External File Interface
-210         *   DATE:      21MAY18
-211         *   DESC:      Generated SAS Datastep Code
-212         *   TEMPLATE SOURCE:  (None Specified.)
-213         ***********************************************************************/
-214            data WORK.ICD9_INFECTION    ;
-215            %let _EFIERR_ = 0; /* set the ERROR detection macro variable */
-216            infile 'U:\studies\AS\pgms\bchan\data\raw\AHRQ_CCS.csv' delimiter = ',' MISSOVER DSD lrecl=32767 firstobs=2 ;
-217               informat ICD_9_CM_CODE $5. ;
-218               informat CCS_CATEGORY best32. ;
-219               informat CCS_CATEGORY_DESCRIPTION $12. ;
-220               informat ICD_9_CM_CODE_DESCRIPTION $64. ;
-221               informat OPTIONAL_CCS_CATEGORY $1. ;
-222               informat OPTIONAL_CCS_CATEGORY_DESCRIPTI $1. ;
-223               informat description $146. ;
-224               informat UABlist $1. ;
-225               informat Infection $1. ;
-226               informat UABgroup $36. ;
-227               informat Infection_Category $36. ;
-228               informat Infection_Location $1. ;
-229               informat Infectious_Organism $1. ;
-230               informat OI $2. ;
-231               informat Viral $5. ;
-232               informat Fungal $1. ;
-233               informat bacterial_infection $1. ;
-234               informat other_types_of_infection $1. ;
-235               informat VAR19 $26. ;
-236               format ICD_9_CM_CODE $5. ;
-237               format CCS_CATEGORY best12. ;
-4                                                                   The SAS System                                          18:21 Monday, May 21, 2018
+219         /**********************************************************************
+220         *   PRODUCT:   SAS
+221         *   VERSION:   9.4
+222         *   CREATOR:   External File Interface
+223         *   DATE:      24MAY18
+224         *   DESC:      Generated SAS Datastep Code
+225         *   TEMPLATE SOURCE:  (None Specified.)
+226         ***********************************************************************/
+227            data WORK.ICD9_INFECTION    ;
+228            %let _EFIERR_ = 0; /* set the ERROR detection macro variable */
+229            infile 'U:\studies\AS\pgms\bchan\data\raw\AHRQ_CCS.csv' delimiter = ',' MISSOVER DSD lrecl=32767 firstobs=2 ;
+230               informat ICD_9_CM_CODE $5. ;
+231               informat CCS_CATEGORY best32. ;
+232               informat CCS_CATEGORY_DESCRIPTION $12. ;
+233               informat ICD_9_CM_CODE_DESCRIPTION $64. ;
+234               informat OPTIONAL_CCS_CATEGORY $1. ;
+235               informat OPTIONAL_CCS_CATEGORY_DESCRIPTI $1. ;
+236               informat description $146. ;
+237               informat UABlist $1. ;
+238               informat Infection $1. ;
+239               informat UABgroup $36. ;
+4                                                                   The SAS System                                        10:16 Thursday, May 24, 2018
 
-238               format CCS_CATEGORY_DESCRIPTION $12. ;
-239               format ICD_9_CM_CODE_DESCRIPTION $64. ;
-240               format OPTIONAL_CCS_CATEGORY $1. ;
-241               format OPTIONAL_CCS_CATEGORY_DESCRIPTI $1. ;
-242               format description $146. ;
-243               format UABlist $1. ;
-244               format Infection $1. ;
-245               format UABgroup $36. ;
-246               format Infection_Category $36. ;
-247               format Infection_Location $1. ;
-248               format Infectious_Organism $1. ;
-249               format OI $2. ;
-250               format Viral $5. ;
-251               format Fungal $1. ;
-252               format bacterial_infection $1. ;
-253               format other_types_of_infection $1. ;
-254               format VAR19 $26. ;
-255            input
-256                        ICD_9_CM_CODE  $
-257                        CCS_CATEGORY
-258                        CCS_CATEGORY_DESCRIPTION  $
-259                        ICD_9_CM_CODE_DESCRIPTION  $
-260                        OPTIONAL_CCS_CATEGORY  $
-261                        OPTIONAL_CCS_CATEGORY_DESCRIPTI  $
-262                        description  $
-263                        UABlist  $
-264                        Infection  $
-265                        UABgroup  $
-266                        Infection_Category  $
-267                        Infection_Location  $
-268                        Infectious_Organism  $
-269                        OI  $
-270                        Viral  $
-271                        Fungal  $
-272                        bacterial_infection  $
-273                        other_types_of_infection  $
-274                        VAR19  $
-275            ;
-276            if _ERROR_ then call symputx('_EFIERR_',1);  /* set ERROR detection macro variable */
-277            run;
+240               informat Infection_Category $36. ;
+241               informat Infection_Location $1. ;
+242               informat Infectious_Organism $1. ;
+243               informat OI $2. ;
+244               informat Viral $5. ;
+245               informat Fungal $1. ;
+246               informat bacterial_infection $1. ;
+247               informat other_types_of_infection $1. ;
+248               informat VAR19 $26. ;
+249               format ICD_9_CM_CODE $5. ;
+250               format CCS_CATEGORY best12. ;
+251               format CCS_CATEGORY_DESCRIPTION $12. ;
+252               format ICD_9_CM_CODE_DESCRIPTION $64. ;
+253               format OPTIONAL_CCS_CATEGORY $1. ;
+254               format OPTIONAL_CCS_CATEGORY_DESCRIPTI $1. ;
+255               format description $146. ;
+256               format UABlist $1. ;
+257               format Infection $1. ;
+258               format UABgroup $36. ;
+259               format Infection_Category $36. ;
+260               format Infection_Location $1. ;
+261               format Infectious_Organism $1. ;
+262               format OI $2. ;
+263               format Viral $5. ;
+264               format Fungal $1. ;
+265               format bacterial_infection $1. ;
+266               format other_types_of_infection $1. ;
+267               format VAR19 $26. ;
+268            input
+269                        ICD_9_CM_CODE  $
+270                        CCS_CATEGORY
+271                        CCS_CATEGORY_DESCRIPTION  $
+272                        ICD_9_CM_CODE_DESCRIPTION  $
+273                        OPTIONAL_CCS_CATEGORY  $
+274                        OPTIONAL_CCS_CATEGORY_DESCRIPTI  $
+275                        description  $
+276                        UABlist  $
+277                        Infection  $
+278                        UABgroup  $
+279                        Infection_Category  $
+280                        Infection_Location  $
+281                        Infectious_Organism  $
+282                        OI  $
+283                        Viral  $
+284                        Fungal  $
+285                        bacterial_infection  $
+286                        other_types_of_infection  $
+287                        VAR19  $
+288            ;
+289            if _ERROR_ then call symputx('_EFIERR_',1);  /* set ERROR detection macro variable */
+290            run;
 
 NOTE: The infile 'U:\studies\AS\pgms\bchan\data\raw\AHRQ_CCS.csv' is:
       Filename=U:\studies\AS\pgms\bchan\data\raw\AHRQ_CCS.csv,
@@ -348,8 +359,8 @@ NOTE: 2230 records were read from the infile 'U:\studies\AS\pgms\bchan\data\raw\
       The maximum record length was 266.
 NOTE: The data set WORK.ICD9_INFECTION has 2230 observations and 19 variables.
 NOTE: DATA statement used (Total process time):
-      real time           0.06 seconds
-      cpu time            0.04 seconds
+      real time           0.04 seconds
+      cpu time            0.03 seconds
       
 
 2230 rows created in WORK.ICD9_INFECTION from U:\studies\AS\pgms\bchan\data\raw\AHRQ_CCS.csv.
@@ -357,33 +368,33 @@ NOTE: DATA statement used (Total process time):
   
   
 NOTE: WORK.ICD9_INFECTION data set was successfully created.
+5                                                                   The SAS System                                        10:16 Thursday, May 24, 2018
+
 NOTE: The data set WORK.ICD9_INFECTION has 2230 observations and 19 variables.
 NOTE: PROCEDURE IMPORT used (Total process time):
-      real time           0.91 seconds
-      cpu time            0.70 seconds
+      real time           0.73 seconds
+      cpu time            0.65 seconds
       
 
-278        data icd9_infection;
-279        set icd9_infection;
-280          where upcase(oi) ^= "OI";
-281        Infection=upcase(Infection);
-282        run;
-5                                                                   The SAS System                                          18:21 Monday, May 21, 2018
-
+291        data icd9_infection;
+292        set icd9_infection;
+293          where upcase(oi) ^= "OI";
+294        Infection=upcase(Infection);
+295        run;
 
 NOTE: There were 1725 observations read from the data set WORK.ICD9_INFECTION.
       WHERE UPCASE(oi) not = 'OI';
 NOTE: The data set WORK.ICD9_INFECTION has 1725 observations and 19 variables.
 NOTE: DATA statement used (Total process time):
-      real time           0.03 seconds
+      real time           0.04 seconds
       cpu time            0.03 seconds
       
 
-283        proc freq data = Work.icd9_infection;
-284          table oi / missprint;
-285        run;
+296        proc freq data = Work.icd9_infection;
+297          table oi / missprint;
+298        run;
 
-                                                                  --- AS project ---                                    18:21 Monday, May 21, 2018   2
+                                                                  --- AS project ---                                  10:16 Thursday, May 24, 2018   2
 
                                                                   The FREQ Procedure
 
@@ -460,14 +471,14 @@ NOTE: DATA statement used (Total process time):
 NOTE: There were 1725 observations read from the data set WORK.ICD9_INFECTION.
 NOTE: The PROCEDURE FREQ printed page 2.
 NOTE: PROCEDURE FREQ used (Total process time):
-      real time           0.07 seconds
+      real time           0.06 seconds
       cpu time            0.03 seconds
       
 
-286        proc print data=icd9_infection (obs=10);run;
+299        proc print data=icd9_infection (obs=10);run;
 
 WARNING: Data too long for column "description"; truncated to 145 characters to fit.
-                                                                  --- AS project ---                                    18:21 Monday, May 21, 2018   3
+                                                                  --- AS project ---                                  10:16 Thursday, May 24, 2018   3
 
                                                                                                                                      OPTIONAL_CCS_
      ICD_9_                     CCS_CATEGORY_                                                                         OPTIONAL_        CATEGORY_
@@ -544,17 +555,17 @@ WARNING: Data too long for column "description"; truncated to 145 characters to 
 NOTE: There were 10 observations read from the data set WORK.ICD9_INFECTION.
 NOTE: The PROCEDURE PRINT printed page 3.
 NOTE: PROCEDURE PRINT used (Total process time):
-      real time           0.07 seconds
-      cpu time            0.04 seconds
+      real time           0.04 seconds
+      cpu time            0.01 seconds
       
 
-287        
-288        proc print data=icd9_infection ;
-289          where ICD_9_CM_CODE=:"003";
-290        run;
+300        
+301        proc print data=icd9_infection ;
+302          where ICD_9_CM_CODE=:"003";
+303        run;
 
 WARNING: Data too long for column "description"; truncated to 145 characters to fit.
-                                                                  --- AS project ---                                    18:21 Monday, May 21, 2018   4
+                                                                  --- AS project ---                                  10:16 Thursday, May 24, 2018   4
 
                                                                                                                                      OPTIONAL_CCS_
      ICD_9_                     CCS_CATEGORY_                                                                         OPTIONAL_        CATEGORY_
@@ -632,15 +643,15 @@ NOTE: There were 5 observations read from the data set WORK.ICD9_INFECTION.
       WHERE ICD_9_CM_CODE=:'003';
 NOTE: The PROCEDURE PRINT printed page 4.
 NOTE: PROCEDURE PRINT used (Total process time):
-      real time           0.04 seconds
-      cpu time            0.03 seconds
+      real time           0.03 seconds
+      cpu time            0.01 seconds
       
 
-291        
-292        proc freq data=icd9_infection; tables Infection_Category Infection_Location;
-293        run;
+304        
+305        proc freq data=icd9_infection; tables Infection_Category Infection_Location;
+306        run;
 
-                                                                  --- AS project ---                                    18:21 Monday, May 21, 2018   5
+                                                                  --- AS project ---                                  10:16 Thursday, May 24, 2018   5
 
                                                                   The FREQ Procedure
 
@@ -718,33 +729,33 @@ NOTE: There were 1725 observations read from the data set WORK.ICD9_INFECTION.
 NOTE: The PROCEDURE FREQ printed page 5.
 NOTE: PROCEDURE FREQ used (Total process time):
       real time           0.09 seconds
-      cpu time            0.03 seconds
+      cpu time            0.06 seconds
       
 
-294        proc freq data=icd9_infection; tables Infection_Category Infection_Location;
-295        where not missing(oi) and Infection^=" " and  Infection_Category not in ("zoster" "tuberculosis");
-296        run;
+307        proc freq data=icd9_infection; tables Infection_Category Infection_Location;
+308        where not missing(oi) and Infection^=" " and  Infection_Category not in ("zoster" "tuberculosis");
+309        run;
 
 NOTE: No observations were selected from data set WORK.ICD9_INFECTION.
 NOTE: There were 0 observations read from the data set WORK.ICD9_INFECTION.
+6                                                                   The SAS System                                        10:16 Thursday, May 24, 2018
+
       WHERE (not MISSING(oi)) and (Infection not = ' ') and Infection_Category not in ('tuberculosis', 'zoster');
 NOTE: PROCEDURE FREQ used (Total process time):
-      real time           0.00 seconds
-      cpu time            0.00 seconds
+      real time           0.01 seconds
+      cpu time            0.01 seconds
       
 
-297        proc print data=icd9_infection;
-298        var ICD_9_CM_CODE CCS_CATEGORY_DESCRIPTION ICD_9_CM_CODE_DESCRIPTION
-299        description Infection UABgroup Infection_Category Infection_Location Infectious_Organism OI Viral Fungal bacterial_infection
-299      ! other_types_of_infection;
-300        
-6                                                                   The SAS System                                          18:21 Monday, May 21, 2018
-
-301        where Infection_Category in ("zoster" "herpes");
-302        run;
+310        proc print data=icd9_infection;
+311        var ICD_9_CM_CODE CCS_CATEGORY_DESCRIPTION ICD_9_CM_CODE_DESCRIPTION
+312        description Infection UABgroup Infection_Category Infection_Location Infectious_Organism OI Viral Fungal bacterial_infection
+312      ! other_types_of_infection;
+313        
+314        where Infection_Category in ("zoster" "herpes");
+315        run;
 
 WARNING: Data too long for column "description"; truncated to 145 characters to fit.
-                                                                  --- AS project ---                                    18:21 Monday, May 21, 2018   6
+                                                                  --- AS project ---                                  10:16 Thursday, May 24, 2018   6
 
      ICD_9_     CCS_CATEGORY_
  Obs CM_CODE     DESCRIPTION     ICD_9_CM_CODE_DESCRIPTION
@@ -818,7 +829,7 @@ WARNING: Data too long for column "description"; truncated to 145 characters to 
  
  
                                                         queryOutcomeHospitalizedInfection.sas
-                                                                  --- AS project ---                                    18:21 Monday, May 21, 2018   7
+                                                                  --- AS project ---                                  10:16 Thursday, May 24, 2018   7
 
      ICD_9_     CCS_CATEGORY_
  Obs CM_CODE     DESCRIPTION     ICD_9_CM_CODE_DESCRIPTION
@@ -896,51 +907,51 @@ NOTE: There were 25 observations read from the data set WORK.ICD9_INFECTION.
       WHERE Infection_Category in ('herpes', 'zoster');
 NOTE: The PROCEDURE PRINT printed pages 6-7.
 NOTE: PROCEDURE PRINT used (Total process time):
-      real time           0.07 seconds
-      cpu time            0.06 seconds
+      real time           0.06 seconds
+      cpu time            0.04 seconds
       
 
-303        
-304        proc print data=icd9_infection;
-305        var ICD_9_CM_CODE CCS_CATEGORY_DESCRIPTION ICD_9_CM_CODE_DESCRIPTION
-306        description Infection UABgroup Infection_Category Infection_Location Infectious_Organism OI Viral Fungal bacterial_infection
-306      ! other_types_of_infection;
-307        
-308        where not missing(oi) and Infection^=" " and  Infection_Category not in ("zoster" "tuberculosis");
-309        run;
+316        
+317        proc print data=icd9_infection;
+318        var ICD_9_CM_CODE CCS_CATEGORY_DESCRIPTION ICD_9_CM_CODE_DESCRIPTION
+319        description Infection UABgroup Infection_Category Infection_Location Infectious_Organism OI Viral Fungal bacterial_infection
+319      ! other_types_of_infection;
+320        
+321        where not missing(oi) and Infection^=" " and  Infection_Category not in ("zoster" "tuberculosis");
+322        run;
 
 NOTE: No observations were selected from data set WORK.ICD9_INFECTION.
 NOTE: There were 0 observations read from the data set WORK.ICD9_INFECTION.
       WHERE (not MISSING(oi)) and (Infection not = ' ') and Infection_Category not in ('tuberculosis', 'zoster');
 NOTE: PROCEDURE PRINT used (Total process time):
-      real time           0.03 seconds
-      cpu time            0.03 seconds
+      real time           0.01 seconds
+      cpu time            0.01 seconds
       
 
-310        
-311        
-312        data icd9_inf;
-313        length ICD_9_CM_CODE $18;
-314        set icd9_infection;
-315        keep
-316        ICD_9_CM_CODE ICD_9_CM_CODE_DESCRIPTION Infection Infection_Category Infection_Location Infectious_Organism OI Viral Fungal
-316      ! bacterial_infection other_types_of_infection;
-317        where Infection^=" ";
-318        run;
+323        
+324        
+325        data icd9_inf;
+326        length ICD_9_CM_CODE $18;
+327        set icd9_infection;
+328        keep
+329        ICD_9_CM_CODE ICD_9_CM_CODE_DESCRIPTION Infection Infection_Category Infection_Location Infectious_Organism OI Viral Fungal
+329      ! bacterial_infection other_types_of_infection;
+330        where Infection^=" ";
+331        run;
 
 NOTE: There were 896 observations read from the data set WORK.ICD9_INFECTION.
       WHERE Infection not = ' ';
 NOTE: The data set WORK.ICD9_INF has 896 observations and 11 variables.
 NOTE: DATA statement used (Total process time):
-      real time           0.04 seconds
+      real time           0.03 seconds
       cpu time            0.01 seconds
       
 
-319        
-320        proc print data=icd9_infection (obs=10);run;
+332        
+333        proc print data=icd9_infection (obs=10);run;
 
 WARNING: Data too long for column "description"; truncated to 145 characters to fit.
-                                                                  --- AS project ---                                    18:21 Monday, May 21, 2018   8
+                                                                  --- AS project ---                                  10:16 Thursday, May 24, 2018   8
 
                                                                                                                                      OPTIONAL_CCS_
      ICD_9_                     CCS_CATEGORY_                                                                         OPTIONAL_        CATEGORY_
@@ -1021,9 +1032,9 @@ NOTE: PROCEDURE PRINT used (Total process time):
       cpu time            0.03 seconds
       
 
-321        proc freq data=icd9_inf ; tables Infection_Category Infection;run;
+334        proc freq data=icd9_inf ; tables Infection_Category Infection;run;
 
-                                                                  --- AS project ---                                    18:21 Monday, May 21, 2018   9
+                                                                  --- AS project ---                                  10:16 Thursday, May 24, 2018   9
 
                                                                   The FREQ Procedure
 
@@ -1097,116 +1108,116 @@ NOTE: PROCEDURE PRINT used (Total process time):
  
  
                                                         queryOutcomeHospitalizedInfection.sas
+7                                                                   The SAS System                                        10:16 Thursday, May 24, 2018
+
 NOTE: There were 896 observations read from the data set WORK.ICD9_INF.
 NOTE: The PROCEDURE FREQ printed page 9.
 NOTE: PROCEDURE FREQ used (Total process time):
       real time           0.09 seconds
-      cpu time            0.03 seconds
+      cpu time            0.04 seconds
       
 
-322        
-323        
-324        /*Infection_Category="tuberculosis";*/
-325        
-7                                                                   The SAS System                                          18:21 Monday, May 21, 2018
-
-326        data outcome_infection_dx(drop=rc);
-327            if _N_=1 then do;
-328                declare hash HDX(dataset:"icd9_inf");
-329                rc = HDX.definekey("ICD_9_CM_CODE");
-330                rc = HDX.definedata(ALL:"YES");
-331                rc=HDX.definedone();
-332            end;
-333        if 0 then set icd9_inf;
-334        set &indxdat. ;
-335        by database exposure patid exposureStart exposureEnd exposureID BEGIN_DATE;
-336        /*length outcome $20 outcome_date 4;*/
-337        /*format outcome_date mmddyy10.;*/
-338                rc =HDX.find(key:DX);
-339                if rc=0 then output outcome_infection_dx;
-340        where ENC_TYPE in ('IP' 'ER' 'AV' 'NH' 'HH' 'ED');
-341        run;
+335        
+336        
+337        /*Infection_Category="tuberculosis";*/
+338        
+339        data outcome_infection_dx(drop=rc);
+340            if _N_=1 then do;
+341                declare hash HDX(dataset:"icd9_inf");
+342                rc = HDX.definekey("ICD_9_CM_CODE");
+343                rc = HDX.definedata(ALL:"YES");
+344                rc=HDX.definedone();
+345            end;
+346        if 0 then set icd9_inf;
+347        set &indxdat. ;
+348        by database exposure patid exposureStart exposureEnd exposureID BEGIN_DATE;
+349        /*length outcome $20 outcome_date 4;*/
+350        /*format outcome_date mmddyy10.;*/
+351                rc =HDX.find(key:DX);
+352                if rc=0 then output outcome_infection_dx;
+353        where ENC_TYPE in ('IP' 'ER' 'AV' 'NH' 'HH' 'ED');
+354        run;
 
 NOTE: There were 896 observations read from the data set WORK.ICD9_INF.
-NOTE: There were 5928438 observations read from the data set UCB.TEMPINCDXALL.
+NOTE: There were 1935016 observations read from the data set UCB64.TEMPINCDXALL.
       WHERE ENC_TYPE in ('AV', 'ED', 'ER', 'HH', 'IP', 'NH');
 NOTE: Parallel WHERE evaluation suppressed due to sort order on table.
-NOTE: The data set WORK.OUTCOME_INFECTION_DX has 269203 observations and 34 variables.
+NOTE: The data set WORK.OUTCOME_INFECTION_DX has 80283 observations and 34 variables.
 NOTE: DATA statement used (Total process time):
-      real time           2.74 seconds
-      cpu time            4.13 seconds
+      real time           1.12 seconds
+      cpu time            1.93 seconds
       
 
-342        proc sort data=outcome_infection_dx nodupkey; by database exposure patid exposureStart exposureEnd exposureID BEGIN_DATE DX ENC_TYPE;run;
+355        proc sort data=outcome_infection_dx nodupkey; by database exposure patid exposureStart exposureEnd exposureID BEGIN_DATE DX ENC_TYPE;run;
 
-NOTE: There were 269203 observations read from the data set WORK.OUTCOME_INFECTION_DX.
-NOTE: 103972 observations with duplicate key values were deleted.
-NOTE: The data set WORK.OUTCOME_INFECTION_DX has 165231 observations and 34 variables.
+NOTE: There were 80283 observations read from the data set WORK.OUTCOME_INFECTION_DX.
+NOTE: 31197 observations with duplicate key values were deleted.
+NOTE: The data set WORK.OUTCOME_INFECTION_DX has 49086 observations and 34 variables.
 NOTE: PROCEDURE SORT used (Total process time):
-      real time           0.53 seconds
-      cpu time            0.81 seconds
+      real time           0.21 seconds
+      cpu time            0.17 seconds
       
 
-343        
-344        proc freq data=outcome_infection_dx; tables Infection_Category Infection;run;
+356        
+357        proc freq data=outcome_infection_dx; tables Infection_Category Infection;run;
 
-                                                                  --- AS project ---                                    18:21 Monday, May 21, 2018  10
+                                                                  --- AS project ---                                  10:16 Thursday, May 24, 2018  10
 
                                                                   The FREQ Procedure
 
                                                                                                Cumulative    Cumulative
                               Infection_Category                      Frequency     Percent     Frequency      Percent
                               -----------------------------------------------------------------------------------------
-                              GI abscess                                  2615        1.70          2615         1.70  
-                              HSV                                          200        0.13          2815         1.83  
-                              Q fever                                        2        0.00          2817         1.83  
-                              UTI                                         1259        0.82          4076         2.65  
-                              abdominal abscess                           2294        1.49          6370         4.14  
-                              actinomycosis                                 68        0.04          6438         4.18  
-                              bacteremia septicemia                       5896        3.83         12334         8.02  
-                              borrelia                                     673        0.44         13007         8.45  
-                              brain abscess                                154        0.10         13161         8.55  
-                              brucella                                       1        0.00         13162         8.55  
-                              candidiasis                                   17        0.01         13179         8.56  
-                              cat-scratch                                    7        0.00         13186         8.57  
-                              cjd                                            1        0.00         13187         8.57  
-                              device associated infections                1812        1.18         14999         9.75  
-                              encephalitis                                  13        0.01         15012         9.76  
-                              endocarditis                                 222        0.14         15234         9.90  
-                              endophthalmitis                               44        0.03         15278         9.93  
-                              filarial or other parasitis                   48        0.03         15326         9.96  
-                              gastroenteritis                             4980        3.24         20306        13.20  
-                              herpes                                      1036        0.67         21342        13.87  
-                              infectious conjunctivitis                     36        0.02         21378        13.89  
-                              leprosy                                        1        0.00         21379        13.89  
-                              leptospirosis                                  1        0.00         21380        13.89  
-                              leshmaniasis                                   2        0.00         21382        13.90  
-                              meningitis                                    73        0.05         21455        13.94  
-                              myocarditis                                    3        0.00         21458        13.94  
-                              ocular infection                              76        0.05         21534        13.99  
-                              osteomyelitis                               3460        2.25         24994        16.24  
-                              plague                                         1        0.00         24995        16.24  
-                              pneumonia                                  17847       11.60         42842        27.84  
-                              pneumonitis                                    1        0.00         42843        27.84  
-                              prostate infections                            3        0.00         42846        27.84  
-                              pyelonephritis urine tract infection       27345       17.77         70191        45.62  
-                              rickettsia                                    38        0.02         70229        45.64  
-                              septic arthritis                             899        0.58         71128        46.22  
-                              skin and soft tissue                         112        0.07         71240        46.30  
-                              skin and soft tissue infection             25267       16.42         96507        62.72  
-                              syphilis and other venereal disease,        1792        1.16         98299        63.88  
-                              upper respiratory tract infection          52613       34.19        150912        98.07  
-                              viremia                                       26        0.02        150938        98.09  
-                              zoster                                      2938        1.91        153876       100.00  
+                              GI abscess                                   774        1.66           774         1.66  
+                              HSV                                          112        0.24           886         1.90  
+                              Q fever                                        2        0.00           888         1.91  
+                              UTI                                          407        0.87          1295         2.78  
+                              abdominal abscess                            585        1.26          1880         4.04  
+                              actinomycosis                                 41        0.09          1921         4.13  
+                              bacteremia septicemia                       1145        2.46          3066         6.58  
+                              borrelia                                     192        0.41          3258         7.00  
+                              brain abscess                                 26        0.06          3284         7.05  
+                              candidiasis                                    8        0.02          3292         7.07  
+                              cat-scratch                                    2        0.00          3294         7.07  
+                              device associated infections                 383        0.82          3677         7.90  
+                              encephalitis                                   3        0.01          3680         7.90  
+                              endocarditis                                  24        0.05          3704         7.96  
+                              endophthalmitis                               14        0.03          3718         7.99  
+                              filarial or other parasitis                   21        0.05          3739         8.03  
+                              gastroenteritis                             1308        2.81          5047        10.84  
+                              herpes                                       380        0.82          5427        11.66  
+                              infectious conjunctivitis                     14        0.03          5441        11.69  
+                              leprosy                                        1        0.00          5442        11.69  
+                              leshmaniasis                                   3        0.01          5445        11.69  
+                              meningitis                                    26        0.06          5471        11.75  
+                              ocular infection                              46        0.10          5517        11.85  
+                              osteomyelitis                                659        1.42          6176        13.26  
+                              pneumonia                                   4428        9.51         10604        22.77  
+                              pyelonephritis urine tract infection        6528       14.02         17132        36.79  
+                              rickettsia                                    19        0.04         17151        36.84  
+                              septic arthritis                             239        0.51         17390        37.35  
+                              skin and soft tissue                          13        0.03         17403        37.38  
+                              skin and soft tissue infection              7451       16.00         24854        53.38  
+                              syphilis and other venereal disease,         715        1.54         25569        54.92  
+                              upper respiratory tract infection          20074       43.11         45643        98.03  
+                              viremia                                        4        0.01         45647        98.04  
+                              zoster                                       914        1.96         46561       100.00  
 
-                                                              Frequency Missing = 11355
+                                                              Frequency Missing = 2525
 
 
                                                                                   Cumulative    Cumulative
                                             Infection    Frequency     Percent     Frequency      Percent
                                             --------------------------------------------------------------
-                                            T                 379        0.23           379         0.23  
-                                            Y              164852       99.77        165231       100.00  
+                                            T                  98        0.20            98         0.20  
+                                            Y               48988       99.80         49086       100.00  
+ 
+ 
+ 
+ 
+ 
+ 
+ 
  
  
  
@@ -1224,19 +1235,19 @@ NOTE: PROCEDURE SORT used (Total process time):
  
  
                                                         queryOutcomeHospitalizedInfection.sas
-NOTE: There were 165231 observations read from the data set WORK.OUTCOME_INFECTION_DX.
+NOTE: There were 49086 observations read from the data set WORK.OUTCOME_INFECTION_DX.
 NOTE: The PROCEDURE FREQ printed page 10.
 NOTE: PROCEDURE FREQ used (Total process time):
-      real time           0.20 seconds
-      cpu time            0.14 seconds
+      real time           0.10 seconds
+      cpu time            0.04 seconds
       
 
-345        
-346        data NDC_PYRAZINAMIDE;
-347        set NDC.TB_ALL_2016;
-348        /*NDC=code;*/
-349        where gnn="PYRAZINAMIDE";
-350        run;
+358        
+359        data NDC_PYRAZINAMIDE;
+360        set NDC.TB_ALL_2016;
+361        /*NDC=code;*/
+362        where gnn="PYRAZINAMIDE";
+363        run;
 
 NOTE: There were 32 observations read from the data set NDC.TB_ALL_2016.
       WHERE gnn='PYRAZINAMIDE';
@@ -1245,171 +1256,171 @@ NOTE: DATA statement used (Total process time):
       real time           0.07 seconds
       cpu time            0.01 seconds
       
+8                                                                   The SAS System                                        10:16 Thursday, May 24, 2018
 
-351        
-352        data outcome_infection_rx(drop=rc:)  outcome_rx_TB(drop=rc:);
-353            if _N_=1 then do;
-354                declare hash HRX(dataset:"NDC.Antibiotics_parenteral_ndc");
-355                rc = HRX.definekey("NDC");
-356        /*        rc = HRX.definedata(ALL:"YES");*/
-357                rc=HRX.definedone();
-358        
-359                declare hash HTB(dataset:"NDC_PYRAZINAMIDE");
-360                rc = HTB.definekey("code");
-8                                                                   The SAS System                                          18:21 Monday, May 21, 2018
 
-361        /*        rc = HTB.definedata(all:"YES");*/
-362                rc=HTB.definedone();
-363        
-364            end;
-365        if 0 then set NDC.Antibiotics_parenteral_ndc(keep=NDC) NDC_PYRAZINAMIDE(keep=code);
-366        set &inrxdat. ;
-367        by database exposure patid exposureStart exposureEnd exposureID DISPENSE_DATE;
-368        /*length outcome $20 outcome_date 4;*/
-369        /*format outcome_date mmddyy10.;*/
-370                rc1 =HRX.find(key:NDC);
-371                rc2 =HTB.find(key:NDC);
-372        
-373                if rc1=0 then output outcome_infection_rx;
-374                if rc2=0 then output outcome_rx_TB;
-375        run;
+364        
+365        data outcome_infection_rx(drop=rc:)  outcome_rx_TB(drop=rc:);
+366            if _N_=1 then do;
+367                declare hash HRX(dataset:"NDC.Antibiotics_parenteral_ndc");
+368                rc = HRX.definekey("NDC");
+369        /*        rc = HRX.definedata(ALL:"YES");*/
+370                rc=HRX.definedone();
+371        
+372                declare hash HTB(dataset:"NDC_PYRAZINAMIDE");
+373                rc = HTB.definekey("code");
+374        /*        rc = HTB.definedata(all:"YES");*/
+375                rc=HTB.definedone();
+376        
+377            end;
+378        if 0 then set NDC.Antibiotics_parenteral_ndc(keep=NDC) NDC_PYRAZINAMIDE(keep=code);
+379        set &inrxdat. ;
+380        by database exposure patid exposureStart exposureEnd exposureID DISPENSE_DATE;
+381        /*length outcome $20 outcome_date 4;*/
+382        /*format outcome_date mmddyy10.;*/
+383                rc1 =HRX.find(key:NDC);
+384                rc2 =HTB.find(key:NDC);
+385        
+386                if rc1=0 then output outcome_infection_rx;
+387                if rc2=0 then output outcome_rx_TB;
+388        run;
 
 NOTE: There were 3057 observations read from the data set NDC.ANTIBIOTICS_PARENTERAL_NDC.
 NOTE: There were 32 observations read from the data set WORK.NDC_PYRAZINAMIDE.
-NOTE: There were 4273219 observations read from the data set UCB.TEMPINCRXALL.
-NOTE: The data set WORK.OUTCOME_INFECTION_RX has 4940 observations and 16 variables.
+NOTE: There were 1569994 observations read from the data set UCB64.TEMPINCRXALL.
+NOTE: The data set WORK.OUTCOME_INFECTION_RX has 1036 observations and 16 variables.
 NOTE: The data set WORK.OUTCOME_RX_TB has 36 observations and 16 variables.
 NOTE: DATA statement used (Total process time):
-      real time           2.49 seconds
-      cpu time            2.35 seconds
+      real time           1.16 seconds
+      cpu time            1.02 seconds
       
 
-376        
-377        
-378        data outcome_infection_px(drop=rc:);
-379            if _N_=1 then do;
-380                declare hash HPX(dataset:"NDC.Antibiotics_parenteral_hcpcs");
-381                rc = HPX.definekey("HCPCS_CD");
-382                rc = HPX.definedata(ALL:"YES");
-383                rc=HPX.definedone();
-384            end;
-385        if 0 then set NDC.Antibiotics_parenteral_hcpcs;
-386        set &inpxdat. ;
-387        by database exposure patid exposureStart exposureEnd exposureID PX_DATE;
-388        /*length outcome $20 outcome_date 4;*/
-389        /*format outcome_date mmddyy10.;*/
-390                rc1 =HPX.find(key:PX);
-391        
-392                if rc1=0 then output outcome_infection_Px;
-393        run;
+389        
+390        
+391        data outcome_infection_px(drop=rc:);
+392            if _N_=1 then do;
+393                declare hash HPX(dataset:"NDC.Antibiotics_parenteral_hcpcs");
+394                rc = HPX.definekey("HCPCS_CD");
+395                rc = HPX.definedata(ALL:"YES");
+396                rc=HPX.definedone();
+397            end;
+398        if 0 then set NDC.Antibiotics_parenteral_hcpcs;
+399        set &inpxdat. ;
+400        by database exposure patid exposureStart exposureEnd exposureID PX_DATE;
+401        /*length outcome $20 outcome_date 4;*/
+402        /*format outcome_date mmddyy10.;*/
+403                rc1 =HPX.find(key:PX);
+404        
+405                if rc1=0 then output outcome_infection_Px;
+406        run;
 
 NOTE: There were 69 observations read from the data set NDC.ANTIBIOTICS_PARENTERAL_HCPCS.
-NOTE: There were 1987380 observations read from the data set WORK.TEMPINCPXALL.
-NOTE: The data set WORK.OUTCOME_INFECTION_PX has 11367 observations and 23 variables.
+NOTE: There were 578745 observations read from the data set WORK.TEMPINCPXALL.
+NOTE: The data set WORK.OUTCOME_INFECTION_PX has 3447 observations and 23 variables.
 NOTE: DATA statement used (Total process time):
-      real time           1.06 seconds
-      cpu time            0.99 seconds
+      real time           0.51 seconds
+      cpu time            0.45 seconds
       
 
-394        
-395        
-396        data outcome_infection_trt(label="parenteral antibiotics(PX+RX) for Infection");
-397        set outcome_infection_px outcome_infection_rx;
-398        length trt_date 4;
-399        format trt_date mmddyy10.;
-400        trt_date=coalesce(PX_DATE , DISPENSE_DATE);
-401        run;
+407        
+408        
+409        data outcome_infection_trt(label="parenteral antibiotics(PX+RX) for Infection");
+410        set outcome_infection_px outcome_infection_rx;
+411        length trt_date 4;
+412        format trt_date mmddyy10.;
+413        trt_date=coalesce(PX_DATE , DISPENSE_DATE);
+414        run;
+9                                                                   The SAS System                                        10:16 Thursday, May 24, 2018
 
-NOTE: There were 11367 observations read from the data set WORK.OUTCOME_INFECTION_PX.
-NOTE: There were 4940 observations read from the data set WORK.OUTCOME_INFECTION_RX.
-NOTE: The data set WORK.OUTCOME_INFECTION_TRT has 16307 observations and 28 variables.
+
+NOTE: There were 3447 observations read from the data set WORK.OUTCOME_INFECTION_PX.
+NOTE: There were 1036 observations read from the data set WORK.OUTCOME_INFECTION_RX.
+NOTE: The data set WORK.OUTCOME_INFECTION_TRT has 4483 observations and 28 variables.
 NOTE: DATA statement used (Total process time):
-      real time           0.06 seconds
+      real time           0.04 seconds
       cpu time            0.03 seconds
       
 
-402        
-403        
-9                                                                   The SAS System                                          18:21 Monday, May 21, 2018
+415        
+416        
+417        
+418        data outcome_infection(keep=database exposure patid exposureStart exposureEnd exposureID outcome_date dx TRT_DATE BEGIN_DATE ADMIT_DATE
+418      ! ENC_TYPE Infection_Category Infection outcome_start_date PDX) ;
+419        if _N_=1 then do;
+420                declare hash HTRT(dataset:"outcome_infection_trt");
+421                rc = HTRT.definekey("database", "exposure", "PATID", "exposureStart", "exposureEnd", "exposureID", "TRT_DATE");
+422        /*        rc = HTRT.definedata(ALL:"YES");*/
+423                rc=HTRT.definedone();
+424            end;
+425        if 0 then set outcome_infection_trt(keep=database exposure patid exposureStart exposureEnd exposureID TRT_DATE);
+426        set outcome_infection_dx;
+427        length outcome_date outcome_start_date 4;
+428        format outcome_date outcome_start_date mmddyy10.;
+429                rc=HTRT.find(key:database, key:exposure, key:patid, key:exposureStart, key:exposureEnd, key:exposureID, key:BEGIN_DATE);
+430                outcome_date=BEGIN_DATE;
+431                outcome_start_date=outcome_date;
+432                if rc=0  then do;
+433                    output;
+434                end; else do;
+435                TRT_DATE=.;
+436                if ENC_TYPE in ( 'IP') then output;
+437                end;
+438        run;
 
-404        
-405        data outcome_infection(keep=database exposure patid exposureStart exposureEnd exposureID outcome_date dx TRT_DATE BEGIN_DATE ADMIT_DATE
-405      ! ENC_TYPE Infection_Category Infection outcome_start_date PDX) ;
-406        if _N_=1 then do;
-407                declare hash HTRT(dataset:"outcome_infection_trt");
-408                rc = HTRT.definekey("database", "exposure", "PATID", "exposureStart", "exposureEnd", "exposureID", "TRT_DATE");
-409        /*        rc = HTRT.definedata(ALL:"YES");*/
-410                rc=HTRT.definedone();
-411            end;
-412        if 0 then set outcome_infection_trt(keep=database exposure patid exposureStart exposureEnd exposureID TRT_DATE);
-413        set outcome_infection_dx;
-414        length outcome_date outcome_start_date 4;
-415        format outcome_date outcome_start_date mmddyy10.;
-416                rc=HTRT.find(key:database, key:exposure, key:patid, key:exposureStart, key:exposureEnd, key:exposureID, key:BEGIN_DATE);
-417                outcome_date=BEGIN_DATE;
-418                outcome_start_date=outcome_date;
-419                if rc=0  then do;
-420                    output;
-421                end; else do;
-422                TRT_DATE=.;
-423                if ENC_TYPE in ( 'IP') then output;
-424                end;
-425        run;
-
-NOTE: There were 16307 observations read from the data set WORK.OUTCOME_INFECTION_TRT.
-NOTE: There were 165231 observations read from the data set WORK.OUTCOME_INFECTION_DX.
-NOTE: The data set WORK.OUTCOME_INFECTION has 38232 observations and 16 variables.
+NOTE: There were 4483 observations read from the data set WORK.OUTCOME_INFECTION_TRT.
+NOTE: There were 49086 observations read from the data set WORK.OUTCOME_INFECTION_DX.
+NOTE: The data set WORK.OUTCOME_INFECTION has 8763 observations and 16 variables.
 NOTE: DATA statement used (Total process time):
-      real time           0.28 seconds
-      cpu time            0.24 seconds
+      real time           0.14 seconds
+      cpu time            0.12 seconds
       
 
-426        
-427        proc sort data=outcome_infection nodupkey; by database exposure patid exposureStart exposureEnd exposureID outcome_date dx pdx;run;
+439        
+440        proc sort data=outcome_infection nodupkey; by database exposure patid exposureStart exposureEnd exposureID outcome_date dx pdx;run;
 
-NOTE: There were 38232 observations read from the data set WORK.OUTCOME_INFECTION.
-NOTE: 69 observations with duplicate key values were deleted.
-NOTE: The data set WORK.OUTCOME_INFECTION has 38163 observations and 16 variables.
+NOTE: There were 8763 observations read from the data set WORK.OUTCOME_INFECTION.
+NOTE: 18 observations with duplicate key values were deleted.
+NOTE: The data set WORK.OUTCOME_INFECTION has 8745 observations and 16 variables.
 NOTE: PROCEDURE SORT used (Total process time):
       real time           0.09 seconds
-      cpu time            0.06 seconds
+      cpu time            0.03 seconds
       
 
-428        data outcome_infection ; set outcome_infection; by database exposure patid exposureStart exposureEnd exposureID outcome_date dx;  /* format
-428      !  dx $Icd9fmt.; */  run;
+441        data outcome_infection ; set outcome_infection; by database exposure patid exposureStart exposureEnd exposureID outcome_date dx;  /* format
+441      !  dx $Icd9fmt.; */  run;
 
-NOTE: There were 38163 observations read from the data set WORK.OUTCOME_INFECTION.
-NOTE: The data set WORK.OUTCOME_INFECTION has 38163 observations and 16 variables.
+NOTE: There were 8745 observations read from the data set WORK.OUTCOME_INFECTION.
+NOTE: The data set WORK.OUTCOME_INFECTION has 8745 observations and 16 variables.
 NOTE: DATA statement used (Total process time):
-      real time           0.09 seconds
-      cpu time            0.07 seconds
+      real time           0.04 seconds
+      cpu time            0.03 seconds
       
 
-429        
-430        proc sort data=outcome_infection nodupkey; by database exposure patid exposureStart exposureEnd exposureID outcome_date ;run;
+442        
+443        proc sort data=outcome_infection nodupkey; by database exposure patid exposureStart exposureEnd exposureID outcome_date ;run;
 
-NOTE: There were 38163 observations read from the data set WORK.OUTCOME_INFECTION.
-NOTE: 16600 observations with duplicate key values were deleted.
-NOTE: The data set WORK.OUTCOME_INFECTION has 21563 observations and 16 variables.
+NOTE: There were 8745 observations read from the data set WORK.OUTCOME_INFECTION.
+NOTE: 3540 observations with duplicate key values were deleted.
+NOTE: The data set WORK.OUTCOME_INFECTION has 5205 observations and 16 variables.
 NOTE: PROCEDURE SORT used (Total process time):
-      real time           0.09 seconds
-      cpu time            0.06 seconds
+      real time           0.06 seconds
+10                                                                  The SAS System                                        10:16 Thursday, May 24, 2018
+
+      cpu time            0.01 seconds
       
 
-431        
-432        proc datasets nolist; delete
-433        /* icd9_infection */
-434        icd9_inf
-435        /* outcome_infection_dx */
-436        outcome_rx_TB
-437        NDC_PYRAZINAMIDE
-438        outcome_infection_px
-10                                                                  The SAS System                                          18:21 Monday, May 21, 2018
-
-439        outcome_infection_rx
-440        outcome_infection_trt
-441        ;
-442        quit;
+444        
+445        proc datasets nolist; delete
+446        /* icd9_infection */
+447        icd9_inf
+448        /* outcome_infection_dx */
+449        outcome_rx_TB
+450        NDC_PYRAZINAMIDE
+451        outcome_infection_px
+452        outcome_infection_rx
+453        outcome_infection_trt
+454        ;
+455        quit;
 
 NOTE: Deleting WORK.ICD9_INF (memtype=DATA).
 NOTE: Deleting WORK.OUTCOME_RX_TB (memtype=DATA).
@@ -1419,53 +1430,53 @@ NOTE: Deleting WORK.OUTCOME_INFECTION_RX (memtype=DATA).
 NOTE: Deleting WORK.OUTCOME_INFECTION_TRT (memtype=DATA).
 NOTE: PROCEDURE DATASETS used (Total process time):
       real time           0.07 seconds
-      cpu time            0.04 seconds
-      
-
-443        
-444        
-445        /*
-446        Write to permanent SAS library
-447         */
-448        proc sql;
-449          create table DT.hospitalizedInfectionEpisodesInc as
-450            select * from Work.outcome_infection;
-NOTE: Table DT.HOSPITALIZEDINFECTIONEPISODESINC created, with 21563 rows and 16 columns.
-
-451        quit;
-NOTE: PROCEDURE SQL used (Total process time):
-      real time           0.04 seconds
       cpu time            0.03 seconds
       
 
-452        
-453        
-454        /*
-455        Data checks
-456         */
-457        proc contents data = DT.hospitalizedInfectionEpisodesInc order = varnum;
-458        run;
+456        
+457        
+458        /*
+459        Write to permanent SAS library
+460         */
+461        proc sql;
+462          create table DT.hospitalizedInfectionEpisodesInc as
+463            select * from Work.outcome_infection;
+NOTE: Table DT.HOSPITALIZEDINFECTIONEPISODESINC created, with 5205 rows and 16 columns.
 
-                                                                  --- AS project ---                                    18:21 Monday, May 21, 2018  11
+464        quit;
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.04 seconds
+      cpu time            0.00 seconds
+      
+
+465        
+466        
+467        /*
+468        Data checks
+469         */
+470        proc contents data = DT.hospitalizedInfectionEpisodesInc order = varnum;
+471        run;
+
+                                                                  --- AS project ---                                  10:16 Thursday, May 24, 2018  11
 
                                                                 The CONTENTS Procedure
 
-                               Data Set Name        DT.HOSPITALIZEDINFECTIONEPISODESINC    Observations          21563
-                               Member Type          DATA                                   Variables             16   
-                               Engine               V9                                     Indexes               0    
-                               Created              05/21/2018 18:22:36                    Observation Length    152  
-                               Last Modified        05/21/2018 18:22:36                    Deleted Observations  0    
-                               Protection                                                  Compressed            NO   
-                               Data Set Type                                               Sorted                YES  
-                               Label                                                                                  
-                               Data Representation  WINDOWS_64                                                        
-                               Encoding             wlatin1  Western (Windows)                                        
+                                Data Set Name        DT.HOSPITALIZEDINFECTIONEPISODESINC    Observations          5205
+                                Member Type          DATA                                   Variables             16  
+                                Engine               V9                                     Indexes               0   
+                                Created              05/24/2018 10:17:30                    Observation Length    152 
+                                Last Modified        05/24/2018 10:17:30                    Deleted Observations  0   
+                                Protection                                                  Compressed            NO  
+                                Data Set Type                                               Sorted                YES 
+                                Label                                                                                 
+                                Data Representation  WINDOWS_64                                                       
+                                Encoding             wlatin1  Western (Windows)                                       
 
 
                                                           Engine/Host Dependent Information
 
                                Data Set Page Size          65536                                                       
-                               Number of Data Set Pages    51                                                          
+                               Number of Data Set Pages    13                                                          
                                First Data Page             1                                                           
                                Max Obs per Page            430                                                         
                                Obs in First Data Page      412                                                         
@@ -1475,35 +1486,35 @@ NOTE: PROCEDURE SQL used (Total process time):
                                Release Created             9.0401M5                                                    
                                Host Created                X64_DS08R2                                                  
                                Owner Name                  AD\benjaminchan                                             
-                               File Size                   3MB                                                         
-                               File Size (bytes)           3407872                                                     
+                               File Size                   896KB                                                       
+                               File Size (bytes)           917504                                                      
 
 
-                                                              Variables in Creation Order
+                                                             Variables in Creation Order
  
-                        #    Variable              Type    Len    Format       Informat    Label
+                             #    Variable              Type    Len    Format       Informat    Label
 
-                        1    database              Char     10                                                                 
-                        2    PATID                 Char     20                             Unique Patient Identification Number
-                        3    exposure              Char     11                                                                 
-                        4    exposureStart         Num       8    MMDDYY10.                                                    
-                        5    exposureEnd           Num       8    MMDDYY10.                                                    
-                        6    exposureID            Num       8                                                                 
-                        7    trt_date              Num       4    MMDDYY10.                                                    
-                        8    Infection             Char      1    $1.          $1.                                             
-                        9    Infection_Category    Char     36    $36.         $36.                                            
-                       10    ENC_TYPE              Char      2                             Encounter Type                      
-                       11    ADMIT_DATE            Num       8    MMDDYY10.                Admission Date                      
-                       12    BEGIN_DATE            Num       8    MMDDYY10.                Beginning Date of Service           
-                       13    DX                    Char     18                             Diagnosis Code                      
-                       14    PDX                   Char      2                             Primary Diagnosis                   
-                       15    outcome_date          Num       4    MMDDYY10.                                                    
-                       16    outcome_start_date    Num       4    MMDDYY10.                                                    
+                             1    database              Char     10                                                      
+                             2    patid                 Char     20                                                      
+                             3    exposure              Char     11                                                      
+                             4    exposureStart         Num       8    MMDDYY10.                                         
+                             5    exposureEnd           Num       8    MMDDYY10.                                         
+                             6    exposureID            Num       8                                                      
+                             7    trt_date              Num       4    MMDDYY10.                                         
+                             8    Infection             Char      1    $1.          $1.                                  
+                             9    Infection_Category    Char     36    $36.         $36.                                 
+                            10    ENC_TYPE              Char      2                             Encounter Type           
+                            11    ADMIT_DATE            Num       8    MMDDYY10.                Admission Date           
+                            12    BEGIN_DATE            Num       8    MMDDYY10.                Beginning Date of Service
+                            13    DX                    Char     18                             Diagnosis Code           
+                            14    PDX                   Char      2                             Primary Diagnosis        
+                            15    outcome_date          Num       4    MMDDYY10.                                         
+                            16    outcome_start_date    Num       4    MMDDYY10.                                         
 
 
                                                                    Sort Information
 
-                               Sortedby       database exposure PATID exposureStart exposureEnd exposureID outcome_date
+                               Sortedby       database exposure patid exposureStart exposureEnd exposureID outcome_date
                                Validated      YES                                                                      
                                Character Set  ANSI                                                                     
                                Sort Option    NODUPKEY                                                                 
@@ -1521,24 +1532,24 @@ NOTE: PROCEDURE SQL used (Total process time):
  
                                                         queryOutcomeHospitalizedInfection.sas
 NOTE: PROCEDURE CONTENTS used (Total process time):
-      real time           0.06 seconds
-      cpu time            0.04 seconds
+      real time           0.09 seconds
+      cpu time            0.03 seconds
       
 NOTE: The PROCEDURE CONTENTS printed page 11.
 
-459        proc sql;
-460          select "Summary of DT.hospitalizedInfectionEpisodesInc" as table,
-461                 database,
-462                 count(*) as denom
-463            from DT.hospitalizedInfectionEpisodesInc
-464            group by database;
-                                                                  --- AS project ---                                    18:21 Monday, May 21, 2018  12
+472        proc sql;
+473          select "Summary of DT.hospitalizedInfectionEpisodesInc" as table,
+474                 database,
+475                 count(*) as denom
+476            from DT.hospitalizedInfectionEpisodesInc
+477            group by database;
+                                                                  --- AS project ---                                  10:16 Thursday, May 24, 2018  12
 
                                          table                                           database       denom
                                          --------------------------------------------------------------------
-                                         Summary of DT.hospitalizedInfectionEpisodesInc  MPCD             417
-                                         Summary of DT.hospitalizedInfectionEpisodesInc  Marketscan      2191
-                                         Summary of DT.hospitalizedInfectionEpisodesInc  Medicare       18955
+                                         Summary of DT.hospitalizedInfectionEpisodesInc  MPCD              76
+                                         Summary of DT.hospitalizedInfectionEpisodesInc  Marketscan       692
+                                         Summary of DT.hospitalizedInfectionEpisodesInc  Medicare        4437
  
  
  
@@ -1606,199 +1617,125 @@ NOTE: The PROCEDURE CONTENTS printed page 11.
  
  
                                                         queryOutcomeHospitalizedInfection.sas
-465          select "Summary of DT.hospitalizedInfectionEpisodesInc" as table,
-466                 A.database,
-467                 A.infection_category,
-468                 count(distinct A.patid) as countDistinctPatid,
-469                 count(*) as countRows,
-470                 count(*) / denom format = percent8.1 as pctWithinDatabase
-471            from DT.hospitalizedInfectionEpisodesInc A inner join
-472                 (select database, count(*) as denom from Work.outcome_infection group by database) B  on (A.database = B.database)
-473            group by A.database, A.infection_category;
-                                                                  --- AS project ---                                    18:21 Monday, May 21, 2018  13
+478          select "Summary of DT.hospitalizedInfectionEpisodesInc" as table,
+479                 A.database,
+480                 A.infection_category,
+481                 count(distinct A.patid) as countDistinctPatid,
+482                 count(*) as countRows,
+483                 count(*) / denom format = percent8.1 as pctWithinDatabase
+484            from DT.hospitalizedInfectionEpisodesInc A inner join
+485                 (select database, count(*) as denom from Work.outcome_infection group by database) B  on (A.database = B.database)
+486            group by A.database, A.infection_category;
+                                                                  --- AS project ---                                  10:16 Thursday, May 24, 2018  13
 
                                                                                                                 count
                                                                                                              Distinct                pctWithin
        table                                           database    Infection_Category                           Patid  countRows      Database
        ---------------------------------------------------------------------------------------------------------------------------------------
-       Summary of DT.hospitalizedInfectionEpisodesInc  MPCD                                                        35         43        10.3% 
-       Summary of DT.hospitalizedInfectionEpisodesInc  MPCD        GI abscess                                       7          7         1.7% 
-       Summary of DT.hospitalizedInfectionEpisodesInc  MPCD        UTI                                              2          2         0.5% 
-       Summary of DT.hospitalizedInfectionEpisodesInc  MPCD        abdominal abscess                                3          3         0.7% 
-       Summary of DT.hospitalizedInfectionEpisodesInc  MPCD        bacteremia septicemia                           33         48        11.5% 
-       Summary of DT.hospitalizedInfectionEpisodesInc  MPCD        borrelia                                         1          1         0.2% 
-       Summary of DT.hospitalizedInfectionEpisodesInc  MPCD        brain abscess                                    1          1         0.2% 
-       Summary of DT.hospitalizedInfectionEpisodesInc  MPCD        device associated infections                     1          1         0.2% 
-       Summary of DT.hospitalizedInfectionEpisodesInc  MPCD        endocarditis                                     1          1         0.2% 
-       Summary of DT.hospitalizedInfectionEpisodesInc  MPCD        gastroenteritis                                 24         33         7.9% 
-       Summary of DT.hospitalizedInfectionEpisodesInc  MPCD        meningitis                                       1          1         0.2% 
-       Summary of DT.hospitalizedInfectionEpisodesInc  MPCD        osteomyelitis                                    6          7         1.7% 
-       Summary of DT.hospitalizedInfectionEpisodesInc  MPCD        pneumonia                                       65         83        19.9% 
-       Summary of DT.hospitalizedInfectionEpisodesInc  MPCD        pyelonephritis urine tract infection            48         64        15.3% 
-       Summary of DT.hospitalizedInfectionEpisodesInc  MPCD        septic arthritis                                 1          2         0.5% 
-       Summary of DT.hospitalizedInfectionEpisodesInc  MPCD        skin and soft tissue infection                  47         56        13.4% 
-       Summary of DT.hospitalizedInfectionEpisodesInc  MPCD        upper respiratory tract infection               48         63        15.1% 
-       Summary of DT.hospitalizedInfectionEpisodesInc  MPCD        zoster                                           1          1         0.2% 
-       Summary of DT.hospitalizedInfectionEpisodesInc  Marketscan                                                 134        156         7.1% 
-       Summary of DT.hospitalizedInfectionEpisodesInc  Marketscan  GI abscess                                      53         69         3.1% 
-       Summary of DT.hospitalizedInfectionEpisodesInc  Marketscan  UTI                                             10         10         0.5% 
-       Summary of DT.hospitalizedInfectionEpisodesInc  Marketscan  abdominal abscess                               32         38         1.7% 
-       Summary of DT.hospitalizedInfectionEpisodesInc  Marketscan  actinomycosis                                    2          4         0.2% 
-       Summary of DT.hospitalizedInfectionEpisodesInc  Marketscan  bacteremia septicemia                          172        263        12.0% 
-       Summary of DT.hospitalizedInfectionEpisodesInc  Marketscan  borrelia                                         6         20         0.9% 
-       Summary of DT.hospitalizedInfectionEpisodesInc  Marketscan  brain abscess                                    4          8         0.4% 
-       Summary of DT.hospitalizedInfectionEpisodesInc  Marketscan  device associated infections                    17         25         1.1% 
-       Summary of DT.hospitalizedInfectionEpisodesInc  Marketscan  endocarditis                                     3          3         0.1% 
-       Summary of DT.hospitalizedInfectionEpisodesInc  Marketscan  gastroenteritis                                121        172         7.9% 
-       Summary of DT.hospitalizedInfectionEpisodesInc  Marketscan  herpes                                          10         12         0.5% 
-       Summary of DT.hospitalizedInfectionEpisodesInc  Marketscan  leptospirosis                                    1          1         0.0% 
-       Summary of DT.hospitalizedInfectionEpisodesInc  Marketscan  meningitis                                       5          7         0.3% 
-       Summary of DT.hospitalizedInfectionEpisodesInc  Marketscan  myocarditis                                      1          1         0.0% 
-       Summary of DT.hospitalizedInfectionEpisodesInc  Marketscan  osteomyelitis                                    9         14         0.6% 
-       Summary of DT.hospitalizedInfectionEpisodesInc  Marketscan  pneumonia                                      224        296        13.5% 
-       Summary of DT.hospitalizedInfectionEpisodesInc  Marketscan  pyelonephritis urine tract infection           200        277        12.6% 
-       Summary of DT.hospitalizedInfectionEpisodesInc  Marketscan  rickettsia                                       1          1         0.0% 
-       Summary of DT.hospitalizedInfectionEpisodesInc  Marketscan  septic arthritis                                 9         20         0.9% 
-       Summary of DT.hospitalizedInfectionEpisodesInc  Marketscan  skin and soft tissue                             1          1         0.0% 
-       Summary of DT.hospitalizedInfectionEpisodesInc  Marketscan  skin and soft tissue infection                 168        271        12.4% 
-       Summary of DT.hospitalizedInfectionEpisodesInc  Marketscan  syphilis and other venereal disease,            12         12         0.5% 
-       Summary of DT.hospitalizedInfectionEpisodesInc  Marketscan  upper respiratory tract infection              322        500        22.8% 
-       Summary of DT.hospitalizedInfectionEpisodesInc  Marketscan  zoster                                           9         10         0.5% 
-       Summary of DT.hospitalizedInfectionEpisodesInc  Medicare                                                  1560       2330        12.3% 
-       Summary of DT.hospitalizedInfectionEpisodesInc  Medicare    GI abscess                                     302        377         2.0% 
-       Summary of DT.hospitalizedInfectionEpisodesInc  Medicare    HSV                                              3          9         0.0% 
+       Summary of DT.hospitalizedInfectionEpisodesInc  MPCD                                                         4          4         5.3% 
+       Summary of DT.hospitalizedInfectionEpisodesInc  MPCD        GI abscess                                       1          1         1.3% 
+       Summary of DT.hospitalizedInfectionEpisodesInc  MPCD        bacteremia septicemia                            3          4         5.3% 
+       Summary of DT.hospitalizedInfectionEpisodesInc  MPCD        brain abscess                                    1          1         1.3% 
+       Summary of DT.hospitalizedInfectionEpisodesInc  MPCD        gastroenteritis                                  4         12        15.8% 
+       Summary of DT.hospitalizedInfectionEpisodesInc  MPCD        meningitis                                       1          1         1.3% 
+       Summary of DT.hospitalizedInfectionEpisodesInc  MPCD        pneumonia                                        8          9        11.8% 
+       Summary of DT.hospitalizedInfectionEpisodesInc  MPCD        pyelonephritis urine tract infection             4          6         7.9% 
+       Summary of DT.hospitalizedInfectionEpisodesInc  MPCD        skin and soft tissue infection                  10         13        17.1% 
+       Summary of DT.hospitalizedInfectionEpisodesInc  MPCD        upper respiratory tract infection               18         25        32.9% 
+       Summary of DT.hospitalizedInfectionEpisodesInc  Marketscan                                                  23         27         3.9% 
+       Summary of DT.hospitalizedInfectionEpisodesInc  Marketscan  GI abscess                                      21         31         4.5% 
+       Summary of DT.hospitalizedInfectionEpisodesInc  Marketscan  UTI                                              4          4         0.6% 
+       Summary of DT.hospitalizedInfectionEpisodesInc  Marketscan  abdominal abscess                               13         18         2.6% 
+       Summary of DT.hospitalizedInfectionEpisodesInc  Marketscan  actinomycosis                                    1          3         0.4% 
+       Summary of DT.hospitalizedInfectionEpisodesInc  Marketscan  bacteremia septicemia                           38         62         9.0% 
+       Summary of DT.hospitalizedInfectionEpisodesInc  Marketscan  borrelia                                         5         16         2.3% 
+       Summary of DT.hospitalizedInfectionEpisodesInc  Marketscan  brain abscess                                    2          4         0.6% 
+       Summary of DT.hospitalizedInfectionEpisodesInc  Marketscan  device associated infections                     5          6         0.9% 
+       Summary of DT.hospitalizedInfectionEpisodesInc  Marketscan  endocarditis                                     1          1         0.1% 
+       Summary of DT.hospitalizedInfectionEpisodesInc  Marketscan  gastroenteritis                                 26         38         5.5% 
+       Summary of DT.hospitalizedInfectionEpisodesInc  Marketscan  herpes                                           1          1         0.1% 
+       Summary of DT.hospitalizedInfectionEpisodesInc  Marketscan  meningitis                                       4          6         0.9% 
+       Summary of DT.hospitalizedInfectionEpisodesInc  Marketscan  osteomyelitis                                    2          2         0.3% 
+       Summary of DT.hospitalizedInfectionEpisodesInc  Marketscan  pneumonia                                       52         66         9.5% 
+       Summary of DT.hospitalizedInfectionEpisodesInc  Marketscan  pyelonephritis urine tract infection            50         66         9.5% 
+       Summary of DT.hospitalizedInfectionEpisodesInc  Marketscan  septic arthritis                                 3          3         0.4% 
+       Summary of DT.hospitalizedInfectionEpisodesInc  Marketscan  skin and soft tissue infection                  56         77        11.1% 
+       Summary of DT.hospitalizedInfectionEpisodesInc  Marketscan  syphilis and other venereal disease,             4          4         0.6% 
+       Summary of DT.hospitalizedInfectionEpisodesInc  Marketscan  upper respiratory tract infection              143        254        36.7% 
+       Summary of DT.hospitalizedInfectionEpisodesInc  Marketscan  zoster                                           3          3         0.4% 
+       Summary of DT.hospitalizedInfectionEpisodesInc  Medicare                                                   323        476        10.7% 
+       Summary of DT.hospitalizedInfectionEpisodesInc  Medicare    GI abscess                                      68         87         2.0% 
+       Summary of DT.hospitalizedInfectionEpisodesInc  Medicare    HSV                                              1          3         0.1% 
        Summary of DT.hospitalizedInfectionEpisodesInc  Medicare    Q fever                                          1          1         0.0% 
-       Summary of DT.hospitalizedInfectionEpisodesInc  Medicare    UTI                                             48         72         0.4% 
-       Summary of DT.hospitalizedInfectionEpisodesInc  Medicare    abdominal abscess                              174        215         1.1% 
-       Summary of DT.hospitalizedInfectionEpisodesInc  Medicare    actinomycosis                                    4          6         0.0% 
-       Summary of DT.hospitalizedInfectionEpisodesInc  Medicare    bacteremia septicemia                         1935       2906        15.3% 
-       Summary of DT.hospitalizedInfectionEpisodesInc  Medicare    borrelia                                        13        129         0.7% 
-       Summary of DT.hospitalizedInfectionEpisodesInc  Medicare    brain abscess                                   17         19         0.1% 
-       Summary of DT.hospitalizedInfectionEpisodesInc  Medicare    candidiasis                                      3          4         0.0% 
-       Summary of DT.hospitalizedInfectionEpisodesInc  Medicare    device associated infections                   125        165         0.9% 
-       Summary of DT.hospitalizedInfectionEpisodesInc  Medicare    encephalitis                                     2          2         0.0% 
-       Summary of DT.hospitalizedInfectionEpisodesInc  Medicare    endocarditis                                    16         18         0.1% 
+       Summary of DT.hospitalizedInfectionEpisodesInc  Medicare    UTI                                             18         36         0.8% 
+       Summary of DT.hospitalizedInfectionEpisodesInc  Medicare    abdominal abscess                               44         57         1.3% 
+       Summary of DT.hospitalizedInfectionEpisodesInc  Medicare    actinomycosis                                    1          3         0.1% 
+       Summary of DT.hospitalizedInfectionEpisodesInc  Medicare    bacteremia septicemia                          412        568        12.8% 
+       Summary of DT.hospitalizedInfectionEpisodesInc  Medicare    borrelia                                         2          2         0.0% 
+       Summary of DT.hospitalizedInfectionEpisodesInc  Medicare    brain abscess                                    3          3         0.1% 
+       Summary of DT.hospitalizedInfectionEpisodesInc  Medicare    candidiasis                                      1          1         0.0% 
+       Summary of DT.hospitalizedInfectionEpisodesInc  Medicare    device associated infections                    24         33         0.7% 
+       Summary of DT.hospitalizedInfectionEpisodesInc  Medicare    endocarditis                                     1          1         0.0% 
        Summary of DT.hospitalizedInfectionEpisodesInc  Medicare    endophthalmitis                                  2          2         0.0% 
-       Summary of DT.hospitalizedInfectionEpisodesInc  Medicare    filarial or other parasitis                      1          1         0.0% 
-       Summary of DT.hospitalizedInfectionEpisodesInc  Medicare    gastroenteritis                               1168       1650         8.7% 
-       Summary of DT.hospitalizedInfectionEpisodesInc  Medicare    herpes                                          61         66         0.3% 
-       Summary of DT.hospitalizedInfectionEpisodesInc  Medicare    infectious conjunctivitis                        1          1         0.0% 
-       Summary of DT.hospitalizedInfectionEpisodesInc  Medicare    meningitis                                      14         14         0.1% 
-       Summary of DT.hospitalizedInfectionEpisodesInc  Medicare    osteomyelitis                                  171        249         1.3% 
-       Summary of DT.hospitalizedInfectionEpisodesInc  Medicare    pneumonia                                     2251       3541        18.7% 
-       Summary of DT.hospitalizedInfectionEpisodesInc  Medicare    pneumonitis                                      1          1         0.0% 
+       Summary of DT.hospitalizedInfectionEpisodesInc  Medicare    gastroenteritis                                265        391         8.8% 
+       Summary of DT.hospitalizedInfectionEpisodesInc  Medicare    herpes                                          19         20         0.5% 
+       Summary of DT.hospitalizedInfectionEpisodesInc  Medicare    meningitis                                       1          1         0.0% 
+       Summary of DT.hospitalizedInfectionEpisodesInc  Medicare    osteomyelitis                                   33         53         1.2% 
+       Summary of DT.hospitalizedInfectionEpisodesInc  Medicare    pneumonia                                      541        840        18.9% 
+       Summary of DT.hospitalizedInfectionEpisodesInc  Medicare    pyelonephritis urine tract infection           346        565        12.7% 
+       Summary of DT.hospitalizedInfectionEpisodesInc  Medicare    rickettsia                                       1          1         0.0% 
+       Summary of DT.hospitalizedInfectionEpisodesInc  Medicare    septic arthritis                                19         20         0.5% 
+       Summary of DT.hospitalizedInfectionEpisodesInc  Medicare    skin and soft tissue                             2          2         0.0% 
+       Summary of DT.hospitalizedInfectionEpisodesInc  Medicare    skin and soft tissue infection                 319        485        10.9% 
+       Summary of DT.hospitalizedInfectionEpisodesInc  Medicare    syphilis and other venereal disease,            25         34         0.8% 
+       Summary of DT.hospitalizedInfectionEpisodesInc  Medicare    upper respiratory tract infection              381        703        15.8% 
+       Summary of DT.hospitalizedInfectionEpisodesInc  Medicare    zoster                                          41         49         1.1% 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
  
                                                         queryOutcomeHospitalizedInfection.sas
-                                                                  --- AS project ---                                    18:21 Monday, May 21, 2018  14
+11                                                                  The SAS System                                        10:16 Thursday, May 24, 2018
 
-                                                                                                                count
-                                                                                                             Distinct                pctWithin
-       table                                           database    Infection_Category                           Patid  countRows      Database
-       ---------------------------------------------------------------------------------------------------------------------------------------
-       Summary of DT.hospitalizedInfectionEpisodesInc  Medicare    pyelonephritis urine tract infection          1689       2575        13.6% 
-       Summary of DT.hospitalizedInfectionEpisodesInc  Medicare    rickettsia                                       2          2         0.0% 
-       Summary of DT.hospitalizedInfectionEpisodesInc  Medicare    septic arthritis                                59         70         0.4% 
-       Summary of DT.hospitalizedInfectionEpisodesInc  Medicare    skin and soft tissue                            13         13         0.1% 
-       Summary of DT.hospitalizedInfectionEpisodesInc  Medicare    skin and soft tissue infection                1180       1826         9.6% 
-       Summary of DT.hospitalizedInfectionEpisodesInc  Medicare    syphilis and other venereal disease,            78        118         0.6% 
-       Summary of DT.hospitalizedInfectionEpisodesInc  Medicare    upper respiratory tract infection             1339       2429        12.8% 
-       Summary of DT.hospitalizedInfectionEpisodesInc  Medicare    viremia                                          1          1         0.0% 
-       Summary of DT.hospitalizedInfectionEpisodesInc  Medicare    zoster                                         117        143         0.8% 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
-                                                        queryOutcomeHospitalizedInfection.sas
-474        quit;
-NOTE: The PROCEDURE SQL printed pages 12-14.
+487        quit;
+NOTE: The PROCEDURE SQL printed pages 12-13.
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           0.23 seconds
+      real time           0.17 seconds
       cpu time            0.15 seconds
       
 
-475        
-476        
-477        /*
-478        Copy data sets to permanent library for use later
-11                                                                  The SAS System                                          18:21 Monday, May 21, 2018
-
-479         */
-480        proc copy out = DT in = Work;
-481          select icd9_infection outcome_infection_dx;
-482        run;
+488        
+489        
+490        /*
+491        Copy data sets to permanent library for use later
+492         */
+493        proc copy out = DT in = Work;
+494          select icd9_infection outcome_infection_dx;
+495        run;
 
 NOTE: Copying WORK.ICD9_INFECTION to DT.ICD9_INFECTION (memtype=DATA).
 NOTE: There were 1725 observations read from the data set WORK.ICD9_INFECTION.
 NOTE: The data set DT.ICD9_INFECTION has 1725 observations and 19 variables.
 NOTE: Copying WORK.OUTCOME_INFECTION_DX to DT.OUTCOME_INFECTION_DX (memtype=DATA).
-NOTE: There were 165231 observations read from the data set WORK.OUTCOME_INFECTION_DX.
-NOTE: The data set DT.OUTCOME_INFECTION_DX has 165231 observations and 34 variables.
+NOTE: There were 49086 observations read from the data set WORK.OUTCOME_INFECTION_DX.
+NOTE: The data set DT.OUTCOME_INFECTION_DX has 49086 observations and 34 variables.
 NOTE: PROCEDURE COPY used (Total process time):
-      real time           0.24 seconds
-      cpu time            0.17 seconds
+      real time           0.20 seconds
+      cpu time            0.09 seconds
       
 
-483        
-484        
-485        
-486        
-487        ods html close;
+496        
+497        
+498        
+499        
+500        ods html close;
 NOTE: SAS Institute Inc., SAS Campus Drive, Cary, NC USA 27513-2414
 NOTE: The SAS System used:
-      real time           40.93 seconds
-      cpu time            1:03.89
+      real time           33.69 seconds
+      cpu time            27.48 seconds
       
