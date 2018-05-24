@@ -120,24 +120,23 @@ Summarize propensity scores and IPTWs by data source and exposure.
 
 |indCommonSupport |database   |exposure             |    n| minPS| maxPS| minIPTW| maxIPTW|
 |:----------------|:----------|:--------------------|----:|-----:|-----:|-------:|-------:|
-|FALSE            |MPCD       |TNF                  |   36| 0.933| 1.000|   1.000|   1.072|
-|FALSE            |MPCD       |DMARD                |   19| 0.000| 0.050|   1.000|   1.053|
-|FALSE            |MPCD       |NSAID or no exposure |   87| 0.001| 0.934|   1.001|  15.262|
-|FALSE            |Marketscan |TNF                  | 1215| 0.946| 1.000|   1.000|   1.058|
-|FALSE            |Marketscan |DMARD                |    6| 0.016| 0.978|   1.017|  46.285|
-|FALSE            |Marketscan |NSAID or no exposure |   21| 0.011| 0.020|   1.011|   1.020|
-|FALSE            |Medicare   |TNF                  |  574| 0.684| 0.959|   1.043|   1.463|
-|FALSE            |Medicare   |DMARD                |    5| 0.018| 0.020|   1.018|   1.020|
-|FALSE            |Medicare   |NSAID or no exposure |  149| 0.010| 0.895|   1.010|   9.488|
-|TRUE             |MPCD       |TNF                  |  634| 0.051| 0.932|   1.073|  19.596|
-|TRUE             |MPCD       |DMARD                |  146| 0.056| 0.933|   1.059|  14.843|
-|TRUE             |MPCD       |NSAID or no exposure |  780| 0.051| 0.918|   1.054|  12.234|
-|TRUE             |Marketscan |TNF                  | 2238| 0.020| 0.945|   1.058|  48.812|
-|TRUE             |Marketscan |DMARD                |  771| 0.022| 0.940|   1.023|  16.754|
-|TRUE             |Marketscan |NSAID or no exposure | 3411| 0.021| 0.945|   1.021|  18.283|
-|TRUE             |Medicare   |TNF                  | 2694| 0.020| 0.683|   1.464|  49.882|
-|TRUE             |Medicare   |DMARD                | 1683| 0.021| 0.683|   1.021|   3.157|
-|TRUE             |Medicare   |NSAID or no exposure | 6487| 0.021| 0.683|   1.021|   3.155|
+|FALSE            |MPCD       |TNF                  |   61| 0.924| 1.000|   1.000|   1.082|
+|FALSE            |MPCD       |DMARD                |    6| 0.000| 0.932|   1.000|  14.611|
+|FALSE            |MPCD       |NSAID or no exposure |   48| 0.003| 0.030|   1.003|   1.031|
+|FALSE            |Marketscan |TNF                  |   70| 0.022| 1.000|   1.000|  45.775|
+|FALSE            |Marketscan |NSAID or no exposure |    5| 0.010| 0.963|   1.010|  26.981|
+|FALSE            |Medicare   |TNF                  |  767| 0.678| 1.000|   1.000|   1.474|
+|FALSE            |Medicare   |DMARD                |    6| 0.009| 0.021|   1.009|   1.021|
+|FALSE            |Medicare   |NSAID or no exposure |  256| 0.007| 0.997|   1.007| 307.328|
+|TRUE             |MPCD       |TNF                  |  609| 0.030| 0.924|   1.082|  33.344|
+|TRUE             |MPCD       |DMARD                |  159| 0.034| 0.919|   1.035|  12.332|
+|TRUE             |MPCD       |NSAID or no exposure |  819| 0.030| 0.924|   1.031|  13.148|
+|TRUE             |Marketscan |TNF                  | 3383| 0.053| 0.938|   1.066|  18.918|
+|TRUE             |Marketscan |DMARD                |  777| 0.034| 0.938|   1.035|  16.241|
+|TRUE             |Marketscan |NSAID or no exposure | 3427| 0.035| 0.933|   1.036|  14.823|
+|TRUE             |Medicare   |TNF                  | 2501| 0.022| 0.678|   1.475|  46.346|
+|TRUE             |Medicare   |DMARD                | 1682| 0.023| 0.678|   1.023|   3.106|
+|TRUE             |Medicare   |NSAID or no exposure | 6380| 0.022| 0.677|   1.022|   3.092|
 
 \newline
 
@@ -146,9 +145,9 @@ Summarize common support region bounds.
 
 |database   | commonSupportLowerBound| commonSupportUpperBound|
 |:----------|-----------------------:|-----------------------:|
-|MPCD       |               0.0510305|               0.9326278|
-|Marketscan |               0.0204868|               0.9453038|
-|Medicare   |               0.0200474|               0.6832805|
+|MPCD       |               0.0299903|               0.9239443|
+|Marketscan |               0.0337966|               0.9384292|
+|Medicare   |               0.0215769|               0.6780409|
 
 Create propensity score deciles cutpoints.
 
@@ -169,96 +168,96 @@ Create propensity score deciles.
 
 |database   |exposure             | psDecile|    n|  min|  max|
 |:----------|:--------------------|--------:|----:|----:|----:|
-|MPCD       |TNF                  |        1|   64| 0.05| 0.23|
-|MPCD       |TNF                  |        2|   63| 0.24| 0.31|
-|MPCD       |TNF                  |        3|   64| 0.31| 0.36|
-|MPCD       |TNF                  |        4|   63| 0.36| 0.48|
-|MPCD       |TNF                  |        5|   63| 0.48| 0.56|
-|MPCD       |TNF                  |        6|   63| 0.56| 0.66|
-|MPCD       |TNF                  |        7|   64| 0.66| 0.72|
-|MPCD       |TNF                  |        8|   63| 0.72| 0.79|
-|MPCD       |TNF                  |        9|   63| 0.79| 0.87|
-|MPCD       |TNF                  |       10|   64| 0.87| 0.93|
-|MPCD       |DMARD                |        1|   49| 0.06| 0.23|
-|MPCD       |DMARD                |        2|   16| 0.24| 0.30|
-|MPCD       |DMARD                |        3|   16| 0.31| 0.36|
-|MPCD       |DMARD                |        4|   18| 0.39| 0.48|
-|MPCD       |DMARD                |        5|   20| 0.49| 0.55|
-|MPCD       |DMARD                |        6|   10| 0.58| 0.65|
-|MPCD       |DMARD                |        7|    6| 0.67| 0.72|
-|MPCD       |DMARD                |        8|    7| 0.72| 0.78|
-|MPCD       |DMARD                |        9|    3| 0.82| 0.84|
-|MPCD       |DMARD                |       10|    1| 0.93| 0.93|
-|MPCD       |NSAID or no exposure |        1|  351| 0.05| 0.23|
-|MPCD       |NSAID or no exposure |        2|  134| 0.23| 0.31|
-|MPCD       |NSAID or no exposure |        3|   96| 0.31| 0.36|
-|MPCD       |NSAID or no exposure |        4|   69| 0.36| 0.48|
-|MPCD       |NSAID or no exposure |        5|   44| 0.48| 0.56|
-|MPCD       |NSAID or no exposure |        6|   34| 0.56| 0.66|
-|MPCD       |NSAID or no exposure |        7|   21| 0.67| 0.72|
-|MPCD       |NSAID or no exposure |        8|   10| 0.72| 0.78|
-|MPCD       |NSAID or no exposure |        9|   17| 0.79| 0.85|
-|MPCD       |NSAID or no exposure |       10|    4| 0.88| 0.92|
-|Marketscan |TNF                  |        1|  224| 0.02| 0.15|
-|Marketscan |TNF                  |        2|  230| 0.15| 0.22|
-|Marketscan |TNF                  |        3|  218| 0.22| 0.35|
-|Marketscan |TNF                  |        4|  223| 0.35| 0.46|
-|Marketscan |TNF                  |        5|  224| 0.46| 0.55|
-|Marketscan |TNF                  |        6|  224| 0.55| 0.66|
-|Marketscan |TNF                  |        7|  223| 0.66| 0.77|
-|Marketscan |TNF                  |        8|  224| 0.77| 0.85|
-|Marketscan |TNF                  |        9|  224| 0.85| 0.91|
-|Marketscan |TNF                  |       10|  224| 0.91| 0.95|
-|Marketscan |DMARD                |        1|  276| 0.02| 0.15|
-|Marketscan |DMARD                |        2|  203| 0.15| 0.22|
-|Marketscan |DMARD                |        3|  110| 0.22| 0.35|
-|Marketscan |DMARD                |        4|   70| 0.35| 0.45|
-|Marketscan |DMARD                |        5|   51| 0.46| 0.55|
-|Marketscan |DMARD                |        6|   26| 0.55| 0.65|
-|Marketscan |DMARD                |        7|   17| 0.67| 0.76|
-|Marketscan |DMARD                |        8|    8| 0.77| 0.83|
-|Marketscan |DMARD                |        9|    5| 0.85| 0.90|
-|Marketscan |DMARD                |       10|    5| 0.91| 0.94|
-|Marketscan |NSAID or no exposure |        1| 1359| 0.02| 0.15|
-|Marketscan |NSAID or no exposure |        2|  707| 0.15| 0.22|
-|Marketscan |NSAID or no exposure |        3|  568| 0.22| 0.35|
-|Marketscan |NSAID or no exposure |        4|  268| 0.35| 0.46|
-|Marketscan |NSAID or no exposure |        5|  197| 0.46| 0.55|
-|Marketscan |NSAID or no exposure |        6|  150| 0.55| 0.66|
-|Marketscan |NSAID or no exposure |        7|   93| 0.67| 0.77|
-|Marketscan |NSAID or no exposure |        8|   37| 0.77| 0.85|
-|Marketscan |NSAID or no exposure |        9|   18| 0.85| 0.90|
-|Marketscan |NSAID or no exposure |       10|   14| 0.91| 0.95|
-|Medicare   |TNF                  |        1|  270| 0.02| 0.12|
-|Medicare   |TNF                  |        2|  269| 0.12| 0.18|
-|Medicare   |TNF                  |        3|  269| 0.18| 0.24|
-|Medicare   |TNF                  |        4|  270| 0.24| 0.30|
-|Medicare   |TNF                  |        5|  269| 0.30| 0.35|
-|Medicare   |TNF                  |        6|  269| 0.35| 0.41|
-|Medicare   |TNF                  |        7|  270| 0.41| 0.47|
-|Medicare   |TNF                  |        8|  269| 0.47| 0.54|
-|Medicare   |TNF                  |        9|  269| 0.54| 0.62|
-|Medicare   |TNF                  |       10|  270| 0.62| 0.68|
-|Medicare   |DMARD                |        1|  827| 0.02| 0.12|
-|Medicare   |DMARD                |        2|  384| 0.12| 0.18|
-|Medicare   |DMARD                |        3|  171| 0.18| 0.24|
-|Medicare   |DMARD                |        4|  131| 0.24| 0.30|
-|Medicare   |DMARD                |        5|   75| 0.30| 0.35|
-|Medicare   |DMARD                |        6|   51| 0.35| 0.41|
-|Medicare   |DMARD                |        7|   30| 0.41| 0.47|
-|Medicare   |DMARD                |        8|   11| 0.48| 0.54|
-|Medicare   |DMARD                |        9|    2| 0.55| 0.55|
-|Medicare   |DMARD                |       10|    1| 0.68| 0.68|
-|Medicare   |NSAID or no exposure |        1| 1957| 0.02| 0.12|
-|Medicare   |NSAID or no exposure |        2|  938| 0.12| 0.18|
-|Medicare   |NSAID or no exposure |        3|  857| 0.18| 0.24|
-|Medicare   |NSAID or no exposure |        4|  773| 0.24| 0.30|
-|Medicare   |NSAID or no exposure |        5|  555| 0.30| 0.35|
-|Medicare   |NSAID or no exposure |        6|  490| 0.35| 0.41|
-|Medicare   |NSAID or no exposure |        7|  405| 0.41| 0.47|
-|Medicare   |NSAID or no exposure |        8|  229| 0.47| 0.54|
-|Medicare   |NSAID or no exposure |        9|  186| 0.54| 0.62|
-|Medicare   |NSAID or no exposure |       10|   97| 0.62| 0.68|
+|MPCD       |TNF                  |        1|   61| 0.03| 0.21|
+|MPCD       |TNF                  |        2|   62| 0.22| 0.31|
+|MPCD       |TNF                  |        3|   60| 0.31| 0.39|
+|MPCD       |TNF                  |        4|   61| 0.40| 0.48|
+|MPCD       |TNF                  |        5|   61| 0.48| 0.57|
+|MPCD       |TNF                  |        6|   60| 0.57| 0.64|
+|MPCD       |TNF                  |        7|   61| 0.64| 0.73|
+|MPCD       |TNF                  |        8|   61| 0.73| 0.80|
+|MPCD       |TNF                  |        9|   61| 0.80| 0.87|
+|MPCD       |TNF                  |       10|   61| 0.87| 0.92|
+|MPCD       |DMARD                |        1|   56| 0.03| 0.21|
+|MPCD       |DMARD                |        2|   20| 0.23| 0.30|
+|MPCD       |DMARD                |        3|   21| 0.31| 0.39|
+|MPCD       |DMARD                |        4|   15| 0.41| 0.48|
+|MPCD       |DMARD                |        5|   18| 0.49| 0.56|
+|MPCD       |DMARD                |        6|    9| 0.57| 0.62|
+|MPCD       |DMARD                |        7|    8| 0.64| 0.69|
+|MPCD       |DMARD                |        8|    6| 0.73| 0.79|
+|MPCD       |DMARD                |        9|    5| 0.80| 0.86|
+|MPCD       |DMARD                |       10|    1| 0.92| 0.92|
+|MPCD       |NSAID or no exposure |        1|  420| 0.03| 0.21|
+|MPCD       |NSAID or no exposure |        2|  138| 0.21| 0.31|
+|MPCD       |NSAID or no exposure |        3|   75| 0.31| 0.39|
+|MPCD       |NSAID or no exposure |        4|   59| 0.39| 0.48|
+|MPCD       |NSAID or no exposure |        5|   47| 0.49| 0.57|
+|MPCD       |NSAID or no exposure |        6|   26| 0.57| 0.64|
+|MPCD       |NSAID or no exposure |        7|   28| 0.65| 0.73|
+|MPCD       |NSAID or no exposure |        8|    5| 0.74| 0.78|
+|MPCD       |NSAID or no exposure |        9|   13| 0.80| 0.86|
+|MPCD       |NSAID or no exposure |       10|    8| 0.87| 0.92|
+|Marketscan |TNF                  |        1|  339| 0.05| 0.24|
+|Marketscan |TNF                  |        2|  338| 0.24| 0.37|
+|Marketscan |TNF                  |        3|  338| 0.37| 0.47|
+|Marketscan |TNF                  |        4|  338| 0.47| 0.54|
+|Marketscan |TNF                  |        5|  339| 0.54| 0.60|
+|Marketscan |TNF                  |        6|  338| 0.61| 0.66|
+|Marketscan |TNF                  |        7|  338| 0.66| 0.74|
+|Marketscan |TNF                  |        8|  338| 0.74| 0.82|
+|Marketscan |TNF                  |        9|  338| 0.82| 0.88|
+|Marketscan |TNF                  |       10|  339| 0.88| 0.94|
+|Marketscan |DMARD                |        1|  250| 0.03| 0.24|
+|Marketscan |DMARD                |        2|  154| 0.24| 0.37|
+|Marketscan |DMARD                |        3|   64| 0.37| 0.47|
+|Marketscan |DMARD                |        4|   73| 0.48| 0.54|
+|Marketscan |DMARD                |        5|   61| 0.54| 0.60|
+|Marketscan |DMARD                |        6|   54| 0.61| 0.66|
+|Marketscan |DMARD                |        7|   56| 0.66| 0.73|
+|Marketscan |DMARD                |        8|   25| 0.74| 0.81|
+|Marketscan |DMARD                |        9|   21| 0.82| 0.88|
+|Marketscan |DMARD                |       10|   19| 0.88| 0.94|
+|Marketscan |NSAID or no exposure |        1| 1691| 0.03| 0.24|
+|Marketscan |NSAID or no exposure |        2|  545| 0.24| 0.37|
+|Marketscan |NSAID or no exposure |        3|  358| 0.37| 0.47|
+|Marketscan |NSAID or no exposure |        4|  232| 0.47| 0.54|
+|Marketscan |NSAID or no exposure |        5|  213| 0.54| 0.60|
+|Marketscan |NSAID or no exposure |        6|  142| 0.61| 0.66|
+|Marketscan |NSAID or no exposure |        7|  110| 0.66| 0.74|
+|Marketscan |NSAID or no exposure |        8|   66| 0.74| 0.82|
+|Marketscan |NSAID or no exposure |        9|   40| 0.82| 0.87|
+|Marketscan |NSAID or no exposure |       10|   30| 0.88| 0.93|
+|Medicare   |TNF                  |        1|  251| 0.02| 0.12|
+|Medicare   |TNF                  |        2|  250| 0.12| 0.18|
+|Medicare   |TNF                  |        3|  250| 0.18| 0.24|
+|Medicare   |TNF                  |        4|  250| 0.24| 0.30|
+|Medicare   |TNF                  |        5|  250| 0.30| 0.35|
+|Medicare   |TNF                  |        6|  250| 0.35| 0.41|
+|Medicare   |TNF                  |        7|  250| 0.41| 0.47|
+|Medicare   |TNF                  |        8|  250| 0.47| 0.54|
+|Medicare   |TNF                  |        9|  250| 0.54| 0.60|
+|Medicare   |TNF                  |       10|  250| 0.60| 0.68|
+|Medicare   |DMARD                |        1|  741| 0.02| 0.12|
+|Medicare   |DMARD                |        2|  359| 0.12| 0.18|
+|Medicare   |DMARD                |        3|  227| 0.18| 0.24|
+|Medicare   |DMARD                |        4|  135| 0.24| 0.30|
+|Medicare   |DMARD                |        5|   92| 0.30| 0.35|
+|Medicare   |DMARD                |        6|   56| 0.35| 0.41|
+|Medicare   |DMARD                |        7|   30| 0.42| 0.47|
+|Medicare   |DMARD                |        8|   24| 0.47| 0.54|
+|Medicare   |DMARD                |        9|   10| 0.55| 0.60|
+|Medicare   |DMARD                |       10|    8| 0.61| 0.68|
+|Medicare   |NSAID or no exposure |        1| 2073| 0.02| 0.12|
+|Medicare   |NSAID or no exposure |        2| 1103| 0.12| 0.18|
+|Medicare   |NSAID or no exposure |        3|  911| 0.18| 0.24|
+|Medicare   |NSAID or no exposure |        4|  682| 0.24| 0.30|
+|Medicare   |NSAID or no exposure |        5|  493| 0.30| 0.35|
+|Medicare   |NSAID or no exposure |        6|  397| 0.35| 0.41|
+|Medicare   |NSAID or no exposure |        7|  268| 0.41| 0.47|
+|Medicare   |NSAID or no exposure |        8|  220| 0.47| 0.54|
+|Medicare   |NSAID or no exposure |        9|  135| 0.54| 0.60|
+|Medicare   |NSAID or no exposure |       10|   98| 0.60| 0.68|
 
 \newline
 
