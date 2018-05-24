@@ -8,7 +8,7 @@ compareIncidenceRates <- function (db, exp, cat, dis) {
     filter(grepl(exp[1], exposure) | grepl(exp[2], exposure)) %>% 
     filter(grepl(cat, outcomeCategory)) %>% 
     filter(grepl(dis, disease)) %>% 
-    select(c(incidence, personYears)) %>% 
+    select(c(nEvents, personYears)) %>% 
     as.matrix %>% 
     rate2by2.test
   pValue <- obj %>% .[["p.value"]] %>% .[2, 1] %>% as.numeric

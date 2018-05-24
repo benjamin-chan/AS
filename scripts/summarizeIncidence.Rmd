@@ -15,21 +15,26 @@ This would be the same format for Aim II that provides the corresponding
 information with each column representing the exposure episodes.
 ```
 
-Read incidence data.
-See `queryIncidenceOutcomes.sas`.
+Read crude incidence data.
+See `modelIncidenceOutcomes.sas`.
 
 ```{r}
 df <-
-  "../data/processed/queryIncidenceOutcomes.csv" %>% 
+  "../data/processed/crudeIncidence.csv" %>% 
   read.csv(file = ., na.string = c("NA", "")) %>% 
   rename(disease = Disease) %>% 
   mutate(type = ifelse(outcomeCategory %in% c("Inflammatory bowel disease", "PsO/PsA", "Uveitis"),
                        "Disease manifestation",
                        "Comorbidity"))
 df %>% 
-  select(c(database, exposure, n)) %>% 
-  unique %>% 
-  kable
+  group_by(database, exposure) %>% 
+  summarize(nPatid = max(nPatid)) %>% 
+  kable()
+```
+
+\newline
+
+```{r}
 df %>% 
   select(c(type, outcomeCategory, disease)) %>% 
   unique() %>% 
@@ -45,51 +50,46 @@ foo <- function(db, exp) {
       filter(database == db) %>% 
       filter(exposure == exp) %>%
       mutate(scale = scale) %>% 
-      mutate(incidenceRate = incidence / personYears * scale) %>% 
-      mutate(lower = incCI(incidence, personYears)[, "lower"] * scale,
-             upper = incCI(incidence, personYears)[, "upper"] * scale) %>% 
-      select(c(database, exposure, type, outcomeCategory, disease, n, incidence, personYears, scale, incidenceRate, lower, upper)) %>% 
-      select(-c(n, incidence, personYears, scale))
+      mutate(incidenceRate = nEvents / personYears * scale) %>% 
+      mutate(lower = incCI(nEvents, personYears)[, "lower"] * scale,
+             upper = incCI(nEvents, personYears)[, "upper"] * scale) %>% 
+      select(c(database, exposure, type, outcomeCategory, disease, nPatid, nEvents, personYears, scale, incidenceRate, lower, upper)) %>% 
+      select(-c(nPatid, nEvents, personYears, scale))
 }
 df1a <- foo("MPCD", "TNF")
 df1b <- foo("MPCD", "DMARD")
-df1c <- foo("MPCD", "NSAID")
-df1d <- foo("MPCD", "No exposure")
+df1c <- foo("MPCD", "NSAID or no exposure")
 df2a <- foo("Marketscan", "TNF")
 df2b <- foo("Marketscan", "DMARD")
-df2c <- foo("Marketscan", "NSAID")
-df2d <- foo("Marketscan", "No exposure")
+df2c <- foo("Marketscan", "NSAID or no exposure")
 df3a <- foo("Medicare", "TNF")
 df3b <- foo("Medicare", "DMARD")
-df3c <- foo("Medicare", "NSAID")
-df3d <- foo("Medicare", "No exposure")
+df3c <- foo("Medicare", "NSAID or no exposure")
 by <- c("database", "type", "outcomeCategory", "disease")
 fmt <- "%.02f (%.02f-%.02f)"
-foo <- function (a, b, c, d) {
-    merge(a, 
-          merge(b, 
-                merge(c, 
-                      d, 
-                      by = by, all = TRUE, suffixes = c("_NSAID", "_NoExp")),
-                by = by, all = TRUE), 
-          by = by, all = TRUE, suffixes = c("_TNF", "_DMARD")) %>% 
+foo <- function (a, b, c) {
+    merge(a %>% select(-exposure), 
+          merge(b %>% select(-exposure), 
+                c %>% select(-exposure), 
+                by = by, all = TRUE, suffixes = c("_DMARD", "_NSAIDNoExp")), 
+          by = by, all = TRUE) %>% 
+    rename(incidenceRate_TNF = incidenceRate,
+           lower_TNF = lower,
+           upper_TNF = upper) %>% 
     select(-c(database))
 }
 incidence <- 
-  merge(foo(df1a, df1b, df1c, df1d), 
-        merge(foo(df2a, df2b, df2c, df2d),
-              foo(df3a, df3b, df3c, df3d),
+  merge(foo(df1a, df1b, df1c), 
+        merge(foo(df2a, df2b, df2c),
+              foo(df3a, df3b, df3c),
               by = c("type", "outcomeCategory", "disease"),
               all = TRUE,
               suffixes = c("_Marketscan", "_Medicare")),
         by = c("type", "outcomeCategory", "disease"),
         all = TRUE) %>% 
-  rename(incidenceRate_NoExp_MPCD = incidenceRate_NoExp,
-         lower_NoExp_MPCD = lower_NoExp,
-         upper_NoExp_MPCD = upper_NoExp,
-         incidenceRate_NSAID_MPCD = incidenceRate_NSAID,
-         lower_NSAID_MPCD = lower_NSAID,
-         upper_NSAID_MPCD = upper_NSAID,
+  rename(incidenceRate_NSAIDNoExp_MPCD = incidenceRate_NSAIDNoExp,
+         lower_NSAIDNoExp_MPCD = lower_NSAIDNoExp,
+         upper_NSAIDNoExp_MPCD = upper_NSAIDNoExp,
          incidenceRate_DMARD_MPCD = incidenceRate_DMARD,
          lower_DMARD_MPCD = lower_DMARD,
          upper_DMARD_MPCD = upper_DMARD,
@@ -97,28 +97,22 @@ incidence <-
          lower_TNF_MPCD = lower_TNF,
          upper_TNF_MPCD = upper_TNF) %>%
   select(matches("type|outcomeCategory|disease|incidence|lower|upper")) %>% 
-  mutate(incidenceRate_NoExp_MPCD = ifelse(is.na(incidenceRate_NoExp_MPCD), "0", sprintf(fmt, incidenceRate_NoExp_MPCD, lower_NoExp_MPCD, upper_NoExp_MPCD)),
-         incidenceRate_NoExp_Marketscan = ifelse(is.na(incidenceRate_NoExp_Marketscan), "0", sprintf(fmt, incidenceRate_NoExp_Marketscan, lower_NoExp_Marketscan, upper_NoExp_Marketscan)),
-         incidenceRate_NoExp_Medicare = ifelse(is.na(incidenceRate_NoExp_Medicare), "0", sprintf(fmt, incidenceRate_NoExp_Medicare, lower_NoExp_Medicare, upper_NoExp_Medicare)),
-         incidenceRate_NSAID_MPCD = ifelse(is.na(incidenceRate_NSAID_MPCD), "0", sprintf(fmt, incidenceRate_NSAID_MPCD, lower_NSAID_MPCD, upper_NSAID_MPCD)),
-         incidenceRate_NSAID_Marketscan = ifelse(is.na(incidenceRate_NSAID_Marketscan), "0", sprintf(fmt, incidenceRate_NSAID_Marketscan, lower_NSAID_Marketscan, upper_NSAID_Marketscan)),
-         incidenceRate_NSAID_Medicare = ifelse(is.na(incidenceRate_NSAID_Medicare), "0", sprintf(fmt, incidenceRate_NSAID_Medicare, lower_NSAID_Medicare, upper_NSAID_Medicare)),
+  mutate(incidenceRate_NSAIDNoExp_MPCD = ifelse(is.na(incidenceRate_NSAIDNoExp_MPCD), "0", sprintf(fmt, incidenceRate_NSAIDNoExp_MPCD, lower_NSAIDNoExp_MPCD, upper_NSAIDNoExp_MPCD)),
+         incidenceRate_NSAIDNoExp_Marketscan = ifelse(is.na(incidenceRate_NSAIDNoExp_Marketscan), "0", sprintf(fmt, incidenceRate_NSAIDNoExp_Marketscan, lower_NSAIDNoExp_Marketscan, upper_NSAIDNoExp_Marketscan)),
+         incidenceRate_NSAIDNoExp_Medicare = ifelse(is.na(incidenceRate_NSAIDNoExp_Medicare), "0", sprintf(fmt, incidenceRate_NSAIDNoExp_Medicare, lower_NSAIDNoExp_Medicare, upper_NSAIDNoExp_Medicare)),
          incidenceRate_DMARD_MPCD = ifelse(is.na(incidenceRate_DMARD_MPCD), "0", sprintf(fmt, incidenceRate_DMARD_MPCD, lower_DMARD_MPCD, upper_DMARD_MPCD)),
          incidenceRate_DMARD_Marketscan = ifelse(is.na(incidenceRate_DMARD_Marketscan), "0", sprintf(fmt, incidenceRate_DMARD_Marketscan, lower_DMARD_Marketscan, upper_DMARD_Marketscan)),
          incidenceRate_DMARD_Medicare = ifelse(is.na(incidenceRate_DMARD_Medicare), "0", sprintf(fmt, incidenceRate_DMARD_Medicare, lower_DMARD_Medicare, upper_DMARD_Medicare)),
          incidenceRate_TNF_MPCD = ifelse(is.na(incidenceRate_TNF_MPCD), "0", sprintf(fmt, incidenceRate_TNF_MPCD, lower_TNF_MPCD, upper_TNF_MPCD)),
          incidenceRate_TNF_Marketscan = ifelse(is.na(incidenceRate_TNF_Marketscan), "0", sprintf(fmt, incidenceRate_TNF_Marketscan, lower_TNF_Marketscan, upper_TNF_Marketscan)),
          incidenceRate_TNF_Medicare = ifelse(is.na(incidenceRate_TNF_Medicare), "0", sprintf(fmt, incidenceRate_TNF_Medicare, lower_TNF_Medicare, upper_TNF_Medicare))) %>% 
-  rename("MPCD No exposure" = incidenceRate_NoExp_MPCD,
-         "MPCD NSAID" = incidenceRate_NSAID_MPCD,
+  rename("MPCD NSAID or no exposure" = incidenceRate_NSAIDNoExp_MPCD,
          "MPCD DMARD" = incidenceRate_DMARD_MPCD,
          "MPCD TNF" = incidenceRate_TNF_MPCD,
-         "Marketscan No exposure" = incidenceRate_NoExp_Marketscan,
-         "Marketscan NSAID" = incidenceRate_NSAID_Marketscan,
+         "Marketscan NSAID or no exposure" = incidenceRate_NSAIDNoExp_Marketscan,
          "Marketscan DMARD" = incidenceRate_DMARD_Marketscan,
          "Marketscan TNF" = incidenceRate_TNF_Marketscan,
-         "Medicare No exposure" = incidenceRate_NoExp_Medicare,
-         "Medicare NSAID" = incidenceRate_NSAID_Medicare,
+         "Medicare NSAID or no exposure" = incidenceRate_NSAIDNoExp_Medicare,
          "Medicare DMARD" = incidenceRate_DMARD_Medicare,
          "Medicare TNF" = incidenceRate_TNF_Medicare) %>% 
   select(-matches("lower|upper"))
@@ -127,7 +121,7 @@ incidence %>% write.csv(file = "../data/processed/incidence.csv", row.names = FA
 ```
 
 
-## TNF vs NSAID
+## TNF vs NSAID or no exposure
 
 ```{r}
 dfLong <- bind_rows(df1a, df1c, df2a, df2c, df3a, df3c)
@@ -162,34 +156,12 @@ dfLong %>%
 ```
 
 
-## **TNF** versus **No exposure**
+## **TNF** versus **NSAID or no exposure**
 
 **MPCD**
 
 ```{r, eval = FALSE}
-exp <- c("TNF", "No exposure")
-digits <- c(rep(0, 4), 1, 1, 3)
-bindCompare("MPCD", exp) %>% kable(digits = digits)
-```
-
-**Marketscan**
-
-```{r, eval = FALSE}
-bindCompare("Marketscan", exp) %>% kable(digits = digits)
-```
-
-**Medicare**
-
-```{r, eval = FALSE}
-bindCompare("Medicare", exp) %>% kable(digits = digits)
-```
-
-## **TNF** versus **NSAID**
-
-**MPCD**
-
-```{r, eval = FALSE}
-exp <- c("TNF", "NSAID")
+exp <- c("TNF", "NSAID or no exposure")
 digits <- c(rep(0, 4), 1, 1, 3)
 bindCompare("MPCD", exp) %>% kable(digits = digits)
 ```

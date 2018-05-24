@@ -1,6 +1,6 @@
 bindCompare <- function (db, exp) {
   bind_rows(compareIncidenceRates(db, exp, "Cancer", "Hematologic Cancer"),
-            compareIncidenceRates(db, exp, "Cancer", "Non-Melanoma Skin Cancer"),
+            compareIncidenceRates(db, exp, "Cancer", "Non Melanoma Skin Cancer"),
             compareIncidenceRates(db, exp, "Cancer", "Solid Cancer"),
             compareIncidenceRates(db, exp, "Cardiac disease", "Aortic Insufficiency/Aortic Regurgitation"),
             compareIncidenceRates(db, exp, "Cardiac disease", "Conduction Block"),
