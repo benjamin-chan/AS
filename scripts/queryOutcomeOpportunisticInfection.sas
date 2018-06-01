@@ -327,7 +327,7 @@ if outcome="ZOSTER" then output outcome_dx_ZOSTER;
 where ENC_TYPE in ('IP' 'ER' 'AV' 'NH' 'HH' 'ED');
 run;
 proc sort data=outcome_dx_TB nodupkey; by database exposure patid exposureStart exposureEnd exposureID outcome_date outcome;run;
-proc sort data=outcome_zoster nodupkey; by database exposure patid exposureStart exposureEnd exposureID outcome_date outcome;run;
+proc sort data=outcome_dx_ZOSTER nodupkey; by database exposure patid exposureStart exposureEnd exposureID outcome_date outcome;run;
 proc sort data=outcome_dx_TB nodupkey; by database exposure patid exposureStart exposureEnd exposureID outcome_date dx ENC_TYPE outcome;run;
 
 
