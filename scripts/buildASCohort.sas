@@ -158,13 +158,20 @@ quit;
 
 
 /* 
-Medicare
+Medicare, 65+ year-olds
  */
 proc sql;
   create table Work.denom as 
-    select distinct patid, enr_start_date, enr_end_date, intck("month", enr_start_date, enr_end_date) + 1 as monthsEnrolled
-    from std_sabr.enroll
-    where 12 <= calculated monthsEnrolled;
+    select distinct 
+           A.patid, 
+           A.enr_start_date, 
+           A.enr_end_date, 
+           intck("month", A.enr_start_date, A.enr_end_date) + 1 as monthsEnrolled,
+           int((A.enr_start_date - B.birth_date) / 365.25) as ageAtEnrollmentStart
+    from std_sabr.enroll A inner join
+         std_sabr.demog B on (A.patid = B.patid)
+    where 12 <= calculated monthsEnrolled &
+          65 <= calculated ageAtEnrollmentStart;
 quit;
 %let varlist = patid, begin_date, dx_type, dx, enc_type, prov_type;
 proc sql;

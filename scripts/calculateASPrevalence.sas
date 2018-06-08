@@ -35,25 +35,37 @@ quit;
 Denominator
 12 months of continuous enrollment
 6+ months enrollment during calendar year
+Age 65+ at start of enrollment window
  */
 %let varlist = patid, enr_start_date, enr_end_date, intck("month", calculated date1, calculated date2) + 1 as monthsEnrolled;
 %let where = 6 <= calculated monthsEnrolled & 12 <= intck("month", enr_start_date, enr_end_date) + 1;
 proc sql;
   create table Work.denom1 as
-    select distinct 2006 as year, max(enr_start_date, "01JAN2006"D) format = mmddyy10. as date1, min("31DEC2006"D, enr_end_date) format = mmddyy10. as date2, &varlist from stdc5p.std_enrollment where &where union corr
-    select distinct 2007 as year, max(enr_start_date, "01JAN2007"D) format = mmddyy10. as date1, min("31DEC2007"D, enr_end_date) format = mmddyy10. as date2, &varlist from stdc5p.std_enrollment where &where union corr
-    select distinct 2008 as year, max(enr_start_date, "01JAN2008"D) format = mmddyy10. as date1, min("31DEC2008"D, enr_end_date) format = mmddyy10. as date2, &varlist from stdc5p.std_enrollment where &where union corr
-    select distinct 2009 as year, max(enr_start_date, "01JAN2009"D) format = mmddyy10. as date1, min("31DEC2009"D, enr_end_date) format = mmddyy10. as date2, &varlist from stdc5p.std_enrollment where &where union corr
-    select distinct 2010 as year, max(enr_start_date, "01JAN2010"D) format = mmddyy10. as date1, min("31DEC2010"D, enr_end_date) format = mmddyy10. as date2, &varlist from stdc5p.std_enrollment where &where union corr
-    select distinct 2011 as year, max(enr_start_date, "01JAN2011"D) format = mmddyy10. as date1, min("31DEC2011"D, enr_end_date) format = mmddyy10. as date2, &varlist from stdc5p.std_enrollment where &where union corr
-    select distinct 2012 as year, max(enr_start_date, "01JAN2012"D) format = mmddyy10. as date1, min("31DEC2012"D, enr_end_date) format = mmddyy10. as date2, &varlist from stdc5p.std_enrollment where &where union corr
-    select distinct 2013 as year, max(enr_start_date, "01JAN2013"D) format = mmddyy10. as date1, min("31DEC2013"D, enr_end_date) format = mmddyy10. as date2, &varlist from stdc5p.std_enrollment where &where union corr
-    select distinct 2014 as year, max(enr_start_date, "01JAN2014"D) format = mmddyy10. as date1, min("31DEC2014"D, enr_end_date) format = mmddyy10. as date2, &varlist from stdc5p.std_enrollment where &where 
+    select A.*,
+           int((A.date1 - B.birth_date) / 365.25) as ageAtEnrollmentStart
+    from (select distinct 2006 as year, max(enr_start_date, "01JAN2006"D) format = mmddyy10. as date1, min("31DEC2006"D, enr_end_date) format = mmddyy10. as date2, &varlist from stdc5p.std_enrollment where &where union corr
+          select distinct 2007 as year, max(enr_start_date, "01JAN2007"D) format = mmddyy10. as date1, min("31DEC2007"D, enr_end_date) format = mmddyy10. as date2, &varlist from stdc5p.std_enrollment where &where union corr
+          select distinct 2008 as year, max(enr_start_date, "01JAN2008"D) format = mmddyy10. as date1, min("31DEC2008"D, enr_end_date) format = mmddyy10. as date2, &varlist from stdc5p.std_enrollment where &where union corr
+          select distinct 2009 as year, max(enr_start_date, "01JAN2009"D) format = mmddyy10. as date1, min("31DEC2009"D, enr_end_date) format = mmddyy10. as date2, &varlist from stdc5p.std_enrollment where &where union corr
+          select distinct 2010 as year, max(enr_start_date, "01JAN2010"D) format = mmddyy10. as date1, min("31DEC2010"D, enr_end_date) format = mmddyy10. as date2, &varlist from stdc5p.std_enrollment where &where union corr
+          select distinct 2011 as year, max(enr_start_date, "01JAN2011"D) format = mmddyy10. as date1, min("31DEC2011"D, enr_end_date) format = mmddyy10. as date2, &varlist from stdc5p.std_enrollment where &where union corr
+          select distinct 2012 as year, max(enr_start_date, "01JAN2012"D) format = mmddyy10. as date1, min("31DEC2012"D, enr_end_date) format = mmddyy10. as date2, &varlist from stdc5p.std_enrollment where &where union corr
+          select distinct 2013 as year, max(enr_start_date, "01JAN2013"D) format = mmddyy10. as date1, min("31DEC2013"D, enr_end_date) format = mmddyy10. as date2, &varlist from stdc5p.std_enrollment where &where union corr
+          select distinct 2014 as year, max(enr_start_date, "01JAN2014"D) format = mmddyy10. as date1, min("31DEC2014"D, enr_end_date) format = mmddyy10. as date2, &varlist from stdc5p.std_enrollment where &where ) A inner join
+         stdc5p.std_demog_2006_2014 B on (A.patid = B.patid)
+    where 65 <= calculated ageAtEnrollmentStart
     order by patid, year;
   create table Work.denom2 as 
-    select distinct patid, enr_start_date, enr_end_date, intck("month", enr_start_date, enr_end_date) + 1 as monthsEnrolled
-    from stdc5p.std_enrollment
-    where 12 <= calculated monthsEnrolled;
+    select distinct 
+           A.patid, 
+           A.enr_start_date, 
+           A.enr_end_date, 
+           intck("month", A.enr_start_date, A.enr_end_date) + 1 as monthsEnrolled,
+           int((A.enr_start_date - B.birth_date) / 365.25) as ageAtEnrollmentStart
+    from stdc5p.std_enrollment A inner join
+         stdc5p.std_demog_2006_2014 B on (A.patid = B.patid)
+    where 12 <= calculated monthsEnrolled &
+          65 <= calculated ageAtEnrollmentStart;
 quit;
 
 /* 
@@ -93,13 +105,15 @@ proc sql;
          stdc5p.std_demog_2006_2014 C on (A.patid = C.patid)
     where (A.prov_type = "66" & B.prov_type = "66");
   create table Work.numer1 as
-    select A.*, B.year
+    select A.*, B.year, B.ageAtEnrollmentStart
     from (select patid, min(year) as yearEarliestDiagnosis from Work.temp2 group by patid) A inner join
          Work.denom1 B on (A.patid = B.patid & A.yearEarliestDiagnosis <= B.year);
   create table Work.numer2 as
-    select A.*
+    select A.*, B.ageAtEnrollmentStart
     from (select patid, min(date2) format = mmddyy10. as dateEarliestDiagnosis from Work.temp2 group by patid) A inner join
          Work.denom2 B on (A.patid = B.patid & B.enr_start_date <= A.dateEarliestDiagnosis <= B.enr_end_date);
+  select "Work.numer1" as table, min(ageAtEnrollmentStart) as minAge, max(ageAtEnrollmentStart) as maxAge, count(*) as countRows from Work.numer1 union corr
+  select "Work.numer2" as table, min(ageAtEnrollmentStart) as minAge, max(ageAtEnrollmentStart) as maxAge, count(*) as countRows from Work.numer2 ;
 quit;
 
 /* 
