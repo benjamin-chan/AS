@@ -1,6 +1,6 @@
 # Propensity score
 
-May 25, 2018
+June 13, 2018
 
 
 ## Description of model
@@ -125,18 +125,18 @@ Summarize propensity scores and IPTWs by data source and exposure.
 |FALSE            |MPCD       |NSAID or no exposure |   48| 0.003| 0.030|   1.003|   1.031|
 |FALSE            |Marketscan |TNF                  |   70| 0.022| 1.000|   1.000|  45.775|
 |FALSE            |Marketscan |NSAID or no exposure |    5| 0.010| 0.963|   1.010|  26.981|
-|FALSE            |Medicare   |TNF                  |  767| 0.678| 1.000|   1.000|   1.474|
-|FALSE            |Medicare   |DMARD                |    6| 0.009| 0.021|   1.009|   1.021|
-|FALSE            |Medicare   |NSAID or no exposure |  256| 0.007| 0.997|   1.007| 307.328|
+|FALSE            |Medicare   |TNF                  |    1| 0.867| 0.867|   1.153|   1.153|
+|FALSE            |Medicare   |DMARD                |   16| 0.000| 0.025|   1.000|   1.026|
+|FALSE            |Medicare   |NSAID or no exposure |  102| 0.000| 0.889|   1.000|   9.047|
 |TRUE             |MPCD       |TNF                  |  609| 0.030| 0.924|   1.082|  33.344|
 |TRUE             |MPCD       |DMARD                |  159| 0.034| 0.919|   1.035|  12.332|
 |TRUE             |MPCD       |NSAID or no exposure |  819| 0.030| 0.924|   1.031|  13.148|
 |TRUE             |Marketscan |TNF                  | 3383| 0.053| 0.938|   1.066|  18.918|
 |TRUE             |Marketscan |DMARD                |  777| 0.034| 0.938|   1.035|  16.241|
 |TRUE             |Marketscan |NSAID or no exposure | 3427| 0.035| 0.933|   1.036|  14.823|
-|TRUE             |Medicare   |TNF                  | 2501| 0.022| 0.678|   1.475|  46.346|
-|TRUE             |Medicare   |DMARD                | 1682| 0.023| 0.678|   1.023|   3.106|
-|TRUE             |Medicare   |NSAID or no exposure | 6380| 0.022| 0.677|   1.022|   3.092|
+|TRUE             |Medicare   |TNF                  |  809| 0.028| 0.840|   1.190|  35.497|
+|TRUE             |Medicare   |DMARD                |  626| 0.029| 0.841|   1.030|   6.291|
+|TRUE             |Medicare   |NSAID or no exposure | 2771| 0.028| 0.840|   1.029|   6.261|
 
 \newline
 
@@ -147,7 +147,7 @@ Summarize common support region bounds.
 |:----------|-----------------------:|-----------------------:|
 |MPCD       |               0.0299903|               0.9239443|
 |Marketscan |               0.0337966|               0.9384292|
-|Medicare   |               0.0215769|               0.6780409|
+|Medicare   |               0.0281712|               0.8410338|
 
 Create propensity score deciles cutpoints.
 
@@ -228,36 +228,36 @@ Create propensity score deciles.
 |Marketscan |NSAID or no exposure |        8|   66| 0.74| 0.82|
 |Marketscan |NSAID or no exposure |        9|   40| 0.82| 0.87|
 |Marketscan |NSAID or no exposure |       10|   30| 0.88| 0.93|
-|Medicare   |TNF                  |        1|  251| 0.02| 0.12|
-|Medicare   |TNF                  |        2|  250| 0.12| 0.18|
-|Medicare   |TNF                  |        3|  250| 0.18| 0.24|
-|Medicare   |TNF                  |        4|  250| 0.24| 0.30|
-|Medicare   |TNF                  |        5|  250| 0.30| 0.35|
-|Medicare   |TNF                  |        6|  250| 0.35| 0.41|
-|Medicare   |TNF                  |        7|  250| 0.41| 0.47|
-|Medicare   |TNF                  |        8|  250| 0.47| 0.54|
-|Medicare   |TNF                  |        9|  250| 0.54| 0.60|
-|Medicare   |TNF                  |       10|  250| 0.60| 0.68|
-|Medicare   |DMARD                |        1|  741| 0.02| 0.12|
-|Medicare   |DMARD                |        2|  359| 0.12| 0.18|
-|Medicare   |DMARD                |        3|  227| 0.18| 0.24|
-|Medicare   |DMARD                |        4|  135| 0.24| 0.30|
-|Medicare   |DMARD                |        5|   92| 0.30| 0.35|
-|Medicare   |DMARD                |        6|   56| 0.35| 0.41|
-|Medicare   |DMARD                |        7|   30| 0.42| 0.47|
-|Medicare   |DMARD                |        8|   24| 0.47| 0.54|
-|Medicare   |DMARD                |        9|   10| 0.55| 0.60|
-|Medicare   |DMARD                |       10|    8| 0.61| 0.68|
-|Medicare   |NSAID or no exposure |        1| 2073| 0.02| 0.12|
-|Medicare   |NSAID or no exposure |        2| 1103| 0.12| 0.18|
-|Medicare   |NSAID or no exposure |        3|  911| 0.18| 0.24|
-|Medicare   |NSAID or no exposure |        4|  682| 0.24| 0.30|
-|Medicare   |NSAID or no exposure |        5|  493| 0.30| 0.35|
-|Medicare   |NSAID or no exposure |        6|  397| 0.35| 0.41|
-|Medicare   |NSAID or no exposure |        7|  268| 0.41| 0.47|
-|Medicare   |NSAID or no exposure |        8|  220| 0.47| 0.54|
-|Medicare   |NSAID or no exposure |        9|  135| 0.54| 0.60|
-|Medicare   |NSAID or no exposure |       10|   98| 0.60| 0.68|
+|Medicare   |TNF                  |        1|   81| 0.03| 0.11|
+|Medicare   |TNF                  |        2|   81| 0.11| 0.14|
+|Medicare   |TNF                  |        3|   81| 0.14| 0.17|
+|Medicare   |TNF                  |        4|   81| 0.17| 0.20|
+|Medicare   |TNF                  |        5|   81| 0.20| 0.25|
+|Medicare   |TNF                  |        6|   80| 0.25| 0.29|
+|Medicare   |TNF                  |        7|   81| 0.29| 0.35|
+|Medicare   |TNF                  |        8|   81| 0.36| 0.43|
+|Medicare   |TNF                  |        9|   81| 0.43| 0.53|
+|Medicare   |TNF                  |       10|   81| 0.53| 0.84|
+|Medicare   |DMARD                |        1|  118| 0.03| 0.11|
+|Medicare   |DMARD                |        2|   86| 0.11| 0.14|
+|Medicare   |DMARD                |        3|   76| 0.14| 0.17|
+|Medicare   |DMARD                |        4|   72| 0.17| 0.20|
+|Medicare   |DMARD                |        5|   67| 0.20| 0.25|
+|Medicare   |DMARD                |        6|   46| 0.25| 0.29|
+|Medicare   |DMARD                |        7|   61| 0.29| 0.35|
+|Medicare   |DMARD                |        8|   27| 0.36| 0.43|
+|Medicare   |DMARD                |        9|   38| 0.43| 0.53|
+|Medicare   |DMARD                |       10|   35| 0.54| 0.84|
+|Medicare   |NSAID or no exposure |        1| 1149| 0.03| 0.11|
+|Medicare   |NSAID or no exposure |        2|  431| 0.11| 0.14|
+|Medicare   |NSAID or no exposure |        3|  364| 0.14| 0.17|
+|Medicare   |NSAID or no exposure |        4|  240| 0.17| 0.20|
+|Medicare   |NSAID or no exposure |        5|  213| 0.20| 0.25|
+|Medicare   |NSAID or no exposure |        6|  114| 0.25| 0.29|
+|Medicare   |NSAID or no exposure |        7|  110| 0.29| 0.35|
+|Medicare   |NSAID or no exposure |        8|   68| 0.35| 0.43|
+|Medicare   |NSAID or no exposure |        9|   48| 0.43| 0.53|
+|Medicare   |NSAID or no exposure |       10|   34| 0.54| 0.84|
 
 \newline
 
