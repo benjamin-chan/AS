@@ -1,4 +1,4 @@
-1                                         The SAS System                16:02 Monday, May 21, 2018
+1                                         The SAS System              09:51 Tuesday, June 12, 2018
 
 NOTE: Copyright (c) 2016 by SAS Institute Inc., Cary, NC, USA. 
 NOTE: SAS (r) Proprietary Software 9.4 (TS1M5) 
@@ -28,8 +28,8 @@ of the shared folders.
 
 
 NOTE: SAS initialization used:
-      real time           5.17 seconds
-      cpu time            0.35 seconds
+      real time           5.13 seconds
+      cpu time            0.40 seconds
       
 1          *  University of Alabama at Birmingham                               *
 2          *  AS project                                            *
@@ -57,76 +57,79 @@ NOTE: Libref UCBSTD was successfully assigned as follows:
 NOTE: Libref UCB was successfully assigned as follows: 
       Engine:        SPDE 
       Physical Name: q:\studies\AS\data\UCB\
+NOTE: Libref UCB64 was successfully assigned as follows: 
+      Engine:        SPDE 
+      Physical Name: q:\studies\AS\data\UCB64\
 NOTE: Libref DT was successfully assigned as follows: 
       Engine:        V9 
       Physical Name: V:\studies\AS\data
 NOTE: Libref NDC was successfully assigned as follows: 
       Engine:        V9 
       Physical Name: W:\onenote\references\drug ndcs\sas data
-128        footnote "&pgm.";
-129        * footnote2 "%sysfunc(datetime(),datetime14.)";
-130        title1 '--- AS project ---';
-131        **********************************************************************;
-132        options macrogen mlogic mprint symbolgen;
-133        options nomacrogen nomlogic nomprint nosymbolgen;
-134        
-135        
-136        
-2                                                                   The SAS System                                          16:02 Monday, May 21, 2018
+143        footnote "&pgm.";
+144        * footnote2 "%sysfunc(datetime(),datetime14.)";
+145        title1 '--- AS project ---';
+146        **********************************************************************;
+147        options macrogen mlogic mprint symbolgen;
+148        options nomacrogen nomlogic nomprint nosymbolgen;
+2                                                                   The SAS System                                        09:51 Tuesday, June 12, 2018
 
-137        ods html
-138          body = "output\&cmt..html"
-139          style = Statistical;
+149        
+150        
+151        
+152        ods html
+153          body = "output\&cmt..html"
+154          style = Statistical;
 NOTE: Writing HTML Body file: output\contentsSourceDatasets.html
-140        
-141        
-142        %macro exportContents;
-143          proc sql;
-144            create table Work.libs (libname varchar(8), desc varchar(20), yearRange varchar(9), note varchar(80));
-145            insert into Work.libs
-146              values ("stdc5p", "Medicare 5% Sample", "2006-2014", "Data can track back to 1999, but only use from 2006 in this project")
-147              values ("std_SABR", "Medicare SABER2", "2006-2014", "Standardization data are in server 1 in SAS lib Std_sabr")
-148              values ("MPSTD", "MPCD", "2007-2010", "Only RA(SP) & Healthy(CP2) population from 'Commercial' (eg. not Medicaid) coverage
-148      ! included)")
-149              values ("UCBSTD", "MarketScan", "2010-2014", "");
-150          quit;
-151          %do i = 1 %to 4;
-152            data _null_;
-153              set Work.libs;
-154              if _n_ = &i then call symput ("lib", strip(libname));
-155            run;
-156            proc contents data = &lib.._all_ order = varnum out = Work.contents_&lib;
-157            run;
-158            proc export
-159              data = Work.contents_&lib
-160              outfile = "data\processed\contentsSourceDatasets_&lib..csv"
-161              dbms = csv
-162              replace;
-163              delimiter = ",";
-164            run;
-165          %end;
-166        %mend;
-167        
-168        %exportContents;
+155        
+156        
+157        %macro exportContents;
+158          proc sql;
+159            create table Work.libs (libname varchar(8), desc varchar(20), yearRange varchar(9), note varchar(80));
+160            insert into Work.libs
+161              values ("stdc5p", "Medicare 5% Sample", "2006-2014", "Data can track back to 1999, but only use from 2006 in this project")
+162              values ("std_SABR", "Medicare SABER2", "2006-2014", "Standardization data are in server 1 in SAS lib Std_sabr")
+163              values ("MPSTD", "MPCD", "2007-2010", "Only RA(SP) & Healthy(CP2) population from 'Commercial' (eg. not Medicaid) coverage
+163      ! included)")
+164              values ("UCBSTD", "MarketScan", "2010-2014", "");
+165          quit;
+166          %do i = 1 %to 4;
+167            data _null_;
+168              set Work.libs;
+169              if _n_ = &i then call symput ("lib", strip(libname));
+170            run;
+171            proc contents data = &lib.._all_ order = varnum out = Work.contents_&lib;
+172            run;
+173            proc export
+174              data = Work.contents_&lib
+175              outfile = "data\processed\contentsSourceDatasets_&lib..csv"
+176              dbms = csv
+177              replace;
+178              delimiter = ",";
+179            run;
+180          %end;
+181        %mend;
+182        
+183        %exportContents;
 NOTE: One or more variables were converted because the data type is not supported by the V9 engine. For more details, run with options MSGLEVEL=I.
 NOTE: Table WORK.LIBS created, with 0 rows and 4 columns.
 WARNING: Character expression will be truncated when assigned to character column note.
 NOTE: 4 rows were inserted into WORK.LIBS.
 
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           0.31 seconds
-      cpu time            0.03 seconds
+      real time           0.10 seconds
+      cpu time            0.04 seconds
       
 
 
 NOTE: There were 4 observations read from the data set WORK.LIBS.
 NOTE: DATA statement used (Total process time):
-      real time           0.10 seconds
+      real time           0.01 seconds
       cpu time            0.01 seconds
       
 
 
-                                                                  --- AS project ---                                    16:02 Monday, May 21, 2018   1
+                                                                  --- AS project ---                                  09:51 Tuesday, June 12, 2018   1
 
                                                                 The CONTENTS Procedure
 
@@ -135,7 +138,7 @@ NOTE: DATA statement used (Total process time):
 Libref               STDC5P                                                                                                                           
 Engine               SPDE                                                                                                                             
 Physical Name        H:\studies\osteo\data\STD_files\5pct\                                                                                            
-Free Space (Kbytes)  10536404417                                                                                                                      
+Free Space (Kbytes)  10406809145                                                                                                                      
 Metapath             'H:\studies\osteo\data\STD_files\5pct\'                                                                                          
 Indexpath            'I:\studies\osteo\data\STD_files\5pct\' 'M:\studies\osteo\data\STD_files\5pct\'                                                  
 Datapath             'J:\studies\osteo\data\STD_files\5pct\' 'K:\studies\osteo\data\STD_files\5pct\' 'L:\studies\osteo\data\STD_files\5pct\'          
@@ -202,7 +205,7 @@ NOTE: Data set STDC5P.STD_DEMOG_2006_2014 is in a format that is native to anoth
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                                    16:02 Monday, May 21, 2018   2
+                                                                  --- AS project ---                                  09:51 Tuesday, June 12, 2018   2
 
                                                                 The CONTENTS Procedure
 
@@ -278,7 +281,7 @@ NOTE: Data set STDC5P.STD_DX_2006 is in a format that is native to another host.
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                                    16:02 Monday, May 21, 2018   3
+                                                                  --- AS project ---                                  09:51 Tuesday, June 12, 2018   3
 
                                                                 The CONTENTS Procedure
 
@@ -354,7 +357,7 @@ NOTE: Data set STDC5P.STD_DX_2007 is in a format that is native to another host.
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                                    16:02 Monday, May 21, 2018   4
+                                                                  --- AS project ---                                  09:51 Tuesday, June 12, 2018   4
 
                                                                 The CONTENTS Procedure
 
@@ -430,7 +433,7 @@ NOTE: Data set STDC5P.STD_DX_2008 is in a format that is native to another host.
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                                    16:02 Monday, May 21, 2018   5
+                                                                  --- AS project ---                                  09:51 Tuesday, June 12, 2018   5
 
                                                                 The CONTENTS Procedure
 
@@ -506,7 +509,7 @@ NOTE: Data set STDC5P.STD_DX_2009 is in a format that is native to another host.
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                                    16:02 Monday, May 21, 2018   6
+                                                                  --- AS project ---                                  09:51 Tuesday, June 12, 2018   6
 
                                                                 The CONTENTS Procedure
 
@@ -582,7 +585,7 @@ NOTE: Data set STDC5P.STD_DX_2010 is in a format that is native to another host.
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                                    16:02 Monday, May 21, 2018   7
+                                                                  --- AS project ---                                  09:51 Tuesday, June 12, 2018   7
 
                                                                 The CONTENTS Procedure
 
@@ -658,7 +661,7 @@ NOTE: Data set STDC5P.STD_DX_2011 is in a format that is native to another host.
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                                    16:02 Monday, May 21, 2018   8
+                                                                  --- AS project ---                                  09:51 Tuesday, June 12, 2018   8
 
                                                                 The CONTENTS Procedure
 
@@ -734,7 +737,7 @@ NOTE: Data set STDC5P.STD_DX_2012 is in a format that is native to another host.
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                                    16:02 Monday, May 21, 2018   9
+                                                                  --- AS project ---                                  09:51 Tuesday, June 12, 2018   9
 
                                                                 The CONTENTS Procedure
 
@@ -789,6 +792,8 @@ NOTE: Data set STDC5P.STD_DX_2012 is in a format that is native to another host.
                                                18    ADMIT_TYPE          Char      1                   
                                                19    POA                 Char      1                   
 NOTE: Data set STDC5P.STD_DX_2013 is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
+3                                                                   The SAS System                                        09:51 Tuesday, June 12, 2018
+
       additional CPU resources and may reduce performance.
  
  
@@ -810,7 +815,7 @@ NOTE: Data set STDC5P.STD_DX_2013 is in a format that is native to another host.
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                                    16:02 Monday, May 21, 2018  10
+                                                                  --- AS project ---                                  09:51 Tuesday, June 12, 2018  10
 
                                                                 The CONTENTS Procedure
 
@@ -886,7 +891,7 @@ NOTE: Data set STDC5P.STD_DX_2014 is in a format that is native to another host.
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                                    16:02 Monday, May 21, 2018  11
+                                                                  --- AS project ---                                  09:51 Tuesday, June 12, 2018  11
 
                                                                 The CONTENTS Procedure
 
@@ -960,7 +965,7 @@ NOTE: Data set STDC5P.STD_DX_2014 is in a format that is native to another host.
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                                    16:02 Monday, May 21, 2018  12
+                                                                  --- AS project ---                                  09:51 Tuesday, June 12, 2018  12
 
                                                                 The CONTENTS Procedure
 
@@ -1000,8 +1005,6 @@ NOTE: Data set STDC5P.STD_DX_2014 is in a format that is native to another host.
                                                    3    ENR_END_DATE      Num       4    MMDDYY10.
                                                    4    MEDICAL           Char      1             
                                                    5    PHARMACY          Char      1             
-3                                                                   The SAS System                                          16:02 Monday, May 21, 2018
-
 NOTE: Data set STDC5P.STD_PX_2006 is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
       additional CPU resources and may reduce performance.
  
@@ -1038,7 +1041,7 @@ NOTE: Data set STDC5P.STD_PX_2006 is in a format that is native to another host.
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                                    16:02 Monday, May 21, 2018  13
+                                                                  --- AS project ---                                  09:51 Tuesday, June 12, 2018  13
 
                                                                 The CONTENTS Procedure
 
@@ -1114,7 +1117,7 @@ NOTE: Data set STDC5P.STD_PX_2007 is in a format that is native to another host.
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                                    16:02 Monday, May 21, 2018  14
+                                                                  --- AS project ---                                  09:51 Tuesday, June 12, 2018  14
 
                                                                 The CONTENTS Procedure
 
@@ -1190,7 +1193,7 @@ NOTE: Data set STDC5P.STD_PX_2008 is in a format that is native to another host.
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                                    16:02 Monday, May 21, 2018  15
+                                                                  --- AS project ---                                  09:51 Tuesday, June 12, 2018  15
 
                                                                 The CONTENTS Procedure
 
@@ -1266,7 +1269,7 @@ NOTE: Data set STDC5P.STD_PX_2009 is in a format that is native to another host.
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                                    16:02 Monday, May 21, 2018  16
+                                                                  --- AS project ---                                  09:51 Tuesday, June 12, 2018  16
 
                                                                 The CONTENTS Procedure
 
@@ -1342,7 +1345,7 @@ NOTE: Data set STDC5P.STD_PX_2010 is in a format that is native to another host.
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                                    16:02 Monday, May 21, 2018  17
+                                                                  --- AS project ---                                  09:51 Tuesday, June 12, 2018  17
 
                                                                 The CONTENTS Procedure
 
@@ -1418,7 +1421,7 @@ NOTE: Data set STDC5P.STD_PX_2011 is in a format that is native to another host.
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                                    16:02 Monday, May 21, 2018  18
+                                                                  --- AS project ---                                  09:51 Tuesday, June 12, 2018  18
 
                                                                 The CONTENTS Procedure
 
@@ -1494,7 +1497,7 @@ NOTE: Data set STDC5P.STD_PX_2012 is in a format that is native to another host.
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                                    16:02 Monday, May 21, 2018  19
+                                                                  --- AS project ---                                  09:51 Tuesday, June 12, 2018  19
 
                                                                 The CONTENTS Procedure
 
@@ -1570,7 +1573,7 @@ NOTE: Data set STDC5P.STD_PX_2013 is in a format that is native to another host.
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                                    16:02 Monday, May 21, 2018  20
+                                                                  --- AS project ---                                  09:51 Tuesday, June 12, 2018  20
 
                                                                 The CONTENTS Procedure
 
@@ -1646,7 +1649,7 @@ NOTE: Data set STDC5P.STD_PX_2014 is in a format that is native to another host.
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                                    16:02 Monday, May 21, 2018  21
+                                                                  --- AS project ---                                  09:51 Tuesday, June 12, 2018  21
 
                                                                 The CONTENTS Procedure
 
@@ -1722,7 +1725,7 @@ NOTE: Data set STDC5P.STD_RX_2006 is in a format that is native to another host.
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                                    16:02 Monday, May 21, 2018  22
+                                                                  --- AS project ---                                  09:51 Tuesday, June 12, 2018  22
 
                                                                 The CONTENTS Procedure
 
@@ -1798,7 +1801,7 @@ NOTE: Data set STDC5P.STD_RX_2007 is in a format that is native to another host.
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                                    16:02 Monday, May 21, 2018  23
+                                                                  --- AS project ---                                  09:51 Tuesday, June 12, 2018  23
 
                                                                 The CONTENTS Procedure
 
@@ -1874,7 +1877,7 @@ NOTE: Data set STDC5P.STD_RX_2008 is in a format that is native to another host.
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                                    16:02 Monday, May 21, 2018  24
+                                                                  --- AS project ---                                  09:51 Tuesday, June 12, 2018  24
 
                                                                 The CONTENTS Procedure
 
@@ -1950,7 +1953,7 @@ NOTE: Data set STDC5P.STD_RX_2009 is in a format that is native to another host.
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                                    16:02 Monday, May 21, 2018  25
+                                                                  --- AS project ---                                  09:51 Tuesday, June 12, 2018  25
 
                                                                 The CONTENTS Procedure
 
@@ -2026,7 +2029,7 @@ NOTE: Data set STDC5P.STD_RX_2010 is in a format that is native to another host.
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                                    16:02 Monday, May 21, 2018  26
+                                                                  --- AS project ---                                  09:51 Tuesday, June 12, 2018  26
 
                                                                 The CONTENTS Procedure
 
@@ -2102,7 +2105,7 @@ NOTE: Data set STDC5P.STD_RX_2011 is in a format that is native to another host.
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                                    16:02 Monday, May 21, 2018  27
+                                                                  --- AS project ---                                  09:51 Tuesday, June 12, 2018  27
 
                                                                 The CONTENTS Procedure
 
@@ -2178,7 +2181,7 @@ NOTE: Data set STDC5P.STD_RX_2012 is in a format that is native to another host.
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                                    16:02 Monday, May 21, 2018  28
+                                                                  --- AS project ---                                  09:51 Tuesday, June 12, 2018  28
 
                                                                 The CONTENTS Procedure
 
@@ -2254,7 +2257,7 @@ NOTE: Data set STDC5P.STD_RX_2013 is in a format that is native to another host.
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                                    16:02 Monday, May 21, 2018  29
+                                                                  --- AS project ---                                  09:51 Tuesday, June 12, 2018  29
 
                                                                 The CONTENTS Procedure
 
@@ -2330,7 +2333,7 @@ NOTE: Data set STDC5P.STD_RX_2014 is in a format that is native to another host.
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                                    16:02 Monday, May 21, 2018  30
+                                                                  --- AS project ---                                  09:51 Tuesday, June 12, 2018  30
 
                                                                 The CONTENTS Procedure
 
@@ -2406,220 +2409,220 @@ NOTE: The data set WORK.CONTENTS_STDC5P has 428 observations and 41 variables.
  
                                                               contentsSourceDatasets.sas
 NOTE: PROCEDURE CONTENTS used (Total process time):
-      real time           15.78 seconds
-      cpu time            6.11 seconds
+      real time           15.21 seconds
+      cpu time            6.22 seconds
       
 NOTE: The PROCEDURE CONTENTS printed pages 1-30.
 
 
-169         /**********************************************************************
-170         *   PRODUCT:   SAS
-171         *   VERSION:   9.4
-172         *   CREATOR:   External File Interface
-173         *   DATE:      21MAY18
-174         *   DESC:      Generated SAS Datastep Code
-175         *   TEMPLATE SOURCE:  (None Specified.)
-176         ***********************************************************************/
-177            data _null_;
-178            %let _EFIERR_ = 0; /* set the ERROR detection macro variable */
-179            %let _EFIREC_ = 0;     /* clear export record count macro variable */
-180            file 'data\processed\contentsSourceDatasets_stdc5p.csv' delimiter=',' DSD DROPOVER lrecl=32767;
-181            if _n_ = 1 then        /* write column names or labels */
-182             do;
-183               put
-184                  "LIBNAME"
-185               ','
-186                  "MEMNAME"
-187               ','
-188                  "MEMLABEL"
-189               ','
-190                  "TYPEMEM"
-191               ','
-192                  "NAME"
-193               ','
-194                  "TYPE"
-195               ','
-196                  "LENGTH"
-4                                                                   The SAS System                                          16:02 Monday, May 21, 2018
+184         /**********************************************************************
+185         *   PRODUCT:   SAS
+186         *   VERSION:   9.4
+187         *   CREATOR:   External File Interface
+188         *   DATE:      12JUN18
+189         *   DESC:      Generated SAS Datastep Code
+190         *   TEMPLATE SOURCE:  (None Specified.)
+191         ***********************************************************************/
+192            data _null_;
+193            %let _EFIERR_ = 0; /* set the ERROR detection macro variable */
+194            %let _EFIREC_ = 0;     /* clear export record count macro variable */
+195            file 'data\processed\contentsSourceDatasets_stdc5p.csv' delimiter=',' DSD DROPOVER lrecl=32767;
+196            if _n_ = 1 then        /* write column names or labels */
+197             do;
+198               put
+199                  "LIBNAME"
+200               ','
+201                  "MEMNAME"
+202               ','
+203                  "MEMLABEL"
+204               ','
+205                  "TYPEMEM"
+206               ','
+207                  "NAME"
+208               ','
+4                                                                   The SAS System                                        09:51 Tuesday, June 12, 2018
 
-197               ','
-198                  "VARNUM"
-199               ','
-200                  "LABEL"
-201               ','
-202                  "FORMAT"
-203               ','
-204                  "FORMATL"
-205               ','
-206                  "FORMATD"
-207               ','
-208                  "INFORMAT"
-209               ','
-210                  "INFORML"
-211               ','
-212                  "INFORMD"
-213               ','
-214                  "JUST"
-215               ','
-216                  "NPOS"
-217               ','
-218                  "NOBS"
-219               ','
-220                  "ENGINE"
-221               ','
-222                  "CRDATE"
-223               ','
-224                  "MODATE"
-225               ','
-226                  "DELOBS"
-227               ','
-228                  "IDXUSAGE"
-229               ','
-230                  "MEMTYPE"
-231               ','
-232                  "IDXCOUNT"
-233               ','
-234                  "PROTECT"
-235               ','
-236                  "FLAGS"
-237               ','
-238                  "COMPRESS"
-239               ','
-240                  "REUSE"
-241               ','
-242                  "SORTED"
-243               ','
-244                  "SORTEDBY"
-245               ','
-246                  "CHARSET"
-247               ','
-248                  "COLLATE"
-249               ','
-250                  "NODUPKEY"
-251               ','
-252                  "NODUPREC"
-253               ','
-254                  "ENCRYPT"
-255               ','
-256                  "POINTOBS"
-257               ','
-258                  "GENMAX"
-259               ','
-260                  "GENNUM"
-261               ','
-262                  "GENNEXT"
-263               ','
-264                  "TRANSCOD"
-265               ;
-266             end;
-267           set  WORK.CONTENTS_STDC5P   end=EFIEOD;
-268               format LIBNAME $8. ;
-5                                                                   The SAS System                                          16:02 Monday, May 21, 2018
+209                  "TYPE"
+210               ','
+211                  "LENGTH"
+212               ','
+213                  "VARNUM"
+214               ','
+215                  "LABEL"
+216               ','
+217                  "FORMAT"
+218               ','
+219                  "FORMATL"
+220               ','
+221                  "FORMATD"
+222               ','
+223                  "INFORMAT"
+224               ','
+225                  "INFORML"
+226               ','
+227                  "INFORMD"
+228               ','
+229                  "JUST"
+230               ','
+231                  "NPOS"
+232               ','
+233                  "NOBS"
+234               ','
+235                  "ENGINE"
+236               ','
+237                  "CRDATE"
+238               ','
+239                  "MODATE"
+240               ','
+241                  "DELOBS"
+242               ','
+243                  "IDXUSAGE"
+244               ','
+245                  "MEMTYPE"
+246               ','
+247                  "IDXCOUNT"
+248               ','
+249                  "PROTECT"
+250               ','
+251                  "FLAGS"
+252               ','
+253                  "COMPRESS"
+254               ','
+255                  "REUSE"
+256               ','
+257                  "SORTED"
+258               ','
+259                  "SORTEDBY"
+260               ','
+261                  "CHARSET"
+262               ','
+263                  "COLLATE"
+264               ','
+265                  "NODUPKEY"
+266               ','
+267                  "NODUPREC"
+268               ','
+269                  "ENCRYPT"
+270               ','
+271                  "POINTOBS"
+272               ','
+273                  "GENMAX"
+274               ','
+275                  "GENNUM"
+276               ','
+277                  "GENNEXT"
+278               ','
+279                  "TRANSCOD"
+280               ;
+5                                                                   The SAS System                                        09:51 Tuesday, June 12, 2018
 
-269               format MEMNAME $32. ;
-270               format MEMLABEL $256. ;
-271               format TYPEMEM $8. ;
-272               format NAME $32. ;
-273               format TYPE best12. ;
-274               format LENGTH best12. ;
-275               format VARNUM best12. ;
-276               format LABEL $256. ;
-277               format FORMAT $32. ;
-278               format FORMATL best12. ;
-279               format FORMATD best12. ;
-280               format INFORMAT $32. ;
-281               format INFORML best12. ;
-282               format INFORMD best12. ;
-283               format JUST best12. ;
-284               format NPOS best12. ;
-285               format NOBS best12. ;
-286               format ENGINE $8. ;
-287               format CRDATE datetime16. ;
-288               format MODATE datetime16. ;
-289               format DELOBS best12. ;
-290               format IDXUSAGE $9. ;
-291               format MEMTYPE $8. ;
-292               format IDXCOUNT best12. ;
-293               format PROTECT $3. ;
-294               format FLAGS $3. ;
-295               format COMPRESS $8. ;
-296               format REUSE $3. ;
-297               format SORTED best12. ;
-298               format SORTEDBY best12. ;
-299               format CHARSET $8. ;
-300               format COLLATE $8. ;
-301               format NODUPKEY $3. ;
-302               format NODUPREC $3. ;
-303               format ENCRYPT $8. ;
-304               format POINTOBS $3. ;
-305               format GENMAX best12. ;
-306               format GENNUM best12. ;
-307               format GENNEXT best12. ;
-308               format TRANSCOD $3. ;
-309             do;
-310               EFIOUT + 1;
-311               put LIBNAME $ @;
-312               put MEMNAME $ @;
-313               put MEMLABEL $ @;
-314               put TYPEMEM $ @;
-315               put NAME $ @;
-316               put TYPE @;
-317               put LENGTH @;
-318               put VARNUM @;
-319               put LABEL $ @;
-320               put FORMAT $ @;
-321               put FORMATL @;
-322               put FORMATD @;
-323               put INFORMAT $ @;
-324               put INFORML @;
-325               put INFORMD @;
-326               put JUST @;
-327               put NPOS @;
-328               put NOBS @;
-329               put ENGINE $ @;
-330               put CRDATE @;
-331               put MODATE @;
-332               put DELOBS @;
-333               put IDXUSAGE $ @;
-334               put MEMTYPE $ @;
-335               put IDXCOUNT @;
-336               put PROTECT $ @;
-337               put FLAGS $ @;
-338               put COMPRESS $ @;
-339               put REUSE $ @;
-340               put SORTED @;
-6                                                                   The SAS System                                          16:02 Monday, May 21, 2018
+281             end;
+282           set  WORK.CONTENTS_STDC5P   end=EFIEOD;
+283               format LIBNAME $8. ;
+284               format MEMNAME $32. ;
+285               format MEMLABEL $256. ;
+286               format TYPEMEM $8. ;
+287               format NAME $32. ;
+288               format TYPE best12. ;
+289               format LENGTH best12. ;
+290               format VARNUM best12. ;
+291               format LABEL $256. ;
+292               format FORMAT $32. ;
+293               format FORMATL best12. ;
+294               format FORMATD best12. ;
+295               format INFORMAT $32. ;
+296               format INFORML best12. ;
+297               format INFORMD best12. ;
+298               format JUST best12. ;
+299               format NPOS best12. ;
+300               format NOBS best12. ;
+301               format ENGINE $8. ;
+302               format CRDATE datetime16. ;
+303               format MODATE datetime16. ;
+304               format DELOBS best12. ;
+305               format IDXUSAGE $9. ;
+306               format MEMTYPE $8. ;
+307               format IDXCOUNT best12. ;
+308               format PROTECT $3. ;
+309               format FLAGS $3. ;
+310               format COMPRESS $8. ;
+311               format REUSE $3. ;
+312               format SORTED best12. ;
+313               format SORTEDBY best12. ;
+314               format CHARSET $8. ;
+315               format COLLATE $8. ;
+316               format NODUPKEY $3. ;
+317               format NODUPREC $3. ;
+318               format ENCRYPT $8. ;
+319               format POINTOBS $3. ;
+320               format GENMAX best12. ;
+321               format GENNUM best12. ;
+322               format GENNEXT best12. ;
+323               format TRANSCOD $3. ;
+324             do;
+325               EFIOUT + 1;
+326               put LIBNAME $ @;
+327               put MEMNAME $ @;
+328               put MEMLABEL $ @;
+329               put TYPEMEM $ @;
+330               put NAME $ @;
+331               put TYPE @;
+332               put LENGTH @;
+333               put VARNUM @;
+334               put LABEL $ @;
+335               put FORMAT $ @;
+336               put FORMATL @;
+337               put FORMATD @;
+338               put INFORMAT $ @;
+339               put INFORML @;
+340               put INFORMD @;
+341               put JUST @;
+342               put NPOS @;
+343               put NOBS @;
+344               put ENGINE $ @;
+345               put CRDATE @;
+346               put MODATE @;
+347               put DELOBS @;
+348               put IDXUSAGE $ @;
+349               put MEMTYPE $ @;
+350               put IDXCOUNT @;
+351               put PROTECT $ @;
+352               put FLAGS $ @;
+6                                                                   The SAS System                                        09:51 Tuesday, June 12, 2018
 
-341               put SORTEDBY @;
-342               put CHARSET $ @;
-343               put COLLATE $ @;
-344               put NODUPKEY $ @;
-345               put NODUPREC $ @;
-346               put ENCRYPT $ @;
-347               put POINTOBS $ @;
-348               put GENMAX @;
-349               put GENNUM @;
-350               put GENNEXT @;
-351               put TRANSCOD $ ;
-352               ;
-353             end;
-354            if _ERROR_ then call symputx('_EFIERR_',1);  /* set ERROR detection macro variable */
-355            if EFIEOD then call symputx('_EFIREC_',EFIOUT);
-356            run;
+353               put COMPRESS $ @;
+354               put REUSE $ @;
+355               put SORTED @;
+356               put SORTEDBY @;
+357               put CHARSET $ @;
+358               put COLLATE $ @;
+359               put NODUPKEY $ @;
+360               put NODUPREC $ @;
+361               put ENCRYPT $ @;
+362               put POINTOBS $ @;
+363               put GENMAX @;
+364               put GENNUM @;
+365               put GENNEXT @;
+366               put TRANSCOD $ ;
+367               ;
+368             end;
+369            if _ERROR_ then call symputx('_EFIERR_',1);  /* set ERROR detection macro variable */
+370            if EFIEOD then call symputx('_EFIREC_',EFIOUT);
+371            run;
 
 NOTE: The file 'data\processed\contentsSourceDatasets_stdc5p.csv' is:
       Filename=U:\studies\AS\pgms\bchan\data\processed\contentsSourceDatasets_stdc5p.csv,
       RECFM=V,LRECL=32767,File Size (bytes)=0,
-      Last Modified=21May2018:16:02:52,
-      Create Time=21May2018:16:02:52
+      Last Modified=12Jun2018:09:52:01,
+      Create Time=12Jun2018:09:52:01
 
 NOTE: 429 records were written to the file 'data\processed\contentsSourceDatasets_stdc5p.csv'.
       The minimum record length was 153.
       The maximum record length was 306.
 NOTE: There were 428 observations read from the data set WORK.CONTENTS_STDC5P.
 NOTE: DATA statement used (Total process time):
-      real time           0.09 seconds
-      cpu time            0.04 seconds
+      real time           0.03 seconds
+      cpu time            0.01 seconds
       
 
 428 records created in data\processed\contentsSourceDatasets_stdc5p.csv from WORK.CONTENTS_STDC5P.
@@ -2627,19 +2630,19 @@ NOTE: DATA statement used (Total process time):
   
 NOTE: "data\processed\contentsSourceDatasets_stdc5p.csv" file was successfully created.
 NOTE: PROCEDURE EXPORT used (Total process time):
-      real time           1.40 seconds
-      cpu time            0.18 seconds
+      real time           0.28 seconds
+      cpu time            0.17 seconds
       
 
 
 NOTE: There were 4 observations read from the data set WORK.LIBS.
 NOTE: DATA statement used (Total process time):
-      real time           0.00 seconds
-      cpu time            0.01 seconds
+      real time           0.01 seconds
+      cpu time            0.00 seconds
       
 
 
-                                                                  --- AS project ---                                    16:02 Monday, May 21, 2018  31
+                                                                  --- AS project ---                                  09:51 Tuesday, June 12, 2018  31
 
                                                                 The CONTENTS Procedure
 
@@ -2648,7 +2651,7 @@ NOTE: DATA statement used (Total process time):
      Libref               STD_SABR                                                                                                               
      Engine               SPDE                                                                                                                   
      Physical Name        q:\data\std_SABER\                                                                                                     
-     Free Space (Kbytes)  16942105537                                                                                                            
+     Free Space (Kbytes)  17143953673                                                                                                            
      Metapath             'q:\data\std_SABER\'                                                                                                   
      Indexpath            'q:\data\aetna\' 't:\data\aetna\'                                                                                      
      Datapath             'q:\data\std_SABER\' 'r:\data\std_SABER\' 's:\data\std_SABER\' 't:\data\std_SABER\' 'u:\studies\SABER2\data\std_SABER\'
@@ -2713,7 +2716,7 @@ NOTE: DATA statement used (Total process time):
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                                    16:02 Monday, May 21, 2018  32
+                                                                  --- AS project ---                                  09:51 Tuesday, June 12, 2018  32
 
                                                                 The CONTENTS Procedure
 
@@ -2789,7 +2792,7 @@ NOTE: Data set STD_SABR.DEMOG0614 is in a format that is native to another host.
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                                    16:02 Monday, May 21, 2018  33
+                                                                  --- AS project ---                                  09:51 Tuesday, June 12, 2018  33
 
                                                                 The CONTENTS Procedure
 
@@ -2863,7 +2866,7 @@ NOTE: Data set STD_SABR.DEMOG0614 is in a format that is native to another host.
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                                    16:02 Monday, May 21, 2018  34
+                                                                  --- AS project ---                                  09:51 Tuesday, June 12, 2018  34
 
                                                                 The CONTENTS Procedure
 
@@ -2939,7 +2942,7 @@ NOTE: Data set STD_SABR.ENROLL0614 is in a format that is native to another host
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                                    16:02 Monday, May 21, 2018  35
+                                                                  --- AS project ---                                  09:51 Tuesday, June 12, 2018  35
 
                                                                 The CONTENTS Procedure
 
@@ -3015,7 +3018,7 @@ NOTE: Data set STD_SABR.ENROLLABC is in a format that is native to another host.
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                                    16:02 Monday, May 21, 2018  36
+                                                                  --- AS project ---                                  09:51 Tuesday, June 12, 2018  36
 
                                                                 The CONTENTS Procedure
 
@@ -3089,7 +3092,7 @@ NOTE: Data set STD_SABR.ENROLLABC is in a format that is native to another host.
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                                    16:02 Monday, May 21, 2018  37
+                                                                  --- AS project ---                                  09:51 Tuesday, June 12, 2018  37
 
                                                                 The CONTENTS Procedure
 
@@ -3165,7 +3168,7 @@ NOTE: Data set STD_SABR.NONSPECIFIC_JCODE_BIOLOGIC is in a format that is native
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                                    16:02 Monday, May 21, 2018  38
+                                                                  --- AS project ---                                  09:51 Tuesday, June 12, 2018  38
 
                                                                 The CONTENTS Procedure
 
@@ -3241,7 +3244,7 @@ NOTE: Data set STD_SABR.PROVIDER_SPECIALTY is in a format that is native to anot
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                                    16:02 Monday, May 21, 2018  39
+                                                                  --- AS project ---                                  09:51 Tuesday, June 12, 2018  39
 
                                                                 The CONTENTS Procedure
 
@@ -3315,7 +3318,7 @@ NOTE: Data set STD_SABR.PROVIDER_SPECIALTY is in a format that is native to anot
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                                    16:02 Monday, May 21, 2018  40
+                                                                  --- AS project ---                                  09:51 Tuesday, June 12, 2018  40
 
                                                                 The CONTENTS Procedure
 
@@ -3391,7 +3394,7 @@ NOTE: Data set STD_SABR.RESIDENT0614 is in a format that is native to another ho
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                                    16:02 Monday, May 21, 2018  41
+                                                                  --- AS project ---                                  09:51 Tuesday, June 12, 2018  41
 
                                                                 The CONTENTS Procedure
 
@@ -3467,7 +3470,7 @@ NOTE: Data set STD_SABR.STD_DX_2006 is in a format that is native to another hos
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                                    16:02 Monday, May 21, 2018  42
+                                                                  --- AS project ---                                  09:51 Tuesday, June 12, 2018  42
 
                                                                 The CONTENTS Procedure
 
@@ -3543,7 +3546,7 @@ NOTE: Data set STD_SABR.STD_DX_2007 is in a format that is native to another hos
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                                    16:02 Monday, May 21, 2018  43
+                                                                  --- AS project ---                                  09:51 Tuesday, June 12, 2018  43
 
                                                                 The CONTENTS Procedure
 
@@ -3619,7 +3622,7 @@ NOTE: Data set STD_SABR.STD_DX_2008_V2 is in a format that is native to another 
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                                    16:02 Monday, May 21, 2018  44
+                                                                  --- AS project ---                                  09:51 Tuesday, June 12, 2018  44
 
                                                                 The CONTENTS Procedure
 
@@ -3695,7 +3698,7 @@ NOTE: Data set STD_SABR.STD_DX_2009 is in a format that is native to another hos
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                                    16:02 Monday, May 21, 2018  45
+                                                                  --- AS project ---                                  09:51 Tuesday, June 12, 2018  45
 
                                                                 The CONTENTS Procedure
 
@@ -3749,6 +3752,8 @@ NOTE: Data set STD_SABR.STD_DX_2009 is in a format that is native to another hos
                                                17    ENC_TYPE            Char      2    $2.            
                                                18    ADMIT_TYPE          Char      1                   
                                                19    POA                 Char      1                   
+7                                                                   The SAS System                                        09:51 Tuesday, June 12, 2018
+
 NOTE: Data set STD_SABR.STD_DX_2010 is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
       additional CPU resources and may reduce performance.
  
@@ -3771,7 +3776,7 @@ NOTE: Data set STD_SABR.STD_DX_2010 is in a format that is native to another hos
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                                    16:02 Monday, May 21, 2018  46
+                                                                  --- AS project ---                                  09:51 Tuesday, June 12, 2018  46
 
                                                                 The CONTENTS Procedure
 
@@ -3826,8 +3831,6 @@ NOTE: Data set STD_SABR.STD_DX_2010 is in a format that is native to another hos
                                                18    ADMIT_TYPE          Char      1                   
                                                19    POA                 Char      1                   
 NOTE: Data set STD_SABR.STD_DX_2011 is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
-7                                                                   The SAS System                                          16:02 Monday, May 21, 2018
-
       additional CPU resources and may reduce performance.
  
  
@@ -3849,7 +3852,7 @@ NOTE: Data set STD_SABR.STD_DX_2011 is in a format that is native to another hos
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                                    16:02 Monday, May 21, 2018  47
+                                                                  --- AS project ---                                  09:51 Tuesday, June 12, 2018  47
 
                                                                 The CONTENTS Procedure
 
@@ -3925,7 +3928,7 @@ NOTE: Data set STD_SABR.STD_DX_2012 is in a format that is native to another hos
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                                    16:02 Monday, May 21, 2018  48
+                                                                  --- AS project ---                                  09:51 Tuesday, June 12, 2018  48
 
                                                                 The CONTENTS Procedure
 
@@ -4001,7 +4004,7 @@ NOTE: Data set STD_SABR.STD_DX_2013 is in a format that is native to another hos
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                                    16:02 Monday, May 21, 2018  49
+                                                                  --- AS project ---                                  09:51 Tuesday, June 12, 2018  49
 
                                                                 The CONTENTS Procedure
 
@@ -4077,7 +4080,7 @@ NOTE: Data set STD_SABR.STD_DX_2014 is in a format that is native to another hos
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                                    16:02 Monday, May 21, 2018  50
+                                                                  --- AS project ---                                  09:51 Tuesday, June 12, 2018  50
 
                                                                 The CONTENTS Procedure
 
@@ -4153,7 +4156,7 @@ NOTE: Data set STD_SABR.STD_DX_2015 is in a format that is native to another hos
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                                    16:02 Monday, May 21, 2018  51
+                                                                  --- AS project ---                                  09:51 Tuesday, June 12, 2018  51
 
                                                                 The CONTENTS Procedure
 
@@ -4227,7 +4230,7 @@ NOTE: Data set STD_SABR.STD_DX_2015 is in a format that is native to another hos
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                                    16:02 Monday, May 21, 2018  52
+                                                                  --- AS project ---                                  09:51 Tuesday, June 12, 2018  52
 
                                                                 The CONTENTS Procedure
 
@@ -4303,7 +4306,7 @@ NOTE: Data set STD_SABR.STD_PX_2006 is in a format that is native to another hos
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                                    16:02 Monday, May 21, 2018  53
+                                                                  --- AS project ---                                  09:51 Tuesday, June 12, 2018  53
 
                                                                 The CONTENTS Procedure
 
@@ -4379,7 +4382,7 @@ NOTE: Data set STD_SABR.STD_PX_2007 is in a format that is native to another hos
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                                    16:02 Monday, May 21, 2018  54
+                                                                  --- AS project ---                                  09:51 Tuesday, June 12, 2018  54
 
                                                                 The CONTENTS Procedure
 
@@ -4455,7 +4458,7 @@ NOTE: Data set STD_SABR.STD_PX_2008 is in a format that is native to another hos
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                                    16:02 Monday, May 21, 2018  55
+                                                                  --- AS project ---                                  09:51 Tuesday, June 12, 2018  55
 
                                                                 The CONTENTS Procedure
 
@@ -4531,7 +4534,7 @@ NOTE: Data set STD_SABR.STD_PX_2009 is in a format that is native to another hos
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                                    16:02 Monday, May 21, 2018  56
+                                                                  --- AS project ---                                  09:51 Tuesday, June 12, 2018  56
 
                                                                 The CONTENTS Procedure
 
@@ -4607,7 +4610,7 @@ NOTE: Data set STD_SABR.STD_PX_2010 is in a format that is native to another hos
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                                    16:02 Monday, May 21, 2018  57
+                                                                  --- AS project ---                                  09:51 Tuesday, June 12, 2018  57
 
                                                                 The CONTENTS Procedure
 
@@ -4683,7 +4686,7 @@ NOTE: Data set STD_SABR.STD_PX_2011 is in a format that is native to another hos
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                                    16:02 Monday, May 21, 2018  58
+                                                                  --- AS project ---                                  09:51 Tuesday, June 12, 2018  58
 
                                                                 The CONTENTS Procedure
 
@@ -4759,7 +4762,7 @@ NOTE: Data set STD_SABR.STD_PX_2012 is in a format that is native to another hos
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                                    16:02 Monday, May 21, 2018  59
+                                                                  --- AS project ---                                  09:51 Tuesday, June 12, 2018  59
 
                                                                 The CONTENTS Procedure
 
@@ -4835,7 +4838,7 @@ NOTE: Data set STD_SABR.STD_PX_2013 is in a format that is native to another hos
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                                    16:02 Monday, May 21, 2018  60
+                                                                  --- AS project ---                                  09:51 Tuesday, June 12, 2018  60
 
                                                                 The CONTENTS Procedure
 
@@ -4911,7 +4914,7 @@ NOTE: Data set STD_SABR.STD_PX_2014 is in a format that is native to another hos
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                                    16:02 Monday, May 21, 2018  61
+                                                                  --- AS project ---                                  09:51 Tuesday, June 12, 2018  61
 
                                                                 The CONTENTS Procedure
 
@@ -4987,7 +4990,7 @@ NOTE: Data set STD_SABR.STD_PX_2015 is in a format that is native to another hos
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                                    16:02 Monday, May 21, 2018  62
+                                                                  --- AS project ---                                  09:51 Tuesday, June 12, 2018  62
 
                                                                 The CONTENTS Procedure
 
@@ -5061,7 +5064,7 @@ NOTE: Data set STD_SABR.STD_PX_2015 is in a format that is native to another hos
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                                    16:02 Monday, May 21, 2018  63
+                                                                  --- AS project ---                                  09:51 Tuesday, June 12, 2018  63
 
                                                                 The CONTENTS Procedure
 
@@ -5137,7 +5140,7 @@ NOTE: Data set STD_SABR.STD_RX_2006 is in a format that is native to another hos
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                                    16:02 Monday, May 21, 2018  64
+                                                                  --- AS project ---                                  09:51 Tuesday, June 12, 2018  64
 
                                                                 The CONTENTS Procedure
 
@@ -5213,7 +5216,7 @@ NOTE: Data set STD_SABR.STD_RX_2007 is in a format that is native to another hos
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                                    16:02 Monday, May 21, 2018  65
+                                                                  --- AS project ---                                  09:51 Tuesday, June 12, 2018  65
 
                                                                 The CONTENTS Procedure
 
@@ -5289,7 +5292,7 @@ NOTE: Data set STD_SABR.STD_RX_2008 is in a format that is native to another hos
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                                    16:02 Monday, May 21, 2018  66
+                                                                  --- AS project ---                                  09:51 Tuesday, June 12, 2018  66
 
                                                                 The CONTENTS Procedure
 
@@ -5365,7 +5368,7 @@ NOTE: Data set STD_SABR.STD_RX_2009 is in a format that is native to another hos
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                                    16:02 Monday, May 21, 2018  67
+                                                                  --- AS project ---                                  09:51 Tuesday, June 12, 2018  67
 
                                                                 The CONTENTS Procedure
 
@@ -5441,7 +5444,7 @@ NOTE: Data set STD_SABR.STD_RX_2010 is in a format that is native to another hos
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                                    16:02 Monday, May 21, 2018  68
+                                                                  --- AS project ---                                  09:51 Tuesday, June 12, 2018  68
 
                                                                 The CONTENTS Procedure
 
@@ -5517,7 +5520,7 @@ NOTE: Data set STD_SABR.STD_RX_2011 is in a format that is native to another hos
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                                    16:02 Monday, May 21, 2018  69
+                                                                  --- AS project ---                                  09:51 Tuesday, June 12, 2018  69
 
                                                                 The CONTENTS Procedure
 
@@ -5593,7 +5596,7 @@ NOTE: Data set STD_SABR.STD_RX_2012 is in a format that is native to another hos
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                                    16:02 Monday, May 21, 2018  70
+                                                                  --- AS project ---                                  09:51 Tuesday, June 12, 2018  70
 
                                                                 The CONTENTS Procedure
 
@@ -5669,7 +5672,7 @@ NOTE: Data set STD_SABR.STD_RX_2013 is in a format that is native to another hos
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                                    16:02 Monday, May 21, 2018  71
+                                                                  --- AS project ---                                  09:51 Tuesday, June 12, 2018  71
 
                                                                 The CONTENTS Procedure
 
@@ -5745,7 +5748,7 @@ NOTE: Data set STD_SABR.STD_RX_2014 is in a format that is native to another hos
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                                    16:02 Monday, May 21, 2018  72
+                                                                  --- AS project ---                                  09:51 Tuesday, June 12, 2018  72
 
                                                                 The CONTENTS Procedure
 
@@ -5821,7 +5824,7 @@ NOTE: Data set STD_SABR.STD_RX_2015 is in a format that is native to another hos
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                                    16:02 Monday, May 21, 2018  73
+                                                                  --- AS project ---                                  09:51 Tuesday, June 12, 2018  73
 
                                                                 The CONTENTS Procedure
 
@@ -5895,7 +5898,7 @@ NOTE: Data set STD_SABR.STD_RX_2015 is in a format that is native to another hos
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                                    16:02 Monday, May 21, 2018  74
+                                                                  --- AS project ---                                  09:51 Tuesday, June 12, 2018  74
 
                                                                 The CONTENTS Procedure
 
@@ -5971,219 +5974,219 @@ NOTE: The data set WORK.CONTENTS_STD_SABR has 571 observations and 41 variables.
  
                                                               contentsSourceDatasets.sas
 NOTE: PROCEDURE CONTENTS used (Total process time):
-      real time           5.05 seconds
-      cpu time            3.64 seconds
+      real time           6.44 seconds
+      cpu time            3.52 seconds
       
 NOTE: The PROCEDURE CONTENTS printed pages 31-74.
 
 
-357         /**********************************************************************
-358         *   PRODUCT:   SAS
-359         *   VERSION:   9.4
-360         *   CREATOR:   External File Interface
-361         *   DATE:      21MAY18
-362         *   DESC:      Generated SAS Datastep Code
-363         *   TEMPLATE SOURCE:  (None Specified.)
-364         ***********************************************************************/
-365            data _null_;
-366            %let _EFIERR_ = 0; /* set the ERROR detection macro variable */
-367            %let _EFIREC_ = 0;     /* clear export record count macro variable */
-368            file 'data\processed\contentsSourceDatasets_std_SABR.csv' delimiter=',' DSD DROPOVER lrecl=32767;
-369            if _n_ = 1 then        /* write column names or labels */
-370             do;
-371               put
-8                                                                   The SAS System                                          16:02 Monday, May 21, 2018
+372         /**********************************************************************
+373         *   PRODUCT:   SAS
+374         *   VERSION:   9.4
+375         *   CREATOR:   External File Interface
+376         *   DATE:      12JUN18
+377         *   DESC:      Generated SAS Datastep Code
+378         *   TEMPLATE SOURCE:  (None Specified.)
+379         ***********************************************************************/
+380            data _null_;
+381            %let _EFIERR_ = 0; /* set the ERROR detection macro variable */
+382            %let _EFIREC_ = 0;     /* clear export record count macro variable */
+383            file 'data\processed\contentsSourceDatasets_std_SABR.csv' delimiter=',' DSD DROPOVER lrecl=32767;
+8                                                                   The SAS System                                        09:51 Tuesday, June 12, 2018
 
-372                  "LIBNAME"
-373               ','
-374                  "MEMNAME"
-375               ','
-376                  "MEMLABEL"
-377               ','
-378                  "TYPEMEM"
-379               ','
-380                  "NAME"
-381               ','
-382                  "TYPE"
-383               ','
-384                  "LENGTH"
-385               ','
-386                  "VARNUM"
-387               ','
-388                  "LABEL"
-389               ','
-390                  "FORMAT"
-391               ','
-392                  "FORMATL"
-393               ','
-394                  "FORMATD"
-395               ','
-396                  "INFORMAT"
-397               ','
-398                  "INFORML"
-399               ','
-400                  "INFORMD"
-401               ','
-402                  "JUST"
-403               ','
-404                  "NPOS"
-405               ','
-406                  "NOBS"
-407               ','
-408                  "ENGINE"
-409               ','
-410                  "CRDATE"
-411               ','
-412                  "MODATE"
-413               ','
-414                  "DELOBS"
-415               ','
-416                  "IDXUSAGE"
-417               ','
-418                  "MEMTYPE"
-419               ','
-420                  "IDXCOUNT"
-421               ','
-422                  "PROTECT"
-423               ','
-424                  "FLAGS"
-425               ','
-426                  "COMPRESS"
-427               ','
-428                  "REUSE"
-429               ','
-430                  "SORTED"
-431               ','
-432                  "SORTEDBY"
-433               ','
-434                  "CHARSET"
-435               ','
-436                  "COLLATE"
-437               ','
-438                  "NODUPKEY"
-439               ','
-440                  "NODUPREC"
-441               ','
-442                  "ENCRYPT"
-443               ','
-9                                                                   The SAS System                                          16:02 Monday, May 21, 2018
+384            if _n_ = 1 then        /* write column names or labels */
+385             do;
+386               put
+387                  "LIBNAME"
+388               ','
+389                  "MEMNAME"
+390               ','
+391                  "MEMLABEL"
+392               ','
+393                  "TYPEMEM"
+394               ','
+395                  "NAME"
+396               ','
+397                  "TYPE"
+398               ','
+399                  "LENGTH"
+400               ','
+401                  "VARNUM"
+402               ','
+403                  "LABEL"
+404               ','
+405                  "FORMAT"
+406               ','
+407                  "FORMATL"
+408               ','
+409                  "FORMATD"
+410               ','
+411                  "INFORMAT"
+412               ','
+413                  "INFORML"
+414               ','
+415                  "INFORMD"
+416               ','
+417                  "JUST"
+418               ','
+419                  "NPOS"
+420               ','
+421                  "NOBS"
+422               ','
+423                  "ENGINE"
+424               ','
+425                  "CRDATE"
+426               ','
+427                  "MODATE"
+428               ','
+429                  "DELOBS"
+430               ','
+431                  "IDXUSAGE"
+432               ','
+433                  "MEMTYPE"
+434               ','
+435                  "IDXCOUNT"
+436               ','
+437                  "PROTECT"
+438               ','
+439                  "FLAGS"
+440               ','
+441                  "COMPRESS"
+442               ','
+443                  "REUSE"
+444               ','
+445                  "SORTED"
+446               ','
+447                  "SORTEDBY"
+448               ','
+449                  "CHARSET"
+450               ','
+451                  "COLLATE"
+452               ','
+453                  "NODUPKEY"
+454               ','
+455                  "NODUPREC"
+9                                                                   The SAS System                                        09:51 Tuesday, June 12, 2018
 
-444                  "POINTOBS"
-445               ','
-446                  "GENMAX"
-447               ','
-448                  "GENNUM"
-449               ','
-450                  "GENNEXT"
-451               ','
-452                  "TRANSCOD"
-453               ;
-454             end;
-455           set  WORK.CONTENTS_STD_SABR   end=EFIEOD;
-456               format LIBNAME $8. ;
-457               format MEMNAME $32. ;
-458               format MEMLABEL $256. ;
-459               format TYPEMEM $8. ;
-460               format NAME $32. ;
-461               format TYPE best12. ;
-462               format LENGTH best12. ;
-463               format VARNUM best12. ;
-464               format LABEL $256. ;
-465               format FORMAT $32. ;
-466               format FORMATL best12. ;
-467               format FORMATD best12. ;
-468               format INFORMAT $32. ;
-469               format INFORML best12. ;
-470               format INFORMD best12. ;
-471               format JUST best12. ;
-472               format NPOS best12. ;
-473               format NOBS best12. ;
-474               format ENGINE $8. ;
-475               format CRDATE datetime16. ;
-476               format MODATE datetime16. ;
-477               format DELOBS best12. ;
-478               format IDXUSAGE $9. ;
-479               format MEMTYPE $8. ;
-480               format IDXCOUNT best12. ;
-481               format PROTECT $3. ;
-482               format FLAGS $3. ;
-483               format COMPRESS $8. ;
-484               format REUSE $3. ;
-485               format SORTED best12. ;
-486               format SORTEDBY best12. ;
-487               format CHARSET $8. ;
-488               format COLLATE $8. ;
-489               format NODUPKEY $3. ;
-490               format NODUPREC $3. ;
-491               format ENCRYPT $8. ;
-492               format POINTOBS $3. ;
-493               format GENMAX best12. ;
-494               format GENNUM best12. ;
-495               format GENNEXT best12. ;
-496               format TRANSCOD $3. ;
-497             do;
-498               EFIOUT + 1;
-499               put LIBNAME $ @;
-500               put MEMNAME $ @;
-501               put MEMLABEL $ @;
-502               put TYPEMEM $ @;
-503               put NAME $ @;
-504               put TYPE @;
-505               put LENGTH @;
-506               put VARNUM @;
-507               put LABEL $ @;
-508               put FORMAT $ @;
-509               put FORMATL @;
-510               put FORMATD @;
-511               put INFORMAT $ @;
-512               put INFORML @;
-513               put INFORMD @;
-514               put JUST @;
-515               put NPOS @;
-10                                                                  The SAS System                                          16:02 Monday, May 21, 2018
+456               ','
+457                  "ENCRYPT"
+458               ','
+459                  "POINTOBS"
+460               ','
+461                  "GENMAX"
+462               ','
+463                  "GENNUM"
+464               ','
+465                  "GENNEXT"
+466               ','
+467                  "TRANSCOD"
+468               ;
+469             end;
+470           set  WORK.CONTENTS_STD_SABR   end=EFIEOD;
+471               format LIBNAME $8. ;
+472               format MEMNAME $32. ;
+473               format MEMLABEL $256. ;
+474               format TYPEMEM $8. ;
+475               format NAME $32. ;
+476               format TYPE best12. ;
+477               format LENGTH best12. ;
+478               format VARNUM best12. ;
+479               format LABEL $256. ;
+480               format FORMAT $32. ;
+481               format FORMATL best12. ;
+482               format FORMATD best12. ;
+483               format INFORMAT $32. ;
+484               format INFORML best12. ;
+485               format INFORMD best12. ;
+486               format JUST best12. ;
+487               format NPOS best12. ;
+488               format NOBS best12. ;
+489               format ENGINE $8. ;
+490               format CRDATE datetime16. ;
+491               format MODATE datetime16. ;
+492               format DELOBS best12. ;
+493               format IDXUSAGE $9. ;
+494               format MEMTYPE $8. ;
+495               format IDXCOUNT best12. ;
+496               format PROTECT $3. ;
+497               format FLAGS $3. ;
+498               format COMPRESS $8. ;
+499               format REUSE $3. ;
+500               format SORTED best12. ;
+501               format SORTEDBY best12. ;
+502               format CHARSET $8. ;
+503               format COLLATE $8. ;
+504               format NODUPKEY $3. ;
+505               format NODUPREC $3. ;
+506               format ENCRYPT $8. ;
+507               format POINTOBS $3. ;
+508               format GENMAX best12. ;
+509               format GENNUM best12. ;
+510               format GENNEXT best12. ;
+511               format TRANSCOD $3. ;
+512             do;
+513               EFIOUT + 1;
+514               put LIBNAME $ @;
+515               put MEMNAME $ @;
+516               put MEMLABEL $ @;
+517               put TYPEMEM $ @;
+518               put NAME $ @;
+519               put TYPE @;
+520               put LENGTH @;
+521               put VARNUM @;
+522               put LABEL $ @;
+523               put FORMAT $ @;
+524               put FORMATL @;
+525               put FORMATD @;
+526               put INFORMAT $ @;
+527               put INFORML @;
+10                                                                  The SAS System                                        09:51 Tuesday, June 12, 2018
 
-516               put NOBS @;
-517               put ENGINE $ @;
-518               put CRDATE @;
-519               put MODATE @;
-520               put DELOBS @;
-521               put IDXUSAGE $ @;
-522               put MEMTYPE $ @;
-523               put IDXCOUNT @;
-524               put PROTECT $ @;
-525               put FLAGS $ @;
-526               put COMPRESS $ @;
-527               put REUSE $ @;
-528               put SORTED @;
-529               put SORTEDBY @;
-530               put CHARSET $ @;
-531               put COLLATE $ @;
-532               put NODUPKEY $ @;
-533               put NODUPREC $ @;
-534               put ENCRYPT $ @;
-535               put POINTOBS $ @;
-536               put GENMAX @;
-537               put GENNUM @;
-538               put GENNEXT @;
-539               put TRANSCOD $ ;
-540               ;
-541             end;
-542            if _ERROR_ then call symputx('_EFIERR_',1);  /* set ERROR detection macro variable */
-543            if EFIEOD then call symputx('_EFIREC_',EFIOUT);
-544            run;
+528               put INFORMD @;
+529               put JUST @;
+530               put NPOS @;
+531               put NOBS @;
+532               put ENGINE $ @;
+533               put CRDATE @;
+534               put MODATE @;
+535               put DELOBS @;
+536               put IDXUSAGE $ @;
+537               put MEMTYPE $ @;
+538               put IDXCOUNT @;
+539               put PROTECT $ @;
+540               put FLAGS $ @;
+541               put COMPRESS $ @;
+542               put REUSE $ @;
+543               put SORTED @;
+544               put SORTEDBY @;
+545               put CHARSET $ @;
+546               put COLLATE $ @;
+547               put NODUPKEY $ @;
+548               put NODUPREC $ @;
+549               put ENCRYPT $ @;
+550               put POINTOBS $ @;
+551               put GENMAX @;
+552               put GENNUM @;
+553               put GENNEXT @;
+554               put TRANSCOD $ ;
+555               ;
+556             end;
+557            if _ERROR_ then call symputx('_EFIERR_',1);  /* set ERROR detection macro variable */
+558            if EFIEOD then call symputx('_EFIREC_',EFIOUT);
+559            run;
 
 NOTE: The file 'data\processed\contentsSourceDatasets_std_SABR.csv' is:
       Filename=U:\studies\AS\pgms\bchan\data\processed\contentsSourceDatasets_std_SABR.csv,
       RECFM=V,LRECL=32767,File Size (bytes)=0,
-      Last Modified=21May2018:16:02:57,
-      Create Time=21May2018:16:02:57
+      Last Modified=12Jun2018:09:52:08,
+      Create Time=12Jun2018:09:52:08
 
 NOTE: 572 records were written to the file 'data\processed\contentsSourceDatasets_std_SABR.csv'.
       The minimum record length was 144.
       The maximum record length was 306.
 NOTE: There were 571 observations read from the data set WORK.CONTENTS_STD_SABR.
 NOTE: DATA statement used (Total process time):
-      real time           0.01 seconds
+      real time           0.03 seconds
       cpu time            0.01 seconds
       
 
@@ -6192,7 +6195,7 @@ NOTE: DATA statement used (Total process time):
   
 NOTE: "data\processed\contentsSourceDatasets_std_SABR.csv" file was successfully created.
 NOTE: PROCEDURE EXPORT used (Total process time):
-      real time           0.20 seconds
+      real time           0.18 seconds
       cpu time            0.11 seconds
       
 
@@ -6204,7 +6207,7 @@ NOTE: DATA statement used (Total process time):
       
 
 
-                                                                  --- AS project ---                                    16:02 Monday, May 21, 2018  75
+                                                                  --- AS project ---                                  09:51 Tuesday, June 12, 2018  75
 
                                                                 The CONTENTS Procedure
 
@@ -6213,7 +6216,7 @@ NOTE: DATA statement used (Total process time):
 Libref               MPSTD                                                                                                                            
 Engine               SPDE                                                                                                                             
 Physical Name        q:\studies\mpcd\data\stddata\                                                                                                    
-Free Space (Kbytes)  19730917329                                                                                                                      
+Free Space (Kbytes)  19890851217                                                                                                                      
 Metapath             'q:\studies\mpcd\data\stddata\'                                                                                                  
 Indexpath            's:\studies\mpcd\data\stddata\' 't:\studies\mpcd\data\stddata\'                                                                  
 Datapath             'r:\studies\mpcd\data\stddata\' 's:\studies\mpcd\data\stddata\' 't:\studies\mpcd\data\stddata\'                                  
@@ -6278,7 +6281,7 @@ Datapath             'r:\studies\mpcd\data\stddata\' 's:\studies\mpcd\data\stdda
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                                    16:02 Monday, May 21, 2018  76
+                                                                  --- AS project ---                                  09:51 Tuesday, June 12, 2018  76
 
                                                                 The CONTENTS Procedure
 
@@ -6352,7 +6355,7 @@ Datapath             'r:\studies\mpcd\data\stddata\' 's:\studies\mpcd\data\stdda
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                                    16:02 Monday, May 21, 2018  77
+                                                                  --- AS project ---                                  09:51 Tuesday, June 12, 2018  77
 
                                                                 The CONTENTS Procedure
 
@@ -6426,7 +6429,7 @@ Datapath             'r:\studies\mpcd\data\stddata\' 's:\studies\mpcd\data\stdda
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                                    16:02 Monday, May 21, 2018  78
+                                                                  --- AS project ---                                  09:51 Tuesday, June 12, 2018  78
 
                                                                 The CONTENTS Procedure
 
@@ -6500,7 +6503,7 @@ Sort Option    NODUPREC
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                                    16:02 Monday, May 21, 2018  79
+                                                                  --- AS project ---                                  09:51 Tuesday, June 12, 2018  79
 
                                                                 The CONTENTS Procedure
 
@@ -6574,7 +6577,7 @@ Sort Option    NODUPKEY
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                                    16:02 Monday, May 21, 2018  80
+                                                                  --- AS project ---                                  09:51 Tuesday, June 12, 2018  80
 
                                                                 The CONTENTS Procedure
 
@@ -6648,7 +6651,7 @@ Sort Option    NODUPKEY
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                                    16:02 Monday, May 21, 2018  81
+                                                                  --- AS project ---                                  09:51 Tuesday, June 12, 2018  81
 
                                                                 The CONTENTS Procedure
 
@@ -6722,7 +6725,7 @@ Sort Option    NODUPKEY
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                                    16:02 Monday, May 21, 2018  82
+                                                                  --- AS project ---                                  09:51 Tuesday, June 12, 2018  82
 
                                                                 The CONTENTS Procedure
 
@@ -6796,7 +6799,7 @@ Sort Option    NODUPKEY
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                                    16:02 Monday, May 21, 2018  83
+                                                                  --- AS project ---                                  09:51 Tuesday, June 12, 2018  83
 
                                                                 The CONTENTS Procedure
 
@@ -6870,7 +6873,7 @@ Sort Option    NODUPKEY
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                                    16:02 Monday, May 21, 2018  84
+                                                                  --- AS project ---                                  09:51 Tuesday, June 12, 2018  84
 
                                                                 The CONTENTS Procedure
 
@@ -6944,7 +6947,7 @@ Sort Option    NODUPKEY
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                                    16:02 Monday, May 21, 2018  85
+                                                                  --- AS project ---                                  09:51 Tuesday, June 12, 2018  85
 
                                                                 The CONTENTS Procedure
 
@@ -7020,212 +7023,212 @@ NOTE: The data set WORK.CONTENTS_MPSTD has 157 observations and 41 variables.
  
                                                               contentsSourceDatasets.sas
 NOTE: PROCEDURE CONTENTS used (Total process time):
-      real time           0.90 seconds
-      cpu time            0.42 seconds
+      real time           0.85 seconds
+      cpu time            0.34 seconds
       
 NOTE: The PROCEDURE CONTENTS printed pages 75-85.
 
+11                                                                  The SAS System                                        09:51 Tuesday, June 12, 2018
 
-545         /**********************************************************************
-546         *   PRODUCT:   SAS
-11                                                                  The SAS System                                          16:02 Monday, May 21, 2018
 
-547         *   VERSION:   9.4
-548         *   CREATOR:   External File Interface
-549         *   DATE:      21MAY18
-550         *   DESC:      Generated SAS Datastep Code
-551         *   TEMPLATE SOURCE:  (None Specified.)
-552         ***********************************************************************/
-553            data _null_;
-554            %let _EFIERR_ = 0; /* set the ERROR detection macro variable */
-555            %let _EFIREC_ = 0;     /* clear export record count macro variable */
-556            file 'data\processed\contentsSourceDatasets_MPSTD.csv' delimiter=',' DSD DROPOVER lrecl=32767;
-557            if _n_ = 1 then        /* write column names or labels */
-558             do;
-559               put
-560                  "LIBNAME"
-561               ','
-562                  "MEMNAME"
-563               ','
-564                  "MEMLABEL"
-565               ','
-566                  "TYPEMEM"
-567               ','
-568                  "NAME"
-569               ','
-570                  "TYPE"
-571               ','
-572                  "LENGTH"
-573               ','
-574                  "VARNUM"
-575               ','
-576                  "LABEL"
-577               ','
-578                  "FORMAT"
-579               ','
-580                  "FORMATL"
-581               ','
-582                  "FORMATD"
-583               ','
-584                  "INFORMAT"
-585               ','
-586                  "INFORML"
-587               ','
-588                  "INFORMD"
-589               ','
-590                  "JUST"
-591               ','
-592                  "NPOS"
-593               ','
-594                  "NOBS"
-595               ','
-596                  "ENGINE"
-597               ','
-598                  "CRDATE"
-599               ','
-600                  "MODATE"
-601               ','
-602                  "DELOBS"
-603               ','
-604                  "IDXUSAGE"
-605               ','
-606                  "MEMTYPE"
-607               ','
-608                  "IDXCOUNT"
-609               ','
-610                  "PROTECT"
-611               ','
-612                  "FLAGS"
-613               ','
-614                  "COMPRESS"
-615               ','
-616                  "REUSE"
-617               ','
-618                  "SORTED"
-12                                                                  The SAS System                                          16:02 Monday, May 21, 2018
+560         /**********************************************************************
+561         *   PRODUCT:   SAS
+562         *   VERSION:   9.4
+563         *   CREATOR:   External File Interface
+564         *   DATE:      12JUN18
+565         *   DESC:      Generated SAS Datastep Code
+566         *   TEMPLATE SOURCE:  (None Specified.)
+567         ***********************************************************************/
+568            data _null_;
+569            %let _EFIERR_ = 0; /* set the ERROR detection macro variable */
+570            %let _EFIREC_ = 0;     /* clear export record count macro variable */
+571            file 'data\processed\contentsSourceDatasets_MPSTD.csv' delimiter=',' DSD DROPOVER lrecl=32767;
+572            if _n_ = 1 then        /* write column names or labels */
+573             do;
+574               put
+575                  "LIBNAME"
+576               ','
+577                  "MEMNAME"
+578               ','
+579                  "MEMLABEL"
+580               ','
+581                  "TYPEMEM"
+582               ','
+583                  "NAME"
+584               ','
+585                  "TYPE"
+586               ','
+587                  "LENGTH"
+588               ','
+589                  "VARNUM"
+590               ','
+591                  "LABEL"
+592               ','
+593                  "FORMAT"
+594               ','
+595                  "FORMATL"
+596               ','
+597                  "FORMATD"
+598               ','
+599                  "INFORMAT"
+600               ','
+601                  "INFORML"
+602               ','
+603                  "INFORMD"
+604               ','
+605                  "JUST"
+606               ','
+607                  "NPOS"
+608               ','
+609                  "NOBS"
+610               ','
+611                  "ENGINE"
+612               ','
+613                  "CRDATE"
+614               ','
+615                  "MODATE"
+616               ','
+617                  "DELOBS"
+618               ','
+619                  "IDXUSAGE"
+620               ','
+621                  "MEMTYPE"
+622               ','
+623                  "IDXCOUNT"
+624               ','
+625                  "PROTECT"
+626               ','
+627                  "FLAGS"
+628               ','
+629                  "COMPRESS"
+630               ','
+12                                                                  The SAS System                                        09:51 Tuesday, June 12, 2018
 
-619               ','
-620                  "SORTEDBY"
-621               ','
-622                  "CHARSET"
-623               ','
-624                  "COLLATE"
-625               ','
-626                  "NODUPKEY"
-627               ','
-628                  "NODUPREC"
-629               ','
-630                  "ENCRYPT"
-631               ','
-632                  "POINTOBS"
-633               ','
-634                  "GENMAX"
-635               ','
-636                  "GENNUM"
-637               ','
-638                  "GENNEXT"
-639               ','
-640                  "TRANSCOD"
-641               ;
-642             end;
-643           set  WORK.CONTENTS_MPSTD   end=EFIEOD;
-644               format LIBNAME $8. ;
-645               format MEMNAME $32. ;
-646               format MEMLABEL $256. ;
-647               format TYPEMEM $8. ;
-648               format NAME $32. ;
-649               format TYPE best12. ;
-650               format LENGTH best12. ;
-651               format VARNUM best12. ;
-652               format LABEL $256. ;
-653               format FORMAT $32. ;
-654               format FORMATL best12. ;
-655               format FORMATD best12. ;
-656               format INFORMAT $32. ;
-657               format INFORML best12. ;
-658               format INFORMD best12. ;
-659               format JUST best12. ;
-660               format NPOS best12. ;
-661               format NOBS best12. ;
-662               format ENGINE $8. ;
-663               format CRDATE datetime16. ;
-664               format MODATE datetime16. ;
-665               format DELOBS best12. ;
-666               format IDXUSAGE $9. ;
-667               format MEMTYPE $8. ;
-668               format IDXCOUNT best12. ;
-669               format PROTECT $3. ;
-670               format FLAGS $3. ;
-671               format COMPRESS $8. ;
-672               format REUSE $3. ;
-673               format SORTED best12. ;
-674               format SORTEDBY best12. ;
-675               format CHARSET $8. ;
-676               format COLLATE $8. ;
-677               format NODUPKEY $3. ;
-678               format NODUPREC $3. ;
-679               format ENCRYPT $8. ;
-680               format POINTOBS $3. ;
-681               format GENMAX best12. ;
-682               format GENNUM best12. ;
-683               format GENNEXT best12. ;
-684               format TRANSCOD $3. ;
-685             do;
-686               EFIOUT + 1;
-687               put LIBNAME $ @;
-688               put MEMNAME $ @;
-689               put MEMLABEL $ @;
-690               put TYPEMEM $ @;
-13                                                                  The SAS System                                          16:02 Monday, May 21, 2018
+631                  "REUSE"
+632               ','
+633                  "SORTED"
+634               ','
+635                  "SORTEDBY"
+636               ','
+637                  "CHARSET"
+638               ','
+639                  "COLLATE"
+640               ','
+641                  "NODUPKEY"
+642               ','
+643                  "NODUPREC"
+644               ','
+645                  "ENCRYPT"
+646               ','
+647                  "POINTOBS"
+648               ','
+649                  "GENMAX"
+650               ','
+651                  "GENNUM"
+652               ','
+653                  "GENNEXT"
+654               ','
+655                  "TRANSCOD"
+656               ;
+657             end;
+658           set  WORK.CONTENTS_MPSTD   end=EFIEOD;
+659               format LIBNAME $8. ;
+660               format MEMNAME $32. ;
+661               format MEMLABEL $256. ;
+662               format TYPEMEM $8. ;
+663               format NAME $32. ;
+664               format TYPE best12. ;
+665               format LENGTH best12. ;
+666               format VARNUM best12. ;
+667               format LABEL $256. ;
+668               format FORMAT $32. ;
+669               format FORMATL best12. ;
+670               format FORMATD best12. ;
+671               format INFORMAT $32. ;
+672               format INFORML best12. ;
+673               format INFORMD best12. ;
+674               format JUST best12. ;
+675               format NPOS best12. ;
+676               format NOBS best12. ;
+677               format ENGINE $8. ;
+678               format CRDATE datetime16. ;
+679               format MODATE datetime16. ;
+680               format DELOBS best12. ;
+681               format IDXUSAGE $9. ;
+682               format MEMTYPE $8. ;
+683               format IDXCOUNT best12. ;
+684               format PROTECT $3. ;
+685               format FLAGS $3. ;
+686               format COMPRESS $8. ;
+687               format REUSE $3. ;
+688               format SORTED best12. ;
+689               format SORTEDBY best12. ;
+690               format CHARSET $8. ;
+691               format COLLATE $8. ;
+692               format NODUPKEY $3. ;
+693               format NODUPREC $3. ;
+694               format ENCRYPT $8. ;
+695               format POINTOBS $3. ;
+696               format GENMAX best12. ;
+697               format GENNUM best12. ;
+698               format GENNEXT best12. ;
+699               format TRANSCOD $3. ;
+700             do;
+701               EFIOUT + 1;
+702               put LIBNAME $ @;
+13                                                                  The SAS System                                        09:51 Tuesday, June 12, 2018
 
-691               put NAME $ @;
-692               put TYPE @;
-693               put LENGTH @;
-694               put VARNUM @;
-695               put LABEL $ @;
-696               put FORMAT $ @;
-697               put FORMATL @;
-698               put FORMATD @;
-699               put INFORMAT $ @;
-700               put INFORML @;
-701               put INFORMD @;
-702               put JUST @;
-703               put NPOS @;
-704               put NOBS @;
-705               put ENGINE $ @;
-706               put CRDATE @;
-707               put MODATE @;
-708               put DELOBS @;
-709               put IDXUSAGE $ @;
-710               put MEMTYPE $ @;
-711               put IDXCOUNT @;
-712               put PROTECT $ @;
-713               put FLAGS $ @;
-714               put COMPRESS $ @;
-715               put REUSE $ @;
-716               put SORTED @;
-717               put SORTEDBY @;
-718               put CHARSET $ @;
-719               put COLLATE $ @;
-720               put NODUPKEY $ @;
-721               put NODUPREC $ @;
-722               put ENCRYPT $ @;
-723               put POINTOBS $ @;
-724               put GENMAX @;
-725               put GENNUM @;
-726               put GENNEXT @;
-727               put TRANSCOD $ ;
-728               ;
-729             end;
-730            if _ERROR_ then call symputx('_EFIERR_',1);  /* set ERROR detection macro variable */
-731            if EFIEOD then call symputx('_EFIREC_',EFIOUT);
-732            run;
+703               put MEMNAME $ @;
+704               put MEMLABEL $ @;
+705               put TYPEMEM $ @;
+706               put NAME $ @;
+707               put TYPE @;
+708               put LENGTH @;
+709               put VARNUM @;
+710               put LABEL $ @;
+711               put FORMAT $ @;
+712               put FORMATL @;
+713               put FORMATD @;
+714               put INFORMAT $ @;
+715               put INFORML @;
+716               put INFORMD @;
+717               put JUST @;
+718               put NPOS @;
+719               put NOBS @;
+720               put ENGINE $ @;
+721               put CRDATE @;
+722               put MODATE @;
+723               put DELOBS @;
+724               put IDXUSAGE $ @;
+725               put MEMTYPE $ @;
+726               put IDXCOUNT @;
+727               put PROTECT $ @;
+728               put FLAGS $ @;
+729               put COMPRESS $ @;
+730               put REUSE $ @;
+731               put SORTED @;
+732               put SORTEDBY @;
+733               put CHARSET $ @;
+734               put COLLATE $ @;
+735               put NODUPKEY $ @;
+736               put NODUPREC $ @;
+737               put ENCRYPT $ @;
+738               put POINTOBS $ @;
+739               put GENMAX @;
+740               put GENNUM @;
+741               put GENNEXT @;
+742               put TRANSCOD $ ;
+743               ;
+744             end;
+745            if _ERROR_ then call symputx('_EFIERR_',1);  /* set ERROR detection macro variable */
+746            if EFIEOD then call symputx('_EFIREC_',EFIOUT);
+747            run;
 
 NOTE: The file 'data\processed\contentsSourceDatasets_MPSTD.csv' is:
       Filename=U:\studies\AS\pgms\bchan\data\processed\contentsSourceDatasets_MPSTD.csv,
       RECFM=V,LRECL=32767,File Size (bytes)=0,
-      Last Modified=21May2018:16:02:58,
-      Create Time=21May2018:16:02:58
+      Last Modified=12Jun2018:09:52:09,
+      Create Time=12Jun2018:09:52:09
 
 NOTE: 158 records were written to the file 'data\processed\contentsSourceDatasets_MPSTD.csv'.
       The minimum record length was 148.
@@ -7242,20 +7245,20 @@ NOTE: DATA statement used (Total process time):
 NOTE: "data\processed\contentsSourceDatasets_MPSTD.csv" file was successfully created.
 NOTE: PROCEDURE EXPORT used (Total process time):
       real time           0.17 seconds
-      cpu time            0.09 seconds
+      cpu time            0.10 seconds
       
 
 
 NOTE: There were 4 observations read from the data set WORK.LIBS.
+14                                                                  The SAS System                                        09:51 Tuesday, June 12, 2018
+
 NOTE: DATA statement used (Total process time):
       real time           0.00 seconds
       cpu time            0.00 seconds
-14                                                                  The SAS System                                          16:02 Monday, May 21, 2018
-
       
 
 
-                                                                  --- AS project ---                                    16:02 Monday, May 21, 2018  86
+                                                                  --- AS project ---                                  09:51 Tuesday, June 12, 2018  86
 
                                                                 The CONTENTS Procedure
 
@@ -7264,7 +7267,7 @@ NOTE: DATA statement used (Total process time):
 Libref               UCBSTD                                                                                                                           
 Engine               SPDE                                                                                                                             
 Physical Name        q:\studies\AS\data\stddata\                                                                                                      
-Free Space (Kbytes)  19730917329                                                                                                                      
+Free Space (Kbytes)  19890851217                                                                                                                      
 Metapath             'q:\studies\AS\data\stddata\'                                                                                                    
 Indexpath            't:\studies\AS\data\stddata\' 'u:\studies\AS\data\stddata\' 'v:\studies\AS\data\stddata\'                                        
 Datapath             'q:\studies\AS\data\stddata\' 'r:\studies\AS\data\stddata\' 's:\studies\AS\data\stddata\'                                        
@@ -7331,7 +7334,7 @@ NOTE: Data set UCBSTD.DEMOG is in a format that is native to another host. Cross
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                                    16:02 Monday, May 21, 2018  87
+                                                                  --- AS project ---                                  09:51 Tuesday, June 12, 2018  87
 
                                                                 The CONTENTS Procedure
 
@@ -7407,7 +7410,7 @@ NOTE: Data set UCBSTD.DX_2010 is in a format that is native to another host. Cro
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                                    16:02 Monday, May 21, 2018  88
+                                                                  --- AS project ---                                  09:51 Tuesday, June 12, 2018  88
 
                                                                 The CONTENTS Procedure
 
@@ -7483,7 +7486,7 @@ NOTE: Data set UCBSTD.DX_2011 is in a format that is native to another host. Cro
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                                    16:02 Monday, May 21, 2018  89
+                                                                  --- AS project ---                                  09:51 Tuesday, June 12, 2018  89
 
                                                                 The CONTENTS Procedure
 
@@ -7559,7 +7562,7 @@ NOTE: Data set UCBSTD.DX_2012 is in a format that is native to another host. Cro
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                                    16:02 Monday, May 21, 2018  90
+                                                                  --- AS project ---                                  09:51 Tuesday, June 12, 2018  90
 
                                                                 The CONTENTS Procedure
 
@@ -7635,7 +7638,7 @@ NOTE: Data set UCBSTD.DX_2013 is in a format that is native to another host. Cro
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                                    16:02 Monday, May 21, 2018  91
+                                                                  --- AS project ---                                  09:51 Tuesday, June 12, 2018  91
 
                                                                 The CONTENTS Procedure
 
@@ -7711,7 +7714,7 @@ NOTE: Data set UCBSTD.DX_2014 is in a format that is native to another host. Cro
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                                    16:02 Monday, May 21, 2018  92
+                                                                  --- AS project ---                                  09:51 Tuesday, June 12, 2018  92
 
                                                                 The CONTENTS Procedure
 
@@ -7787,7 +7790,7 @@ NOTE: Data set UCBSTD.ENROLL is in a format that is native to another host. Cros
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                                    16:02 Monday, May 21, 2018  93
+                                                                  --- AS project ---                                  09:51 Tuesday, June 12, 2018  93
 
                                                                 The CONTENTS Procedure
 
@@ -7863,7 +7866,7 @@ NOTE: Data set UCBSTD.PX_2010 is in a format that is native to another host. Cro
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                                    16:02 Monday, May 21, 2018  94
+                                                                  --- AS project ---                                  09:51 Tuesday, June 12, 2018  94
 
                                                                 The CONTENTS Procedure
 
@@ -7939,7 +7942,7 @@ NOTE: Data set UCBSTD.PX_2011 is in a format that is native to another host. Cro
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                                    16:02 Monday, May 21, 2018  95
+                                                                  --- AS project ---                                  09:51 Tuesday, June 12, 2018  95
 
                                                                 The CONTENTS Procedure
 
@@ -8015,7 +8018,7 @@ NOTE: Data set UCBSTD.PX_2012 is in a format that is native to another host. Cro
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                                    16:02 Monday, May 21, 2018  96
+                                                                  --- AS project ---                                  09:51 Tuesday, June 12, 2018  96
 
                                                                 The CONTENTS Procedure
 
@@ -8091,7 +8094,7 @@ NOTE: Data set UCBSTD.PX_2013 is in a format that is native to another host. Cro
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                                    16:02 Monday, May 21, 2018  97
+                                                                  --- AS project ---                                  09:51 Tuesday, June 12, 2018  97
 
                                                                 The CONTENTS Procedure
 
@@ -8167,7 +8170,7 @@ NOTE: Data set UCBSTD.PX_2014 is in a format that is native to another host. Cro
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                                    16:02 Monday, May 21, 2018  98
+                                                                  --- AS project ---                                  09:51 Tuesday, June 12, 2018  98
 
                                                                 The CONTENTS Procedure
 
@@ -8243,7 +8246,7 @@ NOTE: Data set UCBSTD.REDBOOK is in a format that is native to another host. Cro
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                                    16:02 Monday, May 21, 2018  99
+                                                                  --- AS project ---                                  09:51 Tuesday, June 12, 2018  99
 
                                                                 The CONTENTS Procedure
 
@@ -8317,7 +8320,7 @@ NOTE: Data set UCBSTD.REDBOOK is in a format that is native to another host. Cro
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                                    16:02 Monday, May 21, 2018 100
+                                                                  --- AS project ---                                  09:51 Tuesday, June 12, 2018 100
 
                                                                 The CONTENTS Procedure
 
@@ -8393,7 +8396,7 @@ NOTE: Data set UCBSTD.RX_2010 is in a format that is native to another host. Cro
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                                    16:02 Monday, May 21, 2018 101
+                                                                  --- AS project ---                                  09:51 Tuesday, June 12, 2018 101
 
                                                                 The CONTENTS Procedure
 
@@ -8469,7 +8472,7 @@ NOTE: Data set UCBSTD.RX_2011 is in a format that is native to another host. Cro
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                                    16:02 Monday, May 21, 2018 102
+                                                                  --- AS project ---                                  09:51 Tuesday, June 12, 2018 102
 
                                                                 The CONTENTS Procedure
 
@@ -8545,7 +8548,7 @@ NOTE: Data set UCBSTD.RX_2012 is in a format that is native to another host. Cro
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                                    16:02 Monday, May 21, 2018 103
+                                                                  --- AS project ---                                  09:51 Tuesday, June 12, 2018 103
 
                                                                 The CONTENTS Procedure
 
@@ -8621,7 +8624,7 @@ NOTE: Data set UCBSTD.RX_2013 is in a format that is native to another host. Cro
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                                    16:02 Monday, May 21, 2018 104
+                                                                  --- AS project ---                                  09:51 Tuesday, June 12, 2018 104
 
                                                                 The CONTENTS Procedure
 
@@ -8697,7 +8700,7 @@ NOTE: Data set UCBSTD.RX_2014 is in a format that is native to another host. Cro
  
  
                                                               contentsSourceDatasets.sas
-                                                                  --- AS project ---                                    16:02 Monday, May 21, 2018 105
+                                                                  --- AS project ---                                  09:51 Tuesday, June 12, 2018 105
 
                                                                 The CONTENTS Procedure
 
@@ -8773,219 +8776,219 @@ NOTE: The data set WORK.CONTENTS_UCBSTD has 291 observations and 41 variables.
  
                                                               contentsSourceDatasets.sas
 NOTE: PROCEDURE CONTENTS used (Total process time):
-      real time           4.25 seconds
-      cpu time            2.12 seconds
+      real time           3.82 seconds
+      cpu time            2.07 seconds
       
 NOTE: The PROCEDURE CONTENTS printed pages 86-105.
 
 
-733         /**********************************************************************
-734         *   PRODUCT:   SAS
-735         *   VERSION:   9.4
-736         *   CREATOR:   External File Interface
-737         *   DATE:      21MAY18
-738         *   DESC:      Generated SAS Datastep Code
-739         *   TEMPLATE SOURCE:  (None Specified.)
-740         ***********************************************************************/
-741            data _null_;
-742            %let _EFIERR_ = 0; /* set the ERROR detection macro variable */
-743            %let _EFIREC_ = 0;     /* clear export record count macro variable */
-744            file 'data\processed\contentsSourceDatasets_UCBSTD.csv' delimiter=',' DSD DROPOVER lrecl=32767;
-745            if _n_ = 1 then        /* write column names or labels */
-746             do;
-747               put
-748                  "LIBNAME"
-749               ','
-750                  "MEMNAME"
-751               ','
-752                  "MEMLABEL"
-753               ','
-754                  "TYPEMEM"
-755               ','
-756                  "NAME"
-757               ','
-15                                                                  The SAS System                                          16:02 Monday, May 21, 2018
+748         /**********************************************************************
+749         *   PRODUCT:   SAS
+750         *   VERSION:   9.4
+751         *   CREATOR:   External File Interface
+752         *   DATE:      12JUN18
+753         *   DESC:      Generated SAS Datastep Code
+754         *   TEMPLATE SOURCE:  (None Specified.)
+755         ***********************************************************************/
+756            data _null_;
+757            %let _EFIERR_ = 0; /* set the ERROR detection macro variable */
+758            %let _EFIREC_ = 0;     /* clear export record count macro variable */
+759            file 'data\processed\contentsSourceDatasets_UCBSTD.csv' delimiter=',' DSD DROPOVER lrecl=32767;
+760            if _n_ = 1 then        /* write column names or labels */
+761             do;
+762               put
+763                  "LIBNAME"
+764               ','
+765                  "MEMNAME"
+766               ','
+767                  "MEMLABEL"
+768               ','
+769                  "TYPEMEM"
+15                                                                  The SAS System                                        09:51 Tuesday, June 12, 2018
 
-758                  "TYPE"
-759               ','
-760                  "LENGTH"
-761               ','
-762                  "VARNUM"
-763               ','
-764                  "LABEL"
-765               ','
-766                  "FORMAT"
-767               ','
-768                  "FORMATL"
-769               ','
-770                  "FORMATD"
-771               ','
-772                  "INFORMAT"
-773               ','
-774                  "INFORML"
-775               ','
-776                  "INFORMD"
-777               ','
-778                  "JUST"
-779               ','
-780                  "NPOS"
-781               ','
-782                  "NOBS"
-783               ','
-784                  "ENGINE"
-785               ','
-786                  "CRDATE"
-787               ','
-788                  "MODATE"
-789               ','
-790                  "DELOBS"
-791               ','
-792                  "IDXUSAGE"
-793               ','
-794                  "MEMTYPE"
-795               ','
-796                  "IDXCOUNT"
-797               ','
-798                  "PROTECT"
-799               ','
-800                  "FLAGS"
-801               ','
-802                  "COMPRESS"
-803               ','
-804                  "REUSE"
-805               ','
-806                  "SORTED"
-807               ','
-808                  "SORTEDBY"
-809               ','
-810                  "CHARSET"
-811               ','
-812                  "COLLATE"
-813               ','
-814                  "NODUPKEY"
-815               ','
-816                  "NODUPREC"
-817               ','
-818                  "ENCRYPT"
-819               ','
-820                  "POINTOBS"
-821               ','
-822                  "GENMAX"
-823               ','
-824                  "GENNUM"
-825               ','
-826                  "GENNEXT"
-827               ','
-828                  "TRANSCOD"
-829               ;
-16                                                                  The SAS System                                          16:02 Monday, May 21, 2018
+770               ','
+771                  "NAME"
+772               ','
+773                  "TYPE"
+774               ','
+775                  "LENGTH"
+776               ','
+777                  "VARNUM"
+778               ','
+779                  "LABEL"
+780               ','
+781                  "FORMAT"
+782               ','
+783                  "FORMATL"
+784               ','
+785                  "FORMATD"
+786               ','
+787                  "INFORMAT"
+788               ','
+789                  "INFORML"
+790               ','
+791                  "INFORMD"
+792               ','
+793                  "JUST"
+794               ','
+795                  "NPOS"
+796               ','
+797                  "NOBS"
+798               ','
+799                  "ENGINE"
+800               ','
+801                  "CRDATE"
+802               ','
+803                  "MODATE"
+804               ','
+805                  "DELOBS"
+806               ','
+807                  "IDXUSAGE"
+808               ','
+809                  "MEMTYPE"
+810               ','
+811                  "IDXCOUNT"
+812               ','
+813                  "PROTECT"
+814               ','
+815                  "FLAGS"
+816               ','
+817                  "COMPRESS"
+818               ','
+819                  "REUSE"
+820               ','
+821                  "SORTED"
+822               ','
+823                  "SORTEDBY"
+824               ','
+825                  "CHARSET"
+826               ','
+827                  "COLLATE"
+828               ','
+829                  "NODUPKEY"
+830               ','
+831                  "NODUPREC"
+832               ','
+833                  "ENCRYPT"
+834               ','
+835                  "POINTOBS"
+836               ','
+837                  "GENMAX"
+838               ','
+839                  "GENNUM"
+840               ','
+841                  "GENNEXT"
+16                                                                  The SAS System                                        09:51 Tuesday, June 12, 2018
 
-830             end;
-831           set  WORK.CONTENTS_UCBSTD   end=EFIEOD;
-832               format LIBNAME $8. ;
-833               format MEMNAME $32. ;
-834               format MEMLABEL $256. ;
-835               format TYPEMEM $8. ;
-836               format NAME $32. ;
-837               format TYPE best12. ;
-838               format LENGTH best12. ;
-839               format VARNUM best12. ;
-840               format LABEL $256. ;
-841               format FORMAT $32. ;
-842               format FORMATL best12. ;
-843               format FORMATD best12. ;
-844               format INFORMAT $32. ;
-845               format INFORML best12. ;
-846               format INFORMD best12. ;
-847               format JUST best12. ;
-848               format NPOS best12. ;
-849               format NOBS best12. ;
-850               format ENGINE $8. ;
-851               format CRDATE datetime16. ;
-852               format MODATE datetime16. ;
-853               format DELOBS best12. ;
-854               format IDXUSAGE $9. ;
-855               format MEMTYPE $8. ;
-856               format IDXCOUNT best12. ;
-857               format PROTECT $3. ;
-858               format FLAGS $3. ;
-859               format COMPRESS $8. ;
-860               format REUSE $3. ;
-861               format SORTED best12. ;
-862               format SORTEDBY best12. ;
-863               format CHARSET $8. ;
-864               format COLLATE $8. ;
-865               format NODUPKEY $3. ;
-866               format NODUPREC $3. ;
-867               format ENCRYPT $8. ;
-868               format POINTOBS $3. ;
-869               format GENMAX best12. ;
-870               format GENNUM best12. ;
-871               format GENNEXT best12. ;
-872               format TRANSCOD $3. ;
-873             do;
-874               EFIOUT + 1;
-875               put LIBNAME $ @;
-876               put MEMNAME $ @;
-877               put MEMLABEL $ @;
-878               put TYPEMEM $ @;
-879               put NAME $ @;
-880               put TYPE @;
-881               put LENGTH @;
-882               put VARNUM @;
-883               put LABEL $ @;
-884               put FORMAT $ @;
-885               put FORMATL @;
-886               put FORMATD @;
-887               put INFORMAT $ @;
-888               put INFORML @;
-889               put INFORMD @;
-890               put JUST @;
-891               put NPOS @;
-892               put NOBS @;
-893               put ENGINE $ @;
-894               put CRDATE @;
-895               put MODATE @;
-896               put DELOBS @;
-897               put IDXUSAGE $ @;
-898               put MEMTYPE $ @;
-899               put IDXCOUNT @;
-900               put PROTECT $ @;
-901               put FLAGS $ @;
-17                                                                  The SAS System                                          16:02 Monday, May 21, 2018
+842               ','
+843                  "TRANSCOD"
+844               ;
+845             end;
+846           set  WORK.CONTENTS_UCBSTD   end=EFIEOD;
+847               format LIBNAME $8. ;
+848               format MEMNAME $32. ;
+849               format MEMLABEL $256. ;
+850               format TYPEMEM $8. ;
+851               format NAME $32. ;
+852               format TYPE best12. ;
+853               format LENGTH best12. ;
+854               format VARNUM best12. ;
+855               format LABEL $256. ;
+856               format FORMAT $32. ;
+857               format FORMATL best12. ;
+858               format FORMATD best12. ;
+859               format INFORMAT $32. ;
+860               format INFORML best12. ;
+861               format INFORMD best12. ;
+862               format JUST best12. ;
+863               format NPOS best12. ;
+864               format NOBS best12. ;
+865               format ENGINE $8. ;
+866               format CRDATE datetime16. ;
+867               format MODATE datetime16. ;
+868               format DELOBS best12. ;
+869               format IDXUSAGE $9. ;
+870               format MEMTYPE $8. ;
+871               format IDXCOUNT best12. ;
+872               format PROTECT $3. ;
+873               format FLAGS $3. ;
+874               format COMPRESS $8. ;
+875               format REUSE $3. ;
+876               format SORTED best12. ;
+877               format SORTEDBY best12. ;
+878               format CHARSET $8. ;
+879               format COLLATE $8. ;
+880               format NODUPKEY $3. ;
+881               format NODUPREC $3. ;
+882               format ENCRYPT $8. ;
+883               format POINTOBS $3. ;
+884               format GENMAX best12. ;
+885               format GENNUM best12. ;
+886               format GENNEXT best12. ;
+887               format TRANSCOD $3. ;
+888             do;
+889               EFIOUT + 1;
+890               put LIBNAME $ @;
+891               put MEMNAME $ @;
+892               put MEMLABEL $ @;
+893               put TYPEMEM $ @;
+894               put NAME $ @;
+895               put TYPE @;
+896               put LENGTH @;
+897               put VARNUM @;
+898               put LABEL $ @;
+899               put FORMAT $ @;
+900               put FORMATL @;
+901               put FORMATD @;
+902               put INFORMAT $ @;
+903               put INFORML @;
+904               put INFORMD @;
+905               put JUST @;
+906               put NPOS @;
+907               put NOBS @;
+908               put ENGINE $ @;
+909               put CRDATE @;
+910               put MODATE @;
+911               put DELOBS @;
+912               put IDXUSAGE $ @;
+913               put MEMTYPE $ @;
+17                                                                  The SAS System                                        09:51 Tuesday, June 12, 2018
 
-902               put COMPRESS $ @;
-903               put REUSE $ @;
-904               put SORTED @;
-905               put SORTEDBY @;
-906               put CHARSET $ @;
-907               put COLLATE $ @;
-908               put NODUPKEY $ @;
-909               put NODUPREC $ @;
-910               put ENCRYPT $ @;
-911               put POINTOBS $ @;
-912               put GENMAX @;
-913               put GENNUM @;
-914               put GENNEXT @;
-915               put TRANSCOD $ ;
-916               ;
-917             end;
-918            if _ERROR_ then call symputx('_EFIERR_',1);  /* set ERROR detection macro variable */
-919            if EFIEOD then call symputx('_EFIREC_',EFIOUT);
-920            run;
+914               put IDXCOUNT @;
+915               put PROTECT $ @;
+916               put FLAGS $ @;
+917               put COMPRESS $ @;
+918               put REUSE $ @;
+919               put SORTED @;
+920               put SORTEDBY @;
+921               put CHARSET $ @;
+922               put COLLATE $ @;
+923               put NODUPKEY $ @;
+924               put NODUPREC $ @;
+925               put ENCRYPT $ @;
+926               put POINTOBS $ @;
+927               put GENMAX @;
+928               put GENNUM @;
+929               put GENNEXT @;
+930               put TRANSCOD $ ;
+931               ;
+932             end;
+933            if _ERROR_ then call symputx('_EFIERR_',1);  /* set ERROR detection macro variable */
+934            if EFIEOD then call symputx('_EFIREC_',EFIOUT);
+935            run;
 
 NOTE: The file 'data\processed\contentsSourceDatasets_UCBSTD.csv' is:
       Filename=U:\studies\AS\pgms\bchan\data\processed\contentsSourceDatasets_UCBSTD.csv,
       RECFM=V,LRECL=32767,File Size (bytes)=0,
-      Last Modified=21May2018:16:03:02,
-      Create Time=21May2018:16:03:02
+      Last Modified=12Jun2018:09:52:13,
+      Create Time=12Jun2018:09:52:13
 
 NOTE: 292 records were written to the file 'data\processed\contentsSourceDatasets_UCBSTD.csv'.
       The minimum record length was 163.
       The maximum record length was 306.
 NOTE: There were 291 observations read from the data set WORK.CONTENTS_UCBSTD.
 NOTE: DATA statement used (Total process time):
-      real time           0.15 seconds
+      real time           0.03 seconds
       cpu time            0.01 seconds
       
 
@@ -8994,68 +8997,68 @@ NOTE: DATA statement used (Total process time):
   
 NOTE: "data\processed\contentsSourceDatasets_UCBSTD.csv" file was successfully created.
 NOTE: PROCEDURE EXPORT used (Total process time):
-      real time           0.31 seconds
-      cpu time            0.11 seconds
+      real time           0.17 seconds
+      cpu time            0.07 seconds
       
 
-921        
-922        
-923        proc export
-924          data = Work.libs
-925          outfile = "data\processed\contentsSourceDatasets.csv"
-926          dbms = csv
-927          replace;
-928          delimiter = ",";
-929        run;
+936        
+937        
+938        proc export
+939          data = Work.libs
+940          outfile = "data\processed\contentsSourceDatasets.csv"
+941          dbms = csv
+942          replace;
+943          delimiter = ",";
+944        run;
 
-930         /**********************************************************************
-931         *   PRODUCT:   SAS
-932         *   VERSION:   9.4
-933         *   CREATOR:   External File Interface
-934         *   DATE:      21MAY18
-935         *   DESC:      Generated SAS Datastep Code
-936         *   TEMPLATE SOURCE:  (None Specified.)
-937         ***********************************************************************/
-938            data _null_;
-939            %let _EFIERR_ = 0; /* set the ERROR detection macro variable */
-940            %let _EFIREC_ = 0;     /* clear export record count macro variable */
-941            file 'data\processed\contentsSourceDatasets.csv' delimiter=',' DSD DROPOVER lrecl=32767;
-942            if _n_ = 1 then        /* write column names or labels */
-943             do;
-944               put
-945                  "libname"
-946               ','
-947                  "desc"
-18                                                                  The SAS System                                          16:02 Monday, May 21, 2018
+945         /**********************************************************************
+946         *   PRODUCT:   SAS
+947         *   VERSION:   9.4
+948         *   CREATOR:   External File Interface
+949         *   DATE:      12JUN18
+950         *   DESC:      Generated SAS Datastep Code
+951         *   TEMPLATE SOURCE:  (None Specified.)
+952         ***********************************************************************/
+953            data _null_;
+954            %let _EFIERR_ = 0; /* set the ERROR detection macro variable */
+955            %let _EFIREC_ = 0;     /* clear export record count macro variable */
+956            file 'data\processed\contentsSourceDatasets.csv' delimiter=',' DSD DROPOVER lrecl=32767;
+957            if _n_ = 1 then        /* write column names or labels */
+958             do;
+959               put
+18                                                                  The SAS System                                        09:51 Tuesday, June 12, 2018
 
-948               ','
-949                  "yearRange"
-950               ','
-951                  "note"
-952               ;
-953             end;
-954           set  WORK.LIBS   end=EFIEOD;
-955               format libname $8. ;
-956               format desc $20. ;
-957               format yearRange $9. ;
-958               format note $80. ;
-959             do;
-960               EFIOUT + 1;
-961               put libname $ @;
-962               put desc $ @;
-963               put yearRange $ @;
-964               put note $ ;
-965               ;
-966             end;
-967            if _ERROR_ then call symputx('_EFIERR_',1);  /* set ERROR detection macro variable */
-968            if EFIEOD then call symputx('_EFIREC_',EFIOUT);
-969            run;
+960                  "libname"
+961               ','
+962                  "desc"
+963               ','
+964                  "yearRange"
+965               ','
+966                  "note"
+967               ;
+968             end;
+969           set  WORK.LIBS   end=EFIEOD;
+970               format libname $8. ;
+971               format desc $20. ;
+972               format yearRange $9. ;
+973               format note $80. ;
+974             do;
+975               EFIOUT + 1;
+976               put libname $ @;
+977               put desc $ @;
+978               put yearRange $ @;
+979               put note $ ;
+980               ;
+981             end;
+982            if _ERROR_ then call symputx('_EFIERR_',1);  /* set ERROR detection macro variable */
+983            if EFIEOD then call symputx('_EFIREC_',EFIOUT);
+984            run;
 
 NOTE: The file 'data\processed\contentsSourceDatasets.csv' is:
       Filename=U:\studies\AS\pgms\bchan\data\processed\contentsSourceDatasets.csv,
       RECFM=V,LRECL=32767,File Size (bytes)=0,
-      Last Modified=21May2018:16:03:03,
-      Create Time=21May2018:16:03:03
+      Last Modified=12Jun2018:09:52:13,
+      Create Time=12Jun2018:09:52:13
 
 NOTE: 5 records were written to the file 'data\processed\contentsSourceDatasets.csv'.
       The minimum record length was 27.
@@ -9063,7 +9066,7 @@ NOTE: 5 records were written to the file 'data\processed\contentsSourceDatasets.
 NOTE: There were 4 observations read from the data set WORK.LIBS.
 NOTE: DATA statement used (Total process time):
       real time           0.01 seconds
-      cpu time            0.01 seconds
+      cpu time            0.00 seconds
       
 
 4 records created in data\processed\contentsSourceDatasets.csv from WORK.LIBS.
@@ -9071,16 +9074,16 @@ NOTE: DATA statement used (Total process time):
   
 NOTE: "data\processed\contentsSourceDatasets.csv" file was successfully created.
 NOTE: PROCEDURE EXPORT used (Total process time):
-      real time           0.28 seconds
+      real time           0.15 seconds
       cpu time            0.07 seconds
       
 
-970        
-971        
-972        
-973        ods html close;
+985        
+986        
+987        
+988        ods html close;
 NOTE: SAS Institute Inc., SAS Campus Drive, Cary, NC USA 27513-2414
 NOTE: The SAS System used:
-      real time           47.97 seconds
-      cpu time            13.89 seconds
+      real time           45.63 seconds
+      cpu time            13.77 seconds
       

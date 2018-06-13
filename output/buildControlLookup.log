@@ -1,4 +1,4 @@
-1                                         The SAS System                17:43 Monday, May 21, 2018
+1                                          The SAS System               11:28 Tuesday, June 12, 2018
 
 NOTE: Copyright (c) 2016 by SAS Institute Inc., Cary, NC, USA. 
 NOTE: SAS (r) Proprietary Software 9.4 (TS1M5) 
@@ -28,8 +28,8 @@ of the shared folders.
 
 
 NOTE: SAS initialization used:
-      real time           4.53 seconds
-      cpu time            0.26 seconds
+      real time           0.37 seconds
+      cpu time            0.32 seconds
       
 1          *  University of Alabama at Birmingham                               *
 2          *  AS project                                            *
@@ -57,82 +57,85 @@ NOTE: Libref UCBSTD was successfully assigned as follows:
 NOTE: Libref UCB was successfully assigned as follows: 
       Engine:        SPDE 
       Physical Name: q:\studies\AS\data\UCB\
+NOTE: Libref UCB64 was successfully assigned as follows: 
+      Engine:        SPDE 
+      Physical Name: q:\studies\AS\data\UCB64\
 NOTE: Libref DT was successfully assigned as follows: 
       Engine:        V9 
       Physical Name: V:\studies\AS\data
 NOTE: Libref NDC was successfully assigned as follows: 
       Engine:        V9 
       Physical Name: W:\onenote\references\drug ndcs\sas data
-128        footnote "&pgm.";
-129        * footnote2 "%sysfunc(datetime(),datetime14.)";
-130        title1 '--- AS project ---';
-131        **********************************************************************;
-132        options macrogen mlogic mprint symbolgen;
-133        options nomacrogen nomlogic nomprint nosymbolgen;
-134        
-135        
-136        ods html
-2                                                                   The SAS System                                          17:43 Monday, May 21, 2018
+143        footnote "&pgm.";
+144        * footnote2 "%sysfunc(datetime(),datetime14.)";
+145        title1 '--- AS project ---';
+146        **********************************************************************;
+147        options macrogen mlogic mprint symbolgen;
+148        options nomacrogen nomlogic nomprint nosymbolgen;
+2                                                                   The SAS System                                        11:28 Tuesday, June 12, 2018
 
-137          body = "output\&cmt..html"
-138          style = Statistical;
+149        
+150        
+151        ods html
+152          body = "output\&cmt..html"
+153          style = Statistical;
 NOTE: Writing HTML Body file: output\buildControlLookup.html
-139        
-140        
-141        %let var = patid, indexDate, age, sex, enr_start_date, enr_end_date;
-142        proc sql;
-143          create table DT.controlLookup AS
-144            select "MPCD"       as database, "Non-AS" as cohort, &var from UCB.cntlCohortStdMPCD union corr
-145            select "Medicare"   as database, "Non-AS" as cohort, &var from UCB.cntlCohortStdC5PN ;
+154        
+155        
+156        %let var = patid, indexDate, age, sex, enr_start_date, enr_end_date;
+157        proc sql;
+158          create table DT.controlLookup AS
+159            select "MPCD"       as database, "Non-AS" as cohort, &var from UCB.cntlCohortStdMPCD union corr
+160            select "Medicare"   as database, "Non-AS" as cohort, &var from UCB.cntlCohortStdC5PN where 65 <= age;
 NOTE: Data set UCB.CNTLCOHORTSTDMPCD is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
       additional CPU resources and may reduce performance.
-NOTE: Table DT.CONTROLLOOKUP created, with 2993875 rows and 8 columns.
+NOTE: Table DT.CONTROLLOOKUP created, with 2586417 rows and 8 columns.
 
-146          alter table DT.controlLookup add controlID numeric;
+161          alter table DT.controlLookup add controlID numeric;
 NOTE: Table DT.CONTROLLOOKUP has been modified, with 9 columns.
-147          update DT.controlLookup
-148            set controlID = monotonic();
-NOTE: 2993875 rows were updated in DT.CONTROLLOOKUP.
+162          update DT.controlLookup
+163            set controlID = monotonic();
+NOTE: 2586417 rows were updated in DT.CONTROLLOOKUP.
 
-149        quit;
+164        quit;
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           7.51 seconds
-      cpu time            10.46 seconds
+      real time           6.19 seconds
+      cpu time            8.15 seconds
       
 
-150        
-151        proc sort data = DT.controlLookup nodupkey;
-152          by database cohort patid indexDate;
-153        run;
+165        
+166        proc sort data = DT.controlLookup nodupkey;
+167          by database cohort patid indexDate;
+168        run;
 
-NOTE: There were 2993875 observations read from the data set DT.CONTROLLOOKUP.
+NOTE: There were 2586417 observations read from the data set DT.CONTROLLOOKUP.
 NOTE: 0 observations with duplicate key values were deleted.
-NOTE: The data set DT.CONTROLLOOKUP has 2993875 observations and 9 variables.
+NOTE: The data set DT.CONTROLLOOKUP has 2586417 observations and 9 variables.
 NOTE: PROCEDURE SORT used (Total process time):
-      real time           1.35 seconds
-      cpu time            4.38 seconds
+      real time           1.20 seconds
+      cpu time            2.99 seconds
       
 
-154        
-155        proc sql;
-156          select database,
-157                 cohort,
-158                 . < ENR_START_DATE < indexDate as indIndexAfterEnr,
-159                 count(distinct patid) format = comma12.0 as countDistinctPatid,
-160                 count(distinct controlID) format = comma12.0 as countDistinctID,
-161                 count(*) format = comma12.0 as countRows,
-162                 min(indexDate - ENR_START_DATE) as minDaysFromEnrToIndex,
-163                 max(indexDate - ENR_START_DATE) as maxDaysFromEnrToIndex
-164            from DT.controlLookup
-165            group by database, cohort, calculated indIndexAfterEnr;
-                                                                  --- AS project ---                                    17:43 Monday, May 21, 2018   1
+169        
+170        proc sql;
+171          select database,
+172                 cohort,
+173                 . < ENR_START_DATE < indexDate as indIndexAfterEnr,
+174                 count(distinct patid) format = comma12.0 as countDistinctPatid,
+175                 count(distinct controlID) format = comma12.0 as countDistinctID,
+176                 count(*) format = comma12.0 as countRows,
+177                 min(indexDate - ENR_START_DATE) as minDaysFromEnrToIndex,
+178                 max(indexDate - ENR_START_DATE) as maxDaysFromEnrToIndex
+179            from DT.controlLookup
+180            group by database, cohort, calculated indIndexAfterEnr;
+                                                                  --- AS project ---                                  11:28 Tuesday, June 12, 2018   1
 
                                                                 count
                                                indIndex      Distinct         count                 minDaysFrom   maxDaysFrom
                          database  cohort      AfterEnr         Patid    DistinctID     countRows    EnrToIndex    EnrToIndex
                          ----------------------------------------------------------------------------------------------------
                          MPCD      Non-AS             1     1,139,225     1,139,225     1,139,225           183           183
-                         Medicare  Non-AS             1     1,854,650     1,854,650     1,854,650           183           183
+                         Medicare  Non-AS             1     1,447,192     1,447,192     1,447,192           183           183
  
  
  
@@ -199,18 +202,18 @@ NOTE: PROCEDURE SORT used (Total process time):
  
  
                                                                 buildControlLookup.sas
-166        quit;
+181        quit;
 NOTE: The PROCEDURE SQL printed page 1.
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           5.63 seconds
-      cpu time            7.52 seconds
+      real time           4.61 seconds
+      cpu time            6.08 seconds
       
 
-167        
-168        
-169        ods html close;
+182        
+183        
+184        ods html close;
 NOTE: SAS Institute Inc., SAS Campus Drive, Cary, NC USA 27513-2414
 NOTE: The SAS System used:
-      real time           30.87 seconds
-      cpu time            23.08 seconds
+      real time           13.14 seconds
+      cpu time            18.09 seconds
       
