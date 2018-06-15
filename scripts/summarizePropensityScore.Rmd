@@ -7,9 +7,7 @@
 
 See [`modelPropensityScore.sas`](../scripts/modelPropensityScore.sas) script for details on model.
 
-The propensity of exposure to the three treatments: TNF, DMARD, and NSAID or no exposure, was modeled using a multinomial logistic regression model (SAS `proc logistic`).
-The link function used was a generalized logit.
-TNF exposure was used as the reference exposure.
+The propensity of exposure to the two treatments: TNF versus DMARD, NSAID, or no exposure, was modeled using a logistic regression model (SAS `proc logistic`).
 
 Included independent variables:
 
@@ -62,15 +60,14 @@ countAVRheum12mPrior | Number of rheumatologist visits 12 months prior
 indRxBiologics | Prescription drug indicator: Biologics, 7+ months prior
 indOutpatientInfection | Outpatient infectiion
 
-Model output is probability of exposure to TNF, DMARD, and NSAID or no exposure.
-For our purposes, we focus only on the propensity for TNF exposure.
+Model output is probability of exposure to TNF.
 
 Model estimation was performed separately for the 3 data sources: MPCD, Marketscan, and Medicare.
 Independent variables were excluded from model estimation if they led to unstable estimates when included in data source-specific models.
 This can occur if the covariate is so rare that zero records with this covariate appear in the model estimation cohort.
 
-The common support region lower bound is the maximum of the lowest TNF propensity score among the 3 exposure groups.
-The common support region upper bound is the minimum of the greatest TNF propensity score among the 3 exposure groups.
+The common support region lower bound is the maximum of the lowest TNF propensity score among the 2 exposure groups.
+The common support region upper bound is the minimum of the greatest TNF propensity score among the 2 exposure groups.
 
 To check covariate balance, subjects are partitioned into deciles defined by the TNF propensity score, regardless of true exposure.
 Model covariates are plotted on the y-axis in relation to TNF propensity decile on the x-axis.
@@ -114,14 +111,14 @@ Data was created by [`modelPropensityScore.sas`](../scripts/modelPropensityScore
 ```{r}
 D0 <- 
   read.csv("../data/processed/psDeidentified.csv") %>% 
-  filter(model == "3-level exposure") %>% 
+  filter(model == "2-level exposure") %>% 
   mutate(indCommonSupport = as.logical(indCommonSupport)) %>% 
   mutate(exposure = droplevels(exposure),
          X_LEVEL_ = droplevels(X_LEVEL_)) %>% 
   mutate(exposure = factor(exposure,
-                           levels = c("TNF", "DMARD", "NSAID or no exposure")),
+                           levels = c("TNF", "DMARD, NSAID, or no exposure")),
          X_LEVEL_ = factor(X_LEVEL_,
-                           levels = c("TNF", "DMARD", "NSAID or no exposure"))) %>% 
+                           levels = c("TNF", "DMARD, NSAID, or no exposure"))) %>% 
   mutate(database = factor(database,
                            levels = c("MPCD", "Marketscan", "Medicare")))
 ```
@@ -150,7 +147,7 @@ Summarize common support region bounds.
 ```{r}
 D1 <- 
   read.csv("../data/processed/commonSupportRegion.csv") %>% 
-  filter(model == "3-level exposure") %>% 
+  filter(model == "2-level exposure") %>% 
   select(-model)
 D1 %>% kable()
 ```
@@ -179,7 +176,7 @@ G <-
   D0 %>% 
   mutate(X_LEVEL_ = factor(sprintf("Propensity of %s", X_LEVEL_),
                            levels = sprintf("Propensity of %s",
-                                            c("TNF", "DMARD", "NSAID or no exposure")))) %>% 
+                                            c("TNF", "DMARD, NSAID, or no exposure")))) %>% 
   ggplot() +
     ggtitle("Propensity Score Common Support") +
     geom_rect(data = D1, aes(xmin = 0, xmax = commonSupportLowerBound, ymin = -Inf, ymax = Inf), alpha = 1/4) +

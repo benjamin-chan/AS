@@ -87,9 +87,9 @@ proc sql;
            A.indexID,
            B.exposureID,
            case
-             when B.exposure in ("No exposure", "NSAID") then "NSAID or no exposure"
-             else B.exposure
-             end as exposure3,
+             when A.exposure in ("No exposure", "NSAID", "DMARD") then "DMARD, NSAID, or no exposure"
+             else A.exposure
+             end as exposure2,
            B.outcomeCategory,
            B.disease,
            B.censor,
@@ -107,7 +107,7 @@ proc sql;
     select coalesce(A.database, B.database) as database,
            B.patid,
            coalesce(A.indexID, B.indexID) as indexID,
-           coalesce(A.exposure, B.exposure3) as exposure,
+           coalesce(A.exposure, B.exposure2) as exposure,
            A.age,
            A.catAge,
            A.sex,
@@ -128,7 +128,7 @@ proc sql;
     from DT.ps A inner join
          Work.incidentDiseaseTimelines B on (A.database = B.database &
                                              A.indexID = B.indexID &
-                                             A.exposure = B.exposure3)
+                                             A.exposure = B.exposure2)
     where A.indCommonSupport = 1 &
           ((B.disease = "Amyloidosis" & indAmyloidosis ^= 1) |
            (B.disease = "Aortic Insufficiency/Aortic Regurgitation" & indAortInsuffRegurg ^= 1) |
@@ -265,6 +265,7 @@ quit;
     %put ********************************************************************************;
     %put *** ITERATION &i OUT OF &n: &outcomeCategory: &disease;
     %put ********************************************************************************;
+    options mlogic;
     data _null_;
       disease = strip("&disease");
       test = tranwrd(disease, "/", "\/");
@@ -273,23 +274,23 @@ quit;
     run;
     %let regex = %sysfunc(prxparse(/%cmpres(&test)/));
     %if %sysfunc(prxmatch(&regex, Amyloidosis)) = 1 %then %do;
-      * %model(%quote(0 Unweighted, no covariates), &outcomeCategory, &disease, &maxlen, , );
-      %model(%quote(a Weighted, no covariates), &outcomeCategory, &disease, &maxlen, iptw, );
-      * %model(%quote(b Weighted, covariates (6-month daily steroid dose)), &outcomeCategory, &disease, &maxlen, iptw, meanPredEqDoseCat);
-      %model(%quote(c Weighted, covariates (sex)), &outcomeCategory, &disease, &maxlen, iptw, sex);
-      * %model(%quote(d Weighted, covariates (indHospInf)), &outcomeCategory, &disease, &maxlen, iptw, indHospInf);
-      %model(%quote(e Weighted, covariates (6-month daily steroid dose, sex, indHospInf)), &outcomeCategory, &disease, &maxlen, iptw, meanPredEqDoseCat sex indHospInf);
-      * %model(%quote(f Weighted (stabilized), covariates (6-month daily steroid dose)), &outcomeCategory, &disease, &maxlen, iptwStabilized, meanPredEqDoseCat);
-    %end;
-    %else %if %sysfunc(prxmatch(&regex, Apical Pulmonary fibrosis)) = 1 %then %do;
-    %end;
-    %else %if %sysfunc(prxmatch(&regex, Cauda Equina syndrome)) = 1 %then %do;
       %model(%quote(0 Unweighted, no covariates), &outcomeCategory, &disease, &maxlen, , );
       %model(%quote(a Weighted, no covariates), &outcomeCategory, &disease, &maxlen, iptw, );
       %model(%quote(b Weighted, covariates (6-month daily steroid dose)), &outcomeCategory, &disease, &maxlen, iptw, meanPredEqDoseCat);
       %model(%quote(c Weighted, covariates (sex)), &outcomeCategory, &disease, &maxlen, iptw, sex);
       %model(%quote(d Weighted, covariates (indHospInf)), &outcomeCategory, &disease, &maxlen, iptw, indHospInf);
       * %model(%quote(e Weighted, covariates (6-month daily steroid dose, sex, indHospInf)), &outcomeCategory, &disease, &maxlen, iptw, meanPredEqDoseCat sex indHospInf);
+      * %model(%quote(f Weighted (stabilized), covariates (6-month daily steroid dose)), &outcomeCategory, &disease, &maxlen, iptwStabilized, meanPredEqDoseCat);
+    %end;
+    %else %if %sysfunc(prxmatch(&regex, Apical Pulmonary fibrosis)) = 1 %then %do;
+    %end;
+    %else %if %sysfunc(prxmatch(&regex, Cauda Equina syndrome)) = 1 %then %do;
+      * %model(%quote(0 Unweighted, no covariates), &outcomeCategory, &disease, &maxlen, , );
+      %model(%quote(a Weighted, no covariates), &outcomeCategory, &disease, &maxlen, iptw, );
+      %model(%quote(b Weighted, covariates (6-month daily steroid dose)), &outcomeCategory, &disease, &maxlen, iptw, meanPredEqDoseCat);
+      %model(%quote(c Weighted, covariates (sex)), &outcomeCategory, &disease, &maxlen, iptw, sex);
+      %model(%quote(d Weighted, covariates (indHospInf)), &outcomeCategory, &disease, &maxlen, iptw, indHospInf);
+      %model(%quote(e Weighted, covariates (6-month daily steroid dose, sex, indHospInf)), &outcomeCategory, &disease, &maxlen, iptw, meanPredEqDoseCat sex indHospInf);
       %model(%quote(f Weighted (stabilized), covariates (6-month daily steroid dose)), &outcomeCategory, &disease, &maxlen, iptwStabilized, meanPredEqDoseCat);
     %end;
     %else %do;
@@ -301,6 +302,7 @@ quit;
       %model(%quote(e Weighted, covariates (6-month daily steroid dose, sex, indHospInf)), &outcomeCategory, &disease, &maxlen, iptw, meanPredEqDoseCat sex indHospInf);
       %model(%quote(f Weighted (stabilized), covariates (6-month daily steroid dose)), &outcomeCategory, &disease, &maxlen, iptwStabilized, meanPredEqDoseCat);
     %end;
+    options nomlogic;
   %end;
   proc sql;
     drop table Work.tempN;
@@ -317,8 +319,7 @@ proc sql;
            disease,
            model,
            case
-             when prxmatch("/DMARD vs TNF/", Description) then "TNF vs DMARD"
-             when prxmatch("/NSAID or no exposure vs TNF/", Description) then "TNF vs NSAID or no exposure"
+             when prxmatch("/DMARD, NSAID, or no exposure vs TNF/", Description) then "TNF vs DMARD, NSAID, or no exposure"
              else ""
              end as comparison,
            case
