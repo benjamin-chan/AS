@@ -1,4 +1,4 @@
-1                                          The SAS System               10:03 Tuesday, June 12, 2018
+1                                          The SAS System              18:02 Thursday, June 21, 2018
 
 NOTE: Copyright (c) 2016 by SAS Institute Inc., Cary, NC, USA. 
 NOTE: SAS (r) Proprietary Software 9.4 (TS1M5) 
@@ -28,8 +28,8 @@ of the shared folders.
 
 
 NOTE: SAS initialization used:
-      real time           3.12 seconds
-      cpu time            2.72 seconds
+      real time           3.28 seconds
+      cpu time            3.07 seconds
       
 1          *  University of Alabama at Birmingham                               *
 2          *  AS project                                            *
@@ -72,7 +72,7 @@ NOTE: Libref NDC was successfully assigned as follows:
 146        **********************************************************************;
 147        options macrogen mlogic mprint symbolgen;
 148        options nomacrogen nomlogic nomprint nosymbolgen;
-2                                                                   The SAS System                                        10:03 Tuesday, June 12, 2018
+2                                                                   The SAS System                                       18:02 Thursday, June 21, 2018
 
 149        
 150        
@@ -99,7 +99,7 @@ NOTE: Data set UCB.COHORTASTD_SABR is in a format that is native to another host
 NOTE: Table WORK.NUMERASCOHORT created, with 3 rows and 3 columns.
 
 161          select * from Work.numerASCohort;
-                                                                  --- AS project ---                                  10:03 Tuesday, June 12, 2018   1
+                                                                  --- AS project ---                                 18:02 Thursday, June 21, 2018   1
 
                                                                                                          numer
                                         cohort                                        database        ASCohort
@@ -177,17 +177,17 @@ NOTE: Table WORK.NUMERASCOHORT created, with 3 rows and 3 columns.
 NOTE: The PROCEDURE SQL printed page 1.
 NOTE: PROCEDURE SQL used (Total process time):
       real time           0.26 seconds
-      cpu time            0.17 seconds
+      cpu time            0.23 seconds
       
 
 163        
 164        
 165        /*
-166        Two 720.0 diagnosis codes between 7-365 days apart
+166        Two 720.xx diagnosis codes between 7-365 days apart
 167        Both from rheumatologists
 168        Both from ambulatory visits
 169         */
-170        %let where = dx_type = "09" & dx = "7200" & enc_type = "AV";
+170        %let where = dx_type = "09" & dx like "720%" & enc_type = "AV";
 171        
 172        
 173        /*
@@ -202,8 +202,8 @@ NOTE: Table WORK.DENOM created, with 1393100 rows and 4 columns.
 
 181        quit;
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           1.60 seconds
-      cpu time            2.52 seconds
+      real time           1.56 seconds
+      cpu time            2.38 seconds
       
 
 182        %let varlist = patid, begin_date, dx_type, dx, enc_type, prov_type format = $3. as prov_type, age;
@@ -215,22 +215,22 @@ NOTE: PROCEDURE SQL used (Total process time):
 188            order by patid, begin_date;
 NOTE: Parallel WHERE evaluation suppressed due to sort order on table.
 NOTE: Parallel WHERE evaluation suppressed due to sort order on table.
-NOTE: Table WORK.TEMP1 created, with 96274 rows and 7 columns.
+NOTE: Table WORK.TEMP1 created, with 638928 rows and 7 columns.
 
 189          select dx, count(*) as n from Work.temp1 group by dx;
-                                                                  --- AS project ---                                  10:03 Tuesday, June 12, 2018   2
+                                                                  --- AS project ---                                 18:02 Thursday, June 21, 2018   2
 
                                                                  Diagnosis
                                                                  Code              n
                                                                  -------------------
+                                                                 720             112
                                                                  7200          96274
- 
- 
- 
- 
- 
- 
- 
+                                                                 7201          85330
+                                                                 7202         427056
+                                                                 7208             20
+                                                                 72081          1082
+                                                                 72089          4348
+                                                                 7209          24706
  
  
  
@@ -294,23 +294,23 @@ NOTE: Table WORK.TEMP1 created, with 96274 rows and 7 columns.
                                                                   buildASCohort.sas
 190        quit;
 NOTE: The PROCEDURE SQL printed page 2.
-3                                                                   The SAS System                                        10:03 Tuesday, June 12, 2018
+3                                                                   The SAS System                                       18:02 Thursday, June 21, 2018
 
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           2:01.38
-      cpu time            2:01.71
+      real time           2:03.20
+      cpu time            2:15.62
       
 
 191        proc sort data = Work.temp1 (keep = patid begin_date age) out = Work.ageCstdmpcd nodupkey;
 192          by patid begin_date age;
 193        run;
 
-NOTE: There were 96274 observations read from the data set WORK.TEMP1.
-NOTE: 3906 observations with duplicate key values were deleted.
-NOTE: The data set WORK.AGECSTDMPCD has 92368 observations and 3 variables.
+NOTE: There were 638928 observations read from the data set WORK.TEMP1.
+NOTE: 23932 observations with duplicate key values were deleted.
+NOTE: The data set WORK.AGECSTDMPCD has 614996 observations and 3 variables.
 NOTE: PROCEDURE SORT used (Total process time):
-      real time           0.15 seconds
-      cpu time            0.12 seconds
+      real time           0.43 seconds
+      cpu time            0.74 seconds
       
 
 194        data Work.ageCstdmpcd;
@@ -323,11 +323,18 @@ NOTE: PROCEDURE SORT used (Total process time):
 
 NOTE: Character values have been converted to numeric values at the places given by: (Line):(Column).
       197:9   
-NOTE: There were 92368 observations read from the data set WORK.AGECSTDMPCD.
-NOTE: The data set WORK.AGECSTDMPCD has 46180 observations and 3 variables.
+NOTE: Invalid numeric data, 'UNK' , at line 197 column 9.
+PATID=104137393 BEGIN_DATE=06/30/2008 ageC=UNK FIRST.PATID=1 LAST.PATID=0 FIRST.BEGIN_DATE=1 LAST.BEGIN_DATE=1 age= _ERROR_=1 _N_=312663
+NOTE: Invalid numeric data, 'UNK' , at line 197 column 9.
+PATID=104137393 BEGIN_DATE=08/18/2008 ageC=UNK FIRST.PATID=0 LAST.PATID=1 FIRST.BEGIN_DATE=1 LAST.BEGIN_DATE=1 age= _ERROR_=1 _N_=312664
+NOTE: Missing values were generated as a result of performing an operation on missing values.
+      Each place is given by: (Number of times) at (Line):(Column).
+      2 at 197:28   
+NOTE: There were 614996 observations read from the data set WORK.AGECSTDMPCD.
+NOTE: The data set WORK.AGECSTDMPCD has 307478 observations and 3 variables.
 NOTE: DATA statement used (Total process time):
-      real time           0.09 seconds
-      cpu time            0.07 seconds
+      real time           0.31 seconds
+      cpu time            0.26 seconds
       
 
 201        proc sql;
@@ -349,7 +356,7 @@ NOTE: DATA statement used (Total process time):
 217                 Work.ageCstdmpcd D on (A.patid = D.patid &
 218                                        B.begin_date = D.begin_date)
 219            where (A.prov_type = "66" & B.prov_type = "66");
-NOTE: Table WORK.TEMP2 created, with 39984 rows and 9 columns.
+NOTE: Table WORK.TEMP2 created, with 62714 rows and 9 columns.
 
 220          create table DT.cohortASTDMPCD as
 221            select distinct
@@ -361,18 +368,18 @@ NOTE: Table WORK.TEMP2 created, with 39984 rows and 9 columns.
 227                   C.enr_end_date,
 228                   B.death_date,
 229                   B.sex,
+4                                                                   The SAS System                                       18:02 Thursday, June 21, 2018
+
 230                   B.age
 231            from (select patid, min(date2) format = mmddyy10. as dateEarliestDiagnosis from Work.temp2 group by patid) A inner join
 232                 Work.temp2 B on (A.patid = B.patid & A.dateEarliestDiagnosis = B.date2) inner join
 233                 Work.denom C on (A.patid = C.patid & C.enr_start_date <= A.dateEarliestDiagnosis <= C.enr_end_date);
-NOTE: Table DT.COHORTASTDMPCD created, with 2855 rows and 9 columns.
+NOTE: Table DT.COHORTASTDMPCD created, with 4831 rows and 9 columns.
 
 234        quit;
-4                                                                   The SAS System                                        10:03 Tuesday, June 12, 2018
-
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           2.27 seconds
-      cpu time            3.05 seconds
+      real time           2.89 seconds
+      cpu time            4.25 seconds
       
 
 235        
@@ -391,8 +398,8 @@ NOTE: Table WORK.DENOM created, with 19182532 rows and 4 columns.
 
 245        quit;
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           24.44 seconds
-      cpu time            35.53 seconds
+      real time           27.20 seconds
+      cpu time            40.91 seconds
       
 
 246        %let varlist = patid, begin_date, dx_type, dx, enc_type, prov_type;
@@ -419,20 +426,20 @@ The SAS supervisor will process queries for foreign datasets. No parallel where-
 The SAS supervisor will process queries for foreign datasets. No parallel where-clause processing will occur.
 The SAS supervisor will process queries for foreign datasets. No parallel where-clause processing will occur.
 The SAS supervisor will process queries for foreign datasets. No parallel where-clause processing will occur.
-NOTE: Table WORK.TEMP1 created, with 258849 rows and 6 columns.
+NOTE: Table WORK.TEMP1 created, with 1853386 rows and 6 columns.
 
 255          select dx, count(*) as n from Work.temp1 group by dx;
-                                                                  --- AS project ---                                  10:03 Tuesday, June 12, 2018   3
+                                                                  --- AS project ---                                 18:02 Thursday, June 21, 2018   3
 
                                                                  Diagnosis
                                                                  Code              n
                                                                  -------------------
                                                                  7200         258849
- 
- 
- 
- 
- 
+                                                                 7201         259669
+                                                                 7202        1252129
+                                                                 72081          3857
+                                                                 72089         11334
+                                                                 7209          67548
  
  
  
@@ -499,8 +506,8 @@ NOTE: Table WORK.TEMP1 created, with 258849 rows and 6 columns.
 256        quit;
 NOTE: The PROCEDURE SQL printed page 3.
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           9:04.80
-      cpu time            8:25.85
+      real time           9:55.21
+      cpu time            9:18.51
       
 
 257        proc sql;
@@ -509,6 +516,8 @@ NOTE: PROCEDURE SQL used (Total process time):
 260                   coalesce(A.patid, B.patid) as patid,
 261                   year(B.begin_date) as year,
 262                   A.begin_date format = mmddyy10. as date1,
+5                                                                   The SAS System                                       18:02 Thursday, June 21, 2018
+
 263                   B.begin_date format = mmddyy10. as date2,
 264                   A.prov_type as prov_type1,
 265                   B.prov_type as prov_type2,
@@ -516,15 +525,13 @@ NOTE: PROCEDURE SQL used (Total process time):
 267                   C.sex,
 268                   int((B.begin_date - C.birth_date) / 365.25) as age
 269            from Work.temp1 A inner join
-5                                                                   The SAS System                                        10:03 Tuesday, June 12, 2018
-
 270                 Work.temp1 B on (A.patid = B.patid &
 271                                  intnx("year", B.begin_date, -1, "sameday") < A.begin_date < B.begin_date - 7) inner join
 272                 UCBSTD.demog C on (A.patid = C.patid)
 273            where (A.prov_type = "300" & B.prov_type = "300");
 NOTE: Data set UCBSTD.DEMOG is in a format that is native to another host. Cross Environment Data Access will be used. This will require additional 
       CPU resources and may reduce performance.
-NOTE: Table WORK.TEMP2 created, with 241591 rows and 9 columns.
+NOTE: Table WORK.TEMP2 created, with 340131 rows and 9 columns.
 
 273      !                                                         /* Provider type codes in Marketscan are different than MPCD and Medicare */
 274          create table DT.cohortASTDUCB as
@@ -541,12 +548,12 @@ NOTE: Table WORK.TEMP2 created, with 241591 rows and 9 columns.
 285            from (select patid, min(date2) format = mmddyy10. as dateEarliestDiagnosis from Work.temp2 group by patid) A inner join
 286                 Work.temp2 B on (A.patid = B.patid & A.dateEarliestDiagnosis = B.date2) inner join
 287                 Work.denom C on (A.patid = C.patid & C.enr_start_date <= A.dateEarliestDiagnosis <= C.enr_end_date);
-NOTE: Table DT.COHORTASTDUCB created, with 12566 rows and 9 columns.
+NOTE: Table DT.COHORTASTDUCB created, with 19687 rows and 9 columns.
 
 288        quit;
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           26.13 seconds
-      cpu time            44.17 seconds
+      real time           23.90 seconds
+      cpu time            42.07 seconds
       
 
 289        
@@ -570,8 +577,8 @@ NOTE: Table WORK.DENOM created, with 3890593 rows and 5 columns.
 
 306        quit;
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           16.59 seconds
-      cpu time            19.40 seconds
+      real time           15.01 seconds
+      cpu time            17.81 seconds
       
 
 307        %let varlist = patid, begin_date, dx_type, dx, enc_type, prov_type;
@@ -583,6 +590,8 @@ NOTE: PROCEDURE SQL used (Total process time):
 313            select &varlist from std_sabr.std_dx_2009    where &where union corr
 314            select &varlist from std_sabr.std_dx_2010    where &where union corr
 315            select &varlist from std_sabr.std_dx_2011    where &where union corr
+6                                                                   The SAS System                                       18:02 Thursday, June 21, 2018
+
 316            select &varlist from std_sabr.std_dx_2012    where &where union corr
 317            select &varlist from std_sabr.std_dx_2013    where &where union corr
 318            select &varlist from std_sabr.std_dx_2014    where &where
@@ -590,8 +599,6 @@ NOTE: PROCEDURE SQL used (Total process time):
 NOTE: Data set STD_SABR.STD_DX_2006 is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
       additional CPU resources and may reduce performance.
 NOTE: Data set STD_SABR.STD_DX_2007 is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
-6                                                                   The SAS System                                        10:03 Tuesday, June 12, 2018
-
       additional CPU resources and may reduce performance.
 NOTE: Data set STD_SABR.STD_DX_2008_V2 is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
       additional CPU resources and may reduce performance.
@@ -616,38 +623,38 @@ The SAS supervisor will process queries for foreign datasets. No parallel where-
 The SAS supervisor will process queries for foreign datasets. No parallel where-clause processing will occur.
 The SAS supervisor will process queries for foreign datasets. No parallel where-clause processing will occur.
 The SAS supervisor will process queries for foreign datasets. No parallel where-clause processing will occur.
-NOTE: Table WORK.TEMP1 created, with 654936 rows and 6 columns.
+NOTE: Table WORK.TEMP1 created, with 5044143 rows and 6 columns.
 
 320          select dx, count(*) as n from Work.temp1 group by dx;
-                                                                  --- AS project ---                                  10:03 Tuesday, June 12, 2018   4
+                                                                  --- AS project ---                                 18:02 Thursday, June 21, 2018   4
 
                                                              DX                         n
                                                              ----------------------------
+                                                             720                       27
                                                              7200                  654936
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
+                                                             72000                     18
+                                                             72001                      5
+                                                             72006                      1
+                                                             7201                  694794
+                                                             72010                      1
+                                                             72012                      1
+                                                             72019                      1
+                                                             7202                 3524598
+                                                             72020                      3
+                                                             72025                      2
+                                                             7204                       6
+                                                             72042                      1
+                                                             7205                       4
+                                                             72053                      1
+                                                             7207                       2
+                                                             72071                      1
+                                                             7208                       3
+                                                             72081                   7341
+                                                             72085                      1
+                                                             72089                  20427
+                                                             7209                  141967
+                                                             72090                      1
+                                                             72095                      1
  
  
  
@@ -696,8 +703,8 @@ NOTE: Table WORK.TEMP1 created, with 654936 rows and 6 columns.
 321        quit;
 NOTE: The PROCEDURE SQL printed page 4.
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           14:51.63
-      cpu time            14:04.07
+      real time           16:35.83
+      cpu time            15:53.33
       
 
 322        proc sql;
@@ -717,7 +724,7 @@ NOTE: PROCEDURE SQL used (Total process time):
 336                                  intnx("year", B.begin_date, -1, "sameday") < A.begin_date < B.begin_date - 7) inner join
 337                 std_sabr.demog C on (A.patid = C.patid)
 338            where (A.prov_type = "66" & B.prov_type = "66");
-NOTE: Table WORK.TEMP2 created, with 672109 rows and 9 columns.
+NOTE: Table WORK.TEMP2 created, with 1064167 rows and 9 columns.
 
 339          create table DT.cohortASTD_SABR as
 340            select distinct
@@ -731,16 +738,16 @@ NOTE: Table WORK.TEMP2 created, with 672109 rows and 9 columns.
 348                   B.sex,
 349                   B.age
 350            from (select patid, min(date2) format = mmddyy10. as dateEarliestDiagnosis from Work.temp2 group by patid) A inner join
+7                                                                   The SAS System                                       18:02 Thursday, June 21, 2018
+
 351                 Work.temp2 B on (A.patid = B.patid & A.dateEarliestDiagnosis = B.date2) inner join
 352                 Work.denom C on (A.patid = C.patid & C.enr_start_date <= A.dateEarliestDiagnosis <= C.enr_end_date);
-NOTE: Table DT.COHORTASTD_SABR created, with 4637 rows and 9 columns.
+NOTE: Table DT.COHORTASTD_SABR created, with 14370 rows and 9 columns.
 
 353        quit;
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           8.23 seconds
-7                                                                   The SAS System                                        10:03 Tuesday, June 12, 2018
-
-      cpu time            12.85 seconds
+      real time           10.16 seconds
+      cpu time            16.31 seconds
       
 
 354        
@@ -756,14 +763,14 @@ NOTE: PROCEDURE SQL used (Total process time):
 NOTE: Table WORK.NUMERASCOHORT created, with 3 rows and 3 columns.
 
 361          select * from Work.numerASCohort;
-                                                                  --- AS project ---                                  10:03 Tuesday, June 12, 2018   5
+                                                                  --- AS project ---                                 18:02 Thursday, June 21, 2018   5
 
                                                                                                                     numer
                             cohort                                                               database        ASCohort
                             ---------------------------------------------------------------------------------------------
-                            New cohort, two 720.0 rheumatologist codes between 7-365 days apart  MPCD                2855
-                            New cohort, two 720.0 rheumatologist codes between 7-365 days apart  Marketscan         12566
-                            New cohort, two 720.0 rheumatologist codes between 7-365 days apart  Medicare            4637
+                            New cohort, two 720.0 rheumatologist codes between 7-365 days apart  MPCD                4831
+                            New cohort, two 720.0 rheumatologist codes between 7-365 days apart  Marketscan         19687
+                            New cohort, two 720.0 rheumatologist codes between 7-365 days apart  Medicare           14370
  
  
  
@@ -833,22 +840,22 @@ NOTE: Table WORK.NUMERASCOHORT created, with 3 rows and 3 columns.
 362        quit;
 NOTE: The PROCEDURE SQL printed page 5.
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           0.23 seconds
+      real time           0.15 seconds
       cpu time            0.07 seconds
       
 
 363        
 364        proc contents data = DT.cohortASTDMPCD  order = varnum;  run;
 
-                                                                  --- AS project ---                                  10:03 Tuesday, June 12, 2018   6
+                                                                  --- AS project ---                                 18:02 Thursday, June 21, 2018   6
 
                                                                 The CONTENTS Procedure
 
-                                    Data Set Name        DT.COHORTASTDMPCD             Observations          2855
+                                    Data Set Name        DT.COHORTASTDMPCD             Observations          4831
                                     Member Type          DATA                          Variables             9   
                                     Engine               V9                            Indexes               0   
-                                    Created              06/12/2018 10:05:43           Observation Length    72  
-                                    Last Modified        06/12/2018 10:05:43           Deleted Observations  0   
+                                    Created              06/21/2018 18:04:32           Observation Length    72  
+                                    Last Modified        06/21/2018 18:04:32           Deleted Observations  0   
                                     Protection                                         Compressed            NO  
                                     Data Set Type                                      Sorted                YES 
                                     Label                                                                        
@@ -859,7 +866,7 @@ NOTE: PROCEDURE SQL used (Total process time):
                                                           Engine/Host Dependent Information
 
                                         Data Set Page Size          65536                                     
-                                        Number of Data Set Pages    4                                         
+                                        Number of Data Set Pages    6                                         
                                         First Data Page             1                                         
                                         Max Obs per Page            908                                       
                                         Obs in First Data Page      879                                       
@@ -869,8 +876,8 @@ NOTE: PROCEDURE SQL used (Total process time):
                                         Release Created             9.0401M5                                  
                                         Host Created                X64_DS08R2                                
                                         Owner Name                  AD\benjaminchan                           
-                                        File Size                   320KB                                     
-                                        File Size (bytes)           327680                                    
+                                        File Size                   448KB                                     
+                                        File Size (bytes)           458752                                    
 
 
                                                               Variables in Creation Order
@@ -915,22 +922,22 @@ NOTE: PROCEDURE SQL used (Total process time):
  
                                                                   buildASCohort.sas
 NOTE: PROCEDURE CONTENTS used (Total process time):
-      real time           0.21 seconds
-      cpu time            0.03 seconds
+      real time           0.15 seconds
+      cpu time            0.06 seconds
       
 NOTE: The PROCEDURE CONTENTS printed page 6.
 
 365        proc contents data = DT.cohortASTDUCB   order = varnum;  run;
 
-                                                                  --- AS project ---                                  10:03 Tuesday, June 12, 2018   7
+                                                                  --- AS project ---                                 18:02 Thursday, June 21, 2018   7
 
                                                                 The CONTENTS Procedure
 
-                                    Data Set Name        DT.COHORTASTDUCB              Observations          12566
+                                    Data Set Name        DT.COHORTASTDUCB              Observations          19687
                                     Member Type          DATA                          Variables             9    
                                     Engine               V9                            Indexes               0    
-                                    Created              06/12/2018 10:15:34           Observation Length    72   
-                                    Last Modified        06/12/2018 10:15:34           Deleted Observations  0    
+                                    Created              06/21/2018 18:15:15           Observation Length    72   
+                                    Last Modified        06/21/2018 18:15:15           Deleted Observations  0    
                                     Protection                                         Compressed            NO   
                                     Data Set Type                                      Sorted                YES  
                                     Label                                                                         
@@ -941,7 +948,7 @@ NOTE: The PROCEDURE CONTENTS printed page 6.
                                                           Engine/Host Dependent Information
 
                                         Data Set Page Size          65536                                    
-                                        Number of Data Set Pages    14                                       
+                                        Number of Data Set Pages    22                                       
                                         First Data Page             1                                        
                                         Max Obs per Page            908                                      
                                         Obs in First Data Page      879                                      
@@ -951,8 +958,8 @@ NOTE: The PROCEDURE CONTENTS printed page 6.
                                         Release Created             9.0401M5                                 
                                         Host Created                X64_DS08R2                               
                                         Owner Name                  AD\benjaminchan                          
-                                        File Size                   960KB                                    
-                                        File Size (bytes)           983040                                   
+                                        File Size                   1MB                                      
+                                        File Size (bytes)           1507328                                  
 
 
                                                               Variables in Creation Order
@@ -998,32 +1005,32 @@ NOTE: The PROCEDURE CONTENTS printed page 6.
                                                                   buildASCohort.sas
 NOTE: PROCEDURE CONTENTS used (Total process time):
       real time           0.04 seconds
-      cpu time            0.03 seconds
+      cpu time            0.04 seconds
       
 NOTE: The PROCEDURE CONTENTS printed page 7.
 
 366        proc contents data = DT.cohortASTD_SABR order = varnum;  run;
 
-                                                                  --- AS project ---                                  10:03 Tuesday, June 12, 2018   8
+                                                                  --- AS project ---                                 18:02 Thursday, June 21, 2018   8
 
                                                                 The CONTENTS Procedure
 
-                                    Data Set Name        DT.COHORTASTD_SABR            Observations          4637
-                                    Member Type          DATA                          Variables             9   
-                                    Engine               V9                            Indexes               0   
-                                    Created              06/12/2018 10:30:53           Observation Length    72  
-                                    Last Modified        06/12/2018 10:30:53           Deleted Observations  0   
-                                    Protection                                         Compressed            NO  
-                                    Data Set Type                                      Sorted                YES 
-                                    Label                                                                        
-                                    Data Representation  WINDOWS_64                                              
-                                    Encoding             wlatin1  Western (Windows)                              
+                                    Data Set Name        DT.COHORTASTD_SABR            Observations          14370
+                                    Member Type          DATA                          Variables             9    
+                                    Engine               V9                            Indexes               0    
+                                    Created              06/21/2018 18:32:17           Observation Length    72   
+                                    Last Modified        06/21/2018 18:32:17           Deleted Observations  0    
+                                    Protection                                         Compressed            NO   
+                                    Data Set Type                                      Sorted                YES  
+                                    Label                                                                         
+                                    Data Representation  WINDOWS_64                                               
+                                    Encoding             wlatin1  Western (Windows)                               
 
 
                                                           Engine/Host Dependent Information
 
                                        Data Set Page Size          65536                                      
-                                       Number of Data Set Pages    6                                          
+                                       Number of Data Set Pages    16                                         
                                        First Data Page             1                                          
                                        Max Obs per Page            908                                        
                                        Obs in First Data Page      881                                        
@@ -1033,8 +1040,8 @@ NOTE: The PROCEDURE CONTENTS printed page 7.
                                        Release Created             9.0401M5                                   
                                        Host Created                X64_DS08R2                                 
                                        Owner Name                  AD\benjaminchan                            
-                                       File Size                   448KB                                      
-                                       File Size (bytes)           458752                                     
+                                       File Size                   1MB                                        
+                                       File Size (bytes)           1114112                                    
 
 
                                                              Variables in Creation Order
@@ -1079,8 +1086,8 @@ NOTE: The PROCEDURE CONTENTS printed page 7.
  
                                                                   buildASCohort.sas
 NOTE: PROCEDURE CONTENTS used (Total process time):
-      real time           0.06 seconds
-      cpu time            0.04 seconds
+      real time           0.04 seconds
+      cpu time            0.03 seconds
       
 NOTE: The PROCEDURE CONTENTS printed page 8.
 
@@ -1091,6 +1098,6 @@ NOTE: The PROCEDURE CONTENTS printed page 8.
 371        ods html close;
 NOTE: SAS Institute Inc., SAS Campus Drive, Cary, NC USA 27513-2414
 NOTE: The SAS System used:
-      real time           27:22.38
-      cpu time            26:33.11
+      real time           30:00.53
+      cpu time            29:36.27
       
