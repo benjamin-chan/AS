@@ -126,7 +126,9 @@ proc sql;
            B.denom as denom5pct,
            A.numer * 20 as numerEstimated,
            B.denom * 20 as denomEstimated,
-           A.numer / B.denom format = percent10.3 as prev
+           A.numer / B.denom format = percent10.3 as prev,
+           A.numer / B.denom + quantile("normal", 0.025) * sqrt((A.numer / B.denom) * (1 - (A.numer / B.denom)) / B.denom) format = percent10.3 as lower,
+           A.numer / B.denom + quantile("normal", 0.975) * sqrt((A.numer / B.denom) * (1 - (A.numer / B.denom)) / B.denom) format = percent10.3 as upper
     from (select year, count(distinct patid) as numer from Work.numer1 group by year) A inner join
          (select year, count(distinct patid) as denom from Work.denom1 group by year) B on (A.year = B.year)
     union corr
@@ -135,7 +137,9 @@ proc sql;
            B.denom as denom5pct,
            A.numer * 20 as numerEstimated,
            B.denom * 20 as denomEstimated,
-           A.numer / B.denom format = percent10.3 as prev
+           A.numer / B.denom format = percent10.3 as prev,
+           A.numer / B.denom + quantile("normal", 0.025) * sqrt((A.numer / B.denom) * (1 - (A.numer / B.denom)) / B.denom) format = percent10.3 as lower,
+           A.numer / B.denom + quantile("normal", 0.975) * sqrt((A.numer / B.denom) * (1 - (A.numer / B.denom)) / B.denom) format = percent10.3 as upper
     from (select count(distinct patid) as numer from Work.numer2) A,
          (select count(distinct patid) as denom from Work.denom2) B;
   select * from Work.prev;
