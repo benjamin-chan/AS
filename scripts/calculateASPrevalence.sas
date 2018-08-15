@@ -93,7 +93,7 @@ proc sql;
   create table Work.temp2 as
     select distinct
            coalesce(A.patid, B.patid) as patid,
-           year(B.begin_date) as year,
+           year(A.begin_date) as year,
            A.begin_date format = mmddyy10. as date1,
            B.begin_date format = mmddyy10. as date2,
            A.prov_type as prov_type1,
