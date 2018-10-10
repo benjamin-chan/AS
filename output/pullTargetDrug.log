@@ -1,4 +1,4 @@
-1                                          The SAS System              18:32 Thursday, June 21, 2018
+1                                         The SAS System         14:02 Wednesday, October 10, 2018
 
 NOTE: Copyright (c) 2016 by SAS Institute Inc., Cary, NC, USA. 
 NOTE: SAS (r) Proprietary Software 9.4 (TS1M5) 
@@ -28,8 +28,8 @@ of the shared folders.
 
 
 NOTE: SAS initialization used:
-      real time           1.76 seconds
-      cpu time            0.49 seconds
+      real time           4.38 seconds
+      cpu time            0.26 seconds
       
 1          *  University of Alabama at Birmingham                               *
 2          *  AS project                                            *
@@ -72,7 +72,7 @@ NOTE: Libref NDC was successfully assigned as follows:
 146        **********************************************************************;
 147        options macrogen mlogic mprint symbolgen;
 148        options nomacrogen nomlogic nomprint nosymbolgen;
-2                                                                   The SAS System                                       18:32 Thursday, June 21, 2018
+2                                                                   The SAS System                                   14:02 Wednesday, October 10, 2018
 
 149        
 150        
@@ -86,891 +86,1540 @@ NOTE: Writing HTML Body file: output\pullTargetDrug.html
 157        Fenglong's code to build target drug data sets
 158         */
 159        
-160        data NDC4targetDrug;
-161        set NDC.Ndc_dmard_bio_all(where=(CodeType='NDC'))
-162            NDC.Ndc_nsaidcox(where=(CodeType='NDC'))
-163            NDC.Ndc_nsaidnoncox(where=(CodeType='NDC'));
-ERROR: File NDC.NDC_DMARD_BIO_ALL.DATA does not exist.
-ERROR: File NDC.NDC_NSAIDCOX.DATA does not exist.
-ERROR: File NDC.NDC_NSAIDNONCOX.DATA does not exist.
-164        run;
+160        /*
+161        From: Chen, Lang [mailto:langchen@uabmc.edu]
+162        Sent: Thursday, October 04, 2018 3:21 PM
+163        To: Kevin Winthrop <winthrop@ohsu.edu>; Benjamin Chan <chanb@ohsu.edu>
+164        Cc: Atul Deodhar <deodhara@ohsu.edu>; Jeffrey.Curtis@ccc.uab.edu; Sarah Siegel <siegels@ohsu.edu>
+165        Subject: RE: Review Reminder: AS Comorbidities Manuscript (CZP-PMA-049255). Please review by 10 August
+166        
+167        Ben
+168        
+169        Here is the NDC list in case you need it.
+170        
+171        NDC.Ndc_dmard_bio
+172        NDC.Ndc_nsaids
+173         */
+174        
+175        data NDC4targetDrug;
+176        set NDC.Ndc_dmard_bio(where=(CodeType='NDC'))
+177            NDC.Ndc_nsaids(where=(CodeType='NDC'));
+178          if gnn in ("CELECOXIB",
+179                     "IBUPROFEN",
+180                     "NAPROXEN",
+181                     "MELOXICAM",
+182                     "INDOMETHACIN",
+183                     "DICLOFENAC",
+184                     "KETOROLAC",
+185                     "KETOPROFEN",
+186                     "ETODOLAC",
+187                     "SALSALATE",
+188                     "FLURBIPROFEN",
+189                     "HYDROXYCHLOROQUINE",
+190                     "LEFLUNOMIDE",
+191                     "METHOTREXATE",
+192                     "SULFASALAZINE",
+193                     "ADALIMUMAB",
+194                     "CERTOLIZUMAB",
+195                     "ETANERCEPT",
+196                     "GOLIMUMAB",
+197                     "INFLIXIMAB",
+198                     "ABATACEPT",
+199                     "ANAKINRA",
+200                     "BELIMUMAB",
+201                     "CANAKINUMAB",
+202                     "IXEKIZUMAB",
+203                     "RITUXIMAB",
+204                     "SECUKINUMAB",
+205                     "TOCILIZUMAB",
+206                     "USTEKINUMAB",
+207                     "VEDOLIZUMAB",
+208                     "APREMILAST",
+209                     "TOFACITINIB") then output;
+210        run;
 
-NOTE: The SAS System stopped processing this step because of errors.
-NOTE: SAS set option OBS=0 and will continue to check statements. This might cause NOTE: No observations in data set.
-WARNING: The data set WORK.NDC4TARGETDRUG may be incomplete.  When this step was stopped there were 0 observations and 0 variables.
+NOTE: There were 1214 observations read from the data set NDC.NDC_DMARD_BIO.
+      WHERE CodeType='NDC';
+NOTE: There were 18399 observations read from the data set NDC.NDC_NSAIDS.
+      WHERE CodeType='NDC';
+NOTE: The data set WORK.NDC4TARGETDRUG has 14236 observations and 9 variables.
 NOTE: DATA statement used (Total process time):
-      real time           0.14 seconds
-      cpu time            0.01 seconds
+      real time           0.18 seconds
+      cpu time            0.09 seconds
+3                                                                   The SAS System                                   14:02 Wednesday, October 10, 2018
+
       
 
-165        
-166        data J4targetDrug;
-167        set NDC.Ndc_dmard_bio_all(where=(CodeType='HCPCS'))
-168            NDC.Ndc_nsaidcox(where=(CodeType='HCPCS'))
-169            NDC.Ndc_nsaidnoncox(where=(CodeType='HCPCS'));
-ERROR: File NDC.NDC_DMARD_BIO_ALL.DATA does not exist.
-ERROR: File NDC.NDC_NSAIDCOX.DATA does not exist.
-ERROR: File NDC.NDC_NSAIDNONCOX.DATA does not exist.
-170        run;
+211        
+212        
+213        data J4targetDrug;
+214        set NDC.Ndc_dmard_bio(where=(CodeType='HCPCS'))
+215            NDC.Ndc_nsaids(where=(CodeType='HCPCS'));
+216          if gnn in ("CELECOXIB",
+217                     "IBUPROFEN",
+218                     "NAPROXEN",
+219                     "MELOXICAM",
+220                     "INDOMETHACIN",
+221                     "DICLOFENAC",
+222                     "KETOROLAC",
+223                     "KETOPROFEN",
+224                     "ETODOLAC",
+225                     "SALSALATE",
+226                     "FLURBIPROFEN",
+227                     "HYDROXYCHLOROQUINE",
+228                     "LEFLUNOMIDE",
+229                     "METHOTREXATE",
+230                     "SULFASALAZINE",
+231                     "ADALIMUMAB",
+232                     "CERTOLIZUMAB",
+233                     "ETANERCEPT",
+234                     "GOLIMUMAB",
+235                     "INFLIXIMAB",
+236                     "ABATACEPT",
+237                     "ANAKINRA",
+238                     "BELIMUMAB",
+239                     "CANAKINUMAB",
+240                     "IXEKIZUMAB",
+241                     "RITUXIMAB",
+242                     "SECUKINUMAB",
+243                     "TOCILIZUMAB",
+244                     "USTEKINUMAB",
+245                     "VEDOLIZUMAB",
+246                     "APREMILAST",
+247                     "TOFACITINIB") then output;
+248        run;
 
-NOTE: The SAS System stopped processing this step because of errors.
-WARNING: The data set WORK.J4TARGETDRUG may be incomplete.  When this step was stopped there were 0 observations and 0 variables.
+NOTE: There were 35 observations read from the data set NDC.NDC_DMARD_BIO.
+      WHERE CodeType='HCPCS';
+NOTE: There were 0 observations read from the data set NDC.NDC_NSAIDS.
+      WHERE CodeType='HCPCS';
+NOTE: The data set WORK.J4TARGETDRUG has 19 observations and 9 variables.
 NOTE: DATA statement used (Total process time):
-      real time           0.03 seconds
-      cpu time            0.01 seconds
-      
-
-171        
-172        %macro pullTargetDrug(stdLib=,
-173                              enrData=,
-174                              pxdata=,
-175                              rxData=,
-176                              YearStart=,
-177                              nYear=);
-178        proc datasets nolist;delete RXTdrug&stdLib HCPCSTdrug&stdLib;quit;run;
-179        %do i=1 %to &nYear;
-180        %let YR=%eval(&YearStart+&i-1);
-181        proc sql;
-182        create table work.RXTdrug&stdLib.&YR as
-183        select a.patid,a.NDC,a.DISPENSE_DATE,b.GNN
-184        from &stdLib..&rxData._&YR as a
-185              ,
-186             NDC4targetDrug as b
-187        where a.NDC=b.code;
-188        
-189        create table work.HCPCSTdrug&stdLib.&YR as
-190        select a.patid,a.px,a.BEGIN_DATE,b.GNN
-191        from &stdLib..&pxdata._&YR as a
-192              ,
-193              J4targetDrug as b
-194        where a.px=b.code;
-195        
-196        proc datasets nolist;
-3                                                                   The SAS System                                       18:32 Thursday, June 21, 2018
-
-197        append data=work.RXTdrug&stdLib.&YR out=RXTdrug&stdLib;
-198        quit;run;
-199        
-200        proc datasets nolist;
-201        append data=work.HCPCSTdrug&stdLib.&YR out=HCPCSTdrug&stdLib;
-202        quit;run;
-203        
-204        proc datasets nolist library=work;
-205        delete RXTdrug&stdLib.&YR HCPCSTdrug&stdLib.&YR;
-206        quit;run;
-207        %end;
-208        %mend;
-209        
-210        %pullTargetDrug(stdLib=UCBSTD,
-211                        pxdata=px,
-212                        rxData=rx,
-213                        YearStart=2010,
-214                        nYear=5);
-
-NOTE: PROCEDURE DATASETS used (Total process time):
       real time           0.04 seconds
-      cpu time            0.00 seconds
-      
-
-NOTE: PROC SQL set option NOEXEC and will continue to check the syntax of statements.
-NOTE: Statement not executed due to NOEXEC option.
-NOTE: Statement not executed due to NOEXEC option.
-NOTE: The SAS System stopped processing this step because of errors.
-NOTE: PROCEDURE SQL used (Total process time):
-      real time           0.07 seconds
-      cpu time            0.00 seconds
-      
-
-
-ERROR: File WORK.RXTDRUGUCBSTD2010.DATA does not exist.
-NOTE: Enter RUN; to continue or QUIT; to end the procedure.
-
-NOTE: Statements not processed because of errors noted above.
-NOTE: The data set WORK.RXTDRUGUCBSTD has 0 observations and 0 variables.
-NOTE: The SAS System stopped processing this step because of errors.
-NOTE: PROCEDURE DATASETS used (Total process time):
-      real time           0.07 seconds
-      cpu time            0.01 seconds
-      
-
-ERROR: File WORK.HCPCSTDRUGUCBSTD2010.DATA does not exist.
-NOTE: Enter RUN; to continue or QUIT; to end the procedure.
-
-NOTE: Statements not processed because of errors noted above.
-NOTE: The data set WORK.HCPCSTDRUGUCBSTD has 0 observations and 0 variables.
-NOTE: The SAS System stopped processing this step because of errors.
-NOTE: PROCEDURE DATASETS used (Total process time):
-      real time           0.07 seconds
       cpu time            0.03 seconds
       
 
+249        
+250        
+251        proc freq data=NDC4targetDrug;
+252        table category * GNN / list;
+253        run;
 
+                                                                  --- AS project ---                             14:02 Wednesday, October 10, 2018   1
+
+                                                                  The FREQ Procedure
+
+                                                                                            Cumulative    Cumulative
+                                 Category    GNN                   Frequency     Percent     Frequency      Percent
+                                 -----------------------------------------------------------------------------------
+                                 Biologic    ABATACEPT                    6        0.04             6         0.04  
+                                 Biologic    ADALIMUMAB                  11        0.08            17         0.12  
+                                 Biologic    ANAKINRA                     6        0.04            23         0.16  
+                                 Biologic    BELIMUMAB                    6        0.04            29         0.20  
+                                 Biologic    CANAKINUMAB                  2        0.01            31         0.22  
+                                 Biologic    CERTOLIZUMAB                 3        0.02            34         0.24  
+                                 Biologic    ETANERCEPT                  12        0.08            46         0.32  
+                                 Biologic    GOLIMUMAB                    5        0.04            51         0.36  
+                                 Biologic    INFLIXIMAB                   4        0.03            55         0.39  
+                                 Biologic    IXEKIZUMAB                   9        0.06            64         0.45  
+                                 Biologic    RITUXIMAB                    4        0.03            68         0.48  
+                                 Biologic    SECUKINUMAB                  4        0.03            72         0.51  
+                                 Biologic    TOCILIZUMAB                  4        0.03            76         0.53  
+                                 Biologic    USTEKINUMAB                  4        0.03            80         0.56  
+                                 Biologic    VEDOLIZUMAB                  1        0.01            81         0.57  
+                                 COX         CELECOXIB                  493        3.46           574         4.03  
+                                 NonCOX      DICLOFENAC                1092        7.67          1666        11.70  
+                                 NonCOX      ETODOLAC                   659        4.63          2325        16.33  
+                                 NonCOX      FLURBIPROFEN               186        1.31          2511        17.64  
+                                 NonCOX      IBUPROFEN                 5432       38.16          7943        55.80  
+                                 NonCOX      INDOMETHACIN              1006        7.07          8949        62.86  
+                                 NonCOX      KETOPROFEN                 302        2.12          9251        64.98  
+                                 NonCOX      KETOROLAC                  457        3.21          9708        68.19  
+                                 NonCOX      MELOXICAM                  492        3.46         10200        71.65  
+                                 NonCOX      NAPROXEN                  2798       19.65         12998        91.30  
+                                 NonCOX      SALSALATE                  516        3.62         13514        94.93  
+                                 cDMARD      HYDROXYCHLOROQUINE         116        0.81         13630        95.74  
+                                 cDMARD      LEFLUNOMIDE                 37        0.26         13667        96.00  
+                                 cDMARD      METHOTREXATE               307        2.16         13974        98.16  
+                                 cDMARD      SULFASALAZINE              249        1.75         14223        99.91  
+                                 sDMARD      APREMILAST                   5        0.04         14228        99.94  
+                                 sDMARD      TOFACITINIB                  8        0.06         14236       100.00  
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+                                                                  pullTargetDrug.sas
+NOTE: There were 14236 observations read from the data set WORK.NDC4TARGETDRUG.
+NOTE: The PROCEDURE FREQ printed page 1.
+NOTE: PROCEDURE FREQ used (Total process time):
+      real time           0.26 seconds
+      cpu time            0.06 seconds
+      
+
+254        
+255        proc freq data=J4targetDrug;
+256        table GNN / list;
+257        run;
+
+                                                                  --- AS project ---                             14:02 Wednesday, October 10, 2018   2
+
+                                                                  The FREQ Procedure
+
+                                                                    Generic Name
+ 
+                                                                                   Cumulative    Cumulative
+                                          GNN             Frequency     Percent     Frequency      Percent
+                                          -----------------------------------------------------------------
+                                          ABATACEPT              2       10.53             2        10.53  
+                                          ADALIMUMAB             1        5.26             3        15.79  
+                                          CANAKINUMAB            1        5.26             4        21.05  
+                                          CERTOLIZUMAB           2       10.53             6        31.58  
+                                          ETANERCEPT             1        5.26             7        36.84  
+                                          GOLIMUMAB              1        5.26             8        42.11  
+                                          INFLIXIMAB             1        5.26             9        47.37  
+                                          METHOTREXATE           3       15.79            12        63.16  
+                                          RITUXIMAB              1        5.26            13        68.42  
+                                          TOCILIZUMAB            2       10.53            15        78.95  
+                                          USTEKINUMAB            2       10.53            17        89.47  
+                                          VEDOLIZUMAB            2       10.53            19       100.00  
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+                                                                  pullTargetDrug.sas
+NOTE: There were 19 observations read from the data set WORK.J4TARGETDRUG.
+NOTE: The PROCEDURE FREQ printed page 2.
+NOTE: PROCEDURE FREQ used (Total process time):
+4                                                                   The SAS System                                   14:02 Wednesday, October 10, 2018
+
+      real time           0.06 seconds
+      cpu time            0.01 seconds
+      
+
+258        
+259        %macro pullTargetDrug(stdLib=,
+260                              enrData=,
+261                              pxdata=,
+262                              rxData=,
+263                              YearStart=,
+264                              nYear=);
+265        proc datasets nolist;delete RXTdrug&stdLib HCPCSTdrug&stdLib;quit;run;
+266        %do i=1 %to &nYear;
+267        %let YR=%eval(&YearStart+&i-1);
+268        proc sql;
+269        create table work.RXTdrug&stdLib.&YR as
+270        select a.patid,a.NDC,a.DISPENSE_DATE,b.GNN
+271        from &stdLib..&rxData._&YR as a
+272              ,
+273             NDC4targetDrug as b
+274        where a.NDC=b.code;
+275        
+276        create table work.HCPCSTdrug&stdLib.&YR as
+277        select a.patid,a.px,a.BEGIN_DATE,b.GNN
+278        from &stdLib..&pxdata._&YR as a
+279              ,
+280              J4targetDrug as b
+281        where a.px=b.code;
+282        
+283        proc datasets nolist;
+284        append data=work.RXTdrug&stdLib.&YR out=RXTdrug&stdLib;
+285        quit;run;
+286        
+287        proc datasets nolist;
+288        append data=work.HCPCSTdrug&stdLib.&YR out=HCPCSTdrug&stdLib;
+289        quit;run;
+290        
+291        proc datasets nolist library=work;
+292        delete RXTdrug&stdLib.&YR HCPCSTdrug&stdLib.&YR;
+293        quit;run;
+294        %end;
+295        %mend;
+296        
+297        %pullTargetDrug(stdLib=UCBSTD,
+298                        pxdata=px,
+299                        rxData=rx,
+300                        YearStart=2010,
+301                        nYear=5);
+
+NOTE: The file WORK.RXTDRUGUCBSTD (memtype=DATA) was not found, but appears on a DELETE statement.
+NOTE: The file WORK.HCPCSTDRUGUCBSTD (memtype=DATA) was not found, but appears on a DELETE statement.
 NOTE: PROCEDURE DATASETS used (Total process time):
       real time           0.03 seconds
-      cpu time            0.00 seconds
+      cpu time            0.01 seconds
       
 
-NOTE: PROC SQL set option NOEXEC and will continue to check the syntax of statements.
-NOTE: Statement not executed due to NOEXEC option.
-NOTE: Statement not executed due to NOEXEC option.
-NOTE: The SAS System stopped processing this step because of errors.
+NOTE: Data set UCBSTD.RX_2010 is in a format that is native to another host. Cross Environment Data Access will be used. This will require additional 
+      CPU resources and may reduce performance.
+NOTE: Table WORK.RXTDRUGUCBSTD2010 created, with 4615097 rows and 4 columns.
+
+NOTE: Data set UCBSTD.PX_2010 is in a format that is native to another host. Cross Environment Data Access will be used. This will require additional 
+      CPU resources and may reduce performance.
+The SAS supervisor will process queries for foreign datasets. No parallel where-clause processing will occur.
+NOTE: Table WORK.HCPCSTDRUGUCBSTD2010 created, with 235140 rows and 4 columns.
+
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           0.00 seconds
-      cpu time            0.00 seconds
+      real time           4:23.90
+      cpu time            3:44.00
       
 
 
-4                                                                   The SAS System                                       18:32 Thursday, June 21, 2018
+NOTE: Appending WORK.RXTDRUGUCBSTD2010 to WORK.RXTDRUGUCBSTD.
+5                                                                   The SAS System                                   14:02 Wednesday, October 10, 2018
 
-ERROR: File WORK.RXTDRUGUCBSTD2011.DATA does not exist.
-NOTE: Enter RUN; to continue or QUIT; to end the procedure.
-
-NOTE: Statements not processed because of errors noted above.
-NOTE: The SAS System stopped processing this step because of errors.
+NOTE: BASE data set does not exist. DATA file is being copied to BASE file.
+NOTE: There were 4615097 observations read from the data set WORK.RXTDRUGUCBSTD2010.
+NOTE: The data set WORK.RXTDRUGUCBSTD has 4615097 observations and 4 variables.
 NOTE: PROCEDURE DATASETS used (Total process time):
-      real time           0.07 seconds
-      cpu time            0.01 seconds
+      real time           0.86 seconds
+      cpu time            0.78 seconds
       
 
-ERROR: File WORK.HCPCSTDRUGUCBSTD2011.DATA does not exist.
-NOTE: Enter RUN; to continue or QUIT; to end the procedure.
 
-NOTE: Statements not processed because of errors noted above.
-NOTE: The SAS System stopped processing this step because of errors.
+NOTE: Appending WORK.HCPCSTDRUGUCBSTD2010 to WORK.HCPCSTDRUGUCBSTD.
+NOTE: BASE data set does not exist. DATA file is being copied to BASE file.
+NOTE: There were 235140 observations read from the data set WORK.HCPCSTDRUGUCBSTD2010.
+NOTE: The data set WORK.HCPCSTDRUGUCBSTD has 235140 observations and 4 variables.
 NOTE: PROCEDURE DATASETS used (Total process time):
-      real time           0.06 seconds
-      cpu time            0.01 seconds
+      real time           0.14 seconds
+      cpu time            0.07 seconds
       
 
 
-NOTE: PROCEDURE DATASETS used (Total process time):
-      real time           0.03 seconds
-      cpu time            0.00 seconds
-      
-
-NOTE: PROC SQL set option NOEXEC and will continue to check the syntax of statements.
-NOTE: Statement not executed due to NOEXEC option.
-NOTE: Statement not executed due to NOEXEC option.
-NOTE: The SAS System stopped processing this step because of errors.
-NOTE: PROCEDURE SQL used (Total process time):
-      real time           0.00 seconds
-      cpu time            0.00 seconds
-      
-
-
-ERROR: File WORK.RXTDRUGUCBSTD2012.DATA does not exist.
-NOTE: Enter RUN; to continue or QUIT; to end the procedure.
-
-NOTE: Statements not processed because of errors noted above.
-NOTE: The SAS System stopped processing this step because of errors.
-NOTE: PROCEDURE DATASETS used (Total process time):
-      real time           0.06 seconds
-      cpu time            0.00 seconds
-      
-
-ERROR: File WORK.HCPCSTDRUGUCBSTD2012.DATA does not exist.
-NOTE: Enter RUN; to continue or QUIT; to end the procedure.
-
-NOTE: Statements not processed because of errors noted above.
-NOTE: The SAS System stopped processing this step because of errors.
-NOTE: PROCEDURE DATASETS used (Total process time):
-      real time           0.06 seconds
-      cpu time            0.01 seconds
-      
-
-
-NOTE: PROCEDURE DATASETS used (Total process time):
-      real time           0.03 seconds
-      cpu time            0.01 seconds
-      
-
-NOTE: PROC SQL set option NOEXEC and will continue to check the syntax of statements.
-NOTE: Statement not executed due to NOEXEC option.
-NOTE: Statement not executed due to NOEXEC option.
-NOTE: The SAS System stopped processing this step because of errors.
-NOTE: PROCEDURE SQL used (Total process time):
-      real time           0.01 seconds
-      cpu time            0.01 seconds
-      
-
-
-5                                                                   The SAS System                                       18:32 Thursday, June 21, 2018
-
-ERROR: File WORK.RXTDRUGUCBSTD2013.DATA does not exist.
-NOTE: Enter RUN; to continue or QUIT; to end the procedure.
-
-NOTE: Statements not processed because of errors noted above.
-NOTE: The SAS System stopped processing this step because of errors.
-NOTE: PROCEDURE DATASETS used (Total process time):
-      real time           0.06 seconds
-      cpu time            0.03 seconds
-      
-
-ERROR: File WORK.HCPCSTDRUGUCBSTD2013.DATA does not exist.
-NOTE: Enter RUN; to continue or QUIT; to end the procedure.
-
-NOTE: Statements not processed because of errors noted above.
-NOTE: The SAS System stopped processing this step because of errors.
-NOTE: PROCEDURE DATASETS used (Total process time):
-      real time           0.12 seconds
-      cpu time            0.01 seconds
-      
-
-
-NOTE: PROCEDURE DATASETS used (Total process time):
-      real time           0.03 seconds
-      cpu time            0.00 seconds
-      
-
-NOTE: PROC SQL set option NOEXEC and will continue to check the syntax of statements.
-NOTE: Statement not executed due to NOEXEC option.
-NOTE: Statement not executed due to NOEXEC option.
-NOTE: The SAS System stopped processing this step because of errors.
-NOTE: PROCEDURE SQL used (Total process time):
-      real time           0.00 seconds
-      cpu time            0.00 seconds
-      
-
-
-ERROR: File WORK.RXTDRUGUCBSTD2014.DATA does not exist.
-NOTE: Enter RUN; to continue or QUIT; to end the procedure.
-
-NOTE: Statements not processed because of errors noted above.
-NOTE: The SAS System stopped processing this step because of errors.
-NOTE: PROCEDURE DATASETS used (Total process time):
-      real time           0.06 seconds
-      cpu time            0.01 seconds
-      
-
-ERROR: File WORK.HCPCSTDRUGUCBSTD2014.DATA does not exist.
-NOTE: Enter RUN; to continue or QUIT; to end the procedure.
-
-NOTE: Statements not processed because of errors noted above.
-NOTE: The SAS System stopped processing this step because of errors.
-NOTE: PROCEDURE DATASETS used (Total process time):
-      real time           0.06 seconds
-      cpu time            0.00 seconds
-      
-
-
-NOTE: PROCEDURE DATASETS used (Total process time):
-      real time           0.01 seconds
-      cpu time            0.00 seconds
-      
-
-215        
-216        %pullTargetDrug(stdLib=MPSTD,
-217                        pxdata=px_07,
-218                        rxData=rx_07,
-219                        YearStart=10,
-220                        nYear=1);
-
-NOTE: PROCEDURE DATASETS used (Total process time):
-      real time           0.01 seconds
-      cpu time            0.01 seconds
-6                                                                   The SAS System                                       18:32 Thursday, June 21, 2018
-
-      
-
-NOTE: PROC SQL set option NOEXEC and will continue to check the syntax of statements.
-NOTE: Statement not executed due to NOEXEC option.
-NOTE: Statement not executed due to NOEXEC option.
-NOTE: The SAS System stopped processing this step because of errors.
-NOTE: PROCEDURE SQL used (Total process time):
-      real time           0.01 seconds
-      cpu time            0.00 seconds
-      
-
-
-ERROR: File WORK.RXTDRUGMPSTD10.DATA does not exist.
-NOTE: Enter RUN; to continue or QUIT; to end the procedure.
-
-NOTE: Statements not processed because of errors noted above.
-NOTE: The data set WORK.RXTDRUGMPSTD has 0 observations and 0 variables.
-NOTE: The SAS System stopped processing this step because of errors.
-NOTE: PROCEDURE DATASETS used (Total process time):
-      real time           0.15 seconds
-      cpu time            0.00 seconds
-      
-
-ERROR: File WORK.HCPCSTDRUGMPSTD10.DATA does not exist.
-NOTE: Enter RUN; to continue or QUIT; to end the procedure.
-
-NOTE: Statements not processed because of errors noted above.
-NOTE: The data set WORK.HCPCSTDRUGMPSTD has 0 observations and 0 variables.
-NOTE: The SAS System stopped processing this step because of errors.
+NOTE: Deleting WORK.RXTDRUGUCBSTD2010 (memtype=DATA).
+NOTE: Deleting WORK.HCPCSTDRUGUCBSTD2010 (memtype=DATA).
 NOTE: PROCEDURE DATASETS used (Total process time):
       real time           0.11 seconds
       cpu time            0.03 seconds
       
 
+NOTE: Data set UCBSTD.RX_2011 is in a format that is native to another host. Cross Environment Data Access will be used. This will require additional 
+      CPU resources and may reduce performance.
+NOTE: Table WORK.RXTDRUGUCBSTD2011 created, with 5739167 rows and 4 columns.
 
-NOTE: PROCEDURE DATASETS used (Total process time):
-      real time           0.03 seconds
-      cpu time            0.01 seconds
-      
+NOTE: Data set UCBSTD.PX_2011 is in a format that is native to another host. Cross Environment Data Access will be used. This will require additional 
+      CPU resources and may reduce performance.
+The SAS supervisor will process queries for foreign datasets. No parallel where-clause processing will occur.
+NOTE: Table WORK.HCPCSTDRUGUCBSTD2011 created, with 291973 rows and 4 columns.
 
-221        
-222        %pullTargetDrug(stdLib=std_sabr,
-223                        pxdata=std_px,
-224                        rxData=std_rx,
-225                        YearStart=2006,
-226                        nYear=9);
-
-NOTE: PROCEDURE DATASETS used (Total process time):
-      real time           0.01 seconds
-      cpu time            0.01 seconds
-      
-
-NOTE: PROC SQL set option NOEXEC and will continue to check the syntax of statements.
-NOTE: Statement not executed due to NOEXEC option.
-NOTE: Statement not executed due to NOEXEC option.
-NOTE: The SAS System stopped processing this step because of errors.
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           0.01 seconds
-      cpu time            0.00 seconds
+      real time           5:00.88
+      cpu time            4:15.35
       
 
 
-ERROR: File WORK.RXTDRUGSTD_SABR2006.DATA does not exist.
-NOTE: Enter RUN; to continue or QUIT; to end the procedure.
-
-NOTE: Statements not processed because of errors noted above.
-NOTE: The data set WORK.RXTDRUGSTD_SABR has 0 observations and 0 variables.
-NOTE: The SAS System stopped processing this step because of errors.
+NOTE: Appending WORK.RXTDRUGUCBSTD2011 to WORK.RXTDRUGUCBSTD.
+NOTE: There were 5739167 observations read from the data set WORK.RXTDRUGUCBSTD2011.
+NOTE: 5739167 observations added.
+NOTE: The data set WORK.RXTDRUGUCBSTD has 10354264 observations and 4 variables.
 NOTE: PROCEDURE DATASETS used (Total process time):
-      real time           0.09 seconds
+      real time           1.22 seconds
+      cpu time            1.14 seconds
+      
+
+
+NOTE: Appending WORK.HCPCSTDRUGUCBSTD2011 to WORK.HCPCSTDRUGUCBSTD.
+NOTE: There were 291973 observations read from the data set WORK.HCPCSTDRUGUCBSTD2011.
+NOTE: 291973 observations added.
+NOTE: The data set WORK.HCPCSTDRUGUCBSTD has 527113 observations and 4 variables.
+NOTE: PROCEDURE DATASETS used (Total process time):
+      real time           0.22 seconds
+      cpu time            0.12 seconds
+      
+
+
+NOTE: Deleting WORK.RXTDRUGUCBSTD2011 (memtype=DATA).
+NOTE: Deleting WORK.HCPCSTDRUGUCBSTD2011 (memtype=DATA).
+NOTE: PROCEDURE DATASETS used (Total process time):
+      real time           0.15 seconds
       cpu time            0.01 seconds
       
-7                                                                   The SAS System                                       18:32 Thursday, June 21, 2018
 
+NOTE: Data set UCBSTD.RX_2012 is in a format that is native to another host. Cross Environment Data Access will be used. This will require additional 
+      CPU resources and may reduce performance.
+NOTE: Table WORK.RXTDRUGUCBSTD2012 created, with 6789183 rows and 4 columns.
 
-ERROR: File WORK.HCPCSTDRUGSTD_SABR2006.DATA does not exist.
-NOTE: Enter RUN; to continue or QUIT; to end the procedure.
+6                                                                   The SAS System                                   14:02 Wednesday, October 10, 2018
 
-NOTE: Statements not processed because of errors noted above.
-NOTE: The data set WORK.HCPCSTDRUGSTD_SABR has 0 observations and 0 variables.
-NOTE: The SAS System stopped processing this step because of errors.
-NOTE: PROCEDURE DATASETS used (Total process time):
-      real time           0.07 seconds
-      cpu time            0.01 seconds
-      
+NOTE: Data set UCBSTD.PX_2012 is in a format that is native to another host. Cross Environment Data Access will be used. This will require additional 
+      CPU resources and may reduce performance.
+The SAS supervisor will process queries for foreign datasets. No parallel where-clause processing will occur.
+NOTE: Table WORK.HCPCSTDRUGUCBSTD2012 created, with 320285 rows and 4 columns.
 
-
-NOTE: PROCEDURE DATASETS used (Total process time):
-      real time           0.03 seconds
-      cpu time            0.00 seconds
-      
-
-NOTE: PROC SQL set option NOEXEC and will continue to check the syntax of statements.
-NOTE: Statement not executed due to NOEXEC option.
-NOTE: Statement not executed due to NOEXEC option.
-NOTE: The SAS System stopped processing this step because of errors.
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           0.00 seconds
+      real time           6:13.46
+      cpu time            5:31.95
+      
+
+
+NOTE: Appending WORK.RXTDRUGUCBSTD2012 to WORK.RXTDRUGUCBSTD.
+NOTE: There were 6789183 observations read from the data set WORK.RXTDRUGUCBSTD2012.
+NOTE: 6789183 observations added.
+NOTE: The data set WORK.RXTDRUGUCBSTD has 17143447 observations and 4 variables.
+NOTE: PROCEDURE DATASETS used (Total process time):
+      real time           1.71 seconds
+      cpu time            1.60 seconds
+      
+
+
+NOTE: Appending WORK.HCPCSTDRUGUCBSTD2012 to WORK.HCPCSTDRUGUCBSTD.
+NOTE: There were 320285 observations read from the data set WORK.HCPCSTDRUGUCBSTD2012.
+NOTE: 320285 observations added.
+NOTE: The data set WORK.HCPCSTDRUGUCBSTD has 847398 observations and 4 variables.
+NOTE: PROCEDURE DATASETS used (Total process time):
+      real time           0.17 seconds
+      cpu time            0.09 seconds
+      
+
+
+NOTE: Deleting WORK.RXTDRUGUCBSTD2012 (memtype=DATA).
+NOTE: Deleting WORK.HCPCSTDRUGUCBSTD2012 (memtype=DATA).
+NOTE: PROCEDURE DATASETS used (Total process time):
+      real time           0.04 seconds
       cpu time            0.00 seconds
       
 
+NOTE: Data set UCBSTD.RX_2013 is in a format that is native to another host. Cross Environment Data Access will be used. This will require additional 
+      CPU resources and may reduce performance.
+NOTE: Table WORK.RXTDRUGUCBSTD2013 created, with 6287912 rows and 4 columns.
 
-ERROR: File WORK.RXTDRUGSTD_SABR2007.DATA does not exist.
-NOTE: Enter RUN; to continue or QUIT; to end the procedure.
+NOTE: Data set UCBSTD.PX_2013 is in a format that is native to another host. Cross Environment Data Access will be used. This will require additional 
+      CPU resources and may reduce performance.
+The SAS supervisor will process queries for foreign datasets. No parallel where-clause processing will occur.
+NOTE: Table WORK.HCPCSTDRUGUCBSTD2013 created, with 280313 rows and 4 columns.
 
-NOTE: Statements not processed because of errors noted above.
-NOTE: The SAS System stopped processing this step because of errors.
-NOTE: PROCEDURE DATASETS used (Total process time):
-      real time           0.06 seconds
-      cpu time            0.03 seconds
-      
-
-ERROR: File WORK.HCPCSTDRUGSTD_SABR2007.DATA does not exist.
-NOTE: Enter RUN; to continue or QUIT; to end the procedure.
-
-NOTE: Statements not processed because of errors noted above.
-NOTE: The SAS System stopped processing this step because of errors.
-NOTE: PROCEDURE DATASETS used (Total process time):
-      real time           0.07 seconds
-      cpu time            0.03 seconds
-      
-
-
-NOTE: PROCEDURE DATASETS used (Total process time):
-      real time           0.03 seconds
-      cpu time            0.00 seconds
-      
-
-NOTE: PROC SQL set option NOEXEC and will continue to check the syntax of statements.
-NOTE: Statement not executed due to NOEXEC option.
-NOTE: Statement not executed due to NOEXEC option.
-NOTE: The SAS System stopped processing this step because of errors.
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           0.00 seconds
-      cpu time            0.00 seconds
+      real time           5:37.16
+      cpu time            4:52.54
       
 
 
-ERROR: File WORK.RXTDRUGSTD_SABR2008.DATA does not exist.
-NOTE: Enter RUN; to continue or QUIT; to end the procedure.
+NOTE: Appending WORK.RXTDRUGUCBSTD2013 to WORK.RXTDRUGUCBSTD.
+NOTE: There were 6287912 observations read from the data set WORK.RXTDRUGUCBSTD2013.
+NOTE: 6287912 observations added.
+NOTE: The data set WORK.RXTDRUGUCBSTD has 23431359 observations and 4 variables.
+NOTE: PROCEDURE DATASETS used (Total process time):
+      real time           1.35 seconds
+      cpu time            1.26 seconds
+      
 
-NOTE: Statements not processed because of errors noted above.
-NOTE: The SAS System stopped processing this step because of errors.
+
+NOTE: Appending WORK.HCPCSTDRUGUCBSTD2013 to WORK.HCPCSTDRUGUCBSTD.
+NOTE: There were 280313 observations read from the data set WORK.HCPCSTDRUGUCBSTD2013.
+NOTE: 280313 observations added.
+NOTE: The data set WORK.HCPCSTDRUGUCBSTD has 1127711 observations and 4 variables.
 NOTE: PROCEDURE DATASETS used (Total process time):
       real time           0.12 seconds
-      cpu time            0.01 seconds
-8                                                                   The SAS System                                       18:32 Thursday, June 21, 2018
-
+      cpu time            0.10 seconds
       
 
-ERROR: File WORK.HCPCSTDRUGSTD_SABR2008.DATA does not exist.
-NOTE: Enter RUN; to continue or QUIT; to end the procedure.
+7                                                                   The SAS System                                   14:02 Wednesday, October 10, 2018
 
-NOTE: Statements not processed because of errors noted above.
-NOTE: The SAS System stopped processing this step because of errors.
+
+NOTE: Deleting WORK.RXTDRUGUCBSTD2013 (memtype=DATA).
+NOTE: Deleting WORK.HCPCSTDRUGUCBSTD2013 (memtype=DATA).
 NOTE: PROCEDURE DATASETS used (Total process time):
-      real time           0.08 seconds
+      real time           0.17 seconds
+      cpu time            0.01 seconds
+      
+
+NOTE: Data set UCBSTD.RX_2014 is in a format that is native to another host. Cross Environment Data Access will be used. This will require additional 
+      CPU resources and may reduce performance.
+NOTE: Table WORK.RXTDRUGUCBSTD2014 created, with 6550740 rows and 4 columns.
+
+NOTE: Data set UCBSTD.PX_2014 is in a format that is native to another host. Cross Environment Data Access will be used. This will require additional 
+      CPU resources and may reduce performance.
+The SAS supervisor will process queries for foreign datasets. No parallel where-clause processing will occur.
+NOTE: Table WORK.HCPCSTDRUGUCBSTD2014 created, with 296518 rows and 4 columns.
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           5:14.58
+      cpu time            4:35.37
+      
+
+
+NOTE: Appending WORK.RXTDRUGUCBSTD2014 to WORK.RXTDRUGUCBSTD.
+NOTE: There were 6550740 observations read from the data set WORK.RXTDRUGUCBSTD2014.
+NOTE: 6550740 observations added.
+NOTE: The data set WORK.RXTDRUGUCBSTD has 29982099 observations and 4 variables.
+NOTE: PROCEDURE DATASETS used (Total process time):
+      real time           1.73 seconds
+      cpu time            1.66 seconds
+      
+
+
+NOTE: Appending WORK.HCPCSTDRUGUCBSTD2014 to WORK.HCPCSTDRUGUCBSTD.
+NOTE: There were 296518 observations read from the data set WORK.HCPCSTDRUGUCBSTD2014.
+NOTE: 296518 observations added.
+NOTE: The data set WORK.HCPCSTDRUGUCBSTD has 1424229 observations and 4 variables.
+NOTE: PROCEDURE DATASETS used (Total process time):
+      real time           0.16 seconds
+      cpu time            0.09 seconds
+      
+
+
+NOTE: Deleting WORK.RXTDRUGUCBSTD2014 (memtype=DATA).
+NOTE: Deleting WORK.HCPCSTDRUGUCBSTD2014 (memtype=DATA).
+NOTE: PROCEDURE DATASETS used (Total process time):
+      real time           0.03 seconds
       cpu time            0.03 seconds
       
 
+302        
+303        %pullTargetDrug(stdLib=MPSTD,
+304                        pxdata=px_07,
+305                        rxData=rx_07,
+306                        YearStart=10,
+307                        nYear=1);
 
+NOTE: The file WORK.RXTDRUGMPSTD (memtype=DATA) was not found, but appears on a DELETE statement.
+NOTE: The file WORK.HCPCSTDRUGMPSTD (memtype=DATA) was not found, but appears on a DELETE statement.
 NOTE: PROCEDURE DATASETS used (Total process time):
-      real time           0.03 seconds
-      cpu time            0.01 seconds
-      
-
-NOTE: PROC SQL set option NOEXEC and will continue to check the syntax of statements.
-NOTE: Statement not executed due to NOEXEC option.
-NOTE: Statement not executed due to NOEXEC option.
-NOTE: The SAS System stopped processing this step because of errors.
-NOTE: PROCEDURE SQL used (Total process time):
-      real time           0.00 seconds
-      cpu time            0.00 seconds
-      
-
-
-ERROR: File WORK.RXTDRUGSTD_SABR2009.DATA does not exist.
-NOTE: Enter RUN; to continue or QUIT; to end the procedure.
-
-NOTE: Statements not processed because of errors noted above.
-NOTE: The SAS System stopped processing this step because of errors.
-NOTE: PROCEDURE DATASETS used (Total process time):
-      real time           0.06 seconds
-      cpu time            0.03 seconds
-      
-
-ERROR: File WORK.HCPCSTDRUGSTD_SABR2009.DATA does not exist.
-NOTE: Enter RUN; to continue or QUIT; to end the procedure.
-
-NOTE: Statements not processed because of errors noted above.
-NOTE: The SAS System stopped processing this step because of errors.
-NOTE: PROCEDURE DATASETS used (Total process time):
-      real time           0.07 seconds
-      cpu time            0.03 seconds
-      
-
-
-NOTE: PROCEDURE DATASETS used (Total process time):
-      real time           0.03 seconds
-      cpu time            0.00 seconds
-      
-
-NOTE: PROC SQL set option NOEXEC and will continue to check the syntax of statements.
-NOTE: Statement not executed due to NOEXEC option.
-NOTE: Statement not executed due to NOEXEC option.
-NOTE: The SAS System stopped processing this step because of errors.
-NOTE: PROCEDURE SQL used (Total process time):
-      real time           0.01 seconds
-      cpu time            0.00 seconds
-      
-
-
-ERROR: File WORK.RXTDRUGSTD_SABR2010.DATA does not exist.
-NOTE: Enter RUN; to continue or QUIT; to end the procedure.
-
-NOTE: Statements not processed because of errors noted above.
-NOTE: The SAS System stopped processing this step because of errors.
-NOTE: PROCEDURE DATASETS used (Total process time):
-      real time           0.06 seconds
-      cpu time            0.00 seconds
-9                                                                   The SAS System                                       18:32 Thursday, June 21, 2018
-
-      
-
-ERROR: File WORK.HCPCSTDRUGSTD_SABR2010.DATA does not exist.
-NOTE: Enter RUN; to continue or QUIT; to end the procedure.
-
-NOTE: Statements not processed because of errors noted above.
-NOTE: The SAS System stopped processing this step because of errors.
-NOTE: PROCEDURE DATASETS used (Total process time):
-      real time           0.07 seconds
-      cpu time            0.01 seconds
-      
-
-
-NOTE: PROCEDURE DATASETS used (Total process time):
-      real time           0.03 seconds
-      cpu time            0.00 seconds
-      
-
-NOTE: PROC SQL set option NOEXEC and will continue to check the syntax of statements.
-NOTE: Statement not executed due to NOEXEC option.
-NOTE: Statement not executed due to NOEXEC option.
-NOTE: The SAS System stopped processing this step because of errors.
-NOTE: PROCEDURE SQL used (Total process time):
-      real time           0.01 seconds
-      cpu time            0.01 seconds
-      
-
-
-ERROR: File WORK.RXTDRUGSTD_SABR2011.DATA does not exist.
-NOTE: Enter RUN; to continue or QUIT; to end the procedure.
-
-NOTE: Statements not processed because of errors noted above.
-NOTE: The SAS System stopped processing this step because of errors.
-NOTE: PROCEDURE DATASETS used (Total process time):
-      real time           0.09 seconds
-      cpu time            0.03 seconds
-      
-
-ERROR: File WORK.HCPCSTDRUGSTD_SABR2011.DATA does not exist.
-NOTE: Enter RUN; to continue or QUIT; to end the procedure.
-
-NOTE: Statements not processed because of errors noted above.
-NOTE: The SAS System stopped processing this step because of errors.
-NOTE: PROCEDURE DATASETS used (Total process time):
-      real time           0.07 seconds
-      cpu time            0.00 seconds
-      
-
-
-NOTE: PROCEDURE DATASETS used (Total process time):
-      real time           0.06 seconds
-      cpu time            0.01 seconds
-      
-
-NOTE: PROC SQL set option NOEXEC and will continue to check the syntax of statements.
-NOTE: Statement not executed due to NOEXEC option.
-NOTE: Statement not executed due to NOEXEC option.
-NOTE: The SAS System stopped processing this step because of errors.
-NOTE: PROCEDURE SQL used (Total process time):
-      real time           0.00 seconds
-      cpu time            0.00 seconds
-      
-
-
-ERROR: File WORK.RXTDRUGSTD_SABR2012.DATA does not exist.
-NOTE: Enter RUN; to continue or QUIT; to end the procedure.
-
-NOTE: Statements not processed because of errors noted above.
-NOTE: The SAS System stopped processing this step because of errors.
-NOTE: PROCEDURE DATASETS used (Total process time):
-      real time           0.13 seconds
-      cpu time            0.00 seconds
-10                                                                  The SAS System                                       18:32 Thursday, June 21, 2018
-
-      
-
-ERROR: File WORK.HCPCSTDRUGSTD_SABR2012.DATA does not exist.
-NOTE: Enter RUN; to continue or QUIT; to end the procedure.
-
-NOTE: Statements not processed because of errors noted above.
-NOTE: The SAS System stopped processing this step because of errors.
-NOTE: PROCEDURE DATASETS used (Total process time):
-      real time           0.06 seconds
-      cpu time            0.01 seconds
-      
-
-
-NOTE: PROCEDURE DATASETS used (Total process time):
-      real time           0.03 seconds
-      cpu time            0.01 seconds
-      
-
-NOTE: PROC SQL set option NOEXEC and will continue to check the syntax of statements.
-NOTE: Statement not executed due to NOEXEC option.
-NOTE: Statement not executed due to NOEXEC option.
-NOTE: The SAS System stopped processing this step because of errors.
-NOTE: PROCEDURE SQL used (Total process time):
-      real time           0.00 seconds
-      cpu time            0.00 seconds
-      
-
-
-ERROR: File WORK.RXTDRUGSTD_SABR2013.DATA does not exist.
-NOTE: Enter RUN; to continue or QUIT; to end the procedure.
-
-NOTE: Statements not processed because of errors noted above.
-NOTE: The SAS System stopped processing this step because of errors.
-NOTE: PROCEDURE DATASETS used (Total process time):
-      real time           0.06 seconds
-      cpu time            0.03 seconds
-      
-
-ERROR: File WORK.HCPCSTDRUGSTD_SABR2013.DATA does not exist.
-NOTE: Enter RUN; to continue or QUIT; to end the procedure.
-
-NOTE: Statements not processed because of errors noted above.
-NOTE: The SAS System stopped processing this step because of errors.
-NOTE: PROCEDURE DATASETS used (Total process time):
-      real time           0.07 seconds
-      cpu time            0.01 seconds
-      
-
-
-NOTE: PROCEDURE DATASETS used (Total process time):
-      real time           0.03 seconds
-      cpu time            0.00 seconds
-      
-
-NOTE: PROC SQL set option NOEXEC and will continue to check the syntax of statements.
-NOTE: Statement not executed due to NOEXEC option.
-NOTE: Statement not executed due to NOEXEC option.
-NOTE: The SAS System stopped processing this step because of errors.
-NOTE: PROCEDURE SQL used (Total process time):
-      real time           0.01 seconds
-      cpu time            0.01 seconds
-      
-
-
-ERROR: File WORK.RXTDRUGSTD_SABR2014.DATA does not exist.
-NOTE: Enter RUN; to continue or QUIT; to end the procedure.
-
-NOTE: Statements not processed because of errors noted above.
-NOTE: The SAS System stopped processing this step because of errors.
-NOTE: PROCEDURE DATASETS used (Total process time):
-      real time           0.06 seconds
-      cpu time            0.00 seconds
-11                                                                  The SAS System                                       18:32 Thursday, June 21, 2018
-
-      
-
-ERROR: File WORK.HCPCSTDRUGSTD_SABR2014.DATA does not exist.
-NOTE: Enter RUN; to continue or QUIT; to end the procedure.
-
-NOTE: Statements not processed because of errors noted above.
-NOTE: The SAS System stopped processing this step because of errors.
-NOTE: PROCEDURE DATASETS used (Total process time):
-      real time           0.07 seconds
-      cpu time            0.01 seconds
-      
-
-
-NOTE: PROCEDURE DATASETS used (Total process time):
-      real time           0.03 seconds
-      cpu time            0.00 seconds
-      
-
-227        
-228        
-229        proc freq data=RxtdrugUCBSTD;
-230        table GNN;
-ERROR: Variable GNN not found.
-231        run;
-
-NOTE: The SAS System stopped processing this step because of errors.
-NOTE: PROCEDURE FREQ used (Total process time):
-      real time           0.00 seconds
-      cpu time            0.00 seconds
-      
-232        
-
-
-233        proc freq data=HCPCStdrugUCBSTD;
-234        table GNN;
-ERROR: Variable GNN not found.
-235        run;
-
-NOTE: The SAS System stopped processing this step because of errors.
-NOTE: PROCEDURE FREQ used (Total process time):
-      real time           0.00 seconds
-      cpu time            0.00 seconds
-      
-236        
-
-
-237        proc sql;
-NOTE: PROC SQL set option NOEXEC and will continue to check the syntax of statements.
-238        create table DT.BioUCBSTD as
-239        select patid,DISPENSE_DATE,upcase(GNN) as GNN
-240        from RxtdrugUCBSTD
-241        where NDC in (select Code
-242                      from NDC.Ndc_dmard_bio_all
-243                      where CodeType='NDC' and Category in ('Biologic','sDMARD'))
-244        union
-245        select patid,BEGIN_DATE as DISPENSE_DATE,upcase(GNN) as GNN
-246        from HCPCSTdrugUCBSTD
-247        where PX in (select Code
-248                      from NDC.Ndc_dmard_bio_all
-249                      where CodeType='HCPCS' and Category in ('Biologic','sDMARD'))
-250        ;
-NOTE: Statement not executed due to NOEXEC option.
-251        
-252        create table DT.BioMPSTD as
-253        select patid,DISPENSE_DATE,upcase(GNN) as GNN
-254        from RxtdrugMPSTD
-255        where NDC in (select Code
-256                      from NDC.Ndc_dmard_bio_all
-257                      where CodeType='NDC' and Category in ('Biologic','sDMARD'))
-258        union
-259        select patid,BEGIN_DATE as DISPENSE_DATE,upcase(GNN) as GNN
-260        from HCPCSTdrugMPSTD
-12                                                                  The SAS System                                       18:32 Thursday, June 21, 2018
-
-261        where PX in (select Code
-262                      from NDC.Ndc_dmard_bio_all
-263                      where CodeType='HCPCS' and Category in ('Biologic','sDMARD'));
-NOTE: Statement not executed due to NOEXEC option.
-264        
-265        create table DT.Biostd_sabr as
-266        select patid,DISPENSE_DATE,upcase(GNN) as GNN
-267        from Rxtdrugstd_sabr
-268        where NDC in (select Code
-269                      from NDC.Ndc_dmard_bio_all
-270                      where CodeType='NDC' and Category in ('Biologic','sDMARD'))
-271        union
-272        select patid,BEGIN_DATE as DISPENSE_DATE,upcase(GNN) as GNN
-273        from Hcpcstdrugstd_sabr
-274        where PX in (select Code
-275                      from NDC.Ndc_dmard_bio_all
-276                      where CodeType='HCPCS' and Category in ('Biologic','sDMARD'))
-277        union
-278        select substr(pid,1,20) as patid length=20,rxdate as DISPENSE_DATE,upcase(GNN) as GNN
-279        from std_sabr.Nonspecific_jcode_biologic
-280        ;
-NOTE: Statement not executed due to NOEXEC option.
-281        
-282        create table DT.DmardUCBSTD as
-283        select patid,DISPENSE_DATE,upcase(GNN) as GNN
-284        from RxtdrugUCBSTD
-285        where NDC in (select Code
-286                      from NDC.Ndc_dmard_bio_all
-287                      where CodeType='NDC' and Category in ('cDMARD'))
-288        union
-289        select patid,BEGIN_DATE as DISPENSE_DATE,upcase(GNN) as GNN
-290        from HcpcsTdrugUCBSTD
-291        where PX in (select Code
-292                      from NDC.Ndc_dmard_bio_all
-293                      where CodeType='HCPCS' and Category in ('cDMARD'));
-NOTE: Statement not executed due to NOEXEC option.
-294        
-295        create table DT.DmardMPSTD as
-296        select patid,DISPENSE_DATE,upcase(GNN) as GNN
-297        from RxtdrugMPSTD
-298        where NDC in (select Code
-299                      from NDC.Ndc_dmard_bio_all
-300                      where CodeType='NDC' and Category in ('cDMARD'))
-301        union
-302        select patid,BEGIN_DATE as DISPENSE_DATE,upcase(GNN) as GNN
-303        from HcpcsTdrugMPSTD
-304        where PX in (select Code
-305                      from NDC.Ndc_dmard_bio_all
-306                      where CodeType='HCPCS' and Category in ('cDMARD'));
-NOTE: Statement not executed due to NOEXEC option.
-307        
-308        create table DT.Dmardstd_sabr as
-309        select patid,DISPENSE_DATE,upcase(GNN) as GNN
-310        from Rxtdrugstd_sabr
-311        where NDC in (select Code
-312                      from NDC.Ndc_dmard_bio_all
-313                      where CodeType='NDC' and Category in ('cDMARD'))
-314        union
-315        select patid,BEGIN_DATE as DISPENSE_DATE,upcase(GNN) as GNN
-316        from HcpcsTdrugstd_sabr
-317        where PX in (select Code
-318                      from NDC.Ndc_dmard_bio_all
-319                      where CodeType='HCPCS' and Category in ('cDMARD'));
-NOTE: Statement not executed due to NOEXEC option.
-320        
-321        create table DT.NsaidUCBSTD as
-322        select patid,DISPENSE_DATE,upcase(GNN) as GNN
-323        from RxtdrugUCBSTD
-324        where NDC in (select Code from NDC.Ndc_nsaidcox where CodeType='NDC' union
-325                            select Code from NDC.Ndc_nsaidnoncox where CodeType='NDC')
-326        ;
-NOTE: Statement not executed due to NOEXEC option.
-13                                                                  The SAS System                                       18:32 Thursday, June 21, 2018
-
-327        
-328        create table DT.NsaidMPSTD as
-329        select patid,DISPENSE_DATE,upcase(GNN) as GNN
-330        from RxtdrugMPSTD
-331        where NDC in (select Code from NDC.Ndc_nsaidcox where CodeType='NDC' union
-332                            select Code from NDC.Ndc_nsaidnoncox where CodeType='NDC')
-333        ;
-NOTE: Statement not executed due to NOEXEC option.
-334        
-335        create table DT.Nsaidstd_sabr as
-336        select patid,DISPENSE_DATE,upcase(GNN) as GNN
-337        from Rxtdrugstd_sabr
-338        where NDC in (select Code from NDC.Ndc_nsaidcox where CodeType='NDC' union
-339                            select Code from NDC.Ndc_nsaidnoncox where CodeType='NDC')
-340        ;
-NOTE: Statement not executed due to NOEXEC option.
-341        
-NOTE: The SAS System stopped processing this step because of errors.
-NOTE: PROCEDURE SQL used (Total process time):
-      real time           0.01 seconds
-      cpu time            0.00 seconds
-      
-
-
-342        proc freq data=DT.BioUCBSTD;
-343        table GNN;
-344        run;
-
-NOTE: PROCEDURE FREQ used (Total process time):
-      real time           0.01 seconds
-      cpu time            0.00 seconds
-      
-
-345        
-346        data DT.TNFUCBSTD;
-347        set DT.BioUCBSTD;
-348        if GNN in ('ADALIMUMAB','CERTOLIZUMAB','ETANERCEPT','GOLIMUMAB','INFLIXIMAB');
-349        run;
-
-NOTE: The data set DT.TNFUCBSTD has 0 observations and 3 variables.
-WARNING: Data set DT.TNFUCBSTD was not replaced because this step was stopped.
-NOTE: DATA statement used (Total process time):
-      real time           0.03 seconds
-      cpu time            0.00 seconds
-      
-
-350        
-351        data DT.TNFMPSTD;
-352        set DT.BioMPSTD;
-353        if GNN in ('ADALIMUMAB','CERTOLIZUMAB','ETANERCEPT','GOLIMUMAB','INFLIXIMAB');
-354        run;
-
-NOTE: The data set DT.TNFMPSTD has 0 observations and 3 variables.
-WARNING: Data set DT.TNFMPSTD was not replaced because this step was stopped.
-NOTE: DATA statement used (Total process time):
-      real time           0.07 seconds
-      cpu time            0.01 seconds
-      
-
-355        
-356        data DT.TNFstd_sabr;
-357        set DT.Biostd_sabr;
-358        if GNN in ('ADALIMUMAB','CERTOLIZUMAB','ETANERCEPT','GOLIMUMAB','INFLIXIMAB');
-359        run;
-
-NOTE: The data set DT.TNFSTD_SABR has 0 observations and 3 variables.
-WARNING: Data set DT.TNFSTD_SABR was not replaced because this step was stopped.
-NOTE: DATA statement used (Total process time):
       real time           0.09 seconds
       cpu time            0.00 seconds
       
 
-14                                                                  The SAS System                                       18:32 Thursday, June 21, 2018
+NOTE: Table WORK.RXTDRUGMPSTD10 created, with 7584968 rows and 4 columns.
 
-360        
-361        
-362        
-363        
-364        ods html close;
-ERROR: Errors printed on pages 2,3,4,5,6,7,8,9,10,11.
+NOTE: Table WORK.HCPCSTDRUGMPSTD10 created, with 589170 rows and 4 columns.
 
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           3:09.41
+      cpu time            3:39.52
+      
+8                                                                   The SAS System                                   14:02 Wednesday, October 10, 2018
+
+
+
+NOTE: Appending WORK.RXTDRUGMPSTD10 to WORK.RXTDRUGMPSTD.
+NOTE: BASE data set does not exist. DATA file is being copied to BASE file.
+NOTE: There were 7584968 observations read from the data set WORK.RXTDRUGMPSTD10.
+NOTE: The data set WORK.RXTDRUGMPSTD has 7584968 observations and 4 variables.
+NOTE: PROCEDURE DATASETS used (Total process time):
+      real time           1.22 seconds
+      cpu time            1.13 seconds
+      
+
+
+NOTE: Appending WORK.HCPCSTDRUGMPSTD10 to WORK.HCPCSTDRUGMPSTD.
+NOTE: BASE data set does not exist. DATA file is being copied to BASE file.
+NOTE: There were 589170 observations read from the data set WORK.HCPCSTDRUGMPSTD10.
+NOTE: The data set WORK.HCPCSTDRUGMPSTD has 589170 observations and 4 variables.
+NOTE: PROCEDURE DATASETS used (Total process time):
+      real time           0.23 seconds
+      cpu time            0.15 seconds
+      
+
+
+NOTE: Deleting WORK.RXTDRUGMPSTD10 (memtype=DATA).
+NOTE: Deleting WORK.HCPCSTDRUGMPSTD10 (memtype=DATA).
+NOTE: PROCEDURE DATASETS used (Total process time):
+      real time           0.10 seconds
+      cpu time            0.00 seconds
+      
+
+308        
+309        %pullTargetDrug(stdLib=std_sabr,
+310                        pxdata=std_px,
+311                        rxData=std_rx,
+312                        YearStart=2006,
+313                        nYear=9);
+
+NOTE: The file WORK.RXTDRUGSTD_SABR (memtype=DATA) was not found, but appears on a DELETE statement.
+NOTE: The file WORK.HCPCSTDRUGSTD_SABR (memtype=DATA) was not found, but appears on a DELETE statement.
+NOTE: PROCEDURE DATASETS used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.00 seconds
+      
+
+NOTE: Data set STD_SABR.STD_RX_2006 is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
+      additional CPU resources and may reduce performance.
+NOTE: Table WORK.RXTDRUGSTD_SABR2006 created, with 2726397 rows and 4 columns.
+
+NOTE: Data set STD_SABR.STD_PX_2006 is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
+      additional CPU resources and may reduce performance.
+The SAS supervisor will process queries for foreign datasets. No parallel where-clause processing will occur.
+NOTE: Table WORK.HCPCSTDRUGSTD_SABR2006 created, with 615359 rows and 4 columns.
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           1:09.79
+      cpu time            1:04.94
+      
+
+
+NOTE: Appending WORK.RXTDRUGSTD_SABR2006 to WORK.RXTDRUGSTD_SABR.
+NOTE: BASE data set does not exist. DATA file is being copied to BASE file.
+NOTE: There were 2726397 observations read from the data set WORK.RXTDRUGSTD_SABR2006.
+NOTE: The data set WORK.RXTDRUGSTD_SABR has 2726397 observations and 4 variables.
+NOTE: PROCEDURE DATASETS used (Total process time):
+      real time           0.67 seconds
+      cpu time            0.53 seconds
+      
+
+
+NOTE: Appending WORK.HCPCSTDRUGSTD_SABR2006 to WORK.HCPCSTDRUGSTD_SABR.
+NOTE: BASE data set does not exist. DATA file is being copied to BASE file.
+NOTE: There were 615359 observations read from the data set WORK.HCPCSTDRUGSTD_SABR2006.
+NOTE: The data set WORK.HCPCSTDRUGSTD_SABR has 615359 observations and 4 variables.
+9                                                                   The SAS System                                   14:02 Wednesday, October 10, 2018
+
+NOTE: PROCEDURE DATASETS used (Total process time):
+      real time           0.23 seconds
+      cpu time            0.15 seconds
+      
+
+
+NOTE: Deleting WORK.RXTDRUGSTD_SABR2006 (memtype=DATA).
+NOTE: Deleting WORK.HCPCSTDRUGSTD_SABR2006 (memtype=DATA).
+NOTE: PROCEDURE DATASETS used (Total process time):
+      real time           0.06 seconds
+      cpu time            0.03 seconds
+      
+
+NOTE: Data set STD_SABR.STD_RX_2007 is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
+      additional CPU resources and may reduce performance.
+NOTE: Table WORK.RXTDRUGSTD_SABR2007 created, with 3379060 rows and 4 columns.
+
+NOTE: Data set STD_SABR.STD_PX_2007 is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
+      additional CPU resources and may reduce performance.
+The SAS supervisor will process queries for foreign datasets. No parallel where-clause processing will occur.
+NOTE: Table WORK.HCPCSTDRUGSTD_SABR2007 created, with 667247 rows and 4 columns.
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           1:10.35
+      cpu time            1:06.78
+      
+
+
+NOTE: Appending WORK.RXTDRUGSTD_SABR2007 to WORK.RXTDRUGSTD_SABR.
+NOTE: There were 3379060 observations read from the data set WORK.RXTDRUGSTD_SABR2007.
+NOTE: 3379060 observations added.
+NOTE: The data set WORK.RXTDRUGSTD_SABR has 6105457 observations and 4 variables.
+NOTE: PROCEDURE DATASETS used (Total process time):
+      real time           0.74 seconds
+      cpu time            0.65 seconds
+      
+
+
+NOTE: Appending WORK.HCPCSTDRUGSTD_SABR2007 to WORK.HCPCSTDRUGSTD_SABR.
+NOTE: There were 667247 observations read from the data set WORK.HCPCSTDRUGSTD_SABR2007.
+NOTE: 667247 observations added.
+NOTE: The data set WORK.HCPCSTDRUGSTD_SABR has 1282606 observations and 4 variables.
+NOTE: PROCEDURE DATASETS used (Total process time):
+      real time           0.32 seconds
+      cpu time            0.18 seconds
+      
+
+
+NOTE: Deleting WORK.RXTDRUGSTD_SABR2007 (memtype=DATA).
+NOTE: Deleting WORK.HCPCSTDRUGSTD_SABR2007 (memtype=DATA).
+NOTE: PROCEDURE DATASETS used (Total process time):
+      real time           0.06 seconds
+      cpu time            0.03 seconds
+      
+
+NOTE: Data set STD_SABR.STD_RX_2008 is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
+      additional CPU resources and may reduce performance.
+NOTE: Table WORK.RXTDRUGSTD_SABR2008 created, with 3623123 rows and 4 columns.
+
+NOTE: Data set STD_SABR.STD_PX_2008 is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
+      additional CPU resources and may reduce performance.
+The SAS supervisor will process queries for foreign datasets. No parallel where-clause processing will occur.
+NOTE: Table WORK.HCPCSTDRUGSTD_SABR2008 created, with 695863 rows and 4 columns.
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           1:12.75
+      cpu time            1:09.49
+      
+
+
+NOTE: Appending WORK.RXTDRUGSTD_SABR2008 to WORK.RXTDRUGSTD_SABR.
+NOTE: There were 3623123 observations read from the data set WORK.RXTDRUGSTD_SABR2008.
+10                                                                  The SAS System                                   14:02 Wednesday, October 10, 2018
+
+NOTE: 3623123 observations added.
+NOTE: The data set WORK.RXTDRUGSTD_SABR has 9728580 observations and 4 variables.
+NOTE: PROCEDURE DATASETS used (Total process time):
+      real time           0.67 seconds
+      cpu time            0.59 seconds
+      
+
+
+NOTE: Appending WORK.HCPCSTDRUGSTD_SABR2008 to WORK.HCPCSTDRUGSTD_SABR.
+NOTE: There were 695863 observations read from the data set WORK.HCPCSTDRUGSTD_SABR2008.
+NOTE: 695863 observations added.
+NOTE: The data set WORK.HCPCSTDRUGSTD_SABR has 1978469 observations and 4 variables.
+NOTE: PROCEDURE DATASETS used (Total process time):
+      real time           0.23 seconds
+      cpu time            0.17 seconds
+      
+
+
+NOTE: Deleting WORK.RXTDRUGSTD_SABR2008 (memtype=DATA).
+NOTE: Deleting WORK.HCPCSTDRUGSTD_SABR2008 (memtype=DATA).
+NOTE: PROCEDURE DATASETS used (Total process time):
+      real time           0.09 seconds
+      cpu time            0.01 seconds
+      
+
+NOTE: Data set STD_SABR.STD_RX_2009 is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
+      additional CPU resources and may reduce performance.
+NOTE: Table WORK.RXTDRUGSTD_SABR2009 created, with 3726765 rows and 4 columns.
+
+NOTE: Data set STD_SABR.STD_PX_2009 is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
+      additional CPU resources and may reduce performance.
+The SAS supervisor will process queries for foreign datasets. No parallel where-clause processing will occur.
+NOTE: Table WORK.HCPCSTDRUGSTD_SABR2009 created, with 695946 rows and 4 columns.
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           1:24.91
+      cpu time            1:20.05
+      
+
+
+NOTE: Appending WORK.RXTDRUGSTD_SABR2009 to WORK.RXTDRUGSTD_SABR.
+NOTE: There were 3726765 observations read from the data set WORK.RXTDRUGSTD_SABR2009.
+NOTE: 3726765 observations added.
+NOTE: The data set WORK.RXTDRUGSTD_SABR has 13455345 observations and 4 variables.
+NOTE: PROCEDURE DATASETS used (Total process time):
+      real time           0.75 seconds
+      cpu time            0.70 seconds
+      
+
+
+NOTE: Appending WORK.HCPCSTDRUGSTD_SABR2009 to WORK.HCPCSTDRUGSTD_SABR.
+NOTE: There were 695946 observations read from the data set WORK.HCPCSTDRUGSTD_SABR2009.
+NOTE: 695946 observations added.
+NOTE: The data set WORK.HCPCSTDRUGSTD_SABR has 2674415 observations and 4 variables.
+NOTE: PROCEDURE DATASETS used (Total process time):
+      real time           0.26 seconds
+      cpu time            0.18 seconds
+      
+
+
+NOTE: Deleting WORK.RXTDRUGSTD_SABR2009 (memtype=DATA).
+NOTE: Deleting WORK.HCPCSTDRUGSTD_SABR2009 (memtype=DATA).
+NOTE: PROCEDURE DATASETS used (Total process time):
+      real time           0.12 seconds
+      cpu time            0.04 seconds
+      
+
+NOTE: Data set STD_SABR.STD_RX_2010 is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
+      additional CPU resources and may reduce performance.
+NOTE: Table WORK.RXTDRUGSTD_SABR2010 created, with 4058051 rows and 4 columns.
+
+NOTE: Data set STD_SABR.STD_PX_2010 is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
+11                                                                  The SAS System                                   14:02 Wednesday, October 10, 2018
+
+      additional CPU resources and may reduce performance.
+The SAS supervisor will process queries for foreign datasets. No parallel where-clause processing will occur.
+NOTE: Table WORK.HCPCSTDRUGSTD_SABR2010 created, with 717494 rows and 4 columns.
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           1:28.59
+      cpu time            1:23.78
+      
+
+
+NOTE: Appending WORK.RXTDRUGSTD_SABR2010 to WORK.RXTDRUGSTD_SABR.
+NOTE: There were 4058051 observations read from the data set WORK.RXTDRUGSTD_SABR2010.
+NOTE: 4058051 observations added.
+NOTE: The data set WORK.RXTDRUGSTD_SABR has 17513396 observations and 4 variables.
+NOTE: PROCEDURE DATASETS used (Total process time):
+      real time           0.75 seconds
+      cpu time            0.67 seconds
+      
+
+
+NOTE: Appending WORK.HCPCSTDRUGSTD_SABR2010 to WORK.HCPCSTDRUGSTD_SABR.
+NOTE: There were 717494 observations read from the data set WORK.HCPCSTDRUGSTD_SABR2010.
+NOTE: 717494 observations added.
+NOTE: The data set WORK.HCPCSTDRUGSTD_SABR has 3391909 observations and 4 variables.
+NOTE: PROCEDURE DATASETS used (Total process time):
+      real time           0.25 seconds
+      cpu time            0.18 seconds
+      
+
+
+NOTE: Deleting WORK.RXTDRUGSTD_SABR2010 (memtype=DATA).
+NOTE: Deleting WORK.HCPCSTDRUGSTD_SABR2010 (memtype=DATA).
+NOTE: PROCEDURE DATASETS used (Total process time):
+      real time           0.12 seconds
+      cpu time            0.00 seconds
+      
+
+NOTE: Data set STD_SABR.STD_RX_2011 is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
+      additional CPU resources and may reduce performance.
+NOTE: Table WORK.RXTDRUGSTD_SABR2011 created, with 4513042 rows and 4 columns.
+
+NOTE: Data set STD_SABR.STD_PX_2011 is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
+      additional CPU resources and may reduce performance.
+The SAS supervisor will process queries for foreign datasets. No parallel where-clause processing will occur.
+NOTE: Table WORK.HCPCSTDRUGSTD_SABR2011 created, with 783072 rows and 4 columns.
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           1:39.05
+      cpu time            1:33.33
+      
+
+
+NOTE: Appending WORK.RXTDRUGSTD_SABR2011 to WORK.RXTDRUGSTD_SABR.
+NOTE: There were 4513042 observations read from the data set WORK.RXTDRUGSTD_SABR2011.
+NOTE: 4513042 observations added.
+NOTE: The data set WORK.RXTDRUGSTD_SABR has 22026438 observations and 4 variables.
+NOTE: PROCEDURE DATASETS used (Total process time):
+      real time           0.91 seconds
+      cpu time            0.87 seconds
+      
+
+
+NOTE: Appending WORK.HCPCSTDRUGSTD_SABR2011 to WORK.HCPCSTDRUGSTD_SABR.
+NOTE: There were 783072 observations read from the data set WORK.HCPCSTDRUGSTD_SABR2011.
+NOTE: 783072 observations added.
+NOTE: The data set WORK.HCPCSTDRUGSTD_SABR has 4174981 observations and 4 variables.
+NOTE: PROCEDURE DATASETS used (Total process time):
+      real time           0.29 seconds
+      cpu time            0.21 seconds
+      
+
+
+12                                                                  The SAS System                                   14:02 Wednesday, October 10, 2018
+
+NOTE: Deleting WORK.RXTDRUGSTD_SABR2011 (memtype=DATA).
+NOTE: Deleting WORK.HCPCSTDRUGSTD_SABR2011 (memtype=DATA).
+NOTE: PROCEDURE DATASETS used (Total process time):
+      real time           0.04 seconds
+      cpu time            0.00 seconds
+      
+
+NOTE: Data set STD_SABR.STD_RX_2012 is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
+      additional CPU resources and may reduce performance.
+NOTE: Table WORK.RXTDRUGSTD_SABR2012 created, with 5233313 rows and 4 columns.
+
+NOTE: Data set STD_SABR.STD_PX_2012 is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
+      additional CPU resources and may reduce performance.
+The SAS supervisor will process queries for foreign datasets. No parallel where-clause processing will occur.
+NOTE: Table WORK.HCPCSTDRUGSTD_SABR2012 created, with 829084 rows and 4 columns.
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           2:03.51
+      cpu time            1:58.12
+      
+
+
+NOTE: Appending WORK.RXTDRUGSTD_SABR2012 to WORK.RXTDRUGSTD_SABR.
+NOTE: There were 5233313 observations read from the data set WORK.RXTDRUGSTD_SABR2012.
+NOTE: 5233313 observations added.
+NOTE: The data set WORK.RXTDRUGSTD_SABR has 27259751 observations and 4 variables.
+NOTE: PROCEDURE DATASETS used (Total process time):
+      real time           1.00 seconds
+      cpu time            0.93 seconds
+      
+
+
+NOTE: Appending WORK.HCPCSTDRUGSTD_SABR2012 to WORK.HCPCSTDRUGSTD_SABR.
+NOTE: There were 829084 observations read from the data set WORK.HCPCSTDRUGSTD_SABR2012.
+NOTE: 829084 observations added.
+NOTE: The data set WORK.HCPCSTDRUGSTD_SABR has 5004065 observations and 4 variables.
+NOTE: PROCEDURE DATASETS used (Total process time):
+      real time           0.26 seconds
+      cpu time            0.20 seconds
+      
+
+
+NOTE: Deleting WORK.RXTDRUGSTD_SABR2012 (memtype=DATA).
+NOTE: Deleting WORK.HCPCSTDRUGSTD_SABR2012 (memtype=DATA).
+NOTE: PROCEDURE DATASETS used (Total process time):
+      real time           0.14 seconds
+      cpu time            0.00 seconds
+      
+
+NOTE: Data set STD_SABR.STD_RX_2013 is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
+      additional CPU resources and may reduce performance.
+NOTE: Table WORK.RXTDRUGSTD_SABR2013 created, with 7217662 rows and 4 columns.
+
+NOTE: Data set STD_SABR.STD_PX_2013 is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
+      additional CPU resources and may reduce performance.
+The SAS supervisor will process queries for foreign datasets. No parallel where-clause processing will occur.
+NOTE: Table WORK.HCPCSTDRUGSTD_SABR2013 created, with 880082 rows and 4 columns.
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           4:08.94
+      cpu time            3:58.52
+      
+
+
+NOTE: Appending WORK.RXTDRUGSTD_SABR2013 to WORK.RXTDRUGSTD_SABR.
+NOTE: There were 7217662 observations read from the data set WORK.RXTDRUGSTD_SABR2013.
+NOTE: 7217662 observations added.
+NOTE: The data set WORK.RXTDRUGSTD_SABR has 34477413 observations and 4 variables.
+NOTE: PROCEDURE DATASETS used (Total process time):
+      real time           1.56 seconds
+      cpu time            1.46 seconds
+      
+13                                                                  The SAS System                                   14:02 Wednesday, October 10, 2018
+
+
+
+NOTE: Appending WORK.HCPCSTDRUGSTD_SABR2013 to WORK.HCPCSTDRUGSTD_SABR.
+NOTE: There were 880082 observations read from the data set WORK.HCPCSTDRUGSTD_SABR2013.
+NOTE: 880082 observations added.
+NOTE: The data set WORK.HCPCSTDRUGSTD_SABR has 5884147 observations and 4 variables.
+NOTE: PROCEDURE DATASETS used (Total process time):
+      real time           0.25 seconds
+      cpu time            0.21 seconds
+      
+
+
+NOTE: Deleting WORK.RXTDRUGSTD_SABR2013 (memtype=DATA).
+NOTE: Deleting WORK.HCPCSTDRUGSTD_SABR2013 (memtype=DATA).
+NOTE: PROCEDURE DATASETS used (Total process time):
+      real time           0.20 seconds
+      cpu time            0.00 seconds
+      
+
+NOTE: Data set STD_SABR.STD_RX_2014 is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
+      additional CPU resources and may reduce performance.
+NOTE: Table WORK.RXTDRUGSTD_SABR2014 created, with 8361527 rows and 4 columns.
+
+NOTE: Data set STD_SABR.STD_PX_2014 is in a format that is native to another host. Cross Environment Data Access will be used. This will require 
+      additional CPU resources and may reduce performance.
+The SAS supervisor will process queries for foreign datasets. No parallel where-clause processing will occur.
+NOTE: Table WORK.HCPCSTDRUGSTD_SABR2014 created, with 925498 rows and 4 columns.
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           4:40.43
+      cpu time            4:25.39
+      
+
+
+NOTE: Appending WORK.RXTDRUGSTD_SABR2014 to WORK.RXTDRUGSTD_SABR.
+NOTE: There were 8361527 observations read from the data set WORK.RXTDRUGSTD_SABR2014.
+NOTE: 8361527 observations added.
+NOTE: The data set WORK.RXTDRUGSTD_SABR has 42838940 observations and 4 variables.
+NOTE: PROCEDURE DATASETS used (Total process time):
+      real time           1.52 seconds
+      cpu time            1.45 seconds
+      
+
+
+NOTE: Appending WORK.HCPCSTDRUGSTD_SABR2014 to WORK.HCPCSTDRUGSTD_SABR.
+NOTE: There were 925498 observations read from the data set WORK.HCPCSTDRUGSTD_SABR2014.
+NOTE: 925498 observations added.
+NOTE: The data set WORK.HCPCSTDRUGSTD_SABR has 6809645 observations and 4 variables.
+NOTE: PROCEDURE DATASETS used (Total process time):
+      real time           0.45 seconds
+      cpu time            0.26 seconds
+      
+
+
+NOTE: Deleting WORK.RXTDRUGSTD_SABR2014 (memtype=DATA).
+NOTE: Deleting WORK.HCPCSTDRUGSTD_SABR2014 (memtype=DATA).
+NOTE: PROCEDURE DATASETS used (Total process time):
+      real time           0.21 seconds
+      cpu time            0.01 seconds
+      
+
+314        
+315        
+316        proc freq data=RxtdrugUCBSTD;
+317        table GNN;
+318        run;
+
+                                                                  --- AS project ---                             14:02 Wednesday, October 10, 2018   3
+
+                                                                  The FREQ Procedure
+
+                                                                    Generic Name
+ 
+                                                                                      Cumulative    Cumulative
+                                       GNN                   Frequency     Percent     Frequency      Percent
+                                       -----------------------------------------------------------------------
+                                       ABATACEPT                35921        0.12         35921         0.12  
+                                       ADALIMUMAB             1247457        4.16       1283378         4.28  
+                                       ANAKINRA                  3750        0.01       1287128         4.29  
+                                       APREMILAST                5272        0.02       1292400         4.31  
+                                       BELIMUMAB                 2066        0.01       1294466         4.32  
+                                       CANAKINUMAB                378        0.00       1294844         4.32  
+                                       CELECOXIB              2466996        8.23       3761840        12.55  
+                                       CERTOLIZUMAB            102141        0.34       3863981        12.89  
+                                       DICLOFENAC             3206933       10.70       7070914        23.58  
+                                       ETANERCEPT              983617        3.28       8054531        26.86  
+                                       ETODOLAC                637224        2.13       8691755        28.99  
+                                       FLURBIPROFEN             46166        0.15       8737921        29.14  
+                                       GOLIMUMAB                75178        0.25       8813099        29.39  
+                                       HYDROXYCHLOROQUINE     1336996        4.46      10150095        33.85  
+                                       IBUPROFEN              6341576       21.15      16491671        55.01  
+                                       INDOMETHACIN            674691        2.25      17166362        57.26  
+                                       INFLIXIMAB               46940        0.16      17213302        57.41  
+                                       KETOPROFEN               75681        0.25      17288983        57.66  
+                                       KETOROLAC               596053        1.99      17885036        59.65  
+                                       LEFLUNOMIDE             243987        0.81      18129023        60.47  
+                                       MELOXICAM              5320341       17.75      23449364        78.21  
+                                       METHOTREXATE           2028057        6.76      25477421        84.98  
+                                       NAPROXEN               3844027       12.82      29321448        97.80  
+                                       RITUXIMAB                 3159        0.01      29324607        97.81  
+                                       SALSALATE                61183        0.20      29385790        98.01  
+                                       SULFASALAZINE           511099        1.70      29896889        99.72  
+                                       TOCILIZUMAB               7248        0.02      29904137        99.74  
+                                       TOFACITINIB              11854        0.04      29915991        99.78  
+                                       USTEKINUMAB              65759        0.22      29981750       100.00  
+                                       VEDOLIZUMAB                349        0.00      29982099       100.00  
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+                                                                  pullTargetDrug.sas
+NOTE: There were 29982099 observations read from the data set WORK.RXTDRUGUCBSTD.
+NOTE: The PROCEDURE FREQ printed page 3.
+NOTE: PROCEDURE FREQ used (Total process time):
+      real time           7.21 seconds
+      cpu time            6.41 seconds
+14                                                                  The SAS System                                   14:02 Wednesday, October 10, 2018
+
+      
+
+319        
+320        proc freq data=HCPCStdrugUCBSTD;
+321        table GNN;
+322        run;
+
+                                                                  --- AS project ---                             14:02 Wednesday, October 10, 2018   4
+
+                                                                  The FREQ Procedure
+
+                                                                    Generic Name
+ 
+                                                                                   Cumulative    Cumulative
+                                          GNN             Frequency     Percent     Frequency      Percent
+                                          -----------------------------------------------------------------
+                                          ABATACEPT         134534        9.45        134534         9.45  
+                                          ADALIMUMAB         16980        1.19        151514        10.64  
+                                          CANAKINUMAB          147        0.01        151661        10.65  
+                                          CERTOLIZUMAB       16942        1.19        168603        11.84  
+                                          ETANERCEPT         15188        1.07        183791        12.90  
+                                          GOLIMUMAB           2710        0.19        186501        13.09  
+                                          INFLIXIMAB        849834       59.67       1036335        72.76  
+                                          METHOTREXATE      110138        7.73       1146473        80.50  
+                                          RITUXIMAB         207767       14.59       1354240        95.09  
+                                          TOCILIZUMAB        53535        3.76       1407775        98.84  
+                                          USTEKINUMAB        16445        1.15       1424220       100.00  
+                                          VEDOLIZUMAB            9        0.00       1424229       100.00  
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+                                                                  pullTargetDrug.sas
+NOTE: There were 1424229 observations read from the data set WORK.HCPCSTDRUGUCBSTD.
+NOTE: The PROCEDURE FREQ printed page 4.
+NOTE: PROCEDURE FREQ used (Total process time):
+      real time           0.49 seconds
+      cpu time            0.34 seconds
+      
+
+323        
+324        proc sql;
+325        create table DT.BioUCBSTD as
+326        select patid,DISPENSE_DATE,upcase(GNN) as GNN
+327        from RxtdrugUCBSTD
+328        where NDC in (select Code
+329                      from NDC.Ndc_dmard_bio
+330                      where CodeType='NDC' and Category in ('Biologic','sDMARD'))
+331        union
+332        select patid,BEGIN_DATE as DISPENSE_DATE,upcase(GNN) as GNN
+333        from HCPCSTdrugUCBSTD
+334        where PX in (select Code
+335                      from NDC.Ndc_dmard_bio
+336                      where CodeType='HCPCS' and Category in ('Biologic','sDMARD'))
+337        ;
+NOTE: Table DT.BIOUCBSTD created, with 2579732 rows and 3 columns.
+
+338        
+339        create table DT.BioMPSTD as
+340        select patid,DISPENSE_DATE,upcase(GNN) as GNN
+341        from RxtdrugMPSTD
+342        where NDC in (select Code
+343                      from NDC.Ndc_dmard_bio
+344                      where CodeType='NDC' and Category in ('Biologic','sDMARD'))
+345        union
+346        select patid,BEGIN_DATE as DISPENSE_DATE,upcase(GNN) as GNN
+347        from HCPCSTdrugMPSTD
+348        where PX in (select Code
+349                      from NDC.Ndc_dmard_bio
+350                      where CodeType='HCPCS' and Category in ('Biologic','sDMARD'));
+NOTE: Table DT.BIOMPSTD created, with 861923 rows and 3 columns.
+
+351        
+352        create table DT.Biostd_sabr as
+353        select patid,DISPENSE_DATE,upcase(GNN) as GNN
+354        from Rxtdrugstd_sabr
+355        where NDC in (select Code
+356                      from NDC.Ndc_dmard_bio
+357                      where CodeType='NDC' and Category in ('Biologic','sDMARD'))
+358        union
+359        select patid,BEGIN_DATE as DISPENSE_DATE,upcase(GNN) as GNN
+360        from Hcpcstdrugstd_sabr
+361        where PX in (select Code
+362                      from NDC.Ndc_dmard_bio
+363                      where CodeType='HCPCS' and Category in ('Biologic','sDMARD'))
+364        union
+365        select substr(pid,1,20) as patid length=20,rxdate as DISPENSE_DATE,upcase(GNN) as GNN
+366        from std_sabr.Nonspecific_jcode_biologic
+367        ;
+NOTE: Data set STD_SABR.NONSPECIFIC_JCODE_BIOLOGIC is in a format that is native to another host. Cross Environment Data Access will be used. This 
+      will require additional CPU resources and may reduce performance.
+NOTE: Table DT.BIOSTD_SABR created, with 4065606 rows and 3 columns.
+
+368        
+369        create table DT.DmardUCBSTD as
+370        select patid,DISPENSE_DATE,upcase(GNN) as GNN
+371        from RxtdrugUCBSTD
+372        where NDC in (select Code
+15                                                                  The SAS System                                   14:02 Wednesday, October 10, 2018
+
+373                      from NDC.Ndc_dmard_bio
+374                      where CodeType='NDC' and Category in ('cDMARD'))
+375        union
+376        select patid,BEGIN_DATE as DISPENSE_DATE,upcase(GNN) as GNN
+377        from HcpcsTdrugUCBSTD
+378        where PX in (select Code
+379                      from NDC.Ndc_dmard_bio
+380                      where CodeType='HCPCS' and Category in ('cDMARD'));
+NOTE: Table DT.DMARDUCBSTD created, with 4101285 rows and 3 columns.
+
+381        
+382        create table DT.DmardMPSTD as
+383        select patid,DISPENSE_DATE,upcase(GNN) as GNN
+384        from RxtdrugMPSTD
+385        where NDC in (select Code
+386                      from NDC.Ndc_dmard_bio
+387                      where CodeType='NDC' and Category in ('cDMARD'))
+388        union
+389        select patid,BEGIN_DATE as DISPENSE_DATE,upcase(GNN) as GNN
+390        from HcpcsTdrugMPSTD
+391        where PX in (select Code
+392                      from NDC.Ndc_dmard_bio
+393                      where CodeType='HCPCS' and Category in ('cDMARD'));
+NOTE: Table DT.DMARDMPSTD created, with 2810051 rows and 3 columns.
+
+394        
+395        create table DT.Dmardstd_sabr as
+396        select patid,DISPENSE_DATE,upcase(GNN) as GNN
+397        from Rxtdrugstd_sabr
+398        where NDC in (select Code
+399                      from NDC.Ndc_dmard_bio
+400                      where CodeType='NDC' and Category in ('cDMARD'))
+401        union
+402        select patid,BEGIN_DATE as DISPENSE_DATE,upcase(GNN) as GNN
+403        from HcpcsTdrugstd_sabr
+404        where PX in (select Code
+405                      from NDC.Ndc_dmard_bio
+406                      where CodeType='HCPCS' and Category in ('cDMARD'));
+NOTE: Table DT.DMARDSTD_SABR created, with 19732077 rows and 3 columns.
+
+407        
+408        create table DT.NsaidUCBSTD as
+409        select patid,DISPENSE_DATE,upcase(GNN) as GNN
+410        from RxtdrugUCBSTD
+411        where NDC in (select Code from NDC.Ndc_nsaids where CodeType='NDC')
+412        ;
+NOTE: Table DT.NSAIDUCBSTD created, with 23270871 rows and 3 columns.
+
+413        
+414        create table DT.NsaidMPSTD as
+415        select patid,DISPENSE_DATE,upcase(GNN) as GNN
+416        from RxtdrugMPSTD
+417        where NDC in (select Code from NDC.Ndc_nsaids where CodeType='NDC')
+418        ;
+NOTE: Table DT.NSAIDMPSTD created, with 3891294 rows and 3 columns.
+
+419        
+420        create table DT.Nsaidstd_sabr as
+421        select patid,DISPENSE_DATE,upcase(GNN) as GNN
+422        from Rxtdrugstd_sabr
+423        where NDC in (select Code from NDC.Ndc_nsaids where CodeType='NDC')
+424        ;
+NOTE: Table DT.NSAIDSTD_SABR created, with 19054551 rows and 3 columns.
+
+425        
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           2:16.52
+      cpu time            2:54.03
+      
+
+426        proc freq data=DT.BioUCBSTD;
+427        table GNN;
+16                                                                  The SAS System                                   14:02 Wednesday, October 10, 2018
+
+428        run;
+
+                                                                  --- AS project ---                             14:02 Wednesday, October 10, 2018   5
+
+                                                                  The FREQ Procedure
+
+                                                                                   Cumulative    Cumulative
+                                          GNN             Frequency     Percent     Frequency      Percent
+                                          -----------------------------------------------------------------
+                                          ABATACEPT          35750        1.39         35750         1.39  
+                                          ADALIMUMAB       1242789       48.18       1278539        49.56  
+                                          ANAKINRA            3721        0.14       1282260        49.71  
+                                          APREMILAST          5213        0.20       1287473        49.91  
+                                          BELIMUMAB           1454        0.06       1288927        49.96  
+                                          CANAKINUMAB          378        0.01       1289305        49.98  
+                                          CERTOLIZUMAB      101688        3.94       1390993        53.92  
+                                          ETANERCEPT        980901       38.02       2371894        91.94  
+                                          GOLIMUMAB          74963        2.91       2446857        94.85  
+                                          INFLIXIMAB         46736        1.81       2493593        96.66  
+                                          RITUXIMAB           2738        0.11       2496331        96.77  
+                                          TOCILIZUMAB         6143        0.24       2502474        97.01  
+                                          TOFACITINIB        11819        0.46       2514293        97.46  
+                                          USTEKINUMAB        65094        2.52       2579387        99.99  
+                                          VEDOLIZUMAB          345        0.01       2579732       100.00  
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+                                                                  pullTargetDrug.sas
+NOTE: There were 2579732 observations read from the data set DT.BIOUCBSTD.
+NOTE: The PROCEDURE FREQ printed page 5.
+NOTE: PROCEDURE FREQ used (Total process time):
+      real time           0.43 seconds
+      cpu time            0.38 seconds
+      
+
+429        
+430        data DT.TNFUCBSTD;
+431        set DT.BioUCBSTD;
+432        if GNN in ('ADALIMUMAB','CERTOLIZUMAB','ETANERCEPT','GOLIMUMAB','INFLIXIMAB');
+433        run;
+
+NOTE: There were 2579732 observations read from the data set DT.BIOUCBSTD.
+NOTE: The data set DT.TNFUCBSTD has 2447077 observations and 3 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.68 seconds
+      cpu time            0.65 seconds
+      
+
+434        
+435        data DT.TNFMPSTD;
+436        set DT.BioMPSTD;
+437        if GNN in ('ADALIMUMAB','CERTOLIZUMAB','ETANERCEPT','GOLIMUMAB','INFLIXIMAB');
+438        run;
+
+NOTE: There were 861923 observations read from the data set DT.BIOMPSTD.
+NOTE: The data set DT.TNFMPSTD has 849948 observations and 3 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.32 seconds
+      cpu time            0.29 seconds
+      
+
+439        
+440        data DT.TNFstd_sabr;
+441        set DT.Biostd_sabr;
+442        if GNN in ('ADALIMUMAB','CERTOLIZUMAB','ETANERCEPT','GOLIMUMAB','INFLIXIMAB');
+443        run;
+
+NOTE: There were 4065606 observations read from the data set DT.BIOSTD_SABR.
+NOTE: The data set DT.TNFSTD_SABR has 3828368 observations and 3 variables.
+NOTE: DATA statement used (Total process time):
+      real time           1.04 seconds
+      cpu time            1.03 seconds
+      
+
+444        
+445        proc freq data=DT.TNFUCBSTD;
+446        table GNN;
+447        run;
+
+                                                                  --- AS project ---                             14:02 Wednesday, October 10, 2018   6
+
+                                                                  The FREQ Procedure
+
+                                                                                   Cumulative    Cumulative
+                                          GNN             Frequency     Percent     Frequency      Percent
+                                          -----------------------------------------------------------------
+                                          ADALIMUMAB       1242789       50.79       1242789        50.79  
+                                          CERTOLIZUMAB      101688        4.16       1344477        54.94  
+                                          ETANERCEPT        980901       40.08       2325378        95.03  
+                                          GOLIMUMAB          74963        3.06       2400341        98.09  
+                                          INFLIXIMAB         46736        1.91       2447077       100.00  
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+                                                                  pullTargetDrug.sas
+NOTE: There were 2447077 observations read from the data set DT.TNFUCBSTD.
+NOTE: The PROCEDURE FREQ printed page 6.
+NOTE: PROCEDURE FREQ used (Total process time):
+      real time           0.43 seconds
+      cpu time            0.37 seconds
+      
+
+448        
+449        
+450        
+451        ods html close;
 NOTE: SAS Institute Inc., SAS Campus Drive, Cary, NC USA 27513-2414
 NOTE: The SAS System used:
-      real time           7.57 seconds
-      cpu time            1.94 seconds
+      real time           51:42.48
+      cpu time            48:01.91
       

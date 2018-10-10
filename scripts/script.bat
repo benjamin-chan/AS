@@ -9,25 +9,25 @@ call :execute pullTargetDrug
 call :execute buildExposureCohorts
 call :execute buildIndexLookup
 call :execute buildControlLookup
-call :execute buildExposureFollowUp
-call :execute reproduceTables2
-call :execute buildServiceCodeDatasets
-call :execute buildServiceCodeDatasetsControl
-call :execute queryFractures
-call :execute queryFracturesControl
-call :execute CANCER_setoguchi
-call :execute CANCER_NMSC
-call :execute queryOutcomeHospitalizedInfection
-call :execute queryOutcomeOpportunisticInfection
-call :execute queryPrevalentComorbidities
-call :execute queryPrevalentComorbiditiesControl
-call :execute queryIncidenceOutcomes
-call :execute generateNDCLookup
-call :execute queryOtherComorbidities
-call :execute modelPropensityScore
+REM call :execute buildExposureFollowUp
+REM call :execute reproduceTables2
+REM call :execute buildServiceCodeDatasets
+REM call :execute buildServiceCodeDatasetsControl
+REM call :execute queryFractures
+REM call :execute queryFracturesControl
+REM call :execute CANCER_setoguchi
+REM call :execute CANCER_NMSC
+REM call :execute queryOutcomeHospitalizedInfection
+REM call :execute queryOutcomeOpportunisticInfection
+REM call :execute queryPrevalentComorbidities
+REM call :execute queryPrevalentComorbiditiesControl
+REM call :execute queryIncidenceOutcomes
+REM call :execute generateNDCLookup
+REM call :execute queryOtherComorbidities
+REM call :execute modelPropensityScore
 rem Run summarizePropensityScore.Rmd to check propensity score model
-call :execute modelIncidenceOutcomes
-call :execute contentsWorkingDatasets
+REM call :execute modelIncidenceOutcomes
+REM call :execute contentsWorkingDatasets
 
 "C:\Program Files\7-Zip\7z.exe" d ..\output.zip ..\output\*
 "C:\Program Files\7-Zip\7z.exe" a ..\output.zip ..\output\*
