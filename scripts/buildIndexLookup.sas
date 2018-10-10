@@ -22,7 +22,7 @@ ods html
   style = Statistical;
 
 
-%let var = patid, indexGNN, indexDate, age, sex, asDate, enr_start_date, enr_end_date, asCohortDate, death_date;
+%let var = patid, indexGNN, indexDate, age, sex, asDate, enr_start_date, enr_end_date, obs_end, asCohortDate, death_date;
 proc sql;
   create table DT.indexLookup AS
     select "Marketscan" as database, "TNF"   as exposure, &var from DT.ASTNFCohortStdUCB_ex1     union corr
