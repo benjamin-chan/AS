@@ -26,16 +26,103 @@ ods html
 Fenglong's code to build target drug data sets
  */
 
+/* 
+From: Chen, Lang [mailto:langchen@uabmc.edu] 
+Sent: Thursday, October 04, 2018 3:21 PM
+To: Kevin Winthrop <winthrop@ohsu.edu>; Benjamin Chan <chanb@ohsu.edu>
+Cc: Atul Deodhar <deodhara@ohsu.edu>; Jeffrey.Curtis@ccc.uab.edu; Sarah Siegel <siegels@ohsu.edu>
+Subject: RE: Review Reminder: AS Comorbidities Manuscript (CZP-PMA-049255). Please review by 10 August
+
+Ben 
+
+Here is the NDC list in case you need it.
+
+NDC.Ndc_dmard_bio
+NDC.Ndc_nsaids
+ */
+
 data NDC4targetDrug;
-set NDC.Ndc_dmard_bio_all(where=(CodeType='NDC'))
-    NDC.Ndc_nsaidcox(where=(CodeType='NDC'))
-    NDC.Ndc_nsaidnoncox(where=(CodeType='NDC'));
+set NDC.Ndc_dmard_bio(where=(CodeType='NDC'))
+    NDC.Ndc_nsaids(where=(CodeType='NDC'));
+  if gnn in ("CELECOXIB",
+             "IBUPROFEN",
+             "NAPROXEN",
+             "MELOXICAM",
+             "INDOMETHACIN",
+             "DICLOFENAC",
+             "KETOROLAC",
+             "KETOPROFEN",
+             "ETODOLAC",
+             "SALSALATE",
+             "FLURBIPROFEN",
+             "HYDROXYCHLOROQUINE",
+             "LEFLUNOMIDE",
+             "METHOTREXATE",
+             "SULFASALAZINE",
+             "ADALIMUMAB",
+             "CERTOLIZUMAB",
+             "ETANERCEPT",
+             "GOLIMUMAB",
+             "INFLIXIMAB",
+             "ABATACEPT",
+             "ANAKINRA",
+             "BELIMUMAB",
+             "CANAKINUMAB",
+             "IXEKIZUMAB",
+             "RITUXIMAB",
+             "SECUKINUMAB",
+             "TOCILIZUMAB",
+             "USTEKINUMAB",
+             "VEDOLIZUMAB",
+             "APREMILAST",
+             "TOFACITINIB") then output;
 run;
 
+
 data J4targetDrug;
-set NDC.Ndc_dmard_bio_all(where=(CodeType='HCPCS'))
-    NDC.Ndc_nsaidcox(where=(CodeType='HCPCS'))
-    NDC.Ndc_nsaidnoncox(where=(CodeType='HCPCS'));
+set NDC.Ndc_dmard_bio(where=(CodeType='HCPCS'))
+    NDC.Ndc_nsaids(where=(CodeType='HCPCS'));
+  if gnn in ("CELECOXIB",
+             "IBUPROFEN",
+             "NAPROXEN",
+             "MELOXICAM",
+             "INDOMETHACIN",
+             "DICLOFENAC",
+             "KETOROLAC",
+             "KETOPROFEN",
+             "ETODOLAC",
+             "SALSALATE",
+             "FLURBIPROFEN",
+             "HYDROXYCHLOROQUINE",
+             "LEFLUNOMIDE",
+             "METHOTREXATE",
+             "SULFASALAZINE",
+             "ADALIMUMAB",
+             "CERTOLIZUMAB",
+             "ETANERCEPT",
+             "GOLIMUMAB",
+             "INFLIXIMAB",
+             "ABATACEPT",
+             "ANAKINRA",
+             "BELIMUMAB",
+             "CANAKINUMAB",
+             "IXEKIZUMAB",
+             "RITUXIMAB",
+             "SECUKINUMAB",
+             "TOCILIZUMAB",
+             "USTEKINUMAB",
+             "VEDOLIZUMAB",
+             "APREMILAST",
+             "TOFACITINIB") then output;
+run;
+
+
+proc freq data=NDC4targetDrug;
+table category * GNN / list;
+run;
+
+proc freq data=J4targetDrug;
+table GNN / list;
 run;
 
 %macro pullTargetDrug(stdLib=,                   
@@ -108,13 +195,13 @@ create table DT.BioUCBSTD as
 select patid,DISPENSE_DATE,upcase(GNN) as GNN
 from RxtdrugUCBSTD
 where NDC in (select Code 
-              from NDC.Ndc_dmard_bio_all 
+              from NDC.Ndc_dmard_bio 
               where CodeType='NDC' and Category in ('Biologic','sDMARD'))
 union
 select patid,BEGIN_DATE as DISPENSE_DATE,upcase(GNN) as GNN
 from HCPCSTdrugUCBSTD
 where PX in (select Code 
-              from NDC.Ndc_dmard_bio_all 
+              from NDC.Ndc_dmard_bio 
               where CodeType='HCPCS' and Category in ('Biologic','sDMARD'))
 ;
 
@@ -122,26 +209,26 @@ create table DT.BioMPSTD as
 select patid,DISPENSE_DATE,upcase(GNN) as GNN
 from RxtdrugMPSTD
 where NDC in (select Code 
-              from NDC.Ndc_dmard_bio_all 
+              from NDC.Ndc_dmard_bio 
               where CodeType='NDC' and Category in ('Biologic','sDMARD'))
 union
 select patid,BEGIN_DATE as DISPENSE_DATE,upcase(GNN) as GNN
 from HCPCSTdrugMPSTD
 where PX in (select Code 
-              from NDC.Ndc_dmard_bio_all 
+              from NDC.Ndc_dmard_bio 
               where CodeType='HCPCS' and Category in ('Biologic','sDMARD'));
 
 create table DT.Biostd_sabr as
 select patid,DISPENSE_DATE,upcase(GNN) as GNN
 from Rxtdrugstd_sabr
 where NDC in (select Code 
-              from NDC.Ndc_dmard_bio_all 
+              from NDC.Ndc_dmard_bio 
               where CodeType='NDC' and Category in ('Biologic','sDMARD'))
 union
 select patid,BEGIN_DATE as DISPENSE_DATE,upcase(GNN) as GNN
 from Hcpcstdrugstd_sabr
 where PX in (select Code 
-              from NDC.Ndc_dmard_bio_all 
+              from NDC.Ndc_dmard_bio 
               where CodeType='HCPCS' and Category in ('Biologic','sDMARD'))
 union
 select substr(pid,1,20) as patid length=20,rxdate as DISPENSE_DATE,upcase(GNN) as GNN
@@ -152,60 +239,57 @@ create table DT.DmardUCBSTD as
 select patid,DISPENSE_DATE,upcase(GNN) as GNN
 from RxtdrugUCBSTD
 where NDC in (select Code 
-              from NDC.Ndc_dmard_bio_all 
+              from NDC.Ndc_dmard_bio 
               where CodeType='NDC' and Category in ('cDMARD'))
 union
 select patid,BEGIN_DATE as DISPENSE_DATE,upcase(GNN) as GNN
 from HcpcsTdrugUCBSTD
 where PX in (select Code 
-              from NDC.Ndc_dmard_bio_all 
+              from NDC.Ndc_dmard_bio 
               where CodeType='HCPCS' and Category in ('cDMARD'));
 
 create table DT.DmardMPSTD as
 select patid,DISPENSE_DATE,upcase(GNN) as GNN
 from RxtdrugMPSTD
 where NDC in (select Code 
-              from NDC.Ndc_dmard_bio_all 
+              from NDC.Ndc_dmard_bio 
               where CodeType='NDC' and Category in ('cDMARD'))
 union
 select patid,BEGIN_DATE as DISPENSE_DATE,upcase(GNN) as GNN
 from HcpcsTdrugMPSTD
 where PX in (select Code 
-              from NDC.Ndc_dmard_bio_all 
+              from NDC.Ndc_dmard_bio 
               where CodeType='HCPCS' and Category in ('cDMARD'));
 
 create table DT.Dmardstd_sabr as
 select patid,DISPENSE_DATE,upcase(GNN) as GNN
 from Rxtdrugstd_sabr
 where NDC in (select Code 
-              from NDC.Ndc_dmard_bio_all 
+              from NDC.Ndc_dmard_bio 
               where CodeType='NDC' and Category in ('cDMARD'))
 union
 select patid,BEGIN_DATE as DISPENSE_DATE,upcase(GNN) as GNN
 from HcpcsTdrugstd_sabr
 where PX in (select Code 
-              from NDC.Ndc_dmard_bio_all 
+              from NDC.Ndc_dmard_bio 
               where CodeType='HCPCS' and Category in ('cDMARD'));
 
 create table DT.NsaidUCBSTD as
 select patid,DISPENSE_DATE,upcase(GNN) as GNN
 from RxtdrugUCBSTD
-where NDC in (select Code from NDC.Ndc_nsaidcox where CodeType='NDC' union
-                    select Code from NDC.Ndc_nsaidnoncox where CodeType='NDC')
+where NDC in (select Code from NDC.Ndc_nsaids where CodeType='NDC')
 ;
 
 create table DT.NsaidMPSTD as
 select patid,DISPENSE_DATE,upcase(GNN) as GNN
 from RxtdrugMPSTD
-where NDC in (select Code from NDC.Ndc_nsaidcox where CodeType='NDC' union
-                    select Code from NDC.Ndc_nsaidnoncox where CodeType='NDC')
+where NDC in (select Code from NDC.Ndc_nsaids where CodeType='NDC')
 ;
 
 create table DT.Nsaidstd_sabr as
 select patid,DISPENSE_DATE,upcase(GNN) as GNN
 from Rxtdrugstd_sabr
-where NDC in (select Code from NDC.Ndc_nsaidcox where CodeType='NDC' union
-                    select Code from NDC.Ndc_nsaidnoncox where CodeType='NDC')
+where NDC in (select Code from NDC.Ndc_nsaids where CodeType='NDC')
 ;
 
 proc freq data=DT.BioUCBSTD;
@@ -227,6 +311,9 @@ set DT.Biostd_sabr;
 if GNN in ('ADALIMUMAB','CERTOLIZUMAB','ETANERCEPT','GOLIMUMAB','INFLIXIMAB');
 run;
 
+proc freq data=DT.TNFUCBSTD;
+table GNN;
+run;
 
 
 
