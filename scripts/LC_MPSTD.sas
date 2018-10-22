@@ -1,3 +1,26 @@
+*  University of Alabama at Birmingham                               *
+*  AS project                                            *
+**********************************************************************;
+options pagesize=74 linesize=150 pageno=1 missing=' ' date FORMCHAR="|----|+|---+=|-/\<>*";
+* Programmer    : Benjamin Chan <chanb@ohsu.edu>
+* Creation date : 
+* Modify date   :
+;
+%let cmt=LC_MPSTD; * type the name of your program here (without the filename extension);
+%let pgm=&cmt..sas;
+footnote "&pgm.";
+* footnote2 "%sysfunc(datetime(),datetime14.)";
+title1 '--- AS project ---';
+**********************************************************************;
+options macrogen mlogic mprint symbolgen;
+options nomacrogen nomlogic nomprint nosymbolgen;
+
+
+ods html
+  body = "output\&cmt..html"
+  style = Statistical;
+
+
 
 /*
 mkdir Q:\temp64\lchen\UCBASchecktmp1
@@ -28,6 +51,11 @@ libname UCBcheck spde "Q:\temp64\lchen\UCBASchecktmp1"
                   COMPRESS=BINARY;
 options user=UCBcheck;
 %let source=MPSTD;
+
+
+proc datasets nolist library=user kill;
+quit;
+
 *******************************************************************************;
 * get enrollment into denom
 *******************************************************************************;
@@ -1406,3 +1434,9 @@ proc sql;
   create table DT.expo_cohort7_MPSTD as
   select "MPCD" as database, * from expo_cohort7;
 quit;
+proc contents data = DT.expo_cohort7_MPSTD order = varnum;
+run;
+
+
+
+ods html close;
