@@ -67,7 +67,7 @@ proc sql;
     where 12 <= calculated monthsEnrolled;
 quit;
 %let where = dx_type = "09" & dx like "720%" & enc_type = "AV";
-%let varlist = patid, begin_date, dx_type, dx, enc_type, prov_type;
+%let varlist = patid, begin_date, dx_type, dx, enc_type, prov_type format = $8.;
 proc sql;
   create table temp1 as
     select &varlist from MPSTD.dx_07_10 where &where union corr
@@ -83,8 +83,8 @@ proc sql;
            year(B.begin_date) as year,
            A.begin_date format = mmddyy10. as date1,
            B.begin_date format = mmddyy10. as date2,
-           A.prov_type as prov_type1,
-           B.prov_type as prov_type2,
+           A.prov_type format = $8. as prov_type1,
+           B.prov_type format = $8. as prov_type2,
            C.death_date,
            C.sex/* ,
            int((B.begin_date - C.birth_date) / 365.25) as age */
@@ -92,7 +92,7 @@ proc sql;
          temp1 B on (A.patid = B.patid &
                           intnx("year", B.begin_date, -1, "sameday") < A.begin_date < B.begin_date - 7) inner join
          MPSTD.demog C on (A.patid = C.patid)
-    where (A.prov_type = "300" & B.prov_type = "300");  /* Provider type codes in Marketscan are different than MPCD and Medicare */
+    where (A.prov_type = "66" & B.prov_type = "66");  /* Provider type codes in Marketscan are different than MPCD and Medicare */
   create table cohortASTDMPCD as
     select distinct
            A.patid,
@@ -102,8 +102,8 @@ proc sql;
            C.enr_start_date,
            C.enr_end_date,
            B.death_date,
-           B.sex,
-           B.age
+           B.sex/* ,
+           B.age */
     from (select patid, min(date2) format = mmddyy10. as dateEarliestDiagnosis from temp2 group by patid) A inner join
          temp2 B on (A.patid = B.patid & A.dateEarliestDiagnosis = B.date2) inner join
          denom C on (A.patid = C.patid & C.enr_start_date <= A.dateEarliestDiagnosis <= C.enr_end_date);
@@ -136,9 +136,9 @@ tables dx_type   dx  enc_type;
 run;
 
 *******************************************************************************;
- /* AS 2 dx from AV and rheumotologist PROV_TYPE=300 and 7 day - 1 year apart*/
+ /* AS 2 dx from AV and rheumotologist PROV_TYPE=66 and 7 day - 1 year apart*/
 data uab_dx_720_av_rheu;
-set uab_dx_720_av(where=(PROV_TYPE in ('300')))
+set uab_dx_720_av(where=(PROV_TYPE in ('66')))
 ;
 run;
 %macro twodx(indat, datevar);
@@ -211,11 +211,11 @@ run;
 
 
 /*check*/
-proc freq data=cohort1;
+/* proc freq data=cohort1;
 tables dx2eligible;
-run;
+run; */
 proc freq data=temp2;
-tables sex age prov_type1 prov_type2;
+tables sex /* age */ prov_type1 prov_type2;
 run;
 proc sql;
 select count(distinct patid) from temp2;
@@ -338,10 +338,10 @@ run;
 
 proc sql;
 select count(*) from dat_rx_expo;
-select count(*) from RxtdrugMPSTD;
+/* select count(*) from RxtdrugMPSTD; */
 
 select count(*) from dat_px_expo;
-select count(*) from HcpcstdrugMPSTD;
+/* select count(*) from HcpcstdrugMPSTD; */
 quit;
 proc freq data=NDC.Ndc_dmard_bio ; tables gnn;run;
 
@@ -500,7 +500,7 @@ run;
 proc sort data=dat_expo_bio2 out=dat_expo_bio3 nodupkey; by patid gnn DISPENSE_DATE;run;
 proc sort data=dat_expo_bio2 out=dat_expo_bio nodupkey; by patid gnn DISPENSE_DATE;run;
 proc freq data=dat_expo_bio3; tables gnn;run;
-proc freq data=tmp; tables gnn;run;
+/* proc freq data=tmp; tables gnn;run; */
 proc freq data=dt.BioMPstd; tables gnn;run;
 ods html close;
 ods html;
@@ -652,7 +652,7 @@ ods html close;
 ods html;
 
 /*ben*/
-%expo(source = MPSTD   , cohort0 = cohortASTDMPCD , stdLib = MPSTD   , enrData = enroll)
+/* %expo(source = MPSTD   , cohort0 = cohortASTDMPCD , stdLib = MPSTD   , enrData = enroll) */
 
 
 /*LC first exposure of bio/TNF/DMARD/NSAID*/
@@ -857,11 +857,15 @@ tables exposure*gnn/missing list;
 tables hx6m_rx*hx6m_rx/missing list;
 run;
 
+data enroll;
+  set MPSTD.enroll;
+  format enr_basis $1.;
+run;
 proc sql;
 /* merge with enroll*/
 create table expo_cohort2
 as select * from expo_cohort1(keep=patid exposure indexdate gnn hx_rx hx_rx_date censor_rx hx6m_rx) a
-left join MPSTD.enroll b
+left join enroll b
 on a.patid=b.patid and b.enr_start_date+183<=a.indexdate<=enr_end_date;
 /* merge with as cohort*/
 create table expo_cohort3
@@ -914,32 +918,32 @@ where ascohort=1 and hx6m_rx^=1
 group by exposure;
 
 
-select  count(distinct patid) as number
+/* select  count(distinct patid) as number
 from
-ASNoExpCohort&source._ex1;
+ASNoExpCohort&source._ex1; */
 
 ods html close;
 ods html;
 
-select * from expo_cohort3
+/* select * from expo_cohort3
 where ascohort=1 and hx_rx^=1 and exposure="NO"
 and patid not in (select patid from ASNoExpCohort&source._ex1);
 select * from ASNoExpCohort&source._ex1
 where patid not in (select patid from expo_cohort3
-where ascohort=1 and hx_rx^=1 and exposure="NO");
+where ascohort=1 and hx_rx^=1 and exposure="NO"); */
 
 
-select * from expo_cohort3
+/* select * from expo_cohort3
 where ascohort=1 and hx6m_rx^=1 and exposure="NO"
 and patid not in (select patid from ASNoExpCohort&source._ex2);
 select * from ASNoExpCohort&source._ex2
 where patid not in (select patid from expo_cohort3
-where ascohort=1 and hx6m_rx^=1 and exposure="NO");
+where ascohort=1 and hx6m_rx^=1 and exposure="NO"); */
 
 /*
 patient in no exposure group with death date before index date
 */
-proc print data=ASNoExpCohort&source._ex1;
+/* proc print data=ASNoExpCohort&source._ex1;
 where patid in ("28485767001" "27061524501");
 run;
 
@@ -954,7 +958,7 @@ where patid in ("28485767001"  "27061524501");
 run;
 proc print data=ASNoExpCohort0&source;
 where patid in ("28485767001"  "27061524501");
-run;
+run; */
 
 
 ods html close;
@@ -997,6 +1001,7 @@ ods html;
 
 data expo_cohort5;
 set expo_cohort4;
+format enr_basis $1.;
 where ascohort=1 and enr_start_date+183<=indexDate<=enr_end_date and (indexdate<=obs_end);
 if exposure^="TNF" and hx6m_rx=1 then delete;
 if exposure="TNF" and hx_rx_date=indexdate then delete;
@@ -1008,7 +1013,7 @@ run;
 
 ************************************************************************************************;
 /*ben*/
-%let var = patid, indexGNN, indexDate, age, sex, asDate, enr_start_date, enr_end_date, asCohortDate, death_date;
+/* %let var = patid, indexGNN, indexDate, age, sex, asDate, enr_start_date, enr_end_date, asCohortDate, death_date;
 proc sql;
   create table indexLookup AS
     select "MPCD"       as database, "TNF"   as exposure, &var from ASTNFCohortMPStd_ex1    union corr
@@ -1023,16 +1028,16 @@ proc sort data = indexLookup nodupkey;
   by database exposure patid indexGNN indexDate;
 run;
 ods html close;
-ods html;
+ods html; */
 /*check*/
 proc sql;
-  select database, 
+  /* select database, 
          exposure, 
          count(distinct patid) as countDistinctPatid, 
          count(distinct indexID) as countDistinctIndexes, 
          count(*) as countRows
     from indexLookup
-    group by database, exposure;
+    group by database, exposure; */
 
 select exposure, count(distinct patid) as countDistinctPatid, count(  *) as countDistinctIndexes
 from expo_cohort5
@@ -1051,12 +1056,12 @@ quit;
 options nolabel;
 
 /*find episode in one date not in the other*/
-proc sql outobs=10;
+/* proc sql outobs=10;
 select a.* from expo_cohort5(where=(exposure="TNF")) a
 left join ASTNFCohortMPSTD_ex1 b
 on a.patid=b.patid and a.gnn=b.indexgnn
 where b.patid is null and b.indexgnn is null;
-quit;
+quit; */
 
 
 ************************************************************************************************;
@@ -1102,10 +1107,10 @@ if end2 then hPATID.output(dataset: "Dat_expo_stop") ;
 run;
 ods html close;
 ods html;
-proc freq data=Dat_expo_stop; 
+/* proc freq data=Dat_expo_stop; 
 format stop_date year4.;
 tables  exposure*gnn*stop_date/missing list;
-run;
+run; */
 
 quit;
 
@@ -1131,13 +1136,13 @@ ods html close;
 ods html;
 /*those number should match*/
 proc sql;
-  select database, 
+  /* select database, 
          exposure, 
          count(distinct patid) as countDistinctPatid, 
          count(distinct indexID) as countDistinctIndexes, 
          count(*) as countRows
     from indexLookup
-    group by database, exposure;
+    group by database, exposure; */
 
 select exposure, count(distinct patid) as countDistinctPatid, count(  *) as countDistinctIndexes
 from expo_cohort7
@@ -1163,8 +1168,8 @@ footnote2 "%sysfunc(datetime(), B8601DT15.)";
 title1 '---   ---';
 %let filename=followupday;
 %let RTF_file_path=&outputfolder.;
-ods html file="&filename.(%sysfunc(datetime(), B8601DT15.)).html" path="W:\Arthritis Studies\MPCD_AS";
-ods rtf file="W:\Arthritis Studies\MPCD_AS\&filename.(%sysfunc(datetime(), B8601DT15.)).rtf" style=EGdefault ;
+/* ods html file="&filename.(%sysfunc(datetime(), B8601DT15.)).html" path="W:\Arthritis Studies\MPCD_AS";
+ods rtf file="W:\Arthritis Studies\MPCD_AS\&filename.(%sysfunc(datetime(), B8601DT15.)).rtf" style=EGdefault ; */
 proc means data=expo_cohort7  n nmiss sum mean std mode min p1 p5 p10 p25 median p75 p90 p95 p99 max maxdec=0;
 class exposure gnn;
 var followupday;
@@ -1205,6 +1210,7 @@ end;
 set 
 MPSTD.Px_07_10 
 ;
+format FACILITY_TYPE;
  rc=hPATID.find(key:PATID);
 if rc=0;
 run;
