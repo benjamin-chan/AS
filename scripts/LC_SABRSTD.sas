@@ -6,7 +6,7 @@ options pagesize=74 linesize=150 pageno=1 missing=' ' date FORMCHAR="|----|+|---
 * Creation date : 
 * Modify date   :
 ;
-%let cmt=LC_UCBSTD; * type the name of your program here (without the filename extension);
+%let cmt=LC_SABRSTD; * type the name of your program here (without the filename extension);
 %let pgm=&cmt..sas;
 footnote "&pgm.";
 * footnote2 "%sysfunc(datetime(),datetime14.)";
@@ -243,9 +243,9 @@ run;
 
 
 /*check*/
-proc freq data=cohort1;
+/* proc freq data=cohort1;
 tables dx2eligible;
-run;
+run; */
 proc freq data=temp2;
 tables sex age prov_type1 prov_type2;
 run;
@@ -386,10 +386,10 @@ run;
 
 proc sql;
 select count(*) from dat_rx_expo;
-select count(*) from RxtdrugSABRstd;
+/* select count(*) from RxtdrugSABRstd; */
 
 select count(*) from dat_px_expo;
-select count(*) from HcpcstdrugSABRstd;
+/* select count(*) from HcpcstdrugSABRstd; */
 quit;
 proc freq data=NDC.Ndc_dmard_bio ; tables gnn;run;
 
@@ -407,14 +407,14 @@ proc datasets nolist;delete RXTdrug&stdLib HCPCSTdrug&stdLib;quit;run;
 proc sql;
 create table RXTdrug&stdLib.&YR as
 select a.patid,a.NDC,a.DISPENSE_DATE,b.GNN
-from &stdLib..&rxData._&YR as a
+from &stdLib..std_&rxData._&YR as a
       ,
      NDC4targetDrug as b
 where a.NDC=b.code;
 
 create table HCPCSTdrug&stdLib.&YR as
 select a.patid,a.px,a.BEGIN_DATE,b.GNN
-from &stdLib..&pxdata._&YR as a
+from &stdLib..std_&pxdata._&YR as a
       ,
       J4targetDrug as b
 where a.px=b.code;
@@ -433,16 +433,16 @@ quit;run;
 %end;
 %mend;
 
-%pullTargetDrug(stdLib=SABRSTD,
+%pullTargetDrug(stdLib=std_sabr,
                 pxdata=px,
                 rxData=rx,
-                YearStart=2010,
-                nYear=5);
+                YearStart=2006,
+                nYear=9);
 
 proc sql;
 create table BioSABRSTD as
 select patid,DISPENSE_DATE,upcase(GNN) as GNN
-from RxtdrugSABRSTD
+from RxtdrugSTD_SABR
 where NDC in (select Code 
               from NDC.Ndc_dmard_bio 
               where CodeType='NDC' and gnn in (
@@ -465,7 +465,7 @@ where NDC in (select Code
 'VEDOLIZUMAB'))
 union
 select patid,BEGIN_DATE as DISPENSE_DATE,upcase(GNN) as GNN
-from HCPCSTdrugSABRSTD
+from HCPCSTdrugSTD_SABR
 where PX in (select Code 
               from NDC.Ndc_dmard_bio 
               where CodeType='HCPCS' and gnn in (
@@ -548,8 +548,8 @@ run;
 proc sort data=dat_expo_bio2 out=dat_expo_bio3 nodupkey; by patid gnn DISPENSE_DATE;run;
 proc sort data=dat_expo_bio2 out=dat_expo_bio nodupkey; by patid gnn DISPENSE_DATE;run;
 proc freq data=dat_expo_bio3; tables gnn;run;
-proc freq data=tmp; tables gnn;run;
-proc freq data=dt.BioSABRstd; tables gnn;run;
+/* proc freq data=tmp; tables gnn;run; */
+/* proc freq data=dt.BioSABRstd; tables gnn;run; */
 ods html close;
 ods html;
 proc freq data=BioSABRstd; tables gnn;run;
@@ -585,7 +585,7 @@ proc sql;
 
 create table DmardSABRSTD as
 select patid,DISPENSE_DATE,upcase(GNN) as GNN
-from RxtdrugSABRSTD
+from RxtdrugSTD_SABR
 where NDC in (select Code 
               from NDC.Ndc_dmard_bio
               where CodeType='NDC' and 
@@ -598,7 +598,7 @@ where NDC in (select Code
 			  )
 union
 select patid,BEGIN_DATE as DISPENSE_DATE,upcase(GNN) as GNN
-from HcpcsTdrugSABRSTD
+from HCPCSTdrugSTD_SABR
 where PX in (select Code 
               from NDC.Ndc_dmard_bio
               where CodeType='HCPCS' and upcase(gnn) in (
@@ -615,9 +615,9 @@ quit;
 
 ods html close;
 ods html;
-proc freq data=dt.DmardSABRSTD;
+/* proc freq data=dt.DmardSABRSTD;
 tables gnn;
-run;
+run; */
 proc freq data=DmardSABRSTD;
 tables gnn;
 run;
@@ -655,7 +655,7 @@ proc sort data=dat_expo_NSAID1 out=dat_expo_NSAID nodupkey; by patid gnn DISPENS
 proc sql;
 create table NsaidSABRSTD as
 select patid,DISPENSE_DATE,upcase(GNN) as GNN
-from RxtdrugSABRSTD
+from RxtdrugSTD_SABR
 where NDC in (select Code from NDC.Ndc_nsaids where CodeType='NDC' and rt="ORAL" and
 upcase(gnn) in (
 'CELECOXIB' 
@@ -675,9 +675,9 @@ upcase(gnn) in (
 quit;
 proc sort data=NsaidSABRSTD nodupkey; by patid gnn DISPENSE_DATE;run;
 
-proc freq data=dt.NSAIDSABRSTD;
+/* proc freq data=dt.NSAIDSABRSTD;
 tables gnn;
-run;
+run; */
 
 proc freq data=dat_expo_NSAID1;
 tables gnn;
@@ -700,7 +700,7 @@ ods html close;
 ods html;
 
 /*ben*/
-%expo(source = SABRSTD  , cohort0 = cohortASTDSABR  , stdLib = SABRSTD  , enrData = enroll)
+%expo(source = SABRSTD  , cohort0 = cohortASTDSABR  , stdLib = STD_SABR  , enrData = enroll)
 
 
 /*LC first exposure of bio/TNF/DMARD/NSAID*/
@@ -964,30 +964,30 @@ group by exposure;
 
 select  count(distinct patid) as number
 from
-ASNoExpCohort&source._ex1;
+ASNoExpCohortSABRStd_ex1;
 
 ods html close;
 ods html;
 
 select * from expo_cohort3
 where ascohort=1 and hx_rx^=1 and exposure="NO"
-and patid not in (select patid from ASNoExpCohort&source._ex1);
-select * from ASNoExpCohort&source._ex1
+and patid not in (select patid from ASNoExpCohortSABRStd_ex1);
+select * from ASNoExpCohortSABRStd_ex1
 where patid not in (select patid from expo_cohort3
 where ascohort=1 and hx_rx^=1 and exposure="NO");
 
 
 select * from expo_cohort3
 where ascohort=1 and hx6m_rx^=1 and exposure="NO"
-and patid not in (select patid from ASNoExpCohort&source._ex2);
-select * from ASNoExpCohort&source._ex2
+and patid not in (select patid from ASNoExpCohortSABRStd_ex2);
+select * from ASNoExpCohortSABRStd_ex2
 where patid not in (select patid from expo_cohort3
 where ascohort=1 and hx6m_rx^=1 and exposure="NO");
 
 /*
 patient in no exposure group with death date before index date
 */
-proc print data=ASNoExpCohort&source._ex1;
+/* proc print data=ASNoExpCohort&source._ex1;
 where patid in ("28485767001" "27061524501");
 run;
 
@@ -1002,7 +1002,7 @@ where patid in ("28485767001"  "27061524501");
 run;
 proc print data=ASNoExpCohort0&source;
 where patid in ("28485767001"  "27061524501");
-run;
+run; */
 
 
 ods html close;
