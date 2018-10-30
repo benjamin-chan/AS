@@ -40,14 +40,14 @@ quit;
 %include "lib\expo.sas";
 libname ndc_16 "W:\onenote\references\Drug NDCs\SAS Data\List from 2016 FDB";
 libname lookup "W:\Users\lchen\lookupdata";
-libname UCBcheck spde "Q:\temp64\lchen\UCBASchecktmp1"
-                 datapath=("R:\temp64\lchen\UCBASchecktmp1"
-                           "S:\temp64\lchen\UCBASchecktmp1"
-                           "T:\temp64\lchen\UCBASchecktmp1"
-                           "U:\temp64\lchen\UCBASchecktmp1"
-                           "V:\temp64\lchen\UCBASchecktmp1")
-                 indexpath=("U:\temp64\lchen\UCBASchecktmp1"
-                            "V:\temp64\lchen\UCBASchecktmp1")
+libname UCBcheck spde "Q:\temp64\bchan\SASWork"
+                 datapath=("R:\temp64\bchan\SASWork"
+                           "S:\temp64\bchan\SASWork"
+                           "T:\temp64\bchan\SASWork"
+                           "U:\temp64\bchan\SASWork"
+                           "V:\temp64\bchan\SASWork")
+                 indexpath=("U:\temp64\bchan\SASWork"
+                            "V:\temp64\bchan\SASWork")
                   COMPRESS=BINARY;
 options user=UCBcheck;
 %let source=UCBSTD;
