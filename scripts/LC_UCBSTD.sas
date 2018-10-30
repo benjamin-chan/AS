@@ -1327,6 +1327,51 @@ where enc_type in (
 );
 run;
 
+data outcome_exclude;
+set 
+outcome_Amyloidosis
+outcome_AorticInsufficiency
+outcome_Pulmonaryfibrosis
+outcome_CaudaEquinasyndrome
+outcome_ConductionBlock
+outcome_CrohnDisease
+outcome_HematologicCancer
+outcome_IgAnephropathy
+outcome_Interstitiallung
+outcome_MI
+outcome_Nephroticsyndrome
+outcome_Psoriasis
+outcome_Psoriaticarthritis
+outcome_Restrictivelung
+outcome_SolidCancer
+outcome_SpinalCord
+outcome_UlcerativeColitis
+outcome_uveitis
+;
+run;
+proc freq data= outcome_exclude; format outcome_date year4.; tables outcome_date outcome;run;
+proc print data=outcome_exclude; where outcome_date=.;run;
+proc print data=outcome_MI; where outcome_date=.;run;
+
+proc sort data= outcome_exclude nodupkey; by patid outcome_date;run;
+data outcome_exclude;
+set outcome_exclude;
+by patid outcome_date;
+if first.patid;
+run;;
+proc sql;
+create table expo_cohort7 as
+select a.*, .<b.outcome_date<a.indexdate as hx_outcome , min(stop_date-1, enr_end_date, censor_rx-1, DEATH_DATE)-indexdate+1 as cohortday
+	from expo_cohort6 a
+left join outcome_exclude b
+on a.patid=b.patid;
+quit;
+
+
+proc freq data=expo_cohort7; tables hx_outcome gnn;run;
+proc freq data=expo_cohort6; tables  gnn;run;
+
+
 %let outcome=Psoriaticarthritis;
 %macro outcomedata(outcome=Psoriaticarthritis);
 proc datasets nolist; delete cohortas_&outcome.1 cohortas_&outcome.; quit;
@@ -1338,7 +1383,7 @@ if _n_=1 then do;
     rc=houtcome.defineDone();
 end;
 if 0 then set outcome_&outcome.(keep=PATID outcome_date);
-set expo_cohort6;
+set expo_cohort7;
 by patid  indexdate gnn;
 retain hx_ot_&outcome. bl_ot_&outcome. outcome_&outcome.;
 format outcome_&outcome._date followupenddate mmddyy10.;
@@ -1375,16 +1420,20 @@ proc means data= cohortas_&outcome.1 n nmiss mean std mode min p1 p5 p10 p25 med
 var followupday ;
 run;
 
+proc freq data=cohortas_&outcome.1; tables hx_ot_&outcome.*hx_outcome/nopercent nocol norow;run;
+
+
 data cohortas_&outcome.;
 set cohortas_&outcome.1;
 by patid  indexdate GNN;
 indexgnn=gnn;
-%if %upcase(&outcome)^=%upcase(IPinfection) and 
-	%upcase(&outcome)^=%upcase(OI) and 
-	%upcase(&outcome)^=%upcase(cancer_NMSC) %then %do;
-		if hx_OT_&outcome=1 then delete ;
-		;;;
-%end;
+/*%if %upcase(&outcome)^=%upcase(IPinfection) and */
+/*	%upcase(&outcome)^=%upcase(OI) and */
+/*	%upcase(&outcome)^=%upcase(cancer_NMSC) %then %do;*/
+/*		if hx_OT_&outcome=1 then delete ;*/
+/*		;;;*/
+/*%end;*/
+if hx_outcome then delete;
 run;
 %mend outcomedata;;
 
@@ -1435,7 +1484,9 @@ run;
 
 %mend rawrate;
 
-%outcomedata;;
+%outcomedata;
+proc freq data=COHORTAS_PSORIATICARTHRITIS; tables hx_ot_Psoriaticarthritis*hx_outcome;run;
+;
 %rawrate;
 
 
