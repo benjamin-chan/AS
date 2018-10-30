@@ -1202,6 +1202,17 @@ ods html close;
 ods html;
 
 
+proc sql;
+  create table DT.expo_cohort7_SABRSTD as
+  select "Medicare" as database, * from expo_cohort7;
+quit;
+proc contents data = DT.expo_cohort7_SABRSTD order = varnum;
+run;
+
+
+endsas;
+
+
 options orientation=landscape;
 options papersize=(17in 9in);
 %put %sysfunc(datetime(), B8601DT15.);
@@ -1342,17 +1353,17 @@ outcome_Pulmonaryfibrosis
 outcome_CaudaEquinasyndrome
 outcome_ConductionBlock
 outcome_CrohnDisease
-outcome_HematologicCancer
+/*outcome_HematologicCancer*/
 outcome_IPinfection
 outcome_IgAnephropathy
-outcome_Interstitiallung
-outcome_Myocardialinfarction
+/*outcome_Interstitiallung*/
+/*outcome_Myocardialinfarction*/
 outcome_Nephroticsyndrome
-outcome_NMSC
+/*outcome_NMSC*/
 outcome_Psoriasis
 outcome_Psoriaticarthritis
 outcome_Restrictivelung
-outcome_SolidCancer
+/*outcome_SolidCancer*/
 outcome_SpinalCord
 outcome_UlcerativeColitis
 outcome_uveitis
@@ -1364,19 +1375,19 @@ if disease="Apical Pulmonary fibrosis" then output outcome_Pulmonaryfibrosis;
 if disease="Cauda Equina syndrome" then output outcome_CaudaEquinasyndrome;
 if disease="Conduction Block" then output outcome_ConductionBlock;
 if disease="Crohn�s Disease" then output outcome_CrohnDisease;
-if disease="Hematologic Cancer" then output outcome_HematologicCancer;
+/*if disease="Hematologic Cancer" then output outcome_HematologicCancer;*/
 if disease="Hospitalized infection" and enc_type in (
 'IP' 
 ) then output outcome_IPinfection;
 if disease="IgA nephropathy" then output outcome_IgAnephropathy;
-if disease="Interstitial lung disease" then output outcome_Interstitiallung;
-if disease="Myocardial infarction" then output outcome_Myocardialinfarction;
+/*if disease="Interstitial lung disease" then output outcome_Interstitiallung;*/
+/*if disease="Myocardial infarction" then output outcome_Myocardialinfarction;*/
 if disease="Nephrotic syndrome" then output outcome_Nephroticsyndrome;
-if disease="Non Melanoma Skin Cancer" then output outcome_NMSC;
+/*if disease="Non Melanoma Skin Cancer" then output outcome_NMSC;*/
 if disease="Psoriasis" then output outcome_Psoriasis;
 if disease="Psoriatic arthritis" then output outcome_Psoriaticarthritis;
 if disease='Restrictive lung disease�' then output outcome_Restrictivelung;
-if disease="Solid Cancer" then output outcome_SolidCancer;
+/*if disease="Solid Cancer" then output outcome_SolidCancer;*/
 if disease="Spinal Cord compression" then output outcome_SpinalCord;
 if disease="Ulcerative Colitis" then output outcome_UlcerativeColitis;
 if disease="Uveitis" then output outcome_uveitis;
@@ -1397,21 +1408,21 @@ outcome_Pulmonaryfibrosis
 outcome_CaudaEquinasyndrome
 outcome_ConductionBlock
 outcome_CrohnDisease
-/* outcome_HematologicCancer */
+outcome_HematologicCancer
 outcome_IgAnephropathy
-/* outcome_Interstitiallung */
-/* outcome_MI */
+outcome_Interstitiallung
+outcome_MI
 outcome_Nephroticsyndrome
 outcome_Psoriasis
 outcome_Psoriaticarthritis
 outcome_Restrictivelung
-/* outcome_SolidCancer */
+outcome_SolidCancer
 outcome_SpinalCord
 outcome_UlcerativeColitis
 outcome_uveitis
 ;
 run;
-proc freq data= outcome_exclude; format outcome_date year4.; tables outcome_date disease;run;
+proc freq data= outcome_exclude; format outcome_date year4.; tables outcome_date outcome;run;
 proc print data=outcome_exclude; where outcome_date=.;run;
 proc print data=outcome_MI; where outcome_date=.;run;
 
@@ -1550,14 +1561,6 @@ run;
 proc freq data=COHORTAS_PSORIATICARTHRITIS; tables hx_ot_Psoriaticarthritis*hx_outcome;run;
 ;
 %rawrate;
-
-
-proc sql;
-  create table DT.expo_cohort7_SABRSTD as
-  select "Medicare" as database, * from expo_cohort7;
-quit;
-proc contents data = DT.expo_cohort7_SABRSTD order = varnum;
-run;
 
 
 
