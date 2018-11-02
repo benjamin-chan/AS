@@ -133,10 +133,9 @@ BUDESONIDE         | 1 =     | N/A (confirmed there is no coefficient by Lang on
 
 Let me know if you have any difficulty to find or view the SAS data.
  */
-libname NDC "W:\onenote\references\Drug NDCs\SAS Data" access = readonly;
-proc contents data = NDC.Ndc_oralsteroids order = varnum;
+proc contents data = NDC.Ndc_steroids_oral order = varnum;
 run;
-proc contents data = NDC.NDC_DMARD_Bio_All order = varnum;
+proc contents data = NDC.NDC_DMARD_BIO order = varnum;
 run; 
 
 
@@ -223,10 +222,10 @@ Use LIKE string 2 on etc_name
       C.Prednisone_EQ_Dose as prednisodeEquivalentDose,
       "" as category,
       "" as subcategory,
-      "NDC_ORALSTEROIDS" as source
+      "NDC_STEROIDS_ORAL" as source
     from
       FDB.FDB_ETC_NDC_15 A inner join
-      NDC.Ndc_oralsteroids C on (A.NDC = C.Code)
+      NDC.Ndc_steroids_oral C on (A.NDC = C.Code)
     union all
     select
       A.*,
@@ -237,47 +236,46 @@ Use LIKE string 2 on etc_name
       D.source
     from
       FDB.FDB_ETC_NDC_15 A inner join
-      (select codeType, code, category, subcate, "NDC_ALOPU" as source from NDC.NDC_ALOPU union corr
-       select codeType, code, category, subcate, "NDC_DMARD_BIO_ALL" as source from NDC.NDC_DMARD_BIO_ALL) D on (A.NDC = D.Code)
+      (select codeType, code, category, subcate, "NDC_ALLOPURINOL" as source from NDC.Ndc_allopurinol union corr
+       select codeType, code, category, subcate, "NDC_DMARD_BIO" as source from NDC.NDC_DMARD_BIO) D on (A.NDC = D.Code)
     where D.codeType = "NDC"
     union all
     select
       A.*, . as prednisoneMultiplier, . as prednisodeEquivalentDose, "" as category, "" as subcategory, E.source
     from
       FDB.FDB_ETC_NDC_15 A inner join
-      (/* select codeType, code, "NDC_ALOPU" as source from NDC.NDC_ALOPU union corr */
-       select codeType, code, "NDC_ANTI_FUNGAL" as source from NDC.NDC_ANTI_FUNGAL union corr
-       select codeType, code, "NDC_ANTI_HYPERTENSIVE" as source from NDC.NDC_ANTI_HYPERTENSIVE union corr
+      (/* select codeType, code, "NDC_ALLOPURINOL" as source from NDC.Ndc_allopurinol union corr */
+       select codeType, code, "NDC_ANTIFUNGALS" as source from NDC.NDC_ANTIFUNGALS union corr
+       select codeType, code, "NDC_ANTIHYPERTENSIVE" as source from NDC.NDC_ANTIHYPERTENSIVE union corr
        select codeType, code, "NDC_ANTIBIOTICS" as source from NDC.NDC_ANTIBIOTICS union corr
        select codeType, code, "NDC_ANTICOAGULANTS" as source from NDC.NDC_ANTICOAGULANTS union corr
        select codeType, code, "NDC_ANTIHYPERLIPID" as source from NDC.NDC_ANTIHYPERLIPID union corr
        select codeType, code, "NDC_ANTIVIRAL" as source from NDC.NDC_ANTIVIRAL union corr
        select codeType, code, "NDC_BETABLOCKERS" as source from NDC.NDC_BETABLOCKERS union corr
        select codeType, code, "NDC_BISPHOSPHONATES" as source from NDC.NDC_BISPHOSPHONATES union corr
-       /* select codeType, code, "NDC_DMARD_BIO_ALL" as source from NDC.NDC_DMARD_BIO_ALL union corr */
+       /* select codeType, code, "NDC_DMARD_BIO" as source from NDC.NDC_DMARD_BIO union corr */
        select codeType, code, "NDC_FOLIC_ACID" as source from NDC.NDC_FOLIC_ACID union corr
        select codeType, code, "NDC_GANCICLOVIR" as source from NDC.NDC_GANCICLOVIR union corr
        select codeType, code, "NDC_INSULIN" as source from NDC.NDC_INSULIN union corr
        select codeType, code, "NDC_JIA_DMARDS" as source from NDC.NDC_JIA_DMARDS union corr
        select codeType, code, "NDC_NARCOTICS" as source from NDC.NDC_NARCOTICS union corr
-       select codeType, code, "NDC_NSAIDCOX" as source from NDC.NDC_NSAIDCOX union corr
-       select codeType, code, "NDC_NSAIDNONCOX" as source from NDC.NDC_NSAIDNONCOX union corr
-       /* select codeType, code, "NDC_ORALSTEROIDS" as source from NDC.NDC_ORALSTEROIDS union corr */
+       select codeType, code, "NDC_NSAIDS" as source from NDC.NDC_NSAIDS union corr
+       /* select codeType, code, "NDC_STEROIDS_ORAL" as source from NDC.NDC_STEROIDS_ORAL union corr */
        select codeType, code, "NDC_PPIS" as source from NDC.NDC_PPIS union corr
        select codeType, code, "NDC_PULMONARY_EMBOLISM" as source from NDC.NDC_PULMONARY_EMBOLISM union corr
-       select codeType, code, "NDC_STATIN" as source from NDC.NDC_STATIN union corr
+       select codeType, code, "NDC_ANTIHYPERLIPID" as source from NDC.NDC_ANTIHYPERLIPID union corr
        /* select codeType, code, "NDC_STATIN_OLD15" as source from NDC.NDC_STATIN_OLD15 union corr
        select codeType, code, "NDC_STATINS" as source from NDC.NDC_STATINS union corr
        select codeType, code, "NDC_STATINS_OBSOLETE" as source from NDC.NDC_STATINS_OBSOLETE union corr */
        select codeType, code, "NDC_STEROIDS" as source from NDC.NDC_STEROIDS union corr
        select codeType, code, "NDC_TB" as source from NDC.NDC_TB union corr
-       select codeType, code, "NDC_TOPICALSTEROIDS" as source from NDC.NDC_TOPICALSTEROIDS union corr
+       select codeType, code, "NDC_STEROIDS_TOPICAL" as source from NDC.NDC_STEROIDS_TOPICAL union corr
        select codeType, code, "NDC_VASCULITIS" as source from NDC.NDC_VASCULITIS union corr
        select codeType, code, "NDC_ZOSVAC" as source from NDC.NDC_ZOSVAC) E on (A.NDC = E.Code)
     where E.codeType = "NDC";
 
   create table DT.lookupJcodes as
-    select A.* from NDC.NDC_DMARD_Bio_All A where A.codeType = "HCPCS" union corr
+    select A.* from NDC.NDC_DMARD_BIO A where A.codeType = "HCPCS" union corr
     select "" as gnn,
            "HCPCS" as codeType,
            description as descript,
