@@ -157,6 +157,9 @@ proc sql;
                 A.enc_type = "IP" &
                 . < A.admit_date < A.discharge_date) C
     order by C.database, C.exposureID, C.outcomeCategory, C.disease, C.begin_date;
+  select database, exposure, disease, count(distinct exposureID) as n
+    from Work.incidentMI
+    group by database, exposure, disease;
 quit;
 
 
