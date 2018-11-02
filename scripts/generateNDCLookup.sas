@@ -263,11 +263,11 @@ Use LIKE string 2 on etc_name
        /* select codeType, code, "NDC_STEROIDS_ORAL" as source from NDC.NDC_STEROIDS_ORAL union corr */
        select codeType, code, "NDC_PPIS" as source from NDC.NDC_PPIS union corr
        select codeType, code, "NDC_PULMONARY_EMBOLISM" as source from NDC.NDC_PULMONARY_EMBOLISM union corr
-       select codeType, code, "NDC_ANTIHYPERLIPID" as source from NDC.NDC_ANTIHYPERLIPID union corr
-       /* select codeType, code, "NDC_STATIN_OLD15" as source from NDC.NDC_STATIN_OLD15 union corr
+       /* select codeType, code, "NDC_ANTIHYPERLIPID" as source from NDC.NDC_ANTIHYPERLIPID union corr
+       select codeType, code, "NDC_STATIN_OLD15" as source from NDC.NDC_STATIN_OLD15 union corr
        select codeType, code, "NDC_STATINS" as source from NDC.NDC_STATINS union corr
        select codeType, code, "NDC_STATINS_OBSOLETE" as source from NDC.NDC_STATINS_OBSOLETE union corr */
-       select codeType, code, "NDC_STEROIDS" as source from NDC.NDC_STEROIDS union corr
+       /* select codeType, code, "NDC_STEROIDS" as source from NDC.NDC_STEROIDS union corr */
        select codeType, code, "NDC_TB" as source from NDC.NDC_TB union corr
        select codeType, code, "NDC_STEROIDS_TOPICAL" as source from NDC.NDC_STEROIDS_TOPICAL union corr
        select codeType, code, "NDC_VASCULITIS" as source from NDC.NDC_VASCULITIS union corr
