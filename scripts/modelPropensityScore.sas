@@ -302,7 +302,7 @@ Some parameters blow up; exlude these from the model estimation
 
 
 %let db = MPCD;
-proc logistic data = Work.allCovariates outest = Work.psBetas2Level;
+proc logistic data = Work.allCovariates outest = Work.psBetas2Level&db;
   where database = "&db";
   class &class;
   model exposure2 (event = "TNF") = 
@@ -353,15 +353,11 @@ proc logistic data = Work.allCovariates outest = Work.psBetas2Level;
         indRxBiologics
         indOutpatientInfection
         / link = logit rsquare;
-  output out = Work.ps2Level predicted = ps xbeta = xbeta;
-run;
-proc datasets library = work nolist;
-  change psBetas2Level = psBetas2Level&db
-         ps2Level = ps2Level&db;
+  output out = Work. ps2Level&db predicted = ps xbeta = xbeta;
 run;
 
 %let db = Marketscan;
-proc logistic data = Work.allCovariates outest = Work.psBetas2Level;
+proc logistic data = Work.allCovariates outest = Work.psBetas2Level&db;
   where database = "&db";
   class &class;
   model exposure2 (event = "TNF") = 
@@ -412,15 +408,11 @@ proc logistic data = Work.allCovariates outest = Work.psBetas2Level;
         indRxBiologics
         indOutpatientInfection
         / link = logit rsquare;
-  output out = Work.ps2Level predicted = ps xbeta = xbeta;
-run;
-proc datasets library = work nolist;
-  change psBetas2Level = psBetas2Level&db
-         ps2Level = ps2Level&db;
+  output out = Work.ps2Level&db predicted = ps xbeta = xbeta;
 run;
 
 %let db = Medicare;
-proc logistic data = Work.allCovariates outest = Work.psBetas2Level;
+proc logistic data = Work.allCovariates outest = Work.psBetas2Level&db;
   where database = "&db";
   class &class;
   model exposure2 (event = "TNF") = 
@@ -471,11 +463,7 @@ proc logistic data = Work.allCovariates outest = Work.psBetas2Level;
         indRxBiologics
         indOutpatientInfection
         / link = logit rsquare;
-  output out = Work.ps2Level predicted = ps xbeta = xbeta;
-run;
-proc datasets library = work nolist;
-  change psBetas2Level = psBetas2Level&db
-         ps2Level = ps2Level&db;
+  output out = Work.ps2Level&db predicted = ps xbeta = xbeta;
 run;
 
 proc sql;
