@@ -1,29 +1,32 @@
 del ..\output\* /q
 del ..\data\processed\* /q
 
-call :execute contentsSourceDatasets
-call :execute importOutcomeCodebook
-call :execute calculateASPrevalence
-call :execute buildASCohort
-call :execute pullTargetDrug
-call :execute buildExposureCohorts
-call :execute buildIndexLookup
-call :execute buildControlLookup
-REM call :execute buildExposureFollowUp
+REM call :execute contentsSourceDatasets
+REM call :execute importOutcomeCodebook
+REM call :execute calculateASPrevalence
+REM call :execute buildASCohort
+REM call :execute pullTargetDrug
+REM call :execute buildExposureCohorts
+REM call :execute buildIndexLookup
+REM call :execute buildControlLookup
+REM call :execute LC_UCBSTD
+REM call :execute LC_MPSTD
+REM call :execute LC_SABRSTD
+REM call :execute unionExpoCohort7
 REM call :execute reproduceTables2
 REM call :execute buildServiceCodeDatasets
 REM call :execute buildServiceCodeDatasetsControl
-REM call :execute queryFractures
+call :execute queryFractures
 REM call :execute queryFracturesControl
-REM call :execute CANCER_setoguchi
-REM call :execute CANCER_NMSC
-REM call :execute queryOutcomeHospitalizedInfection
-REM call :execute queryOutcomeOpportunisticInfection
-REM call :execute queryPrevalentComorbidities
+call :execute CANCER_setoguchi
+call :execute CANCER_NMSC
+call :execute queryOutcomeHospitalizedInfection
+call :execute queryOutcomeOpportunisticInfection
+call :execute queryPrevalentComorbidities
 REM call :execute queryPrevalentComorbiditiesControl
-REM call :execute queryIncidenceOutcomes
-REM call :execute generateNDCLookup
-REM call :execute queryOtherComorbidities
+call :execute queryIncidenceOutcomes
+call :execute generateNDCLookup
+call :execute queryOtherComorbidities
 REM call :execute modelPropensityScore
 rem Run summarizePropensityScore.Rmd to check propensity score model
 REM call :execute modelIncidenceOutcomes
