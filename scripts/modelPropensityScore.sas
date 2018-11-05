@@ -313,13 +313,13 @@ proc logistic data = Work.allCovariates outest = Work.psBetas2Level&db;
         /* indApicalPulmFib */
         /* indCaudaEquina */
         indVertFrac
-        /* indConductBlock */
+        indConductBlock
         indCrohnsDis
         indHematCa
         indHospInf
         indIgANeph
         /* indInterstLungDis */
-        /* indMI */
+        indMI
         /* indNephSyn */
         /* indNMSC */
         indNonVertOsFrac
@@ -338,7 +338,7 @@ proc logistic data = Work.allCovariates outest = Work.psBetas2Level&db;
         indCOPDEmphysema
         meanPredEqDoseCat
         quartileCharlson
-        indInflamMarker
+        /* indInflamMarker */
         indRxNSAID
         indRxHtn
         indRxNarcotics
@@ -418,7 +418,7 @@ proc logistic data = Work.allCovariates outest = Work.psBetas2Level&db;
   model exposure2 (event = "TNF") = 
         catAge
         sex
-        indAmyloidosis
+        /* indAmyloidosis */
         indAortInsuffRegurg
         /* indApicalPulmFib */
         indCaudaEquina
@@ -430,7 +430,7 @@ proc logistic data = Work.allCovariates outest = Work.psBetas2Level&db;
         indIgANeph
         indInterstLungDis
         indMI
-        indNephSyn
+        /* indNephSyn */
         indNMSC
         indNonVertOsFrac
         indOppInf
@@ -448,8 +448,8 @@ proc logistic data = Work.allCovariates outest = Work.psBetas2Level&db;
         indCOPDEmphysema
         meanPredEqDoseCat
         quartileCharlson
-        indInflamMarker
-        indRxNSAID
+        /* indInflamMarker */
+        /* indRxNSAID */
         indRxHtn
         indRxNarcotics
         indRxFungus
