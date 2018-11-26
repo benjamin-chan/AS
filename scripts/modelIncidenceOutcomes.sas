@@ -102,7 +102,8 @@ proc sql;
          DT.incidentDiseaseTimelines B on (A.database = B.database & 
                                            A.patid = B.patid &
                                            A.indexDate = B.exposureStart &
-                                           A.indexGNN = B.exposureDrug);
+                                           ((A.indexGNN = B.exposureDrug) | 
+                                            (A.indexGNN = "NoExp" & B.exposureDrug = "")));
   create table Work.analyticDataset as
     select coalesce(A.database, B.database) as database,
            B.patid,
