@@ -97,7 +97,10 @@ proc sql;
            B.exposureStart,
            B.exposureEnd,
            B.outcomeDate,
-           B.earliestOutcome
+           B.earliestOutcome,
+           A.enr_end_date,
+           B.censor_rx,
+           A.death_date
     from DT.indexLookup A inner join
          DT.incidentDiseaseTimelines B on (A.database = B.database & 
                                            A.patid = B.patid &
@@ -121,11 +124,17 @@ proc sql;
            B.outcomeCategory,
            B.disease,
            B.censor,
-           B.daysAtRisk,
            B.exposureStart,
            B.exposureEnd,
            B.outcomeDate,
-           B.earliestOutcome
+           B.earliestOutcome,
+           min(B.stop_date - 1, 
+               B.enr_end_date, 
+               B.censor_rx - 1, 
+               B.DEATH_DATE,
+               B.earliestOutcome) - B.indexDate + 1
+             as daysAtRisk,
+           B.daysAtRisk as daysAtRisk0
     from DT.ps A inner join
          Work.incidentDiseaseTimelines B on (A.database = B.database &
                                              A.indexID = B.indexID &
