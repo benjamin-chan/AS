@@ -44,10 +44,15 @@ proc sql;
            indexDate format = mmddyy10. as exposureStart,
            enr_end_date format = mmddyy10.,
            death_date format = mmddyy10.,
+           censor_rx format = mmddyy10.,
            stop_date format = mmddyy10.,
            obs_end format = mmddyy10.,
            followupenddate format = mmddyy10. as exposureEnd,
-           followupday as daysExposed
+           followupday as daysExposed,
+           min(stop_date - 1, 
+               enr_end_date, 
+               censor_rx - 1, 
+               DEATH_DATE) - indexDate + 1) as cohortDay
     from (select * from DT.expo_cohort7_UCBSTD  union corr
           select * from DT.expo_cohort7_MPSTD   union corr
           select * from DT.expo_cohort7_SABRSTD );
@@ -62,6 +67,10 @@ quit;
 proc means data = Work.exposureTimeline n sum mean std min q1 median q3 max maxdec = 1;
   class database exposureClass exposure;
   var daysExposed;
+run;
+proc means data = Work.exposureTimeline n sum mean std min q1 median q3 max maxdec = 1;
+  class database exposureClass exposure;
+  var cohortDay;
 run;
 
 
