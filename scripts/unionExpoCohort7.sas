@@ -52,7 +52,7 @@ proc sql;
            min(stop_date - 1, 
                enr_end_date, 
                censor_rx - 1, 
-               DEATH_DATE) - indexDate + 1) as cohortDay
+               DEATH_DATE) - indexDate + 1 as cohortDay
     from (select * from DT.expo_cohort7_UCBSTD  union corr
           select * from DT.expo_cohort7_MPSTD   union corr
           select * from DT.expo_cohort7_SABRSTD );
