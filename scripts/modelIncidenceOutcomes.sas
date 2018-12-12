@@ -86,6 +86,7 @@ proc sql;
            coalesce(A.indexGNN, B.exposureDrug) as indexGNN,
            A.indexID,
            B.exposureID,
+           A.exposure,
            case
              when A.exposure in ("No exposure", "NSAID", "DMARD") then "DMARD, NSAID, or no exposure"
              else A.exposure
@@ -100,6 +101,7 @@ proc sql;
            B.earliestOutcome,
            A.enr_end_date,
            B.censor_rx,
+           B.stop_date,
            A.death_date
     from DT.indexLookup A inner join
          DT.incidentDiseaseTimelines B on (A.database = B.database & 
@@ -111,7 +113,7 @@ proc sql;
     select coalesce(A.database, B.database) as database,
            B.patid,
            coalesce(A.indexID, B.indexID) as indexID,
-           coalesce(A.exposure, B.exposure2) as exposure,
+           coalesce(A.exposure, B.exposure) as exposure,
            A.age,
            A.catAge,
            A.sex,
@@ -138,7 +140,7 @@ proc sql;
     from DT.ps A inner join
          Work.incidentDiseaseTimelines B on (A.database = B.database &
                                              A.indexID = B.indexID &
-                                             A.exposure = B.exposure2)
+                                             A.exposure = B.exposure)
     where A.indCommonSupport = 1 &
           ((B.disease = "Amyloidosis" & indAmyloidosis ^= 1) |
            (B.disease = "Aortic Insufficiency/Aortic Regurgitation" & indAortInsuffRegurg ^= 1) |
@@ -156,8 +158,8 @@ proc sql;
            (B.disease = "Non Melanoma Skin Cancer" /* & indNMSC ^= 1 */) |
            (B.disease = "Non-vertebral osteoporotic fracture" & indNonVertOsFrac ^= 1) |
            (B.disease = "Opportunistic infection" /* & indOppInf ^= 1 */) |
-           (B.disease = "Psoriasis" & indPsoriasis ^= 1) |
-           (B.disease = "Psoriatic arthritis" & indPSA ^= 1) |
+           (B.disease = "Psoriasis" & (indPsoriasis ^= 1 & indPSA ^= 1)) |
+           (B.disease = "Psoriatic arthritis" & (indPsoriasis ^= 1 & indPSA ^= 1)) |
            (prxmatch("/Restrictive lung disease/", B.disease) & indRestrictLungDis ^= 1) |
            (B.disease = "Solid Cancer" & indSolidCa ^= 1) |
            (B.disease = "Spinal Cord compression" & indSpinalCordComp ^= 1) |
