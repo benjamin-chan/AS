@@ -424,6 +424,10 @@ set outcome_OP_TB outcome_dx_TB(where=(outcome="TUBERCULOSIS" and ENC_TYPE in ( 
 by database exposure patid exposureStart exposureEnd exposureID outcome_date;
 run;
 
+proc sort data = outcome_dx_ZOSTER;
+  by database exposure patid exposureStart exposureEnd exposureID BEGIN_DATE;
+run;
+
 data outcome_zoster(keep=database exposure patid exposureStart exposureEnd exposureID BEGIN_DATE outcome outcome_date DISPENSE_DATE DX ADMIT_DATE ENC_TYPE outcome_start_date infection_category);
     if _N_=1 then do;
         declare hash Hzos(dataset:"outcome_rx_zoster" , multidata:"Y");

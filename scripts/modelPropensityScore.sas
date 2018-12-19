@@ -25,6 +25,7 @@ ods html
 proc sql;
   create table Work.allCovariates as
     select A.database,
+           A.exposure,
            case
              when A.exposure in ("No exposure", "NSAID") then "NSAID or no exposure"
              else A.exposure
@@ -169,7 +170,7 @@ run;
 
 
 proc means data = Work.allCovariates maxdec = 2 nolabels;
-  class database exposure2;
+  class database exposure;
   var indAmyloidosis
       indAortInsuffRegurg
       indApicalPulmFib
@@ -217,7 +218,7 @@ proc means data = Work.allCovariates maxdec = 2 nolabels;
       indOutpatientInfection;
 run;
 proc freq data = Work.allCovariates;
-  table database * exposure2 * (meanPredEqDoseCat quartileCharlson quartileCIRAS quartileIPAdmits12mPrior quartileAVPhys12mPrior quartileAVRheum12mPrior catERVisits) / list;
+  table database * exposure * (meanPredEqDoseCat quartileCharlson quartileCIRAS quartileIPAdmits12mPrior quartileAVPhys12mPrior quartileAVRheum12mPrior catERVisits) / list;
 run;
 proc sql;
   select database,
@@ -227,7 +228,10 @@ proc sql;
          max(age) as max,
          count(*) as n,
          sum(exposure2 = "TNF") as nTNF,
-         sum(exposure2 ^= "TNF") as nDMARDNSAIDNoExp
+         sum(exposure2 ^= "TNF") as nDMARDNSAIDNoExp,
+         sum(exposure = "DMARD") as nDMARD,
+         sum(exposure = "NSAID") as nNSAID,
+         sum(exposure = "No exposure") as nNoExp
     from Work.AllCovariates
     group by database, catAge;
   select database,
@@ -237,7 +241,10 @@ proc sql;
          max(charlson) as max,
          count(*) as n,
          sum(exposure2 = "TNF") as nTNF,
-         sum(exposure2 ^= "TNF") as nDMARDNSAIDNoExp
+         sum(exposure2 ^= "TNF") as nDMARDNSAIDNoExp,
+         sum(exposure = "DMARD") as nDMARD,
+         sum(exposure = "NSAID") as nNSAID,
+         sum(exposure = "No exposure") as nNoExp
     from Work.AllCovariates
     group by database, quartileCharlson;
   select database,
@@ -247,7 +254,10 @@ proc sql;
          max(ciras) as max,
          count(*) as n,
          sum(exposure2 = "TNF") as nTNF,
-         sum(exposure2 ^= "TNF") as nDMARDNSAIDNoExp
+         sum(exposure2 ^= "TNF") as nDMARDNSAIDNoExp,
+         sum(exposure = "DMARD") as nDMARD,
+         sum(exposure = "NSAID") as nNSAID,
+         sum(exposure = "No exposure") as nNoExp
     from Work.AllCovariates
     group by database, quartileCIRAS;
   select database,
@@ -257,7 +267,10 @@ proc sql;
          max(countIPAdmits12mPrior) as max,
          count(*) as n,
          sum(exposure2 = "TNF") as nTNF,
-         sum(exposure2 ^= "TNF") as nDMARDNSAIDNoExp
+         sum(exposure2 ^= "TNF") as nDMARDNSAIDNoExp,
+         sum(exposure = "DMARD") as nDMARD,
+         sum(exposure = "NSAID") as nNSAID,
+         sum(exposure = "No exposure") as nNoExp
     from Work.AllCovariates
     group by database, quartileIPAdmits12mPrior;
   select database,
@@ -267,7 +280,10 @@ proc sql;
          max(countAVPhys12mPrior) as max,
          count(*) as n,
          sum(exposure2 = "TNF") as nTNF,
-         sum(exposure2 ^= "TNF") as nDMARDNSAIDNoExp
+         sum(exposure2 ^= "TNF") as nDMARDNSAIDNoExp,
+         sum(exposure = "DMARD") as nDMARD,
+         sum(exposure = "NSAID") as nNSAID,
+         sum(exposure = "No exposure") as nNoExp
     from Work.AllCovariates
     group by database, quartileAVPhys12mPrior;
   select database,
@@ -277,15 +293,23 @@ proc sql;
          max(countAVRheum12mPrior) as max,
          count(*) as n,
          sum(exposure2 = "TNF") as nTNF,
-         sum(exposure2 ^= "TNF") as nDMARDNSAIDNoExp
+         sum(exposure2 ^= "TNF") as nDMARDNSAIDNoExp,
+         sum(exposure = "DMARD") as nDMARD,
+         sum(exposure = "NSAID") as nNSAID,
+         sum(exposure = "No exposure") as nNoExp
     from Work.AllCovariates
     group by database, quartileAVRheum12mPrior;
 quit;
 
 
 /* 
-Fit 2-level model
-2 levels of treatment exposure: TNF vs DMARD, NSAID, or no exposure
+Fit 4-level model
+4 levels of treatment exposure: 
+
+* TNF
+* DMARD
+* NSAID
+* No exposure
 
 Fit separate models for each data source: MPCD, Marketscan, Medicare
 
@@ -302,10 +326,10 @@ Some parameters blow up; exlude these from the model estimation
 
 
 %let db = MPCD;
-proc logistic data = Work.allCovariates outest = Work.psBetas2Level;
+proc logistic data = Work.allCovariates outest = Work.psBetas4Level&db;
   where database = "&db";
   class &class;
-  model exposure2 (event = "TNF") = 
+  model exposure = 
         catAge
         sex
         /* indAmyloidosis */
@@ -313,13 +337,13 @@ proc logistic data = Work.allCovariates outest = Work.psBetas2Level;
         /* indApicalPulmFib */
         /* indCaudaEquina */
         indVertFrac
-        /* indConductBlock */
+        indConductBlock
         indCrohnsDis
         indHematCa
         indHospInf
         indIgANeph
         /* indInterstLungDis */
-        /* indMI */
+        indMI
         /* indNephSyn */
         /* indNMSC */
         indNonVertOsFrac
@@ -338,7 +362,7 @@ proc logistic data = Work.allCovariates outest = Work.psBetas2Level;
         indCOPDEmphysema
         meanPredEqDoseCat
         quartileCharlson
-        indInflamMarker
+        /* indInflamMarker */
         indRxNSAID
         indRxHtn
         indRxNarcotics
@@ -352,19 +376,15 @@ proc logistic data = Work.allCovariates outest = Work.psBetas2Level;
         countAVRheum12mPrior
         indRxBiologics
         indOutpatientInfection
-        / link = logit rsquare;
-  output out = Work.ps2Level predicted = ps xbeta = xbeta;
-run;
-proc datasets library = work nolist;
-  change psBetas2Level = psBetas2Level&db
-         ps2Level = ps2Level&db;
+        / link = glogit rsquare;
+  output out = Work. ps4Level&db predicted = ps xbeta = xbeta;
 run;
 
 %let db = Marketscan;
-proc logistic data = Work.allCovariates outest = Work.psBetas2Level;
+proc logistic data = Work.allCovariates outest = Work.psBetas4Level&db;
   where database = "&db";
   class &class;
-  model exposure2 (event = "TNF") = 
+  model exposure = 
         catAge
         sex
         /* indAmyloidosis */
@@ -411,22 +431,18 @@ proc logistic data = Work.allCovariates outest = Work.psBetas2Level;
         countAVRheum12mPrior
         indRxBiologics
         indOutpatientInfection
-        / link = logit rsquare;
-  output out = Work.ps2Level predicted = ps xbeta = xbeta;
-run;
-proc datasets library = work nolist;
-  change psBetas2Level = psBetas2Level&db
-         ps2Level = ps2Level&db;
+        / link = glogit rsquare;
+  output out = Work.ps4Level&db predicted = ps xbeta = xbeta;
 run;
 
 %let db = Medicare;
-proc logistic data = Work.allCovariates outest = Work.psBetas2Level;
+proc logistic data = Work.allCovariates outest = Work.psBetas4Level&db;
   where database = "&db";
   class &class;
-  model exposure2 (event = "TNF") = 
+  model exposure = 
         catAge
         sex
-        indAmyloidosis
+        /* indAmyloidosis */
         indAortInsuffRegurg
         /* indApicalPulmFib */
         indCaudaEquina
@@ -438,7 +454,7 @@ proc logistic data = Work.allCovariates outest = Work.psBetas2Level;
         indIgANeph
         indInterstLungDis
         indMI
-        indNephSyn
+        /* indNephSyn */
         indNMSC
         indNonVertOsFrac
         indOppInf
@@ -456,8 +472,8 @@ proc logistic data = Work.allCovariates outest = Work.psBetas2Level;
         indCOPDEmphysema
         meanPredEqDoseCat
         quartileCharlson
-        indInflamMarker
-        indRxNSAID
+        /* indInflamMarker */
+        /* indRxNSAID */
         indRxHtn
         indRxNarcotics
         indRxFungus
@@ -470,23 +486,19 @@ proc logistic data = Work.allCovariates outest = Work.psBetas2Level;
         countAVRheum12mPrior
         indRxBiologics
         indOutpatientInfection
-        / link = logit rsquare;
-  output out = Work.ps2Level predicted = ps xbeta = xbeta;
-run;
-proc datasets library = work nolist;
-  change psBetas2Level = psBetas2Level&db
-         ps2Level = ps2Level&db;
+        / link = glogit rsquare;
+  output out = Work.ps4Level&db predicted = ps xbeta = xbeta;
 run;
 
 proc sql;
-  create table Work.ps2Level as
-    select * from ps2LevelMPCD union corr
-    select * from ps2LevelMarketscan union corr
-    select * from ps2LevelMedicare ;
-  create table Work.psBetas2Level as
-    select "MPCD" as database, * from psBetas2LevelMPCD union corr
-    select "Marketscan" as database, * from psBetas2LevelMarketscan union corr
-    select "Medicare" as database, * from psBetas2LevelMedicare ;
+  create table Work.ps4Level as
+    select * from ps4LevelMPCD union corr
+    select * from ps4LevelMarketscan union corr
+    select * from ps4LevelMedicare ;
+  create table Work.psBetas4Level as
+    select "MPCD" as database, * from psBetas4LevelMPCD union corr
+    select "Marketscan" as database, * from psBetas4LevelMarketscan union corr
+    select "Medicare" as database, * from psBetas4LevelMedicare ;
 quit;
 
 
@@ -508,7 +520,7 @@ Union model coefficients from the 4-level model and the 2-level model
  */
 proc sql;
   create table Work.psBetas as
-    select * from Work.psBetas2Level ;
+    select * from Work.psBetas4Level ;
 quit;
 
 
@@ -574,7 +586,7 @@ Calculate IPTW
 ;
 proc sql;
   create table Work.ps as
-    select "2-level exposure" as model, exposure2 as exposure, &varlist from Work.ps2Level 
+    select "4-level exposure" as model, exposure, &varlist from Work.ps4Level 
     order by indexID, exposure;
   alter table Work.ps add iptw numeric;
   update Work.ps set iptw = (exposure  = _level_) / ps + (exposure ^= _level_) / (1 - ps);

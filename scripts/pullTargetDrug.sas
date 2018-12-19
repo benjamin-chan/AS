@@ -43,7 +43,7 @@ NDC.Ndc_nsaids
 
 data NDC4targetDrug;
 set NDC.Ndc_dmard_bio(where=(CodeType='NDC'))
-    NDC.Ndc_nsaids(where=(CodeType='NDC'));
+    NDC.Ndc_nsaids(where=(CodeType='NDC' & rt = "ORAL"));
   if gnn in ("CELECOXIB",
              "IBUPROFEN",
              "NAPROXEN",

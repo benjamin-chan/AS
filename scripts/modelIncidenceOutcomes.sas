@@ -86,6 +86,7 @@ proc sql;
            coalesce(A.indexGNN, B.exposureDrug) as indexGNN,
            A.indexID,
            B.exposureID,
+           A.exposure,
            case
              when A.exposure in ("No exposure", "NSAID", "DMARD") then "DMARD, NSAID, or no exposure"
              else A.exposure
@@ -97,17 +98,22 @@ proc sql;
            B.exposureStart,
            B.exposureEnd,
            B.outcomeDate,
-           B.earliestOutcome
+           B.earliestOutcome,
+           A.enr_end_date,
+           B.censor_rx,
+           B.stop_date,
+           A.death_date
     from DT.indexLookup A inner join
          DT.incidentDiseaseTimelines B on (A.database = B.database & 
                                            A.patid = B.patid &
                                            A.indexDate = B.exposureStart &
-                                           A.indexGNN = B.exposureDrug);
+                                           ((A.indexGNN = B.exposureDrug) | 
+                                            (A.indexGNN = "NoExp" & B.exposureDrug = "")));
   create table Work.analyticDataset as
     select coalesce(A.database, B.database) as database,
            B.patid,
            coalesce(A.indexID, B.indexID) as indexID,
-           coalesce(A.exposure, B.exposure2) as exposure,
+           coalesce(A.exposure, B.exposure) as exposure,
            A.age,
            A.catAge,
            A.sex,
@@ -120,15 +126,21 @@ proc sql;
            B.outcomeCategory,
            B.disease,
            B.censor,
-           B.daysAtRisk,
            B.exposureStart,
            B.exposureEnd,
            B.outcomeDate,
-           B.earliestOutcome
+           B.earliestOutcome,
+           min(B.stop_date - 1, 
+               B.enr_end_date, 
+               B.censor_rx - 1, 
+               B.DEATH_DATE,
+               B.earliestOutcome) - B.indexDate + 1
+             as daysAtRisk,
+           B.daysAtRisk as daysAtRisk0
     from DT.ps A inner join
          Work.incidentDiseaseTimelines B on (A.database = B.database &
                                              A.indexID = B.indexID &
-                                             A.exposure = B.exposure2)
+                                             A.exposure = B.exposure)
     where A.indCommonSupport = 1 &
           ((B.disease = "Amyloidosis" & indAmyloidosis ^= 1) |
            (B.disease = "Aortic Insufficiency/Aortic Regurgitation" & indAortInsuffRegurg ^= 1) |
@@ -146,8 +158,8 @@ proc sql;
            (B.disease = "Non Melanoma Skin Cancer" /* & indNMSC ^= 1 */) |
            (B.disease = "Non-vertebral osteoporotic fracture" & indNonVertOsFrac ^= 1) |
            (B.disease = "Opportunistic infection" /* & indOppInf ^= 1 */) |
-           (B.disease = "Psoriasis" & indPsoriasis ^= 1) |
-           (B.disease = "Psoriatic arthritis" & indPSA ^= 1) |
+           (B.disease = "Psoriasis" & (indPsoriasis ^= 1 & indPSA ^= 1)) |
+           (B.disease = "Psoriatic arthritis" & (indPsoriasis ^= 1 & indPSA ^= 1)) |
            (prxmatch("/Restrictive lung disease/", B.disease) & indRestrictLungDis ^= 1) |
            (B.disease = "Solid Cancer" & indSolidCa ^= 1) |
            (B.disease = "Spinal Cord compression" & indSpinalCordComp ^= 1) |
@@ -274,25 +286,25 @@ quit;
     run;
     %let regex = %sysfunc(prxparse(/%cmpres(&test)/));
     %if %sysfunc(prxmatch(&regex, Amyloidosis)) = 1 %then %do;
-      * %model(%quote(0 Unweighted, no covariates), &outcomeCategory, &disease, &maxlen, , );
+      /* * %model(%quote(0 Unweighted, no covariates), &outcomeCategory, &disease, &maxlen, , );
       %model(%quote(a Weighted, no covariates), &outcomeCategory, &disease, &maxlen, iptw, );
       * %model(%quote(b Weighted, covariates (6-month daily steroid dose)), &outcomeCategory, &disease, &maxlen, iptw, meanPredEqDoseCat);
       %model(%quote(c Weighted, covariates (sex)), &outcomeCategory, &disease, &maxlen, iptw, sex);
       * %model(%quote(d Weighted, covariates (indHospInf)), &outcomeCategory, &disease, &maxlen, iptw, indHospInf);
       * %model(%quote(e Weighted, covariates (6-month daily steroid dose, sex, indHospInf)), &outcomeCategory, &disease, &maxlen, iptw, meanPredEqDoseCat sex indHospInf);
-      %model(%quote(f Weighted (stabilized), covariates (6-month daily steroid dose)), &outcomeCategory, &disease, &maxlen, iptwStabilized, meanPredEqDoseCat);
+      %model(%quote(f Weighted (stabilized), covariates (6-month daily steroid dose)), &outcomeCategory, &disease, &maxlen, iptwStabilized, meanPredEqDoseCat); */
     %end;
-    %else %if %sysfunc(prxmatch(&regex, Apical Pulmonary fibrosis)) = 1 %then %do;
-    %end;
-    /* %else %if %sysfunc(prxmatch(&regex, Cauda Equina syndrome)) = 1 %then %do;
-      * %model(%quote(0 Unweighted, no covariates), &outcomeCategory, &disease, &maxlen, , );
+    /* %else %if %sysfunc(prxmatch(&regex, Apical Pulmonary fibrosis)) = 1 %then %do;
+    %end; */
+    %else %if %sysfunc(prxmatch(&regex, Cauda Equina syndrome)) = 1 %then %do;
+      /* * %model(%quote(0 Unweighted, no covariates), &outcomeCategory, &disease, &maxlen, , );
       %model(%quote(a Weighted, no covariates), &outcomeCategory, &disease, &maxlen, iptw, );
       %model(%quote(b Weighted, covariates (6-month daily steroid dose)), &outcomeCategory, &disease, &maxlen, iptw, meanPredEqDoseCat);
       %model(%quote(c Weighted, covariates (sex)), &outcomeCategory, &disease, &maxlen, iptw, sex);
       %model(%quote(d Weighted, covariates (indHospInf)), &outcomeCategory, &disease, &maxlen, iptw, indHospInf);
       %model(%quote(e Weighted, covariates (6-month daily steroid dose, sex, indHospInf)), &outcomeCategory, &disease, &maxlen, iptw, meanPredEqDoseCat sex indHospInf);
-      %model(%quote(f Weighted (stabilized), covariates (6-month daily steroid dose)), &outcomeCategory, &disease, &maxlen, iptwStabilized, meanPredEqDoseCat);
-    %end; */
+      %model(%quote(f Weighted (stabilized), covariates (6-month daily steroid dose)), &outcomeCategory, &disease, &maxlen, iptwStabilized, meanPredEqDoseCat); */
+    %end;
     %else %do;
       %model(%quote(0 Unweighted, no covariates), &outcomeCategory, &disease, &maxlen, , );
       %model(%quote(a Weighted, no covariates), &outcomeCategory, &disease, &maxlen, iptw, );

@@ -1,15 +1,18 @@
 del ..\output\* /q
 del ..\data\processed\* /q
 
-call :execute contentsSourceDatasets
-call :execute importOutcomeCodebook
-call :execute calculateASPrevalence
-call :execute buildASCohort
-call :execute pullTargetDrug
-call :execute buildExposureCohorts
-call :execute buildIndexLookup
-call :execute buildControlLookup
-REM call :execute buildExposureFollowUp
+REM call :execute contentsSourceDatasets
+REM call :execute importOutcomeCodebook
+REM call :execute calculateASPrevalence
+REM call :execute buildASCohort
+REM call :execute pullTargetDrug
+REM call :execute buildExposureCohorts
+REM call :execute buildIndexLookup
+REM call :execute buildControlLookup
+call :execute LC_UCBSTD
+call :execute LC_MPSTD
+call :execute LC_SABRSTD
+call :execute unionExpoCohort7
 REM call :execute reproduceTables2
 REM call :execute buildServiceCodeDatasets
 REM call :execute buildServiceCodeDatasetsControl
@@ -21,12 +24,12 @@ REM call :execute queryOutcomeHospitalizedInfection
 REM call :execute queryOutcomeOpportunisticInfection
 REM call :execute queryPrevalentComorbidities
 REM call :execute queryPrevalentComorbiditiesControl
-REM call :execute queryIncidenceOutcomes
+call :execute queryIncidenceOutcomes
 REM call :execute generateNDCLookup
 REM call :execute queryOtherComorbidities
-REM call :execute modelPropensityScore
+call :execute modelPropensityScore
 rem Run summarizePropensityScore.Rmd to check propensity score model
-REM call :execute modelIncidenceOutcomes
+call :execute modelIncidenceOutcomes
 REM call :execute contentsWorkingDatasets
 
 "C:\Program Files\7-Zip\7z.exe" d ..\output.zip ..\output\*
