@@ -294,8 +294,8 @@ quit;
       * %model(%quote(e Weighted, covariates (6-month daily steroid dose, sex, indHospInf)), &outcomeCategory, &disease, &maxlen, iptw, meanPredEqDoseCat sex indHospInf);
       %model(%quote(f Weighted (stabilized), covariates (6-month daily steroid dose)), &outcomeCategory, &disease, &maxlen, iptwStabilized, meanPredEqDoseCat); */
     %end;
-    /* %else %if %sysfunc(prxmatch(&regex, Apical Pulmonary fibrosis)) = 1 %then %do;
-    %end; */
+    %else %if %sysfunc(prxmatch(&regex, Apical Pulmonary fibrosis)) = 1 %then %do;
+    %end;
     %else %if %sysfunc(prxmatch(&regex, Cauda Equina syndrome)) = 1 %then %do;
       /* * %model(%quote(0 Unweighted, no covariates), &outcomeCategory, &disease, &maxlen, , );
       %model(%quote(a Weighted, no covariates), &outcomeCategory, &disease, &maxlen, iptw, );
@@ -332,6 +332,9 @@ proc sql;
            model,
            case
              when prxmatch("/DMARD, NSAID, or no exposure vs TNF/", Description) then "TNF vs DMARD, NSAID, or no exposure"
+             when prxmatch("/DMARD vs TNF/", Description) then "TNF vs DMARD"
+             when prxmatch("/NSAID vs TNF/", Description) then "TNF vs NSAID"
+             when prxmatch("/No exposure vs TNF/", Description) then "TNF vs No exposure"
              else ""
              end as comparison,
            case
