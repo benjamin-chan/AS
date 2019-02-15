@@ -202,13 +202,40 @@ proc sql;
   insert into Work.lookupDisease (outcomeCategory, disease)
     values ("Osteoporotic fracture", "Clinical vertebral fracture")
     values ("Osteoporotic fracture", "Non-vertebral osteoporotic fracture");
+  alter table Work.lookupDisease
+    modify disease char(57) format = $51.;
+  update Work.lookupDisease
+    set disease = 
+      case
+        when disease = "Clinical vertebral fracture" | disease = "Non-vertebral osteoporotic fracture"
+          then "Clinical vertebral or non-vertebral osteoporotic fracture"
+        when disease = "Psoriasis" | disease = "Psoriatic arthritis"
+          then "Psoriasis or psoriatic arthritis"
+        when prxmatch("/Crohn/", disease) | disease = "Ulcerative Colitis"
+          then "Crohns disease or ulcerative colitis"
+        else disease
+        end;
+  create table Work.temp as
+    select distinct * from Work.lookupDisease;
+  drop table Work.lookupDisease;
+  create table Work.lookupDisease as
+    select * from Work.temp;
+  drop table Work.temp;
   
   %let select1 = select A.*, B.outcomeCategory, B.disease;
   %let join1 = inner join Work.defOutcomes B on (A.codeType = B.codeType & A.code = B.code);
   create table Work.incidentDisease as
     select C.database, C.exposureID, C.patid, C.exposure, C.exposureStart, C.exposureEnd,
            C.outcomeCategory,
-           C.disease,
+           case
+             when C.disease = "Clinical vertebral fracture" | C.disease = "Non-vertebral osteoporotic fracture"
+               then "Clinical vertebral or non-vertebral osteoporotic fracture"
+             when C.disease = "Psoriasis" | C.disease = "Psoriatic arthritis"
+               then "Psoriasis or psoriatic arthritis"
+             when prxmatch("/Crohn/", C.disease) | C.disease = "Ulcerative Colitis"
+               then "Crohns disease or ulcerative colitis"
+             else C.disease
+             end as disease,
            C.begin_date
     from (&select1 from UCB64.tempIncDxAll A &join1 union corr
           &select1 from UCB64.tempIncPxAll A &join1 union corr
@@ -219,6 +246,7 @@ proc sql;
           select * from Work.oppInf  union corr
           select * from Work.fractures) C
     order by C.database, C.exposureID, C.outcomeCategory, C.disease, C.begin_date;
+
 quit;
 
 /* 
@@ -227,6 +255,12 @@ Take first occurrence of outcome
 proc sort data = Work.incidentDisease nodupkey;
   by database exposureID outcomeCategory disease;
 run;
+proc sql;
+  select distinct 
+         outcomeCategory,
+         disease
+    from Work.incidentDisease;
+quit;
 
 /* 
 For all but NMSC and infection (hospitalized and opportunistic),

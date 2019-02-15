@@ -150,9 +150,9 @@ proc sql;
            (B.disease = "Aortic Insufficiency/Aortic Regurgitation" & indAortInsuffRegurg ^= 1) |
            (B.disease = "Apical Pulmonary fibrosis" & indApicalPulmFib ^= 1) |
            (B.disease = "Cauda Equina syndrome" & indCaudaEquina ^= 1) |
-           (B.disease = "Clinical vertebral fracture" & indVertFrac ^= 1) |
+           (B.disease = "Clinical vertebral or non-vertebral osteoporotic fracture" & (indVertFrac ^= 1 & indNonVertOsFrac ^= 1)) |
            (B.disease = "Conduction Block" & indConductBlock ^= 1) |
-           (prxmatch("/Crohn.s Disease/", B.disease) & indCrohnsDis ^= 1) |
+           (B.disease = "Crohns disease or ulcerative colitis" & (indCrohnsDis ^= 1 & indUlcerColitis ^= 1)) |
            (B.disease = "Hematologic Cancer" & indHematCa ^= 1) |
            (B.disease = "Hospitalized infection" /* & indHospInf ^= 1 */) |
            (B.disease = "IgA nephropathy" & indIgANeph ^= 1) |
@@ -160,14 +160,11 @@ proc sql;
            (B.disease = "Myocardial infarction" & indMI ^= 1) |
            (B.disease = "Nephrotic syndrome" & indNephSyn ^= 1) |
            (B.disease = "Non Melanoma Skin Cancer" /* & indNMSC ^= 1 */) |
-           (B.disease = "Non-vertebral osteoporotic fracture" & indNonVertOsFrac ^= 1) |
            (B.disease = "Opportunistic infection" /* & indOppInf ^= 1 */) |
-           (B.disease = "Psoriasis" & (indPsoriasis ^= 1 & indPSA ^= 1)) |
-           (B.disease = "Psoriatic arthritis" & (indPsoriasis ^= 1 & indPSA ^= 1)) |
+           (B.disease = "Psoriasis or psoriatic arthritis" & (indPsoriasis ^= 1 & indPSA ^= 1)) |
            (prxmatch("/Restrictive lung disease/", B.disease) & indRestrictLungDis ^= 1) |
            (B.disease = "Solid Cancer" & indSolidCa ^= 1) |
            (B.disease = "Spinal Cord compression" & indSpinalCordComp ^= 1) |
-           (B.disease = "Ulcerative Colitis" & indUlcerColitis ^= 1) |
            (B.disease = "Uveitis" & indUveitis ^= 1) )
     order by B.outcomeCategory,
              B.disease,
