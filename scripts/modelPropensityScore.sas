@@ -27,7 +27,7 @@ proc sql;
     select A.database,
            A.exposure,
            case
-             when A.exposure in ("No exposure", "NSAID") then "NSAID or no exposure"
+             when A.exposure in ("NSAID", "DMARD") then "DMARD or NSAID"
              else A.exposure
              end as exposure3,
            case
@@ -230,7 +230,7 @@ proc sql;
          sum(exposure2 = "TNF") as nTNF,
          sum(exposure2 ^= "TNF") as nDMARDNSAIDNoExp,
          sum(exposure = "DMARD") as nDMARD,
-         sum(exposure3 ^= "TNF" & exposure3 ^= "DMARD") as nNSAIDNoExp,
+         sum(exposure3 ^= "TNF" & exposure3 ^= "No exposure") as nDMARDNSAID,
          sum(exposure = "NSAID") as nNSAID,
          sum(exposure = "No exposure") as nNoExp
     from Work.AllCovariates
@@ -244,7 +244,7 @@ proc sql;
          sum(exposure2 = "TNF") as nTNF,
          sum(exposure2 ^= "TNF") as nDMARDNSAIDNoExp,
          sum(exposure = "DMARD") as nDMARD,
-         sum(exposure3 ^= "TNF" & exposure3 ^= "DMARD") as nNSAIDNoExp,
+         sum(exposure3 ^= "TNF" & exposure3 ^= "No exposure") as nDMARDNSAID,
          sum(exposure = "NSAID") as nNSAID,
          sum(exposure = "No exposure") as nNoExp
     from Work.AllCovariates
@@ -258,7 +258,7 @@ proc sql;
          sum(exposure2 = "TNF") as nTNF,
          sum(exposure2 ^= "TNF") as nDMARDNSAIDNoExp,
          sum(exposure = "DMARD") as nDMARD,
-         sum(exposure3 ^= "TNF" & exposure3 ^= "DMARD") as nNSAIDNoExp,
+         sum(exposure3 ^= "TNF" & exposure3 ^= "No exposure") as nDMARDNSAID,
          sum(exposure = "NSAID") as nNSAID,
          sum(exposure = "No exposure") as nNoExp
     from Work.AllCovariates
@@ -272,7 +272,7 @@ proc sql;
          sum(exposure2 = "TNF") as nTNF,
          sum(exposure2 ^= "TNF") as nDMARDNSAIDNoExp,
          sum(exposure = "DMARD") as nDMARD,
-         sum(exposure3 ^= "TNF" & exposure3 ^= "DMARD") as nNSAIDNoExp,
+         sum(exposure3 ^= "TNF" & exposure3 ^= "No exposure") as nDMARDNSAID,
          sum(exposure = "NSAID") as nNSAID,
          sum(exposure = "No exposure") as nNoExp
     from Work.AllCovariates
@@ -286,7 +286,7 @@ proc sql;
          sum(exposure2 = "TNF") as nTNF,
          sum(exposure2 ^= "TNF") as nDMARDNSAIDNoExp,
          sum(exposure = "DMARD") as nDMARD,
-         sum(exposure3 ^= "TNF" & exposure3 ^= "DMARD") as nNSAIDNoExp,
+         sum(exposure3 ^= "TNF" & exposure3 ^= "No exposure") as nDMARDNSAID,
          sum(exposure = "NSAID") as nNSAID,
          sum(exposure = "No exposure") as nNoExp
     from Work.AllCovariates
@@ -300,7 +300,7 @@ proc sql;
          sum(exposure2 = "TNF") as nTNF,
          sum(exposure2 ^= "TNF") as nDMARDNSAIDNoExp,
          sum(exposure = "DMARD") as nDMARD,
-         sum(exposure3 ^= "TNF" & exposure3 ^= "DMARD") as nNSAIDNoExp,
+         sum(exposure3 ^= "TNF" & exposure3 ^= "No exposure") as nDMARDNSAID,
          sum(exposure = "NSAID") as nNSAID,
          sum(exposure = "No exposure") as nNoExp
     from Work.AllCovariates
@@ -313,8 +313,8 @@ Fit 3-level model
 3 levels of treatment exposure: 
 
 * TNF
-* DMARD
-* NSAID or No exposure
+* DMARD or NSAID
+* No exposure
 
 Fit separate models for each data source: MPCD, Marketscan, Medicare
 

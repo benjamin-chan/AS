@@ -88,7 +88,7 @@ proc sql;
            B.exposureID,
            A.exposure,
            case
-             when A.exposure in ("No exposure", "NSAID") then "NSAID or no exposure"
+             when A.exposure in ("NSAID", "DMARD") then "DMARD or NSAID"
              else A.exposure
              end as exposure3,
            case
@@ -345,6 +345,7 @@ proc sql;
            model,
            case
              when prxmatch("/DMARD, NSAID, or no exposure vs TNF/", Description) then "TNF vs DMARD, NSAID, or no exposure"
+             when prxmatch("/DMARD or NSAID vs TNF/", Description) then "TNF vs DMARD or NSAID"
              when prxmatch("/NSAID or no exposure vs TNF/", Description) then "TNF vs NSAID or no exposure"
              when prxmatch("/DMARD vs TNF/", Description) then "TNF vs DMARD"
              when prxmatch("/NSAID vs TNF/", Description) then "TNF vs NSAID"
