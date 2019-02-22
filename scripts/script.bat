@@ -9,10 +9,10 @@ REM call :execute pullTargetDrug
 REM call :execute buildExposureCohorts
 REM call :execute buildIndexLookup
 REM call :execute buildControlLookup
-call :execute LC_UCBSTD
-call :execute LC_MPSTD
-call :execute LC_SABRSTD
-call :execute unionExpoCohort7
+REM call :execute LC_UCBSTD
+REM call :execute LC_MPSTD
+REM call :execute LC_SABRSTD
+REM call :execute unionExpoCohort7
 REM call :execute reproduceTables2
 REM call :execute buildServiceCodeDatasets
 REM call :execute buildServiceCodeDatasetsControl
