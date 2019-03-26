@@ -213,6 +213,8 @@ proc sql;
           then "Psoriasis or psoriatic arthritis"
         when prxmatch("/Crohn/", disease) | disease = "Ulcerative Colitis"
           then "Crohns disease or ulcerative colitis"
+        when disease = "Interstitial lung disease" | prxmatch("/Restrictive lung disease/", disease)
+          then "Interstitial or restrictive lung disease"
         else disease
         end;
   create table Work.temp as
@@ -234,6 +236,8 @@ proc sql;
                then "Psoriasis or psoriatic arthritis"
              when prxmatch("/Crohn/", C.disease) | C.disease = "Ulcerative Colitis"
                then "Crohns disease or ulcerative colitis"
+             when disease = "Interstitial lung disease" | prxmatch("/Restrictive lung disease/", disease)
+               then "Interstitial or restrictive lung disease"
              else C.disease
              end as disease,
            C.begin_date

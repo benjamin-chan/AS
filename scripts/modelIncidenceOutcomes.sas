@@ -156,13 +156,12 @@ proc sql;
            (B.disease = "Hematologic Cancer" & indHematCa ^= 1) |
            (B.disease = "Hospitalized infection" /* & indHospInf ^= 1 */) |
            (B.disease = "IgA nephropathy" & indIgANeph ^= 1) |
-           (B.disease = "Interstitial lung disease" & indInterstLungDis ^= 1) |
+           (B.disease = "Interstitial or restrictive lung disease" & (indInterstLungDis ^= 1& indRestrictLungDis ^= 1)) |
            (B.disease = "Myocardial infarction" & indMI ^= 1) |
            (B.disease = "Nephrotic syndrome" & indNephSyn ^= 1) |
            (B.disease = "Non Melanoma Skin Cancer" /* & indNMSC ^= 1 */) |
            (B.disease = "Opportunistic infection" /* & indOppInf ^= 1 */) |
            (B.disease = "Psoriasis or psoriatic arthritis" & (indPsoriasis ^= 1 & indPSA ^= 1)) |
-           (prxmatch("/Restrictive lung disease/", B.disease) & indRestrictLungDis ^= 1) |
            (B.disease = "Solid Cancer" & indSolidCa ^= 1) |
            (B.disease = "Spinal Cord compression" & indSpinalCordComp ^= 1) |
            (B.disease = "Uveitis" & indUveitis ^= 1) )
