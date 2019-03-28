@@ -94,7 +94,7 @@ proc sql;
              when C.disease = "Interstitial lung disease" | prxmatch("/Restrictive lung disease/", C.disease)
                then "Interstitial or restrictive lung disease"
              else C.disease
-             end as disease;
+             end as disease,
            sum(C.begin_date < C.ASCohortDate) > 0 as indPrevPriorToCohortEntry,
            sum(0 <= C.ASCohortDate  - C.begin_date <= 183 |
                0 <= C.begin_date - C.ASCohortDate  <= (183 * 1)) > 0 as indPrev12mo,
