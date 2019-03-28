@@ -3,7 +3,7 @@ del ..\data\processed\* /q
 
 REM call :execute contentsSourceDatasets
 REM call :execute importOutcomeCodebook
-REM call :execute calculateASPrevalence
+call :execute calculateASPrevalence
 REM call :execute buildASCohort
 REM call :execute pullTargetDrug
 REM call :execute buildExposureCohorts
@@ -22,7 +22,7 @@ REM call :execute CANCER_setoguchi
 REM call :execute CANCER_NMSC
 REM call :execute queryOutcomeHospitalizedInfection
 REM call :execute queryOutcomeOpportunisticInfection
-REM call :execute queryPrevalentComorbidities
+call :execute queryPrevalentComorbidities
 REM call :execute queryPrevalentComorbiditiesControl
 call :execute queryIncidenceOutcomes
 REM call :execute generateNDCLookup
