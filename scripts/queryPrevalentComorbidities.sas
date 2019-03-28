@@ -84,7 +84,17 @@ proc sql;
   create table DT.comorbiditiesByPatid as
     select C.database, C.patid, C.ASCohortDate,
            C.outcomeCategory,
-           C.disease,
+           case
+             when C.disease = "Clinical vertebral fracture" | C.disease = "Non-vertebral osteoporotic fracture"
+               then "Clinical vertebral or non-vertebral osteoporotic fracture"
+             when C.disease = "Psoriasis" | C.disease = "Psoriatic arthritis"
+               then "Psoriasis or psoriatic arthritis"
+             when prxmatch("/Crohn/", C.disease) | C.disease = "Ulcerative Colitis"
+               then "Crohns disease or ulcerative colitis"
+             when C.disease = "Interstitial lung disease" | prxmatch("/Restrictive lung disease/", C.disease)
+               then "Interstitial or restrictive lung disease"
+             else C.disease
+             end as disease;
            sum(C.begin_date < C.ASCohortDate) > 0 as indPrevPriorToCohortEntry,
            sum(0 <= C.ASCohortDate  - C.begin_date <= 183 |
                0 <= C.begin_date - C.ASCohortDate  <= (183 * 1)) > 0 as indPrev12mo,
@@ -98,7 +108,7 @@ proc sql;
           select * from Work.fractures) C
     group by C.database, C.patid, C.ASCohortDate,
              C.outcomeCategory,
-             C.disease
+             calculated disease
     having calculated indPrevPriorToCohortEntry > 0 | 
            calculated indPrev12mo > 0 | 
            calculated indPrev24mo > 0 | 
